@@ -27,7 +27,6 @@ public class WorkAreax extends VerticalLayout implements View {
 	@Override
 	public void enter(ViewChangeEvent event) {
 		setSizeFull();
-		setWidthUndefined();
 		setMargin(false);
 		setStyleName("parent_layout");
 		
@@ -55,7 +54,7 @@ public class WorkAreax extends VerticalLayout implements View {
 		logoC.setStyleName("logo_c");
 		logoC.setMargin(true);
 		logoC.addComponent(emb);
-		c1.addComponent(logoC);
+		//c1.addComponent(logoC);
 		
 		
 		
@@ -152,12 +151,78 @@ public class WorkAreax extends VerticalLayout implements View {
 		g.setRowExpandRatio(1, 1.0f);
 		
 		g.setColumnExpandRatio(0, 0.0f);
-		g.setColumnExpandRatio(1, 5.0f);
+		g.setColumnExpandRatio(1, 1.0f);
 		
 		
 		
 		addComponent(g);
 		setComponentAlignment(g, Alignment.MIDDLE_CENTER);
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		/*
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 */
+		
+		
+		/*VerticalLayout cLogo = new VerticalLayout();
+		cLogo.setSizeUndefined();
+		cLogo.setStyleName("logo_c");
+		cLogo.setMargin(true);
+		cLogo.addComponent(emb);*/
+		
+		/*HorizontalLayout cHeader = new HorizontalLayout();
+		cHeader.setWidth("100%");
+		cHeader.setHeightUndefined();
+		cHeader.setStyleName("c_header");
+		cHeader.addComponent(logoC);
+		cHeader.addComponent(logoutC);
+		cHeader.setComponentAlignment(logoutC, Alignment.TOP_RIGHT);
+		
+		addComponent(cHeader);
+		addComponent(mCC);
+		setExpandRatio(mCC, 1.0f);*/
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		
 		
 		if(event.getParameters().toString().equals("add_user")){

@@ -204,10 +204,10 @@ public class Login extends VerticalLayout implements View {
 					//Notification.show("Invalid value");
 					return;
 				}
-				if(validCredentials()){
+				//if(validCredentials()){
 					UI.getCurrent().getSession().setAttribute("user", tfUsername.getValue());
 					UI.getCurrent().getNavigator().navigateTo(WorkAreax.WORK_AREA);
-				}
+			//	}
 			
 				
 				
