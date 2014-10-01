@@ -1,0 +1,52 @@
+@charset "utf-8";
+/* CSS Document */
+
+.menu_container{
+	color:#00C;
+	background:#006;
+}
+
+.menu{
+	list-style:none;
+	background:#0000CC;
+	color:#FFFFFF;
+	float:left;
+	
+}
+
+.menu li:hover{
+	background:#09f;
+	color:#6cf;
+}
+
+.menu li{
+	position:relative;
+	background:#ccff00;
+}
+
+
+ul.menu{
+	background:#ffff00;
+	padding:0;
+	
+}
+
+.menu ul{
+	position:absolute;
+	left: -9999px;
+	white-space:nowrap;
+	list-style-type:none;
+}
+
+
+
+.menu li:hover ul{
+	left:0px;
+	top:0px;	
+}
+
+
+
+/*.menu li ul li{
+	background:#000033;
+}*/
