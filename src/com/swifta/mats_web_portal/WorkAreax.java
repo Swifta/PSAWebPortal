@@ -47,6 +47,7 @@ public class WorkAreax extends VerticalLayout implements View {
 		
 		c4.setStyleName("c_4");
 		c4.setWidth("100%");
+		c4.setHeight("100%");
 		
 		
 		VerticalLayout logoC = new VerticalLayout();
@@ -54,7 +55,7 @@ public class WorkAreax extends VerticalLayout implements View {
 		logoC.setStyleName("logo_c");
 		logoC.setMargin(true);
 		logoC.addComponent(emb);
-		//c1.addComponent(logoC);
+		c1.addComponent(logoC);
 		
 		
 		
@@ -76,8 +77,8 @@ public class WorkAreax extends VerticalLayout implements View {
 		curActivityC.setSpacing(false);
 		
 		curActivityC.setStyleName("cur_activity_c");
-		c4.addComponent(curActivityC);
-		c4.setComponentAlignment(curActivityC, Alignment.BOTTOM_RIGHT);
+		//c4.addComponent(curActivityC);
+		//c4.setComponentAlignment(curActivityC, Alignment.BOTTOM_RIGHT);
 		
 		VerticalLayout curActivityStrip = new VerticalLayout();
 		curActivityStrip.setWidth("100%");
@@ -327,7 +328,7 @@ public class WorkAreax extends VerticalLayout implements View {
 	public CustomLayout createAdminMenu(){
 		CustomLayout vmbar = new CustomLayout("VMBar_fitting");
 		
-		MenuItemClickable lbASpecific = new MenuItemClickable("Specific", "Specific");
+		/*MenuItemClickable lbASpecific = new MenuItemClickable("Specific", "Specific");
 		
 		vmbar.addComponent(lbASpecific, "location_specific_accounts");
 		
@@ -348,8 +349,8 @@ public class WorkAreax extends VerticalLayout implements View {
 		MenuItemClickable lbABlocked = new MenuItemClickable("Blocked","Blocked");
 		vmbar.addComponent(lbABlocked, "location_blocked_accounts");
 		
-		MenuItemClickable lbAMisceleneous = new MenuItemClickable("Misceleneous","Misceleneous");
-		vmbar.addComponent(lbAMisceleneous, "location_misceleneous_accounts_info");
+		MenuItemClickable lbAMisceleneous = new MenuItemClickable("Misceleneous","Misceleneous"); 
+		vmbar.addComponent(lbAMisceleneous, "location_misceleneous_accounts_info");*/
 		
 		MenuItemClickable lbUAddNew = new MenuItemClickable("Add New","add_user");
 		vmbar.addComponent(lbUAddNew, "location_new_user");
@@ -357,14 +358,14 @@ public class WorkAreax extends VerticalLayout implements View {
 		MenuItemClickable lbUManage = new MenuItemClickable("Manage", "manage_user");
 		vmbar.addComponent(lbUManage, "location_manage_user");
 		
-		MenuItemClickable lbUEdit = new MenuItemClickable("Edit", "edit_user");
+		/*MenuItemClickable lbUEdit = new MenuItemClickable("Edit", "edit_user");
 		vmbar.addComponent(lbUEdit, "location_edit_user");
 		
 		MenuItemClickable lbULink = new MenuItemClickable("Link", "link_user");
 		vmbar.addComponent(lbULink, "location_link_user");
 		
 		MenuItemClickable lbUDelete = new MenuItemClickable("Delete", "delete_user");
-		vmbar.addComponent(lbUDelete, "location_delete_user");
+		vmbar.addComponent(lbUDelete, "location_delete_user");*/
 		
 		
 		

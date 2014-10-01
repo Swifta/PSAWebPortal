@@ -178,7 +178,7 @@ public class ManageUserModule {
 		
 		searchResultsContainer.addComponent(pnUserSearchResults);
 		searchResultsContainer.addComponent(tb);
-		//tb.setHeight("219px");
+		tb.setHeight("219px");
 		
 		VerticalLayout actionBulkC = new VerticalLayout();
 		actionBulkC.setWidth("100%");
