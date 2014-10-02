@@ -111,7 +111,7 @@ public class ManageUserModule {
 					@Override
 					public void buttonClick(ClickEvent event) {
 						UI.getCurrent().getSession().setAttribute(ManageUserModule.UMANAGE_SESSION_SEARCH, tfUname.getValue());
-						UI.getCurrent().getNavigator().navigateTo(WorkAreax.WORK_AREA+"/search_user_results");
+						UI.getCurrent().getNavigator().navigateTo(WorkArea.WORK_AREA+"/search_user_results");
 					}
 				});
 				
@@ -213,7 +213,7 @@ public class ManageUserModule {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				UI.getCurrent().getSession().setAttribute(ManageUserModule.UMANAGE_SESSION_SEARCH, null);
-				UI.getCurrent().getNavigator().navigateTo(WorkAreax.WORK_AREA+"/manage_user");
+				UI.getCurrent().getNavigator().navigateTo(WorkArea.WORK_AREA+"/manage_user");
 				
 			}
 		});
@@ -348,7 +348,7 @@ public class ManageUserModule {
 			public void buttonClick(ClickEvent event) {
 				
 				UI.getCurrent().getSession().setAttribute(UMANAGE_SESSION_DETAILS, "details");
-				UI.getCurrent().getNavigator().navigateTo(WorkAreax.WORK_AREA+"/user_details");
+				UI.getCurrent().getNavigator().navigateTo(WorkArea.WORK_AREA+"/user_details");
 				
 			}
 			
@@ -423,7 +423,7 @@ public class ManageUserModule {
 				@Override
 				public void buttonClick(ClickEvent event) {
 					UI.getCurrent().getSession().setAttribute(ManageUserModule.UMANAGE_SESSION_SEARCH, null);
-					UI.getCurrent().getNavigator().navigateTo(WorkAreax.WORK_AREA+"/manage_user");
+					UI.getCurrent().getNavigator().navigateTo(WorkArea.WORK_AREA+"/manage_user");
 					
 				}
 			});

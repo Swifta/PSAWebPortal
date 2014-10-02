@@ -32,12 +32,12 @@ public class MenuItemClickable extends HorizontalLayout {
 					
 					
 					if(curRole == "add_user"){
-						UI.getCurrent().getNavigator().navigateTo(WorkAreax.WORK_AREA+"/"+curRole);
+						UI.getCurrent().getNavigator().navigateTo(WorkArea.WORK_AREA+"/"+curRole);
 						
 					}
 					
 					if(curRole == "manage_user"){
-						UI.getCurrent().getNavigator().navigateTo(WorkAreax.WORK_AREA+"/"+curRole);
+						UI.getCurrent().getNavigator().navigateTo(WorkArea.WORK_AREA+"/"+curRole);
 					}
 				}
 			}

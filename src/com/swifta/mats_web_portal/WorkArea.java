@@ -15,7 +15,7 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
 	
-public class WorkAreax extends VerticalLayout implements View {
+public class WorkArea extends VerticalLayout implements View {
 	/**
 	 * 
 	 */

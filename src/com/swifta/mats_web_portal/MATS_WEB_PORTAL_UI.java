@@ -27,7 +27,7 @@ public class MATS_WEB_PORTAL_UI extends UI {
 	protected void init(VaadinRequest request) {
 		new Navigator(this, this);
 		getNavigator().addView(Login.LOGIN,  Login.class);
-		getNavigator().addView(WorkAreax.WORK_AREA, WorkAreax.class);
+		getNavigator().addView(WorkArea.WORK_AREA, WorkArea.class);
 		UI.getCurrent().getNavigator().addViewChangeListener(new ViewChangeListener(){
 
 			@Override
