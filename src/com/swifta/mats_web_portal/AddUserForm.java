@@ -87,6 +87,10 @@ public class AddUserForm{
 	public VerticalLayout getAddUserForm(){
 	
 			VerticalLayout addUserContainer = new VerticalLayout();
+			addUserContainer.setWidthUndefined();
+			addUserContainer.setWidthUndefined();
+			addUserContainer.setMargin(new MarginInfo(false, true, true, true));
+			addUserContainer.setStyleName("c_add_user");
 			
 			
 			FormLayout addUserForm = new FormLayout();
@@ -95,7 +99,7 @@ public class AddUserForm{
 			addUserForm.setMargin(true);
 			addUserForm.setStyleName("frm_add_user");
 			
-			Embedded emb = new Embedded(null,new ThemeResource("img/add_user_1.png"));
+			Embedded emb = new Embedded(null,new ThemeResource("img/add_user_small.png"));
 			emb.setDescription("Add new User.");
 			emb.setStyleName("add_user_img");
 			
@@ -104,14 +108,15 @@ public class AddUserForm{
 			VerticalLayout addUserHeader = new VerticalLayout();
 			addUserHeader.setWidthUndefined();
 			addUserHeader.setHeightUndefined();
-			addUserHeader.setMargin(new MarginInfo(true, true, true, true));
+			//addUserHeader.setMargin(new MarginInfo(true, true, true, true));
 			addUserHeader.setSpacing(true);
 			
 			addUserHeader.addComponent(emb);
 			addUserHeader.setComponentAlignment(emb, Alignment.TOP_RIGHT);
-			addUserContainer.addComponent(addUserHeader);
-			addUserContainer.setComponentAlignment(addUserHeader, Alignment.TOP_RIGHT);
+			//addUserContainer.addComponent(addUserHeader);
+			//addUserContainer.setComponentAlignment(addUserHeader, Alignment.TOP_RIGHT);
 			
+			addUserForm.addComponent(addUserHeader);
 			Label lbAddUser = new Label("Add New User...");
 			lbAddUser.setStyleName("label_add_user");
 			lbAddUser.setSizeUndefined();
@@ -162,9 +167,7 @@ public class AddUserForm{
 			addUserForm.addComponent(btnSave);
 		
 			addUserContainer.addComponent(addUserForm);
-			addUserContainer.setWidthUndefined();
-			addUserContainer.setWidthUndefined();
-			addUserContainer.setStyleName("add_user_container");
+			
 			
 			
 			/*if(strSearchSessionVar== null){

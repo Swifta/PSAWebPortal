@@ -221,8 +221,8 @@ ul.empty li{
 }
 
 .menu li:hover ul.level_2, .menu li:hover ul.empty{
-	left:98%;
-	top:0px;	
+	left:100%;
+	top:-1px;	
 	z-index: 999;
 }
 
@@ -605,10 +605,16 @@ ul.empty li{
 
 .frm_add_user{
 	//height: 9000px;
+	//background: #00F;
 }
 
 .c_header{
-	background: pink;
+	//background: pink;
+}
+
+.c_add_user{
+	//background: #0F0;
+	border-right: 1px solid #DDD;
 }
 
 
