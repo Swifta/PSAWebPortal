@@ -1,4 +1,4 @@
-package com.swifta.mats_web_portal;
+package com.swifta.mats.web;
 
 import javax.servlet.annotation.WebServlet;
 
@@ -14,10 +14,10 @@ import com.vaadin.ui.UI;
 @Theme("mats_web_portal")
 //@PreserveOnRefresh
 
-public class MATS_WEB_PORTAL_UI extends UI {
+public class MatsWebPortalUI extends UI {
 	
 	@WebServlet(value = "/*", asyncSupported = true)
-	@VaadinServletConfiguration(productionMode = false, ui = MATS_WEB_PORTAL_UI.class)
+	@VaadinServletConfiguration(productionMode = false, ui = MatsWebPortalUI.class)
 	public static class Servlet extends VaadinServlet {
 	}
 	

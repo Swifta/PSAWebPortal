@@ -1,4 +1,4 @@
-package com.swifta.mats_web_portal;
+package com.swifta.mats.web;
 
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;

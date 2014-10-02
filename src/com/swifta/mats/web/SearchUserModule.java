@@ -1,4 +1,4 @@
-package com.swifta.mats_web_portal;
+package com.swifta.mats.web;
 
 import com.jensjansson.pagedtable.PagedTable;
 import com.vaadin.data.Item;
@@ -91,6 +91,7 @@ public class SearchUserModule {
 		icMoreActions.setStyleName(ValoTheme.BUTTON_BORDERLESS);
 		actionsC.addComponent(icMoreActions);
 		tdPropertyActions.setValue(actionsC);
+		actionsC.setStyleName("c_actions");
 		
 		
 		

@@ -1,4 +1,4 @@
-package com.swifta.mats_web_portal;
+package com.swifta.mats.web;
 
 import com.jensjansson.pagedtable.PagedTable;
 import com.vaadin.data.util.IndexedContainer;
@@ -165,10 +165,12 @@ public class ManageUserModule {
 		IndexedContainer container = sum.queryBackEnd();
 		
 		
-		PagedTable tb = new PagedTable("Search results for: \"admin\"(Summary)");
+		PagedTableCustom tb = new PagedTableCustom("Search results for: \"admin\"(Summary)");
+		
+		
 		tb.setContainerDataSource(container);
 		tb.setColumnIcon(" ", FontAwesome.CHECK_SQUARE_O);
-		tb.setPageLength(5);
+		//tb.setPageLength(5);
 		tb.setStyleName("tb_u_search_results");
 		
 		HorizontalLayout pnUserSearchResults = tb.createControls();
@@ -176,9 +178,14 @@ public class ManageUserModule {
 		pnUserSearchResults.setMargin(false);
 		pnUserSearchResults.setSpacing(false);
 		
+		//int pageCur = tb.getCurrentPage();
+		//tb.previousPage();
+		//tb.nextPage();
+		//int pageTotal = tb.getTotalAmountOfPages();
+		
 		searchResultsContainer.addComponent(pnUserSearchResults);
 		searchResultsContainer.addComponent(tb);
-		tb.setHeight("219px");
+		//tb.setHeight("219px");
 		
 		VerticalLayout actionBulkC = new VerticalLayout();
 		actionBulkC.setWidth("100%");

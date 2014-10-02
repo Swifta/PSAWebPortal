@@ -1,4 +1,4 @@
-package com.swifta.mats_web_portal;
+package com.swifta.mats.web;
 
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Validator;
