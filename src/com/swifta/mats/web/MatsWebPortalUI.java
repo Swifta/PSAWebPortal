@@ -27,7 +27,8 @@ public class MatsWebPortalUI extends UI {
 	protected void init(VaadinRequest request) {
 		new Navigator(this, this);
 		getNavigator().addView(Login.LOGIN,  Login.class);
-		getNavigator().addView(WorkArea.WORK_AREA, WorkArea.class);
+		getNavigator().addView(WorkSpace.WORK_SPACE, WorkSpace.class);
+		
 		UI.getCurrent().getNavigator().addViewChangeListener(new ViewChangeListener(){
 
 			@Override

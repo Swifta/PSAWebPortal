@@ -206,7 +206,7 @@ public class Login extends VerticalLayout implements View {
 				}
 				//if(validCredentials()){
 					UI.getCurrent().getSession().setAttribute("user", tfUsername.getValue());
-					UI.getCurrent().getNavigator().navigateTo(WorkArea.WORK_AREA);
+					UI.getCurrent().getNavigator().navigateTo(WorkSpace.WORK_SPACE);
 			//	}
 			
 				
