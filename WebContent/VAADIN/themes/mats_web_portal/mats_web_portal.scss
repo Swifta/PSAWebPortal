@@ -1,0 +1,660 @@
+// Global variable overrides. Must be declared before importing Valo.
+
+// Defines the plaintext font size, weight and family. Font size affects general component sizing.
+//$v-font-size: 16px;
+//$v-font-weight: 300;
+//$v-font-family: "Open Sans", sans-serif;
+
+// Defines the border used by all components.
+//$v-border: 1px solid (v-shade 0.7);
+//$v-border-radius: 4px;
+
+// Affects the color of some component elements, e.g Button, Panel title, etc
+//$v-background-color: hsl(210, 0%, 98%);
+// Affects the color of content areas, e.g  Panel and Window content, TextField input etc
+//$v-app-background-color: $v-background-color;
+
+// Affects the visual appearance of all components
+//$v-gradient: v-linear 8%;
+//$v-bevel-depth: 30%;
+//$v-shadow-opacity: 5%;
+
+// Defines colors for indicating status (focus, success, failure)
+//$v-focus-color: valo-focus-color(); // Calculates a suitable color automatically
+//$v-friendly-color: #2c9720;
+//$v-error-indicator-color: #ed473b;
+
+// For more information, see: https://vaadin.com/book/-/page/themes.valo.html
+// Example variants can be copy/pasted from https://vaadin.com/wiki/-/wiki/Main/Valo+Examples
+@import "../valo/valo.scss";
+
+
+@mixin mats_web_portal {
+  @include valo;
+ 
+
+  .username_text_field{
+  			//color:#F00;
+  			//width: 200px;
+  }
+ .panelx_container{
+ 			background:#000;
+ }
+ .hLayoutx_container{
+ 			background:#F00;
+ }
+ 
+ .panelx_login{
+ 			  background:#F00;
+ 			  //padding:20%;
+ }
+ 
+ .tabref{
+	border: 1px solid #7ec0ee;
+	border-radius: 5px;
+		
+}
+ 
+ .panel_login_content{
+ 			// background:#F00;
+ 			 // padding:200px;
+ 			 // width:400px;
+ 			  
+ }
+ 
+.panel_login_content.v-margin-left   {padding-left:   60px;}
+.panel_login_content.v-margin-right  {padding-right:  60px;}
+.panel_login_content.v-margin-top    {padding-top:    60px;}
+.panel_login_content.v-margin-bottom {padding-bottom: 60px;}
+
+.logo_and_slogan_container{
+	background:#FF0;
+}
+
+.label_login_prompt{
+	font-size: 12px;
+}
+
+.label_login_prompt_err{
+	color: #F00;
+	font-style: italic;
+	font-size: 12px;
+}
+
+
+
+.vx-label.v-widget.label_login_prompt.v-label-label_login_prompt.v-label-undef-w{
+	color:#F0F;
+	font-size: 4px;
+}
+
+
+.label_version.v-label{
+	font-size:12px
+	
+	//display: block;
+   // white-space: normal;
+   // text-align: center;
+   // width: 200px;
+}
+
+.label_copyright.v-label{
+	font-size:10px
+	//display: block;
+   // white-space: normal;
+    //text-align: center;
+   // width: 200px;
+}
+
+
+
+.borderless {
+	//border:none;
+}
+
+.layout_work_area_container{
+
+		background:#F00;
+		//width: 100px;
+		//height: 1000px;
+}
+
+
+
+
+.left_menu{
+	background:#FF0;
+	width: 20%;
+	height: 100%;
+	//float: left;
+}
+
+.right_menu{
+	background:#FF0;
+	width: 200px;
+	height: 500px;
+	float: right;
+}
+
+.main_work_area{
+	background:#FFF;
+	width: 80%;
+	height: 100%;
+	float: left;
+}
+
+.system_identity_container{
+	background: #FAFAFA;
+	padding: 5px;
+	min-height: 100%;
+}
+
+.vmbar {
+    background: #444;
+    min-width: 100%;
+   
+   
+}
+
+.vmbar_container{
+	background: #00F;
+}
+
+ul.menu{
+	background:#FFFF00;
+	padding:0;
+	margin:0px;
+	width:100%;
+	
+}
+
+
+
+
+
+.menu > li {
+	position:relative;
+	background:#000;
+	padding: 10px;
+	//padding-right: 10px;
+	
+}
+
+
+
+.menu_container{
+	color:#00C;
+	background:#006;
+}
+
+.menu{
+	list-style:none;
+	background:#0000CC;
+	color:#FFFFFF;
+	
+	
+}
+
+.menu li:hover{
+	background:#00F;
+	color: #6CF;
+	cursor: pointer;
+}
+
+
+.menu li ul{
+	position:absolute;
+	left: -9999px;
+	white-space:nowrap;
+	list-style-type:none;
+	min-width: 100%;
+	background: #000;
+	padding: 0;
+}
+
+ul.empty li{
+	position:relative;
+	background:#000;
+	padding: 10px;
+	
+}
+
+
+.menu li ul li{
+	
+	background: #000;
+	
+}
+
+.menu li:hover ul.level_2, .menu li:hover ul.empty{
+	left:100%;
+	top:-1px;	
+	z-index: 999;
+}
+
+.menu li{
+	border-top: 1px solid #444;
+	text-align: right;
+	//padding: 10px;
+}
+
+
+.label_menu_item {
+	text-align: right;
+	white-space: nowrap;
+	padding: 10px;
+	
+}
+
+.label_no_link{
+	position:relative;
+	background:#000;
+	padding: 10px;
+}
+
+/*.v-label.label_menu_item{
+	color: #F00;
+	padding: 5px;
+	background: #F0F;
+}*/
+
+
+.right_content_container{
+	//background: #00F;
+}
+
+
+
+
+
+
+.logout_container{
+	//background: #00F;
+	//min-height: 100%;
+	//border-bottom: 1px dotted #222;
+}
+
+.left_menu_container {
+		background: #FAFAFA;
+		
+		//background: #444;
+		//min-width: 100%;
+		//min-height: 100%;
+		//background: #F0F;
+		
+		
+		
+}
+
+
+.main_content_container{
+	//background: #0F0;
+}
+
+.user_add_container{
+	//background: #00F;
+	padding: 20px;
+}
+
+
+
+.main_layout{
+	min-height: 100%;
+	//background: #0F0;
+}
+
+.m_l {
+	//background: #F0F;
+	overflow: auto;
+	min-height: 100%;
+	height: auto;
+}
+
+.m_l_clear_both{
+	clear: both;
+	background: #F00;
+	min-width: 100%;
+	height: auto;
+}
+
+.l_c {
+	background: #00F;
+	min-width: 100%;
+	
+}
+
+.r_c {
+	//background: #0F0;
+	min-width: 100%;
+	min-height: 100%;
+	height: auto;
+	
+}
+
+.l_g_c {
+	//background: #F00;
+	border-bottom: 1px dotted #222;
+	
+}
+
+.m_c_c {
+
+	//background: #FFF;
+	//padding: 200px;
+}
+
+.logout_and_username{
+	
+}
+
+
+.header_container{
+	//background: #00F;
+}
+
+.body_container{
+	background: #0F0;
+}
+
+.x_1{
+	//background: #F0F;
+	//min-height: 100%;
+	//height: 100%;
+}
+
+.x_2{
+	background: brown;
+	//min-height: 100%;
+}
+
+.x_3{
+	//background: #000;
+	//min-height: 100%;
+}
+
+.x_4{
+	//background: #FA12B9;
+	//min-height: 100%;
+	
+}
+
+
+
+.c_1{
+	//background: #F00;
+	min-width: 100%;
+	//width: auto;
+	z-index: 999;
+}
+
+.c_2{
+	background: #00F;
+	margin-bottom:4px;
+	margin-top: 0px;
+}
+.thy{
+	margin-bottom:4px;
+}
+.lbel3{
+	margin-right: 4px;
+	font-size: 19px;
+}
+
+.c_3{
+	background: #00F;
+}
+
+.c_4{
+	
+	//background: pink;
+	border-bottom: 1px dotted #00F;
+	z-index: 999;
+}
+
+
+.system_identity_container{
+	//background: #FAFAFA;
+	padding: 5px;
+	//min-height: 100%;
+}
+
+.logo_c{
+	//background: #000;
+	padding: 5px;
+}
+
+
+
+.c_2 {
+	background: #F00;
+}
+
+.menu_c{
+	//background: #F00;
+	//min-height: 600px;
+	height: auto;
+	//background: #0F0;
+	z-index: 999;
+	
+}
+
+.content_c{
+	//background: #4DF;
+	//position: absolute;
+	//top: 0;
+	//right: 0;
+	//width: 90%;
+	//left: 130px;
+	//z-index: 0;
+	
+	//position: relative;
+	background: #FAFAFA;
+	min-width: 100%;
+	min-height: 530px;
+	height: 100%;
+	
+}
+
+.vmb{
+	z-index: 9999;
+	//height: 200px;
+	width: 100%;
+	//background: #F00;
+}
+
+.vmb_c{
+	//background: #00F;
+	//min-height: 1000px
+	//overflow:hidden;
+	
+}
+
+
+.parent_layout{
+	//background: #ABABAB;
+	min-width: 100%;
+	//width: 100%;
+	//min-height: 100%;
+	margin: 0;
+	padding: 0;
+	overflow: auto;
+}
+
+.g{
+   //background: yellow;
+  	//min-height: 400px;
+    height: 10px;
+    //min-width: 100%;
+  	//overflow: auto;
+  
+}
+
+.menu_and_content_c{
+	background: #444;
+	//position: relative;
+	z-index: 1;
+
+}
+
+.c_login_page{
+	overflow: auto;
+}
+.logout_c{
+	padding-top: 0;
+	margin-right: 10px;
+	//background: #00F;
+	//padding-top: 400px;
+}
+
+.menu_container{
+	width: 100%;
+}
+
+.c_search_user{
+	//background: gray;
+	border-right: 1px solid #DDD;
+	//height: 1000px;
+}
+
+.u_operation_container{
+	border-left: 1px solid #DDD;
+	//background: gray;
+}
+
+.content{
+	//background: #FFF;
+	//width: 100%;
+	//position: unset;
+}
+
+.user_operation_container{
+	//background: brown;
+	margin: 0;
+	
+}
+
+.user_search_container{
+	margin-bottom: 10px;
+}
+
+.c_u_search_results{
+	padding: 10px;
+}
+
+.c_action_bulk{
+	//padding: 10px;
+}
+
+.c_actions{
+	padding: 2px;
+}
+
+.search_user_form{
+	//padding-bottom: 30px;
+	//margin-right: 30px;
+	text-align: left;
+	padding: 0;
+}
+
+
+
+
+.user_operation_img{
+	margin-bottom: 25px;
+}
+
+
+
+.label_operation_header{
+	margin-left: 100px;
+	color: #197DE1;
+	padding: 10px;
+	background: #FFF;
+}
+
+.label_search_user{
+	color: #197DE1;
+	padding: 10px;
+	background: #FFF;
+}
+
+.label_search_results{
+	color: #197DE1;
+	padding: 10px;
+	background: #FFF;
+}
+
+.operation_form_user_profile{
+	text-align:right;
+}
+
+.cur_activity_c{
+	background: #FFF;
+	margin-top: 65px;
+	margin-right: 50px;
+	padding:0;
+	
+	border-left: 1px solid #DDD;
+	border-bottom: 1px solid #DDD;
+	border-right: 1px solid #DDD;
+	border-radius: 0px 0px 5px 5px;
+	
+	background: #00F;
+	z-index: 999;
+}
+
+.cur_activity_strip{
+	background: #197DE1;
+	height: 5px;
+}
+
+.cur_activity_conn{
+	background: #000;
+}
+
+.label_add_user{
+	color: #197DE1;
+	padding: 10px;
+	background: #FFF;
+}
+
+.frm_add_user{
+	//height: 9000px;
+	//background: #00F;
+}
+
+.c_header{
+	//background: pink;
+}
+
+.c_add_user{
+	//background: #0F0;
+	border-right: 1px solid #DDD;
+}
+
+.v-textfield-small{
+	width: 40px !important;
+	//background: yellow;
+}
+
+.pagedtable-itemsperpagecombobox{
+	width: 80px !important;
+	//background: yellow;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  				
+}
