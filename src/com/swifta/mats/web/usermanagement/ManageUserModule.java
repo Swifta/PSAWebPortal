@@ -37,9 +37,12 @@ public class ManageUserModule {
 	private static final String btnIDPersonal = "user_details_personal";
 	private static final String btnIDAccount = "user_details_account";
 	private static final String btnIDAuth = "user_details_auth";
+	private static final String btnIDAddUser = "add_user";
+	private static final String btnIDManageUser= "manage_user";
+	
 	private static  String curIDDetails;
 	private FormLayout uDetailsForm;
-	ArrayList<BtnTabLikeUserDetails> arrLTabBtns;
+	ArrayList<BtnTabLike> arrLTabBtns;
 	Window popup;
 	VerticalLayout cPopupMsg;
 	
@@ -87,7 +90,7 @@ public class ManageUserModule {
 				searchUserHeader.addComponent(emb);
 				searchUserHeader.addComponent(lbSearch);
 				searchContainer.addComponent(searchUserHeader);
-				
+				searchUserHeader.setStyleName("search_user_header");
 				
 				TextField tfUid = new TextField();
 				tfUid.setCaption("User ID");
@@ -136,9 +139,10 @@ public class ManageUserModule {
 						UI.getCurrent().getSession().setAttribute(SESSION_UMANAGE, SESSION_VAR_UMANAGE_SEARCH_RESULTS);
 						//UI.getCurrent().getNavigator().navigateTo(WorkSpaceManageUser.WORK_AREA+"/search_user_results");
 						//WorkSpace.wsmu.getWorkSpaceManageUser();
-						Notification.show("Hellozzzzz...hhhhh...");
+						//Notification.show("Hellozzzzz...hhhhh...");
 						//WorkSpaceManageUser.wsmuModifier();
-						WorkSpace.wsmu.getWorkSpaceManageUser();
+						if(WorkSpace.wsmu != null)
+							WorkSpace.wsmu.wsmuModifier();
 					}
 				});
 				
@@ -164,11 +168,12 @@ public class ManageUserModule {
 		searchUserHeader.setHeightUndefined();
 		searchUserHeader.setMargin(true);
 		searchUserHeader.setSpacing(true);
+		searchUserHeader.setStyleName("search_user_header");
 		searchContainer.setStyleName("c_u_search_results");
 		
 		Embedded emb = new Embedded(null,new ThemeResource("img/search_user_1.png"));
 		emb.setDescription("Search users");
-		emb.setStandby("search_user_img");
+		emb.setStyleName("search_user_img");
 		searchUserHeader.addComponent(emb);
 		searchUserHeader.setComponentAlignment(emb, Alignment.TOP_RIGHT);
 		
@@ -250,7 +255,7 @@ public class ManageUserModule {
 				UI.getCurrent().getSession().setAttribute(SESSION_UMANAGE, SESSION_VAR_UMANAGE_SEARCH_RESULTS);
 				//UI.getCurrent().getNavigator().navigateTo(WorkSpaceManageUser.WORK_AREA+"/manage_user");
 				//WorkSpace.wsmu.getWorkSpaceManageUser();
-				WorkSpace.wsmu.getWorkSpaceManageUser();
+				//WorkSpace.wsmu.getWorkSpaceManageUser();
 				
 				
 			}
@@ -295,18 +300,18 @@ public class ManageUserModule {
 						
 			
 			
-			BtnTabLikeUserDetails btnPersonal;
-			BtnTabLikeUserDetails btnAccount;
-			BtnTabLikeUserDetails btnAuth;
+			BtnTabLike btnPersonal;
+			BtnTabLike btnAccount;
+			BtnTabLike btnAuth;
 			
 			
 			
-			arrLTabBtns = new ArrayList<BtnTabLikeUserDetails>();
+			arrLTabBtns = new ArrayList<BtnTabLike>();
 			
 			
-			btnPersonal = new BtnTabLikeUserDetails("Personal", btnIDPersonal);
-			btnAccount = new BtnTabLikeUserDetails("Account", btnIDAccount);
-			btnAuth = new BtnTabLikeUserDetails("Authentication", btnIDAuth);
+			btnPersonal = new BtnTabLike("Personal", btnIDPersonal);
+			btnAccount = new BtnTabLike("Account", btnIDAccount);
+			btnAuth = new BtnTabLike("Authentication", btnIDAuth);
 			
 			
 			HorizontalLayout cInfoCategory = new HorizontalLayout();
@@ -321,8 +326,7 @@ public class ManageUserModule {
 			cCHeader.addComponent(cInfoCategory);
 			
 			btnPersonal.setStyleName("btn_tab_like btn_tab_like_active");
-			btnAuth.setStyleName("btn_tab_like" );
-			btnAccount.setStyleName("btn_tab_like");
+			
 			
 			arrLTabBtns.add(btnPersonal);
 			arrLTabBtns.add(btnAccount);
@@ -362,18 +366,16 @@ public class ManageUserModule {
 	
 	
 	private class BtnTabLikeClickListener implements Button.ClickListener{
-
-			
+			//private String curIDDetails;
+			public BtnTabLikeClickListener(){
+				
+			}
 
 			private static final long serialVersionUID = -6544444429248747390L;
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-					BtnTabLikeUserDetails curBtn = (BtnTabLikeUserDetails) event.getButton();
-					
-					//System.out.println("nextID: "+curBtn.getId());
-					//System.out.println("curDetailsID: "+curIDDetails);
-					
+					BtnTabLike curBtn = (BtnTabLike) event.getButton();			
 					String nextID = curBtn.getId();
 					
 					if(nextID.equals(btnIDPersonal) && !nextID.equals(curIDDetails) ){
@@ -382,7 +384,7 @@ public class ManageUserModule {
 							UI.getCurrent().addWindow(getWarningPopWindow(curBtn));
 						}else{
 							curIDDetails = nextID;
-							setActiveTab(curBtn);
+							setActiveTab(curBtn, arrLTabBtns);
 							cPerAccAuthInfo.removeAllComponents();
 							cPerAccAuthInfo.addComponent(udm.getDetailsForm("personal", "001"));
 						}
@@ -395,7 +397,7 @@ public class ManageUserModule {
 							UI.getCurrent().addWindow(getWarningPopWindow(curBtn));
 						}else{
 							curIDDetails = nextID;
-							setActiveTab(curBtn);
+							setActiveTab(curBtn, arrLTabBtns);
 							cPerAccAuthInfo.removeAllComponents();
 							cPerAccAuthInfo.addComponent(udm.getDetailsForm("Account", "001"));
 							
@@ -408,7 +410,7 @@ public class ManageUserModule {
 							UI.getCurrent().addWindow(getWarningPopWindow(curBtn));
 						}else{	
 							curIDDetails = nextID;
-							setActiveTab(curBtn);
+							setActiveTab(curBtn, arrLTabBtns);
 							cPerAccAuthInfo.removeAllComponents();
 							cPerAccAuthInfo.addComponent(udm.getDetailsForm("Authentication", "001"));
 							
@@ -424,7 +426,7 @@ public class ManageUserModule {
 				
 			}
 			
-			private Window getWarningPopWindow(BtnTabLikeUserDetails curBtn){
+			private Window getWarningPopWindow(BtnTabLike curBtn){
 				curBtn.addStyleName("btn_tab_like");
 				popup = new Window("Unsaved changes");
 				popup.center();
@@ -457,13 +459,84 @@ public class ManageUserModule {
 			
 		}
 	
-		private void setActiveTab(BtnTabLikeUserDetails curBtn){
+		private void setActiveTab(BtnTabLike curBtn, ArrayList<BtnTabLike>arrLTabBtns){
 			curBtn.setStyleName("btn_tab_like btn_tab_like_active");
-			for(BtnTabLikeUserDetails btn: arrLTabBtns){
+			for(BtnTabLike btn: arrLTabBtns){
 				if(!curBtn.equals(btn)){
 					btn.setStyleName("btn_tab_like");
 				}
 			}
+		}
+		
+		
+		public HorizontalLayout addManageUserMenu(boolean boolAddHeaderStatus){
+			
+			if(!boolAddHeaderStatus){
+				HorizontalLayout cManageUserMenu = new HorizontalLayout();
+				//cManageUserMenu.setWidth("100%");
+				//cManageUserMenu.setHeight("50px");
+				cManageUserMenu.setStyleName("c_u_manage_menu");
+				cManageUserMenu.setSizeUndefined();
+				
+				BtnTabLike btnManageU = new BtnTabLike("Manage", btnIDManageUser);
+				btnManageU.setStyleName("btn_tab_like btn_tab_like_active");
+				
+				BtnTabLike btnAddU = new BtnTabLike("Add New", btnIDAddUser);
+				cManageUserMenu.addComponent(btnManageU);
+				cManageUserMenu.addComponent(btnAddU);
+				
+				final ArrayList<BtnTabLike> arrLTabBtns = new ArrayList<BtnTabLike>();
+				arrLTabBtns.add(btnAddU);
+				arrLTabBtns.add(btnManageU);
+				
+				btnAddU.addClickListener(new Button.ClickListener() {
+					
+					private static final long serialVersionUID = -3927916905213002810L;
+
+					@Override
+					public void buttonClick(ClickEvent event) {
+						BtnTabLike curBtn = (BtnTabLike) event.getButton();
+						setActiveTab(curBtn, arrLTabBtns);
+						UI.getCurrent().getSession().setAttribute(WorkSpaceManageUser.SESSION_WORK_AREA,
+								WorkSpaceManageUser.SESSION_VAR_WORK_AREA_ADD_USER);
+							if(WorkSpace.wsmu!= null)
+							WorkSpace.wsmu.wsmuModifier();
+						
+					}
+				});
+				
+				
+				btnManageU.addClickListener(new Button.ClickListener() {
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = -5321322384841298049L;
+
+					@Override
+					public void buttonClick(ClickEvent event) {
+						BtnTabLike curBtn = (BtnTabLike) event.getButton();
+						setActiveTab(curBtn, arrLTabBtns);
+						setActiveTab(curBtn, arrLTabBtns);
+						
+						UI.getCurrent().getSession().setAttribute(WorkSpaceManageUser.SESSION_WORK_AREA,
+								WorkSpaceManageUser.SESSION_VAR_WORK_AREA_MANAGE_USER);
+						UI.getCurrent().getSession().setAttribute(ManageUserModule.SESSION_UMANAGE,
+								ManageUserModule.SESSION_VAR_UMANAGE_SEARCH);
+							if(WorkSpace.wsmu!= null)
+							WorkSpace.wsmu.wsmuModifier();
+						
+					}
+				});
+				
+				
+				
+				
+				
+				return cManageUserMenu;
+			}else{
+				return null;
+			}
+			
 		}
 		
 		

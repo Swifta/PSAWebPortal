@@ -30,8 +30,10 @@ public class BtnActionsClickable implements ClickListener{
 				UI.getCurrent().getSession().setAttribute(ManageUserModule.SESSION_UMANAGE, ManageUserModule.SESSION_VAR_UMANAGE_USER_DETAILS);
 				UI.getCurrent().getSession().setAttribute(SESSION_ACTIONS_TABLE, arrTableAndUID[0]);
 				UI.getCurrent().getSession().setAttribute(SESSION_ACTIONS_ROW_ID, arrTableAndUID[1]);
-				WorkSpace.wsmu.getWorkSpaceManageUser();							}
-				}
+				if(WorkSpace.wsmu!=null)
+					WorkSpace.wsmu.wsmuModifier();	
+			}
+		}
 	
 	
 	

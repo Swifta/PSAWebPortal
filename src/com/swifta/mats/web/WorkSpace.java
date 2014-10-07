@@ -199,8 +199,7 @@ public class WorkSpace extends VerticalLayout implements View, TabSheet.Selected
 
 	@Override
 	public void selectedTabChange(SelectedTabChangeEvent event) {
-		
-		
+		Notification.show("I have been thoroughly clicked....!!");
 	}
 
 }

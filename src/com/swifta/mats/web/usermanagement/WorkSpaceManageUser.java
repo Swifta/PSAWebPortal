@@ -30,6 +30,7 @@ public class WorkSpaceManageUser{
 	public final static  String SESSION_WORK_AREA = "session_work_area";
 	public final static  String SESSION_VAR_WORK_AREA_ADD_USER = "add_user";
 	public final static  String SESSION_VAR_WORK_AREA_MANAGE_USER= "manage_user";
+	private boolean wsmuInitStatus = false;
 	
 	
 	public WorkSpaceManageUser(){
@@ -165,7 +166,7 @@ public class WorkSpaceManageUser{
 		g.setColumnExpandRatio(0, 0.0f);
 		g.setColumnExpandRatio(1, 1.0f);
 		
-		cParentLayout.addComponent(contentC);
+		
 		
 		
 		//addComponent(g);
@@ -177,6 +178,7 @@ public class WorkSpaceManageUser{
 		searchC = mum.getSearchContainer();
 		searchResultsC = mum.getSearchResults();
 		searchResultsC.setSizeUndefined();
+		cParentLayout.addComponent(mum.addManageUserMenu(wsmuInitStatus));
 		
 		
 	}
@@ -187,22 +189,7 @@ public class WorkSpaceManageUser{
 	public VerticalLayout getWorkSpaceManageUser() {
 		
 		String curSessionWorkArea = (String) UI.getCurrent().getSession().getAttribute(WorkSpaceManageUser.SESSION_WORK_AREA);
-		if(curSessionWorkArea!= null && curSessionWorkArea.equals(SESSION_VAR_WORK_AREA_ADD_USER)){
-			contentC.addComponent(uf);
-			contentC.setComponentAlignment(uf, Alignment.MIDDLE_CENTER);
-			contentC.setSpacing(false);
-			contentC.setMargin(true);
-			contentC.setSizeFull();
-			
-			
-		}
-		
-		
-		
-	
-		
 		String curSessionUManage = (String) UI.getCurrent().getSession().getAttribute(ManageUserModule.SESSION_UMANAGE);
-		
 		if(curSessionWorkArea != null && curSessionWorkArea.equals(SESSION_VAR_WORK_AREA_MANAGE_USER)){
 			
 			contentC.addComponent(searchC);
@@ -211,57 +198,23 @@ public class WorkSpaceManageUser{
 				contentC.setSizeFull();;
 				contentC.setSpacing(false);
 				contentC.setMargin(true);
+				
 			}
 		
-			if(curSessionUManage != null && curSessionUManage.equals(ManageUserModule.SESSION_VAR_UMANAGE_SEARCH_RESULTS)){
-				searchC.setSizeUndefined();
-				contentC.setComponentAlignment(searchC, Alignment.TOP_RIGHT);
-				
-				contentC.addComponent(searchResultsC);
-				contentC.setComponentAlignment(searchResultsC, Alignment.TOP_LEFT);
-				
-				contentC.setSizeUndefined();
-				contentC.setMargin(new MarginInfo(true, false, true, false));
-				contentC.setSpacing(false);
-				
-			}
 			
-			
-			if(curSessionUManage != null && curSessionUManage.equals(ManageUserModule.SESSION_VAR_UMANAGE_USER_DETAILS)){
-				contentC.removeComponent(searchResultsC);
-				searchC.setSizeUndefined();
-				//searchC.setSizeFull();
-				//contentC.setComponentAlignment(searchC, Alignment.TOP_LEFT);
-				contentC.setComponentAlignment(searchC, Alignment.TOP_RIGHT);
-								
-				VerticalLayout cuDetails = mum.getUserDetailsContainer();
-				
-				contentC.addComponent(cuDetails);
-				//cuDetails.setSizeUndefined();
-				contentC.setComponentAlignment(cuDetails, Alignment.TOP_CENTER);
-				contentC.setExpandRatio(cuDetails, 1.0f);
-				
-				contentC.setSizeFull();
-				contentC.setMargin(new MarginInfo(true, false, true, false));
-				contentC.setSpacing(false);
-				contentC.setStyleName("content_c");
-				
-			}
 			
 		}	
 			
 		
 		
 		
-		
-		
-		
-		
-		
-		
-		
-		
-		return cParentLayout;
+		cParentLayout.addComponent(contentC);
+		cParentLayout.setExpandRatio(contentC, 1.0f);
+		//if(!wsmuInitStatus){
+			return cParentLayout;
+		//}else{
+			//return null;
+		//}
 		
 	}
 	
@@ -327,6 +280,76 @@ public class WorkSpaceManageUser{
 		});
 	
 		return vmbar;
+	}
+	
+	
+	public void wsmuModifier(){
+		
+		String curSessionWorkArea = (String) UI.getCurrent().getSession().getAttribute(WorkSpaceManageUser.SESSION_WORK_AREA);
+		String curSessionUManage = (String) UI.getCurrent().getSession().getAttribute(ManageUserModule.SESSION_UMANAGE);
+
+		if( curSessionWorkArea != null && curSessionWorkArea.equals(SESSION_VAR_WORK_AREA_MANAGE_USER)){
+			contentC.removeComponent(uf);
+			contentC.addComponent(searchC);
+			if(curSessionUManage != null && curSessionUManage.equals(ManageUserModule.SESSION_VAR_UMANAGE_SEARCH)){
+				contentC.setComponentAlignment(searchC, Alignment.MIDDLE_CENTER);
+				contentC.setSizeFull();;
+				contentC.setSpacing(false);
+				contentC.setMargin(true);
+				
+			}
+		
+			
+			
+		}	
+			
+		if(curSessionWorkArea!= null && curSessionWorkArea.equals(SESSION_VAR_WORK_AREA_ADD_USER)){
+		contentC.removeAllComponents();
+		contentC.addComponent(uf);
+		contentC.setComponentAlignment(uf, Alignment.MIDDLE_CENTER);
+		contentC.setSpacing(false);
+		contentC.setMargin(true);
+		contentC.setSizeFull();
+		
+		
+		
+	}
+		
+	if(curSessionUManage != null && curSessionUManage.equals(ManageUserModule.SESSION_VAR_UMANAGE_SEARCH_RESULTS)){
+		searchC.setSizeUndefined();
+		contentC.setComponentAlignment(searchC, Alignment.TOP_RIGHT);
+		
+		contentC.addComponent(searchResultsC);
+		contentC.setComponentAlignment(searchResultsC, Alignment.TOP_LEFT);
+		
+		contentC.setSizeUndefined();
+		contentC.setMargin(new MarginInfo(true, false, true, false));
+		contentC.setSpacing(false);
+	
+	}
+	
+	
+	if(curSessionUManage != null && curSessionUManage.equals(ManageUserModule.SESSION_VAR_UMANAGE_USER_DETAILS)){
+		contentC.removeComponent(searchResultsC);
+		searchC.setSizeUndefined();
+		//searchC.setSizeFull();
+		//contentC.setComponentAlignment(searchC, Alignment.TOP_LEFT);
+		contentC.setComponentAlignment(searchC, Alignment.TOP_RIGHT);
+						
+		VerticalLayout cuDetails = mum.getUserDetailsContainer();
+		
+		contentC.addComponent(cuDetails);
+		//cuDetails.setSizeUndefined();
+		contentC.setComponentAlignment(cuDetails, Alignment.TOP_CENTER);
+		contentC.setExpandRatio(cuDetails, 1.0f);
+		
+		contentC.setSizeFull();
+		contentC.setMargin(new MarginInfo(true, false, true, false));
+		contentC.setSpacing(false);
+		contentC.setStyleName("content_c");
+		
+	}
+		
 	}
 	
 	
