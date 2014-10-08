@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 import com.swifta.mats.web.WorkSpace;
 import com.vaadin.data.util.IndexedContainer;
+import com.vaadin.event.LayoutEvents.LayoutClickEvent;
+import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
@@ -23,8 +25,7 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Window;
 
 public class ManageUserModule {
-	private String strSessionVarUManage;
-	//private String strSessionVarDetails;
+	
 	public static final String DEFAULT_UMANAGE_SESSION_VAR = null;
 	public static final String SESSION_UMANAGE = "umanage_session";
 	public static final String SESSION_VAR_UMANAGE_SEARCH = "search_user";
@@ -38,13 +39,20 @@ public class ManageUserModule {
 	private static final String btnIDAccount = "user_details_account";
 	private static final String btnIDAuth = "user_details_auth";
 	private static final String btnIDAddUser = "add_user";
+	private static final String btnIDLog = "user_log";
+	private String btnIDActLog;
+	private String btnIDAccChangeLog;
 	private static final String btnIDManageUser= "manage_user";
 	
-	private static  String curIDDetails;
+	
 	private FormLayout uDetailsForm;
 	ArrayList<BtnTabLike> arrLTabBtns;
 	Window popup;
 	VerticalLayout cPopupMsg;
+	HorizontalLayout cUserLogMenu;
+	
+	
+	
 	
 	
 	
@@ -54,10 +62,6 @@ public class ManageUserModule {
 	
 	
 	public ManageUserModule(){
-		this.strSessionVarUManage = (String) UI.getCurrent().getSession().getAttribute(SESSION_UMANAGE);
-		//this.strSessionVarDetails = (String) Login.CUR_SESSION_OBJ.getAttribute(UMANAGE_SESSION_DETAILS);
-		
-		
 	}
 	public VerticalLayout getSearchContainer(){
 				VerticalLayout searchContainer = new VerticalLayout();
@@ -271,7 +275,7 @@ public class ManageUserModule {
 
 	
 	public VerticalLayout getUserDetailsContainer(){
-		
+			udm = new UserDetailsModule();
 		
 			VerticalLayout cUDetails = new VerticalLayout();
 			cUDetails.setMargin(new MarginInfo(false, true, true, true));
@@ -303,6 +307,7 @@ public class ManageUserModule {
 			BtnTabLike btnPersonal;
 			BtnTabLike btnAccount;
 			BtnTabLike btnAuth;
+			BtnTabLike btnLog;
 			
 			
 			
@@ -312,7 +317,10 @@ public class ManageUserModule {
 			btnPersonal = new BtnTabLike("Personal", btnIDPersonal);
 			btnAccount = new BtnTabLike("Account", btnIDAccount);
 			btnAuth = new BtnTabLike("Authentication", btnIDAuth);
+			btnLog = new BtnTabLike("Log", btnIDLog);
 			
+			VerticalLayout cTabLike = new VerticalLayout();
+			cTabLike.setSizeUndefined();
 			
 			HorizontalLayout cInfoCategory = new HorizontalLayout();
 			cInfoCategory.setSizeUndefined();
@@ -320,17 +328,26 @@ public class ManageUserModule {
 			cInfoCategory.addComponent(btnPersonal);
 			cInfoCategory.addComponent(btnAccount);
 			cInfoCategory.addComponent(btnAuth);
-			
-			
-			cCHeader.addComponent(lbCHeader);
-			cCHeader.addComponent(cInfoCategory);
-			
-			btnPersonal.setStyleName("btn_tab_like btn_tab_like_active");
-			
+			cInfoCategory.addComponent(btnLog);
 			
 			arrLTabBtns.add(btnPersonal);
 			arrLTabBtns.add(btnAccount);
 			arrLTabBtns.add(btnAuth);
+			arrLTabBtns.add(btnLog);
+			
+			cTabLike.addComponent(cInfoCategory);
+			cUserLogMenu = new HorizontalLayout();
+			HorizontalLayout[] cArrSubMenus = {cUserLogMenu};
+			cTabLike.addComponent(addUserLogSubMenu(btnLog, cArrSubMenus));
+			
+			
+			cCHeader.addComponent(lbCHeader);
+			cCHeader.addComponent(cTabLike);
+			
+			btnPersonal.setStyleName("btn_tab_like btn_tab_like_active");
+			
+			
+			
 			
 			
 			//btnAccount.addClickListener(new BtnTabLikeClickListener());
@@ -345,15 +362,23 @@ public class ManageUserModule {
 			cUDetails.setComponentAlignment(cPerAccAuthInfo, Alignment.TOP_LEFT);
 			cUDetails.setExpandRatio(cPerAccAuthInfo, 1.0f);
 			
-			udm = new UserDetailsModule();
+			
 			uDetailsForm = udm.getDetailsForm("personal", "001");
 			cPerAccAuthInfo.addComponent(uDetailsForm);
-			curIDDetails = btnPersonal.getId();
+			btnPersonal.setEnabled(false);
+			//curIDDetails = btnPersonal.getId();
 			
-			btnPersonal.addClickListener(new BtnTabLikeClickListener(false, arrLTabBtns, cPerAccAuthInfo, udm, "personal", "001" ));
-			btnAccount.addClickListener(new BtnTabLikeClickListener(false, arrLTabBtns, cPerAccAuthInfo, udm, "account", "001" ));
-			btnAuth.addClickListener(new BtnTabLikeClickListener(false, arrLTabBtns, cPerAccAuthInfo, udm, "auth", "001" ));
-
+			
+			
+			btnPersonal.addClickListener(new BtnTabLikeClickListener(false, false, cArrSubMenus, arrLTabBtns, cPerAccAuthInfo, udm,
+					"personal", "001" ));
+			btnAccount.addClickListener(new BtnTabLikeClickListener(false, false, cArrSubMenus,  arrLTabBtns, cPerAccAuthInfo, udm,
+					"account", "001" ));
+			btnAuth.addClickListener(new BtnTabLikeClickListener(false, false, cArrSubMenus, arrLTabBtns, cPerAccAuthInfo, udm,
+					"auth", "001" ));
+			
+			
+			
 			
 			
 			
@@ -362,114 +387,8 @@ public class ManageUserModule {
 	}
 	
 	
-	/*private class BtnTabLikeClickListener implements Button.ClickListener{
-			//private String curIDDetails;
-			public BtnTabLikeClickListener(){
-				
-			}
+	
 
-			private static final long serialVersionUID = -6544444429248747390L;
-
-			@Override
-			public void buttonClick(ClickEvent event) {
-					BtnTabLike curBtn = (BtnTabLike) event.getButton();			
-					String nextID = curBtn.getId();
-					
-					if(nextID.equals(btnIDPersonal) && !nextID.equals(curIDDetails) ){
-						
-						if(UserDetailsModule.uDetailsEditStatus){
-							UI.getCurrent().addWindow(getWarningPopWindow(curBtn));
-						}else{
-							curIDDetails = nextID;
-							setActiveTab(curBtn, arrLTabBtns);
-							cPerAccAuthInfo.removeAllComponents();
-							cPerAccAuthInfo.addComponent(udm.getDetailsForm("personal", "001"));
-						}
-						
-					}
-					
-					
-					if(nextID.equals(btnIDAccount) && !nextID.equals(curIDDetails) ){
-						if(UserDetailsModule.uDetailsEditStatus){
-							UI.getCurrent().addWindow(getWarningPopWindow(curBtn));
-						}else{
-							curIDDetails = nextID;
-							setActiveTab(curBtn, arrLTabBtns);
-							cPerAccAuthInfo.removeAllComponents();
-							cPerAccAuthInfo.addComponent(udm.getDetailsForm("Account", "001"));
-							
-						}
-						
-					} 
-					
-					if(nextID.equals(btnIDAuth) && !nextID.equals(curIDDetails) ){
-						if(UserDetailsModule.uDetailsEditStatus){
-							UI.getCurrent().addWindow(getWarningPopWindow(curBtn));
-						}else{	
-							curIDDetails = nextID;
-							setActiveTab(curBtn, arrLTabBtns);
-							cPerAccAuthInfo.removeAllComponents();
-							cPerAccAuthInfo.addComponent(udm.getDetailsForm("Authentication", "001"));
-							
-						}
-					}
-					
-					
-					
-					
-					
-					
-					
-				
-			}
-			
-			private Window getWarningPopWindow(BtnTabLike curBtn){
-				curBtn.addStyleName("btn_tab_like");
-				popup = new Window("Unsaved changes");
-				popup.center();
-				cPopupMsg = new VerticalLayout();
-				cPopupMsg.setMargin(true);
-				cPopupMsg.setSpacing(true);
-				HorizontalLayout cUnsavedDataMsg = new HorizontalLayout();
-				Label lbUnsavedDataMsg = new Label("All unsaved changes on this page will be lost. \rStay on this Page?");
-				//Label lbUnsavedDataMsg = new Label("Page contains unsaved changes. Stay on this Page?");
-				
-				cUnsavedDataMsg.addComponent(lbUnsavedDataMsg);
-				HorizontalLayout cPopupBtns = new HorizontalLayout();
-				cPopupBtns.setSizeUndefined();
-				cPopupBtns.setSpacing(true);
-				
-				Button btnLeavePage = new Button("Leave this page.");
-				Button btnYes = new Button("Yes.");
-				cPopupBtns.addComponent(btnYes);
-				cPopupBtns.addComponent(btnLeavePage);
-				
-				cPopupMsg.addComponent(cUnsavedDataMsg );
-				cPopupMsg.addComponent(cPopupBtns);
-				cPopupMsg.setComponentAlignment(cUnsavedDataMsg, Alignment.MIDDLE_CENTER);
-				cPopupMsg.setComponentAlignment(cPopupBtns, Alignment.BOTTOM_CENTER);
-				
-				
-				popup.setContent(cPopupMsg);
-				return popup;
-			}
-			
-		}
-	*/
-		
-	
-	
-	
-	
-	private void setActiveTab(BtnTabLike curBtn, ArrayList<BtnTabLike>arrLTabBtns){
-			curBtn.setStyleName("btn_tab_like btn_tab_like_active");
-			for(BtnTabLike btn: arrLTabBtns){
-				if(!curBtn.equals(btn)){
-					btn.setStyleName("btn_tab_like");
-				}
-			}
-		}
-		
 		
 		public HorizontalLayout addManageUserMenu(boolean boolAddHeaderStatus){
 			
@@ -492,10 +411,10 @@ public class ManageUserModule {
 				
 				WorkSpaceManageUser wsmu = WorkSpace.wsmu;
 				
-				btnManageU.addClickListener(new BtnTabLikeClickListener(true, arrLTabBtns, new String[]{WorkSpaceManageUser.SESSION_WORK_AREA, ManageUserModule.SESSION_UMANAGE}, new String[]{WorkSpaceManageUser.SESSION_VAR_WORK_AREA_MANAGE_USER, ManageUserModule.SESSION_VAR_UMANAGE_SEARCH} , wsmu));
-				//btnManageU.setDisableOnClick(true);
+				btnManageU.addClickListener(new BtnTabLikeClickListener(true, arrLTabBtns, new String[]{WorkSpaceManageUser.SESSION_WORK_AREA, ManageUserModule.SESSION_UMANAGE}, new String[]{WorkSpaceManageUser.SESSION_VAR_WORK_AREA_MANAGE_USER, ManageUserModule.SESSION_VAR_UMANAGE_SEARCH}));
+				btnManageU.setEnabled(false);
 				
-				btnAddU.addClickListener(new BtnTabLikeClickListener(true, arrLTabBtns, new String[]{WorkSpaceManageUser.SESSION_WORK_AREA}, new String[]{WorkSpaceManageUser.SESSION_VAR_WORK_AREA_ADD_USER} , wsmu));
+				btnAddU.addClickListener(new BtnTabLikeClickListener(true, arrLTabBtns, new String[]{WorkSpaceManageUser.SESSION_WORK_AREA}, new String[]{WorkSpaceManageUser.SESSION_VAR_WORK_AREA_ADD_USER}));
 				
 				
 		
@@ -507,6 +426,45 @@ public class ManageUserModule {
 				return null;
 			}
 			
+		}
+		
+		
+		private VerticalLayout addUserLogSubMenu(BtnTabLike btnLog, HorizontalLayout[] cArrSubMenus){
+			//btnLog.addClickListener(new BtnTabLikeClickListener(false, arrLTabBtns, cPerAccAuthInfo, udm, "log", "001" ));
+			VerticalLayout cLog = new VerticalLayout();
+			cLog.setSizeUndefined();
+			cUserLogMenu.setStyleName("c_u_log_menu");
+			cUserLogMenu.setSizeUndefined();
+			
+			BtnTabLike btnAccChangeLog = new BtnTabLike("Activity LOG", btnIDActLog);
+			btnAccChangeLog.setStyleName("btn_tab_like btn_tab_like_active");
+			
+			BtnTabLike btnActLog = new BtnTabLike("Account Change LOG", btnIDAccChangeLog);
+			cUserLogMenu.addComponent(btnAccChangeLog);
+			cUserLogMenu.addComponent(btnActLog);
+			
+			final ArrayList<BtnTabLike> arrLSubTabBtns = new ArrayList<BtnTabLike>();
+			arrLSubTabBtns.add(btnActLog);
+			arrLSubTabBtns.add(btnAccChangeLog);
+			/*btnLog.addClickListener(new BtnTabLikeClickListener(false, true, arrLTabBtns, cUserLogMenu, cPerAccAuthInfo, udm, 
+					"activity_log", "001"));*/
+			
+			
+			
+			
+			btnActLog.addClickListener(new BtnTabLikeClickListener(false, false, cArrSubMenus, arrLSubTabBtns,  cPerAccAuthInfo, udm,
+					"activity_log", "001" ));
+			btnAccChangeLog.addClickListener(new BtnTabLikeClickListener(false, false, cArrSubMenus,  arrLSubTabBtns, cPerAccAuthInfo, udm,
+					"account_change_log", "001" ));
+			
+			btnLog.addClickListener(new BtnTabLikeClickListener(false, true, arrLTabBtns, cUserLogMenu, cPerAccAuthInfo, udm,
+					"activity_log", "001"));
+			cUserLogMenu.setVisible(false);
+			cLog.addComponent(cUserLogMenu);
+			
+			
+			
+			return cLog;
 		}
 		
 		

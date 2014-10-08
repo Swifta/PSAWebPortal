@@ -15,7 +15,11 @@ public class BackEndEmulator {
 		
 		String strTbNamePersonal = "personal";//, "Account", "Authentication"};
 		String strTbNameAccount = "account";
-		String strTbNameAuth = "authentication";
+		String strTbNameAuth = "auth";
+		String strTbNameActLog = "activity_log";
+		String strTbNameAccChangeLog = "account_change_log";
+		
+		
 		String strUser001 = "001";
 		
 		if(strTbName.equals(strTbNamePersonal) && strUID.equals(strUser001)){
@@ -51,6 +55,10 @@ public class BackEndEmulator {
 		}else if(strTbName.equals(strTbNameAccount) && strUID.equals(strUser001)){
 			
 		}else if(strTbName.equals(strTbNameAuth) && strUID.equals(strUser001)){
+			
+		}else if(strTbName.equals(strTbNameActLog) && strUID.equals(strUser001)){
+			
+		}else if(strTbName.equals(strTbNameAccChangeLog) && strUID.equals(strUser001)){
 			
 		}
 		
