@@ -57,7 +57,7 @@ public class Login extends VerticalLayout implements View {
 		logoContainer.setSizeUndefined();
 		logoContainer.setStyleName("logo_and_slogan_container");
 		//logoAndSloganContainer.setMargin(true);
-		ThemeResource rLogo = new ThemeResource("img/logo.jpg");
+		ThemeResource rLogo = new ThemeResource("img/logo.png");
 		//System.out.println(rLogo.toString());
 		Embedded emb = new Embedded(null, rLogo);
 		emb.setWidth("100px");
@@ -99,7 +99,7 @@ public class Login extends VerticalLayout implements View {
 		//versionAndCopyrightContainer.setSizeFull();
 		
 		Label lbVersion = new Label("MATS Platform v.1.0");
-		Label lbCopyright = new Label("Copyright © 2014-2015 Swifta Systems & Services Ltd.");
+		Label lbCopyright = new Label("Copyright ï¿½ 2014-2015 Swifta Systems & Services Ltd.");
 		lbVersion.setStyleName("label_version");
 		lbCopyright.setStyleName("label_copyright");
 		

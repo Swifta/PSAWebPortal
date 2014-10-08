@@ -556,6 +556,10 @@ ul.empty li{
 	padding: 0;
 }
 
+.c_c_header{
+	//background: #00F;
+}
+
 
 
 
@@ -641,6 +645,154 @@ ul.empty li{
 	width: 80px !important;
 	//background: yellow;
 }
+
+.frm_details_personal_info{
+	//background: #00F;
+	//width: 100px important;
+	//border-right: 1px solid #DDD;
+	//border-radius: 10px;
+	margin-right: 50px;
+}
+.frm_details_personal_info .v-formlayout-contentcell{
+	//background: #F00;
+	min-width: 100%;
+}
+
+.frm_details_personal_info .v-datefield, .frm_details_personal_info .v-filterselect, .frm_details_personal_info .v-textfield{
+	//background: #F0F;
+	//background: #FFF;
+	//min-width: 150px;
+	//max-width: 150px;
+	margin-bottom: 4px;
+	//.v-datefield,.v-filterselect-input
+	
+}
+
+
+
+.btn_link{
+	//padding: 0px;
+	//background: #F00;
+	//border: none;
+	//height: 10px;
+	
+	border: none;
+	margin-right: 2px;
+}
+
+.c_u_details{
+	//background: #0F0;
+}
+
+.label_frm_header{
+	
+}
+
+.v-caption-label_frm_header{
+	color: #197DE1;
+	padding: 5px;
+	background: #FFF;
+	//font-style: italic;
+	font-size: 15px;
+}
+
+.label_c_header{
+	color: #197DE1;
+	padding: 10px;
+	background: #FFF;
+	
+}
+
+.btn_tab_like_active{
+	border-bottom: none;
+	background-image: none;
+	box-shadow: none;
+	
+}
+
+.btn_tab_like.v-button:focus:after{
+	border-bottom: none;
+	box-shadow: none;
+	background-image: none;
+	
+}
+
+.btn_tab_like.v-button:focus{
+	//border-bottom: none;
+	//box-shadow: none;
+	//background-image: none;
+	border-radius: 2px;
+ 	border-right:none;
+	
+}
+
+.btn_tab_like_active{
+	border-bottom: none;
+	box-shadow: none;
+	background-image: none;
+	
+}
+
+.btn_tab_like{
+ border-radius: 2px;
+ border-right:none;
+}
+
+.btn_tab_like:active{
+	//border-radius: 2px;
+	
+ //background: #0F0;
+ 
+}
+
+
+
+.btn_tab_like_first{
+	border-right: none;
+}
+
+.btn_tab_like_last{
+	border-left: none;
+	border-right: 1px solid #C5C5C5;
+}
+
+.c_info_category{
+	border-right: 1px solid #C5C5C5;
+}
+
+
+
+.btn_tab_like_first{
+	border-right: none;
+}
+
+.btn_tab_like_last{
+	border-left: none;
+	border-right: 1px solid #C5C5C5;
+}
+
+.c_info_category{
+	border-right: 1px solid #C5C5C5;
+}
+
+
+
+.c_u_manage_menu{
+	
+	position: fixed;
+	z-index: 999;
+}
+
+.search_user_header{
+    //background: #F00;
+ 	margin-top: 10px;
+}
+
+.c_u_manage_menu{
+	border-right: 1px solid #C5C5C5;
+	margin: 5px 0 0 5px;
+}
+
 
 
 
