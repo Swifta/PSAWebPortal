@@ -641,7 +641,6 @@ ul.empty li{
 	//background: yellow;
 }
 
-
 .pagedtable-itemsperpagecombobox{
 	width: 80px !important;
 	//background: yellow;
@@ -763,6 +762,21 @@ ul.empty li{
 
 
 
+.btn_tab_like_first{
+	border-right: none;
+}
+
+.btn_tab_like_last{
+	border-left: none;
+	border-right: 1px solid #C5C5C5;
+}
+
+.c_info_category{
+	border-right: 1px solid #C5C5C5;
+}
+
+
+
 .c_u_manage_menu{
 	
 	position: fixed;
@@ -772,6 +786,11 @@ ul.empty li{
 .search_user_header{
     //background: #F00;
  	margin-top: 10px;
+}
+
+.c_u_manage_menu{
+	border-right: 1px solid #C5C5C5;
+	margin: 5px 0 0 5px;
 }
 
 

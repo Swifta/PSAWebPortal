@@ -17,6 +17,7 @@ public class BtnTabLike extends Button{
 		super(strCaption);
 		this.setId(btnId);
 		this.setStyleName("btn_tab_like" );
+		
 	}
 
 	

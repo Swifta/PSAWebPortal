@@ -302,6 +302,8 @@ public class WorkSpaceManageUser{
 			
 			
 		}	
+		
+		
 			
 		if(curSessionWorkArea!= null && curSessionWorkArea.equals(SESSION_VAR_WORK_AREA_ADD_USER)){
 		contentC.removeAllComponents();
@@ -315,41 +317,44 @@ public class WorkSpaceManageUser{
 		
 	}
 		
-	if(curSessionUManage != null && curSessionUManage.equals(ManageUserModule.SESSION_VAR_UMANAGE_SEARCH_RESULTS)){
-		searchC.setSizeUndefined();
-		contentC.setComponentAlignment(searchC, Alignment.TOP_RIGHT);
+	if(curSessionWorkArea!= null && curSessionWorkArea.equals(SESSION_VAR_WORK_AREA_MANAGE_USER)){
 		
-		contentC.addComponent(searchResultsC);
-		contentC.setComponentAlignment(searchResultsC, Alignment.TOP_LEFT);
-		
-		contentC.setSizeUndefined();
-		contentC.setMargin(new MarginInfo(true, false, true, false));
-		contentC.setSpacing(false);
-	
-	}
-	
-	
-	if(curSessionUManage != null && curSessionUManage.equals(ManageUserModule.SESSION_VAR_UMANAGE_USER_DETAILS)){
-		contentC.removeComponent(searchResultsC);
-		searchC.setSizeUndefined();
-		//searchC.setSizeFull();
-		//contentC.setComponentAlignment(searchC, Alignment.TOP_LEFT);
-		contentC.setComponentAlignment(searchC, Alignment.TOP_RIGHT);
-						
-		VerticalLayout cuDetails = mum.getUserDetailsContainer();
-		
-		contentC.addComponent(cuDetails);
-		//cuDetails.setSizeUndefined();
-		contentC.setComponentAlignment(cuDetails, Alignment.TOP_CENTER);
-		contentC.setExpandRatio(cuDetails, 1.0f);
-		
-		contentC.setSizeFull();
-		contentC.setMargin(new MarginInfo(true, false, true, false));
-		contentC.setSpacing(false);
-		contentC.setStyleName("content_c");
-		
-	}
-		
+			if(curSessionUManage != null && curSessionUManage.equals(ManageUserModule.SESSION_VAR_UMANAGE_SEARCH_RESULTS)){
+				contentC.addComponent(searchC);
+				searchC.setSizeUndefined();
+				contentC.setComponentAlignment(searchC, Alignment.TOP_RIGHT);
+				
+				contentC.addComponent(searchResultsC);
+				contentC.setComponentAlignment(searchResultsC, Alignment.TOP_LEFT);
+				
+				contentC.setSizeUndefined();
+				contentC.setMargin(new MarginInfo(true, false, true, false));
+				contentC.setSpacing(false);
+			
+			}
+			
+			
+			if(curSessionUManage != null && curSessionUManage.equals(ManageUserModule.SESSION_VAR_UMANAGE_USER_DETAILS)){
+				contentC.removeComponent(searchResultsC);
+				searchC.setSizeUndefined();
+				//searchC.setSizeFull();
+				//contentC.setComponentAlignment(searchC, Alignment.TOP_LEFT);
+				contentC.setComponentAlignment(searchC, Alignment.TOP_RIGHT);
+								
+				VerticalLayout cuDetails = mum.getUserDetailsContainer();
+				
+				contentC.addComponent(cuDetails);
+				//cuDetails.setSizeUndefined();
+				contentC.setComponentAlignment(cuDetails, Alignment.TOP_CENTER);
+				contentC.setExpandRatio(cuDetails, 1.0f);
+				
+				contentC.setSizeFull();
+				contentC.setMargin(new MarginInfo(true, false, true, false));
+				contentC.setSpacing(false);
+				contentC.setStyleName("content_c");
+				
+			}
+	}	
 	}
 	
 	
