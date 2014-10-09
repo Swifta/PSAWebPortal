@@ -730,6 +730,7 @@ ul.empty li{
 	border-bottom: none;
 	box-shadow: none;
 	background-image: none;
+	cursor: pointer !important;
 	
 }
 
@@ -789,9 +790,20 @@ ul.empty li{
 }
 
 .c_u_manage_menu{
-	border-right: 1px solid #C5C5C5;
+	//border-right: 1px solid #C5C5C5;
 	margin: 5px 0 0 5px;
 }
+
+.c_u_log_menu{
+	//background: #00F;
+	//border-right: 1px solid #C5C5C5;
+	//margin: 5px 0 0 5px;
+	//padding: 50px;
+	margin-top: 10px;
+	//margin-left: -400px;
+}
+
+
 
 
 
