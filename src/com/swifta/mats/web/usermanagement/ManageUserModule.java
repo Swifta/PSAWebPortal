@@ -30,7 +30,7 @@ public class ManageUserModule {
 	public static final String SESSION_UMANAGE = "umanage_session";
 	public static final String SESSION_VAR_UMANAGE_SEARCH = "search_user";
 	public static final String SESSION_VAR_UMANAGE_SEARCH_RESULTS = "search_results";
-	public static final String SESSION_VAR_UMANAGE_USER_DETAILS = "user_details";
+	public static final String SESSION_VAR_UMANAGE_USER_ACTIONS = "user_actions";
 	
 	
 	HorizontalLayout cPerAccAuthInfo;
@@ -283,7 +283,7 @@ public class ManageUserModule {
 	
 
 	
-	public VerticalLayout getUserDetailsContainer(){
+	public VerticalLayout getUserDetailsContainer(String strTbName, String strUID){
 			udm = new UserDetailsModule();
 		
 			VerticalLayout cUDetails = new VerticalLayout();

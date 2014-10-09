@@ -5,22 +5,50 @@ import com.vaadin.data.Property;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.ThemeResource;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.themes.ValoTheme;
 
 public class SearchUserModule {
-	Button btnEdit;
-	Button btnLink;
-	Button btnDelete;
-	Button btnMoreActions;
+	public static  final String tbUsers = "user";
+	public static final String SESSION_USER_ACTION = "session_action";
+	public static final String SESSION_USER_TABLE = "tb";
+	public static final String SESSION_USER_TABLE_ROW_ID = "tb_rw_id";
+	public static final String ACTION_DETAILS = "details";
+	public static final String ACTION_EDIT = "edit";
+	public static final String ACTION_LINK = "link";
+	public static final String ACTION_DELETE = "delete";
+	public static final String ACTION_MORE = "more_actions";
+	
+	BtnActions btnDetails;
+	BtnActions btnEdit;
+	BtnActions btnLink;
+	BtnActions  btnDelete;
+	BtnActions  btnMoreActions;
+	HorizontalLayout actionsC;
 	
 	public SearchUserModule(){
-		btnEdit = new Button();
-		btnLink = new Button();
-		btnDelete = new Button();
-		btnMoreActions = new Button("...");
+		ThemeResource icDelete = new ThemeResource("img/ic_delete_small.png");
+		btnDetails = new BtnActions("Details");
+		btnDetails.setIcon(FontAwesome.ALIGN_JUSTIFY);
+		btnEdit = new BtnActions("Edit");
+		btnEdit.setIcon(FontAwesome.EDIT);
+		btnLink = new BtnActions("Link");
+		btnLink.setIcon(FontAwesome.LINK);
+		btnDelete = new BtnActions("Delete");
+		btnDelete.setIcon(icDelete);
+		btnMoreActions = new BtnActions("More...");
+		btnMoreActions.setIcon(FontAwesome.ANGLE_RIGHT);
+		
+		btnDetails.addClickListener(new BtnActionsClickListener());
+		btnEdit.addClickListener(new BtnActionsClickListener());
+		btnLink.addClickListener(new BtnActionsClickListener());
+		btnDelete.addClickListener(new BtnActionsClickListener());
+		btnMoreActions.addClickListener(new BtnActionsClickListener());
+		
+		actionsC = new HorizontalLayout();
+		actionsC.setSizeUndefined();
+		actionsC.setStyleName("c_actions");
+		
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -54,30 +82,19 @@ public class SearchUserModule {
 		tdPropertyFname.setValue("Yoweri");
 		tdPropertyLname.setValue("Amama");
 		tdPropertyACCType.setValue("Administrator");
-		
-		HorizontalLayout actionsC = new HorizontalLayout();
-		actionsC.setSizeUndefined();
-		actionsC.setStyleName("c_actions");
 		tdPropertyActions.setValue(actionsC);
+		String strUID = tdPropertyUID.getValue();
 		
+		btnDetails.setId("user_"+strUID+"_details");
+		btnEdit.setId("user_"+strUID+"_edit");
+		btnLink.setId("user_"+strUID+"_link");
+		btnDelete.setId("user_"+strUID+"_delete");
+		btnMoreActions.setId("user_"+strUID+"_moreActions");
 		
-		BtnActionsClickListener btnActionsClickListener = new BtnActionsClickListener();
-		Button btnDetails = new Button();
-		btnDetails.setIcon(FontAwesome.ALIGN_JUSTIFY);
-		btnDetails.setId("user_"+tdPropertyUID.getValue());
-		btnDetails.setDescription("Details");
-		btnDetails.setStyleName(ValoTheme.BUTTON_ICON_ONLY+" btn_link");
-		btnDetails.addClickListener(btnActionsClickListener);
 		actionsC.addComponent(btnDetails);
-		
-	
-	
 		actionsC.addComponent(btnEdit);
-		
 		actionsC.addComponent(btnLink);
-		
 		actionsC.addComponent(btnDelete);
-		
 		actionsC.addComponent(btnMoreActions);
 	
 		

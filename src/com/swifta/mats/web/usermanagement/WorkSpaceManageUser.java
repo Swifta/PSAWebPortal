@@ -8,6 +8,7 @@ import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
@@ -335,24 +336,45 @@ public class WorkSpaceManageUser{
 			}
 			
 			
-			if(curSessionUManage != null && curSessionUManage.equals(ManageUserModule.SESSION_VAR_UMANAGE_USER_DETAILS)){
+			if(curSessionUManage != null && curSessionUManage.equals(ManageUserModule.SESSION_VAR_UMANAGE_USER_ACTIONS)){
+				String strTbName = (String) UI.getCurrent().getSession().getAttribute(SearchUserModule.SESSION_USER_TABLE);
+				String strUID = (String) UI.getCurrent().getSession().getAttribute(SearchUserModule.SESSION_USER_TABLE_ROW_ID);
+				String strAction = (String) UI.getCurrent().getSession().getAttribute(SearchUserModule.SESSION_USER_ACTION);
+
+
 				contentC.removeComponent(searchResultsC);
 				searchC.setSizeUndefined();
 				//searchC.setSizeFull();
 				//contentC.setComponentAlignment(searchC, Alignment.TOP_LEFT);
 				contentC.setComponentAlignment(searchC, Alignment.TOP_RIGHT);
-								
-				cuDetails = mum.getUserDetailsContainer();
+				if(strAction.equals(SearchUserModule.ACTION_DETAILS)){
+					cuDetails = mum.getUserDetailsContainer(strTbName, strUID);
+					contentC.addComponent(cuDetails);
+					//cuDetails.setSizeUndefined();
+					contentC.setComponentAlignment(cuDetails, Alignment.TOP_CENTER);
+					contentC.setExpandRatio(cuDetails, 1.0f);
+					
+					contentC.setSizeFull();
+					contentC.setMargin(new MarginInfo(true, false, true, false));
+					contentC.setSpacing(false);
+					contentC.setStyleName("content_c");
+				}else if(strAction.equals(SearchUserModule.ACTION_EDIT)){
+					Notification.show("Wanna Edit?");
+					return;
+				}else if(strAction.equals(SearchUserModule.ACTION_LINK)){
+					Notification.show("Wanna Link?");
+					return;
+				}else if(strAction.equals(SearchUserModule.ACTION_DELETE)){
+					Notification.show("Wanna Delete?");
+					return;
+					
+				}else if(strAction.equals(SearchUserModule.ACTION_MORE)){
+					Notification.show("Wanna More more...?");
+					return;
+					
+				}
 				
-				contentC.addComponent(cuDetails);
-				//cuDetails.setSizeUndefined();
-				contentC.setComponentAlignment(cuDetails, Alignment.TOP_CENTER);
-				contentC.setExpandRatio(cuDetails, 1.0f);
 				
-				contentC.setSizeFull();
-				contentC.setMargin(new MarginInfo(true, false, true, false));
-				contentC.setSpacing(false);
-				contentC.setStyleName("content_c");
 				
 			}
 	}	
