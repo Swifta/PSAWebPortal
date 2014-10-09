@@ -29,7 +29,7 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 	private String[] strSessionVar;
 	private boolean hasSubMenu = false;
 	private HorizontalLayout cSubMenu;
-	private HorizontalLayout[] cSubMenus;
+	private ArrayList<HorizontalLayout> arrLSubTabs;
 	BtnTabLike curBtn;
 	public BtnTabLikeClickListener(boolean isModifier, boolean hasSubMenu, ArrayList<BtnTabLike>arrLTabBtns, HorizontalLayout cSubMenu, HorizontalLayout hTabContainer, UserDetailsModule udm, String strTbName, String strUID){
 		this.hasSubMenu = hasSubMenu;
@@ -42,7 +42,7 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 		this.isModifier = isModifier;
 		
 	}
-	public BtnTabLikeClickListener(boolean isModifier, boolean hasSubMenu, HorizontalLayout[] cSubMenus, ArrayList<BtnTabLike>arrLTabBtns, HorizontalLayout tabContainer, UserDetailsModule udm, String strTbName, String strUID){
+	public BtnTabLikeClickListener(boolean isModifier, boolean hasSubMenu, ArrayList<HorizontalLayout> arrLSubTabs, ArrayList<BtnTabLike>arrLTabBtns, HorizontalLayout tabContainer, UserDetailsModule udm, String strTbName, String strUID){
 		this.arrLTabBtns = arrLTabBtns;
 		this.hTabContainer = tabContainer;
 		this.udm = udm;
@@ -50,7 +50,7 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 		this.strUID = strUID;
 		this.isModifier = isModifier;
 		this.hasSubMenu = hasSubMenu;
-		this.cSubMenus = cSubMenus;
+		this.arrLSubTabs = arrLSubTabs;
 	}
 	
 	
@@ -71,7 +71,7 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 			
 			if(hasSubMenu){
 				setActiveTab(curBtn, arrLTabBtns);
-				cSubMenu.setVisible(true);
+				cSubMenu.setStyleName("c_sub_menu_visible");
 				hTabContainer.removeAllComponents();
 				hTabContainer.addComponent(udm.getDetailsForm(strTbName, strUID));
 			}else{
@@ -98,15 +98,14 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 					
 						
 					}else{
-						for(HorizontalLayout sm: cSubMenus){
-							
-							sm.setVisible(false);
+						for(HorizontalLayout sm: arrLSubTabs){
+							sm.setStyleName("c_sub_menu_invisible");
 						}
 						/*
 						 * Next line is important for only one reason...
 						 * 1. Ensure that child Menu does not hide Parent Menu
 						 */
-						curBtn.getParent().setVisible(true);
+						curBtn.getParent().setStyleName("c_sub_menu_visible");
 						
 						if(UserDetailsModule.uDetailsEditStatus){
 							UI.getCurrent().addWindow(getWarningPopWindow());

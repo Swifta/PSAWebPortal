@@ -31,6 +31,7 @@ public class WorkSpaceManageUser{
 	public final static  String SESSION_VAR_WORK_AREA_ADD_USER = "add_user";
 	public final static  String SESSION_VAR_WORK_AREA_MANAGE_USER= "manage_user";
 	private boolean wsmuInitStatus = false;
+	VerticalLayout cuDetails;
 	
 	
 	public WorkSpaceManageUser(){
@@ -305,31 +306,31 @@ public class WorkSpaceManageUser{
 		
 		
 			
-		if(curSessionWorkArea!= null && curSessionWorkArea.equals(SESSION_VAR_WORK_AREA_ADD_USER)){
+	if(curSessionWorkArea!= null && curSessionWorkArea.equals(SESSION_VAR_WORK_AREA_ADD_USER)){
 		contentC.removeAllComponents();
 		contentC.addComponent(uf);
 		contentC.setComponentAlignment(uf, Alignment.MIDDLE_CENTER);
 		contentC.setSpacing(false);
 		contentC.setMargin(true);
 		contentC.setSizeFull();
-		
-		
-		
 	}
 		
 	if(curSessionWorkArea!= null && curSessionWorkArea.equals(SESSION_VAR_WORK_AREA_MANAGE_USER)){
 		
 			if(curSessionUManage != null && curSessionUManage.equals(ManageUserModule.SESSION_VAR_UMANAGE_SEARCH_RESULTS)){
-				contentC.addComponent(searchC);
-				searchC.setSizeUndefined();
-				contentC.setComponentAlignment(searchC, Alignment.TOP_RIGHT);
-				
-				contentC.addComponent(searchResultsC);
-				contentC.setComponentAlignment(searchResultsC, Alignment.TOP_LEFT);
-				
-				contentC.setSizeUndefined();
-				contentC.setMargin(new MarginInfo(true, false, true, false));
-				contentC.setSpacing(false);
+				if(cuDetails != null){
+					contentC.removeComponent(cuDetails);
+				}
+					contentC.addComponent(searchC);
+					searchC.setSizeUndefined();
+					contentC.setComponentAlignment(searchC, Alignment.TOP_RIGHT);
+					
+					contentC.addComponent(searchResultsC);
+					contentC.setComponentAlignment(searchResultsC, Alignment.TOP_LEFT);
+					
+					contentC.setSizeUndefined();
+					contentC.setMargin(new MarginInfo(true, false, true, false));
+					contentC.setSpacing(false);
 			
 			}
 			
@@ -341,7 +342,7 @@ public class WorkSpaceManageUser{
 				//contentC.setComponentAlignment(searchC, Alignment.TOP_LEFT);
 				contentC.setComponentAlignment(searchC, Alignment.TOP_RIGHT);
 								
-				VerticalLayout cuDetails = mum.getUserDetailsContainer();
+				cuDetails = mum.getUserDetailsContainer();
 				
 				contentC.addComponent(cuDetails);
 				//cuDetails.setSizeUndefined();

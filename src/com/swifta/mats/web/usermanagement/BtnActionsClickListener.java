@@ -1,6 +1,7 @@
 package com.swifta.mats.web.usermanagement;
 
 import com.swifta.mats.web.WorkSpace;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -10,7 +11,7 @@ import elemental.events.MouseEvent.Button;
 
 
 
-public class BtnActionsClickable implements ClickListener{
+public class BtnActionsClickListener implements ClickListener{
 	
 	public static final String tbUsers = "user";
 	public static final String SESSION_ACTIONS_TABLE = "session_actions_table";
@@ -32,6 +33,7 @@ public class BtnActionsClickable implements ClickListener{
 				UI.getCurrent().getSession().setAttribute(SESSION_ACTIONS_ROW_ID, arrTableAndUID[1]);
 				if(WorkSpace.wsmu!=null)
 					WorkSpace.wsmu.wsmuModifier();	
+				System.out.println(FontAwesome.ADJUST);
 			}
 		}
 	

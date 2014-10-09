@@ -1,34 +1,31 @@
 package com.swifta.mats.web.usermanagement;
 
-import com.jensjansson.pagedtable.PagedTable;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.ThemeResource;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.Embedded;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 public class SearchUserModule {
+	Button btnEdit;
+	Button btnLink;
+	Button btnDelete;
+	Button btnMoreActions;
 	
 	public SearchUserModule(){
-		
+		btnEdit = new Button();
+		btnLink = new Button();
+		btnDelete = new Button();
+		btnMoreActions = new Button("...");
 	}
 	
 	@SuppressWarnings("unchecked")
 	public IndexedContainer queryBackEnd(){
-		
-		CheckBox chklb = new CheckBox();
 		IndexedContainer container = new IndexedContainer();//"Results for: \""+UI.getCurrent().getSession().getAttribute(ManageUserModule.UMANAGE_SESSION_SEARCH)+"\"  (Summary)");
-		CheckBox chk = new CheckBox("All");
 		container.addContainerProperty(" ", CheckBox.class, null);
 		container.addContainerProperty("UID", String.class, "000");
 		container.addContainerProperty("Username", String.class, "");
@@ -64,57 +61,24 @@ public class SearchUserModule {
 		tdPropertyActions.setValue(actionsC);
 		
 		
-		BtnActionsClickable btnActionsClickListener = new BtnActionsClickable();
-		Button icDetails = new Button();
-		icDetails.setIcon(FontAwesome.ALIGN_JUSTIFY);
-		icDetails.setId("user_"+tdPropertyUID.getValue());
-		icDetails.setDescription("Details");
-		icDetails.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
-		icDetails.addClickListener(btnActionsClickListener);
-		actionsC.addComponent(icDetails);
+		BtnActionsClickListener btnActionsClickListener = new BtnActionsClickListener();
+		Button btnDetails = new Button();
+		btnDetails.setIcon(FontAwesome.ALIGN_JUSTIFY);
+		btnDetails.setId("user_"+tdPropertyUID.getValue());
+		btnDetails.setDescription("Details");
+		btnDetails.setStyleName(ValoTheme.BUTTON_ICON_ONLY+" btn_link");
+		btnDetails.addClickListener(btnActionsClickListener);
+		actionsC.addComponent(btnDetails);
 		
+	
+	
+		actionsC.addComponent(btnEdit);
 		
-		//Embedded embDetails = new Embedded(null, FontAwesome.ALIGN_JUSTIFY);
-		/*VerticalLayout icDetails = new VerticalLayout();
-		icDetails.setSizeUndefined();
+		actionsC.addComponent(btnLink);
 		
+		actionsC.addComponent(btnDelete);
 		
-		
-		icDetails.setStyleName("ic_details");
-		
-		icDetails.setIcon(FontAwesome.ALIGN_JUSTIFY);
-		actionsC.addComponent(icDetails);
-		actionsC.setComponentAlignment(icDetails, Alignment.MIDDLE_CENTER);*/
-		
-		
-		
-		Button icEdit = new Button();
-		icEdit.setIcon(FontAwesome.EDIT);
-		//icEdit.setStyleName(ValoTheme.BUTTON_TINY);
-		//icEdit.setStyleName(ValoTheme.BUTTON_BORDERLESS);
-		icEdit.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
-		icEdit.setDescription("Edit");
-		actionsC.addComponent(icEdit);
-		
-		Button icLink = new Button();
-		icLink.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
-		icLink.setIcon(FontAwesome.LINK);
-		icLink.setDescription("Link");
-		//icLink.setStyleName(ValoTheme.BUTTON_BORDERLESS);
-		actionsC.addComponent(icLink);
-		
-		Button icDelete = new Button();
-		icDelete.setIcon(new ThemeResource("img/ic_delete_small.png"));
-		icDelete.setDescription("Delete");
-		//icDelete.setStyleName(ValoTheme.BUTTON_BORDERLESS);
-		icDelete.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
-		actionsC.addComponent(icDelete);
-		
-		Button icMoreActions = new Button("...");
-		icMoreActions.setDescription("More...");
-		//icMoreActions.setStyleName(ValoTheme.BUTTON_BORDERLESS);
-		icMoreActions.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
-		actionsC.addComponent(icMoreActions);
+		actionsC.addComponent(btnMoreActions);
 	
 		
 		
