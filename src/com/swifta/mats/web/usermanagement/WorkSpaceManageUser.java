@@ -340,15 +340,22 @@ public class WorkSpaceManageUser{
 				String strTbName = (String) UI.getCurrent().getSession().getAttribute(SearchUserModule.SESSION_USER_TABLE);
 				String strUID = (String) UI.getCurrent().getSession().getAttribute(SearchUserModule.SESSION_USER_TABLE_ROW_ID);
 				String strAction = (String) UI.getCurrent().getSession().getAttribute(SearchUserModule.SESSION_USER_ACTION);
-
+				boolean boolEditStatus = false;
 
 				contentC.removeComponent(searchResultsC);
 				searchC.setSizeUndefined();
 				//searchC.setSizeFull();
 				//contentC.setComponentAlignment(searchC, Alignment.TOP_LEFT);
 				contentC.setComponentAlignment(searchC, Alignment.TOP_RIGHT);
-				if(strAction.equals(SearchUserModule.ACTION_DETAILS)){
-					cuDetails = mum.getUserDetailsContainer(strTbName, strUID);
+				if(strAction.equals(SearchUserModule.ACTION_DETAILS) || strAction.equals(SearchUserModule.ACTION_EDIT)){
+					if(strAction.equals(SearchUserModule.ACTION_DETAILS)){
+						boolEditStatus = false;
+					}
+					
+					if(strAction.equals(SearchUserModule.ACTION_EDIT)){
+						boolEditStatus = true;
+					}
+					cuDetails = mum.getUserDetailsContainer(strTbName, strUID, boolEditStatus);
 					contentC.addComponent(cuDetails);
 					//cuDetails.setSizeUndefined();
 					contentC.setComponentAlignment(cuDetails, Alignment.TOP_CENTER);
@@ -358,19 +365,6 @@ public class WorkSpaceManageUser{
 					contentC.setMargin(new MarginInfo(true, false, true, false));
 					contentC.setSpacing(false);
 					contentC.setStyleName("content_c");
-				}else if(strAction.equals(SearchUserModule.ACTION_EDIT)){
-					Notification.show("Wanna Edit?");
-					return;
-				}else if(strAction.equals(SearchUserModule.ACTION_LINK)){
-					Notification.show("Wanna Link?");
-					return;
-				}else if(strAction.equals(SearchUserModule.ACTION_DELETE)){
-					Notification.show("Wanna Delete?");
-					return;
-					
-				}else if(strAction.equals(SearchUserModule.ACTION_MORE)){
-					Notification.show("Wanna More more...?");
-					return;
 					
 				}
 				
