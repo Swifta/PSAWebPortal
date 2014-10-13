@@ -55,7 +55,7 @@ public class AddIcons extends VerticalLayout {
 			private static final long serialVersionUID = 1L;
 
 			public void layoutClick(LayoutClickEvent event) {
-				Notification.show("I have been thoroughly clicked....!!");                
+				//Notification.show("I have been thoroughly clicked....!!");                
             }
         });
 		

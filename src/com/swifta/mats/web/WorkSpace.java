@@ -138,6 +138,7 @@ public class WorkSpace extends VerticalLayout implements View, TabSheet.Selected
 		
 		
 		dashboard6.setImmediate(true);
+		dashboard6.setMargin(true);
 		dashboard6.setHeight("500px");
 		dashboard6.setWidth("1000px");
 		dashboard6.setCaption("Test6");
@@ -145,7 +146,7 @@ public class WorkSpace extends VerticalLayout implements View, TabSheet.Selected
 		HorizontalLayout layoutnew = setting.Addlabel();
 		dashboard6.addComponent(layoutnew);
 		tabsheet1.addTab(dashboard6,"Settings", null);
-		dashboard6.setComponentAlignment(layoutnew, Alignment.MIDDLE_CENTER);
+		dashboard6.setComponentAlignment(layoutnew, Alignment.TOP_LEFT);
 		
 		layout.addComponent(tabsheet1);
 		
