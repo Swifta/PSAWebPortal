@@ -142,33 +142,15 @@ public class WorkSpace extends VerticalLayout implements View, TabSheet.Selected
 		dashboard6.setWidth("1000px");
 		dashboard6.setCaption("Test6");
 		Settings setting = new Settings();
-		dashboard6.addComponent(setting.Addlabel());
+		HorizontalLayout layoutnew = setting.Addlabel();
+		dashboard6.addComponent(layoutnew);
 		tabsheet1.addTab(dashboard6,"Settings", null);
-		//HorizontalLayout lay1 = new HorizontalLayout();
-		
-		
+		dashboard6.setComponentAlignment(layoutnew, Alignment.MIDDLE_CENTER);
 		
 		layout.addComponent(tabsheet1);
 		
 		
-		// TODO Auto-generated method stub
-	    
 		
-		/*tabsheet1.addSelectedTabChangeListener(new TabSheet.SelectedTabChangeListener() {
-			
-			
-			public void selectedTabChange(SelectedTabChangeEvent event) {
-				// TODO Auto-generated method stub
-				if(event.getTabSheet().getSelectedTab().getCaption() == "Test6" ){
-					
-					String het = tabsheet1.getSelectedTab().getCaption();
-					Label lbel = new Label(het);
-					Dashboard dash = new Dashboard();
-					dashboard6.addComponent(dash.Addlabel());
-					dashboard6.addComponent(lbel);
-				}
-			}
-		} );*/
 		btnLogout.addClickListener( new Button.ClickListener() {
 					
 					/**
