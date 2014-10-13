@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Alignment;
@@ -32,7 +34,7 @@ public class UserDetailsModule{
 	PopupDateField dF;
 	
 	//Declaration of data containers...
-	String strUID;
+	
 	String[] arrTfCaptions;
 	String[] arrOptCaptions;
 	String[] arrComboCaptions;
@@ -42,6 +44,8 @@ public class UserDetailsModule{
 	String[] arrOptVals;
 	String[] arrComboVals;
 	String[] arrDfVals;
+	
+	EditCancelBtnsSingleField ecbsf;
 	
 	
 	public UserDetailsModule(){
@@ -71,6 +75,7 @@ public class UserDetailsModule{
 			}else{
 				
 				String strTbName = mappedData.get("arrTbName")[0];
+				String strUID = mappedData.get("arrUID")[0];
 				if(strTbName.equals("activity_log") || strTbName.equals("account_change_log")){
 					//TODO fetch specified table log
 					
@@ -78,6 +83,7 @@ public class UserDetailsModule{
 					
 					
 					List<Object> arrLAllFormFields = new ArrayList<Object>();
+					List<Button> arrLOpBtns = new ArrayList<Button>();
 					
 					/*TODO
 					 * 
@@ -94,12 +100,9 @@ public class UserDetailsModule{
 						hasOp = false;
 					}
 					
-					if(hasOp){
-						cDetailsAndOperations.addComponent(getOperationsContainer(strTbName));
-					}
 					
 					
-					strUID = mappedData.get("arrUID")[0];
+					
 					arrTfCaptions = mappedData.get("arrTfCaptions");
 					arrOptCaptions = mappedData.get("arrOptCaptions");
 					arrComboCaptions = mappedData.get("arrComboCaptions");
@@ -140,11 +143,12 @@ public class UserDetailsModule{
 					
 					//Set OptionGroup(opt) form objects
 					if(arrOptVals != null){
-						setOpts(isReadOnlyOpt, arrLAllFormFields,arrLAllEditableFields,arrLOptEditableVals);
+						
+						setOpts(strTbName, strUID, isReadOnlyOpt, arrLAllFormFields,arrLAllEditableFields,arrLOptEditableVals, arrLOpBtns);
 					}
 					//Set ComboBox(combo) form objects
 					if(arrComboVals != null){
-						setCombos(isReadOnlyCombo,arrLAllFormFields,arrLAllEditableFields,arrLComboEditableVals);
+						setCombos(strTbName, strUID,isReadOnlyCombo,arrLAllFormFields,arrLAllEditableFields,arrLComboEditableVals, arrLOpBtns);
 					}
 					//Set InlineDateField(dF) form objects
 					if(arrDfVals != null){
@@ -174,92 +178,22 @@ public class UserDetailsModule{
 					cBtnEditCancel.setSizeUndefined();
 					cBtnEditCancel.addComponent(btnEdit);
 					
-					cUPersonalDetails.addComponent(cBtnEditCancel);
 					
 					
 					
-					btnEdit.addClickListener(new Button.ClickListener() {
+					if(hasOp){
+						cDetailsAndOperations.addComponent(getOperationsContainer(strTbName, strUID, arrLOpBtns));
+						ecbsf = new EditCancelBtnsSingleField(cUPersonalDetails);
 						
-						
-						private static final long serialVersionUID = -6544444429248747390L;
-			
-						@Override
-						public void buttonClick(ClickEvent event) {
+					}else{
+						wrapperEditCancelBtnsClickListener(btnEdit, btnCancel, btnEditId, btnSaveId, arrLAllEditableFields, cBtnEditCancel, arrLTfEditableVals, 
+								arrLOptEditableVals, arrLComboEditableVals, arrLDfEditableVals);
+						cUPersonalDetails.addComponent(cBtnEditCancel);
+					}
+					
+					
+					
 							
-							/*
-							 * Prepare all Editable fields (Entire form) for editing.
-							 */
-							if(event.getButton().getId().equals(btnEditId)){
-								enableEditableFormFields(arrLAllEditableFields);
-								
-								/*By Default, btnCancel is not visible, until btnEdit is clicked.
-								 * Only until then is it added and visible.
-								 */
-								
-								if(!btnCancel.isVisible()){
-									event.getButton().setId(btnSaveId);
-									event.getButton().setIcon(FontAwesome.SAVE);
-									btnCancel.setVisible(true);
-									cBtnEditCancel.addComponent(btnCancel);	
-								}
-								
-								
-								
-							}else{
-								if(event.getButton().getId().equals(btnSaveId)){
-									/*
-									 * 
-									 * 
-									 * 
-									 * 
-									 * TODO commit (save) changes i.e, send changes back to the server.
-									 * 
-									 * 
-									 * 
-									 * 
-									 */
-									
-									//Remove undo button (btnCancel)
-									btnCancel.setVisible(false);
-									
-									//Reset all Editable fields to readOnly after saving to the server
-									disableEditableFields(arrLAllEditableFields);
-									
-									
-									//Reset btnEdit id to btnIdEdit and caption(icon) to FontAwesome.EDIT
-									btnEdit.setId(btnEditId);
-									btnEdit.setIcon(FontAwesome.EDIT);
-									
-									//Reset Edit status to false
-									uDetailsEditStatus = false;
-									
-								}
-							}
-							
-						}
-					});
-					
-					
-					
-					
-					
-					btnCancel.addClickListener(new Button.ClickListener() {
-						
-						
-						private static final long serialVersionUID = 7719883177456399112L;
-			
-						@Override
-						public void buttonClick(ClickEvent event) {
-							
-							resetForm(arrLAllEditableFields,  arrLTfEditableVals, arrLOptEditableVals, arrLComboEditableVals,arrLDfEditableVals);
-							btnEdit.setId(btnEditId);
-							btnEdit.setIcon(FontAwesome.EDIT);
-							btnCancel.setVisible(false);
-							
-							
-						}
-					});
-					
 					
 					
 					/*
@@ -271,26 +205,28 @@ public class UserDetailsModule{
 						editUserDetails(arrLAllEditableFields, btnEdit, btnCancel, btnSaveId, cBtnEditCancel);
 					}
 					
-					/*if(strTbName.equals("account")){
-						VerticalLayout cOperations = getOperationsContainer();
-						cUPersonalDetails.addComponent(cOperations);
-						cUPersonalDetails.setComponentAlignment(cOperations, Alignment.TOP_LEFT);
-					}*/
+					
 					
 				
 				}
+				
 				
 			}
 			
 			
 			
 			
+				
 			
 
 			
 		
 		return cDetailsAndOperations;
 	}
+	
+	
+	
+	
 	
 	
 	private void resetForm(List<Object> lAllEditableFields, ArrayList<String> arrLTfVals,  ArrayList<String> arrLOptVals, ArrayList<String> arrLComboSelVals, ArrayList<String>arrLDfVals){
@@ -410,23 +346,30 @@ public class UserDetailsModule{
 		
 	}
 	
-	private void setOpts(int isReadOnlyOpt, List<Object>lAllFormFields, List<Object>arrLOptEditable, ArrayList<String>arrLOptEditableVals){
+	private void setOpts(String strTbName, String strUID, int isReadOnlyOpt, List<Object>lAllFormFields,
+			List<Object>arrLOptEditable, ArrayList<String>arrLOptEditableVals, List<Button> arrLOpBtns){
 		for(int iOpt = 0; iOpt < arrOptVals.length; iOpt++){
 			opt = new OptionGroup();
 			opt.setCaption(arrOptCaptions[iOpt]);
 			opt.addItem(arrOptVals[iOpt]);
 			opt.select(arrOptVals[iOpt]);
 			opt.setReadOnly(true);
+			opt.setId("opt_"+strTbName+"_"+strUID+"_"+arrOptCaptions[iOpt]);
 			if(iOpt != isReadOnlyOpt){
 				arrLOptEditable.add(opt);
 				arrLOptEditableVals.add(arrOptVals[iOpt]);
+			}
+			if(strTbName.equals("account") && arrOptCaptions[iOpt].equals("Status")){
+				Button btn = getOpBtn(strTbName,strUID, opt, "Deactivate", null);
+				arrLOpBtns.add(btn);
 			}
 			
 			cUPersonalDetails.addComponent(opt);
 		}
 	}
 	
-	private void setCombos(int isReadOnlyCombo, List<Object>lAllFormFields, List<Object>arrLComboEditable, ArrayList<String>arrLComboEditableVals){
+	private void setCombos(String strTbName, String strUID,int isReadOnlyCombo, List<Object>lAllFormFields,
+			List<Object>arrLComboEditable, ArrayList<String>arrLComboEditableVals, List<Button> arrLOpBtns){
 		for(int iCombo = 0; iCombo < arrComboVals.length; iCombo++){
 			combo = new ComboBox();
 			combo.setCaption(arrComboCaptions[iCombo]);
@@ -437,6 +380,28 @@ public class UserDetailsModule{
 			if(iCombo != isReadOnlyCombo){
 				arrLComboEditable.add(combo);
 				arrLComboEditableVals.add(arrComboVals[iCombo]);
+			}
+			
+			
+			if(strTbName.equals("account") && arrComboCaptions[iCombo].equals("Type")){
+				Button btn = getOpBtn(strTbName,strUID, combo, "Change Type", null);
+				combo.addValueChangeListener(new ValueChangeListener(){
+					private static final long serialVersionUID = -2182355729919041184L;
+
+					@Override
+					public void valueChange(ValueChangeEvent event) {
+						ecbsf.btnEditS.setIcon(FontAwesome.SAVE);
+						ecbsf.btnEditS.setVisible(true);
+						ecbsf.btnCancel.setVisible(true);
+						ecbsf.btnEditS.setEnabled(true);
+						ecbsf.btnCancel.setEnabled(true);
+						uDetailsEditStatus = true;
+							
+					}
+					
+				});
+				arrLOpBtns.add(btn);
+				
 			}
 			
 			cUPersonalDetails.addComponent(combo);
@@ -459,7 +424,8 @@ public class UserDetailsModule{
 		}
 	}
 	
-	private void editUserDetails(List<Object> arrLAllEditableFields,Button btnEdit, Button btnCancel, String btnSaveId, HorizontalLayout cBtnEditCancel){
+	private void editUserDetails(List<Object> arrLAllEditableFields,Button btnEdit, Button btnCancel,
+			String btnSaveId, HorizontalLayout cBtnEditCancel){
 		enableEditableFormFields(arrLAllEditableFields);
 		/*By Default, btnCancel is not visible, until btnEdit is clicked.
 		 * Only until then is it added and visible.
@@ -475,7 +441,7 @@ public class UserDetailsModule{
 	
 	
 	
-	private VerticalLayout getOperationsContainer(String strTbName){
+	private VerticalLayout getOperationsContainer(String strTbName, String strUID, List<Button> arrLOpBtns){
 		
 		VerticalLayout cOp = new VerticalLayout();
 		cOp.setSizeUndefined();
@@ -483,27 +449,198 @@ public class UserDetailsModule{
 		cOp.setMargin(true);
 		Label lbOp;
 		
-		String[] arrAccBtnCaptions = {"Activate", "Deactivate", "Change Type"};
-		String[] arrAuthBtnCaptions = {"Reset Password", "Block", "Unblock"};
-		String[] arrBtnCaptions = null;
+		
+		
+		
+		
 		if(strTbName.equals("auth")){
 			lbOp = new Label("Authentication Operations");	
 			cOp.addComponent(lbOp);
-			arrBtnCaptions = arrAuthBtnCaptions;
 		}else if(strTbName.equals("account")){
+			
 			lbOp = new Label("Account Operations");	
 			cOp.addComponent(lbOp);
-			arrBtnCaptions = arrAccBtnCaptions;
+			
+		}
+		
+		for(Button btn: arrLOpBtns){
+			cOp.addComponent(btn);
 		}
 		
 		
-		Button btnOp;
-		for(String strCap: arrBtnCaptions){
-			 btnOp = new Button(strCap);
-			 cOp.addComponent(btnOp);	
-		}
+		
 		return cOp;
 	}
+	
+	public Button getOpBtn(String strTbName, String strUID, Object objSlaveField, String strAction, List<Button> arrLSlaveBtn){
+		final String strBtnID = "opBtn_"+strTbName+"_"+strUID+"_"+strAction;
+		Button btnAct = new Button(strAction);
+		btnAct.setId(strBtnID);
+		btnAct.addClickListener(new BtnOpClickListener(objSlaveField, arrLSlaveBtn));
+		return btnAct;
+	}
+	
+	
+	
+	private void wrapperEditCancelBtnsClickListener(final Button btnEdit, final Button btnCancel, final String btnEditId, final String btnSaveId, final List<Object> arrLAllEditableFields, final HorizontalLayout cBtnEditCancel, final ArrayList<String> arrLTfEditableVals, 
+			final ArrayList<String> arrLOptEditableVals, final ArrayList<String> arrLComboEditableVals, final ArrayList<String> arrLDfEditableVals){
+		btnEdit.addClickListener(new Button.ClickListener() {
+			
+			
+			private static final long serialVersionUID = -6544444429248747390L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				
+				/*
+				 * Prepare all Editable fields (Entire form) for editing.
+				 */
+				if(event.getButton().getId().equals(btnEditId)){
+					enableEditableFormFields(arrLAllEditableFields);
+					
+					/*By Default, btnCancel is not visible, until btnEdit is clicked.
+					 * Only until then is it added and visible.
+					 */
+					
+					if(!btnCancel.isVisible()){
+						event.getButton().setId(btnSaveId);
+						event.getButton().setIcon(FontAwesome.SAVE);
+						btnCancel.setVisible(true);
+						cBtnEditCancel.addComponent(btnCancel);	
+					}
+					
+					
+					
+				}else{
+					if(event.getButton().getId().equals(btnSaveId)){
+						/*
+						 * 
+						 * 
+						 * 
+						 * 
+						 * TODO commit (save) changes i.e, send changes back to the server.
+						 * 
+						 * 
+						 * 
+						 * 
+						 */
+						
+						//Remove undo button (btnCancel)
+						btnCancel.setVisible(false);
+						
+						//Reset all Editable fields to readOnly after saving to the server
+						disableEditableFields(arrLAllEditableFields);
+						
+						
+						//Reset btnEdit id to btnIdEdit and caption(icon) to FontAwesome.EDIT
+						btnEdit.setId(btnEditId);
+						btnEdit.setIcon(FontAwesome.EDIT);
+						
+						//Reset Edit status to false
+						uDetailsEditStatus = false;
+						
+					}
+				}
+				
+			}
+		});
+		
+		
+		
+		
+		
+		btnCancel.addClickListener(new Button.ClickListener() {
+			
+			
+			private static final long serialVersionUID = 7719883177456399112L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				
+				resetForm(arrLAllEditableFields,  arrLTfEditableVals, arrLOptEditableVals, arrLComboEditableVals,arrLDfEditableVals);
+				btnEdit.setId(btnEditId);
+				btnEdit.setIcon(FontAwesome.EDIT);
+				btnCancel.setVisible(false);
+				
+				
+			}
+		});
+
+	}
+	
+	
+	private class EditCancelBtnsSingleField{
+		
+		String strBtnIDEdit = "btn_account_status_edit";
+		final Button btnEditS = new Button();
+		final Button btnCancel = new Button();
+		final HorizontalLayout cBtnEditCancel = new HorizontalLayout();
+		
+		
+		public EditCancelBtnsSingleField(FormLayout c){
+			btnEditS.setId(strBtnIDEdit );
+			btnEditS.setIcon(FontAwesome.EDIT);
+			btnEditS.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
+			btnEditS.setStyleName("btn_link");
+			btnEditS.setVisible(false);
+			btnEditS.setEnabled(false);
+			
+			
+			btnCancel.setId(strBtnIDEdit);
+			btnCancel.setIcon(FontAwesome.UNDO);
+			btnCancel.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
+			btnCancel.setStyleName("btn_link");
+			btnCancel.setVisible(false);
+			btnCancel.setEnabled(false);
+			
+			
+			
+			cBtnEditCancel.setSizeUndefined();
+			cBtnEditCancel.addComponent(btnEditS);
+			cBtnEditCancel.addComponent(btnCancel);
+			c.addComponent(cBtnEditCancel);
+			
+			btnEditS.addClickListener(new Button.ClickListener() {
+				
+				private static final long serialVersionUID = 7008276156596987435L;
+
+				@Override
+				public void buttonClick(ClickEvent event) {
+					// TODO Auto-generated method stub
+					
+				}
+			});
+			
+			btnCancel.addClickListener(new Button.ClickListener() {
+				private static final long serialVersionUID = 7008276156596987435L;
+
+				@Override
+				public void buttonClick(ClickEvent event) {
+					// TODO Auto-generated method stub
+					
+				}
+			});
+			
+		}
+		
+		
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	
