@@ -284,9 +284,9 @@ public class ManageUserModule {
 	
 
 	
-	public VerticalLayout getUserDetailsContainer(String strTbName, String strUID, boolean boolEditStatus){
+	public VerticalLayout getUserDetailsContainer(String strTbName, String strUID, boolean hasOp, boolean boolEditStatus){
 			udm = new UserDetailsModule();
-		
+			
 			VerticalLayout cUDetails = new VerticalLayout();
 			cUDetails.setMargin(new MarginInfo(false, true, true, true));
 			
@@ -350,7 +350,7 @@ public class ManageUserModule {
 			ArrayList<HorizontalLayout> arrLSubTabs = new ArrayList<HorizontalLayout>();
 			HorizontalLayout cUserLogMenu = new HorizontalLayout();
 			arrLSubTabs.add(cUserLogMenu);
-			HorizontalLayout cLog = getUserLogSubMenu(btnLog, cUserLogMenu, arrLSubTabs, boolEditStatus);
+			HorizontalLayout cLog = getUserLogSubMenu(btnLog, cUserLogMenu, arrLSubTabs, hasOp, boolEditStatus);
 			cLog.setSizeUndefined();
 			cTabLike.addComponent(cLog);
 			cTabLike.setComponentAlignment(cLog, Alignment.TOP_RIGHT);
@@ -378,19 +378,19 @@ public class ManageUserModule {
 			cUDetails.setExpandRatio(cPerAccAuthInfo, 1.0f);
 			
 			
-			uDetailsForm = udm.getDetailsForm("personal", "001", boolEditStatus);
-			cPerAccAuthInfo.addComponent(uDetailsForm);
+			HorizontalLayout cUDetailsAndOperations= udm.getDetailsForm("personal", "001", hasOp, boolEditStatus);
+			cPerAccAuthInfo.addComponent(cUDetailsAndOperations);
 			btnPersonal.setEnabled(false);
 			//curIDDetails = btnPersonal.getId();
 			
 			
 			
 			btnPersonal.addClickListener(new BtnTabLikeClickListener(false, false, arrLSubTabs, arrLTabBtns, cPerAccAuthInfo, udm,
-					"personal", "001", boolEditStatus ));
+					"personal", "001", hasOp, boolEditStatus ));
 			btnAccount.addClickListener(new BtnTabLikeClickListener(false, false, arrLSubTabs,  arrLTabBtns, cPerAccAuthInfo, udm,
-					"account", "001", boolEditStatus ));
+					"account", "001", hasOp, boolEditStatus ));
 			btnAuth.addClickListener(new BtnTabLikeClickListener(false, false, arrLSubTabs, arrLTabBtns, cPerAccAuthInfo, udm,
-					"auth", "001", boolEditStatus ));
+					"auth", "001", hasOp, boolEditStatus ));
 			
 			
 			
@@ -444,7 +444,7 @@ public class ManageUserModule {
 		}
 		
 		
-		private HorizontalLayout getUserLogSubMenu(BtnTabLike btnLog, HorizontalLayout cUserLogMenu, ArrayList<HorizontalLayout> arrLSubTabs, boolean boolEditStatus){
+		private HorizontalLayout getUserLogSubMenu(BtnTabLike btnLog, HorizontalLayout cUserLogMenu, ArrayList<HorizontalLayout> arrLSubTabs, boolean hasOp, boolean boolEditStatus){
 			//btnLog.addClickListener(new BtnTabLikeClickListener(false, arrLTabBtns, cPerAccAuthInfo, udm, "log", "001" ));
 			//VerticalLayout cLog = new VerticalLayout();
 			//cLog.setSizeUndefined();
@@ -469,12 +469,12 @@ public class ManageUserModule {
 			
 			
 			btnActLog.addClickListener(new BtnTabLikeClickListener(false, false, arrLSubTabs, arrLSubTabBtns,  cPerAccAuthInfo, udm,
-					"activity_log", "001", boolEditStatus ));
+					"activity_log", "001", hasOp, boolEditStatus ));
 			btnAccChangeLog.addClickListener(new BtnTabLikeClickListener(false, false, arrLSubTabs,  arrLSubTabBtns, cPerAccAuthInfo, udm,
-					"account_change_log", "001", boolEditStatus ));
+					"account_change_log", "001", hasOp, boolEditStatus ));
 			
 			btnLog.addClickListener(new BtnTabLikeClickListener(false, true, arrLTabBtns, cUserLogMenu, cPerAccAuthInfo, udm,
-					"activity_log", "001", boolEditStatus));
+					"activity_log", "001", hasOp, boolEditStatus));
 			//cUserLogMenu.setVisible(false);
 			//cLog.addComponent(cUserLogMenu);
 			
@@ -482,8 +482,6 @@ public class ManageUserModule {
 			
 			return cUserLogMenu;
 		}
-		
-		
 		
 		
 			

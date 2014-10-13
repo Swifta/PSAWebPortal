@@ -31,8 +31,9 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 	private HorizontalLayout cSubMenu;
 	private ArrayList<HorizontalLayout> arrLSubTabs;
 	BtnTabLike curBtn;
+	private boolean hasOp;
 	boolean boolEditStatus = false;
-	public BtnTabLikeClickListener(boolean isModifier, boolean hasSubMenu, ArrayList<BtnTabLike>arrLTabBtns, HorizontalLayout cSubMenu, HorizontalLayout hTabContainer, UserDetailsModule udm, String strTbName, String strUID, boolean boolEditStatus){
+	public BtnTabLikeClickListener(boolean isModifier, boolean hasSubMenu, ArrayList<BtnTabLike>arrLTabBtns, HorizontalLayout cSubMenu, HorizontalLayout hTabContainer, UserDetailsModule udm, String strTbName, String strUID, boolean hasOp, boolean boolEditStatus){
 		this.hasSubMenu = hasSubMenu;
 		this.cSubMenu = cSubMenu;
 		this.arrLTabBtns = arrLTabBtns;
@@ -42,9 +43,10 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 		this.udm = udm;
 		this.isModifier = isModifier;
 		this.boolEditStatus = boolEditStatus;
+		this.hasOp = hasOp;
 		
 	}
-	public BtnTabLikeClickListener(boolean isModifier, boolean hasSubMenu, ArrayList<HorizontalLayout> arrLSubTabs, ArrayList<BtnTabLike>arrLTabBtns, HorizontalLayout tabContainer, UserDetailsModule udm, String strTbName, String strUID, boolean boolEditStatus){
+	public BtnTabLikeClickListener(boolean isModifier, boolean hasSubMenu, ArrayList<HorizontalLayout> arrLSubTabs, ArrayList<BtnTabLike>arrLTabBtns, HorizontalLayout tabContainer, UserDetailsModule udm, String strTbName, String strUID, boolean hasOp, boolean boolEditStatus){
 		this.arrLTabBtns = arrLTabBtns;
 		this.hTabContainer = tabContainer;
 		this.udm = udm;
@@ -54,6 +56,7 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 		this.hasSubMenu = hasSubMenu;
 		this.arrLSubTabs = arrLSubTabs;
 		this.boolEditStatus = boolEditStatus;
+		this.hasOp = hasOp;
 	}
 	
 	
@@ -76,7 +79,7 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 				setActiveTab(curBtn, arrLTabBtns);
 				cSubMenu.setStyleName("c_sub_menu_visible");
 				hTabContainer.removeAllComponents();
-				hTabContainer.addComponent(udm.getDetailsForm(strTbName, strUID, boolEditStatus));
+				hTabContainer.addComponent(udm.getDetailsForm(strTbName, strUID, hasOp, boolEditStatus));
 			}else{
 				
 				
@@ -116,7 +119,7 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 							
 							setActiveTab(curBtn, arrLTabBtns);
 							hTabContainer.removeAllComponents();
-							hTabContainer.addComponent(udm.getDetailsForm(strTbName, strUID, boolEditStatus));
+							hTabContainer.addComponent(udm.getDetailsForm(strTbName, strUID, hasOp, boolEditStatus));
 						}	
 					}
 			}
@@ -193,7 +196,7 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 					
 					setActiveTab(curBtn, arrLTabBtns);
 					hTabContainer.removeAllComponents();
-					hTabContainer.addComponent(udm.getDetailsForm(strTbName, strUID, boolEditStatus));
+					hTabContainer.addComponent(udm.getDetailsForm(strTbName, strUID, hasOp, boolEditStatus));
 				}
 				
 			}

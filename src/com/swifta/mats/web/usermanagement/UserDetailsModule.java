@@ -7,6 +7,7 @@ import java.util.Map;
 
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
@@ -17,11 +18,13 @@ import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 public class UserDetailsModule{
 	public static boolean uDetailsEditStatus = false;
 	FormLayout  cUPersonalDetails;
+	HorizontalLayout cDetailsAndOperations;
 	//Declaration of form fields
 	TextField tfGen;
 	OptionGroup opt;
@@ -45,18 +48,22 @@ public class UserDetailsModule{
 		
 	}
 	
-	public FormLayout getDetailsForm(String strTbName, String strUID, boolean boolEditStatus){
-		return setDetailsForm(getUDetails(strTbName, strUID), boolEditStatus);
+	public HorizontalLayout getDetailsForm(String strTbName, String strUID, boolean hasOp, boolean boolEditStatus){
+		return setDetailsForm(getUDetails(strTbName, strUID), hasOp,  boolEditStatus);
 	}
 	
-	private FormLayout setDetailsForm(Map<String, String[]> mappedData, boolean boolEditStatus){
-		
+	private HorizontalLayout setDetailsForm(Map<String, String[]> mappedData, boolean hasOp, boolean boolEditStatus){
+		cDetailsAndOperations = new HorizontalLayout();
+		cDetailsAndOperations.setSizeFull();
 		
 		cUPersonalDetails = new FormLayout();
 		cUPersonalDetails.setMargin(true);
 		cUPersonalDetails.setSpacing(false);
 		cUPersonalDetails.setStyleName("frm_details_personal_info");
 		cUPersonalDetails.setSizeFull();
+		cDetailsAndOperations.addComponent(cUPersonalDetails);
+		
+		
 			
 			if(mappedData.size() == 0){
 				cUPersonalDetails.addComponent(new Label(" NO Data Available!"));
@@ -68,10 +75,7 @@ public class UserDetailsModule{
 					//TODO fetch specified table log
 					
 				}else{
-					TextField tfGen;
-					OptionGroup opt;
-					ComboBox combo;
-					PopupDateField dF;
+					
 					
 					List<Object> arrLAllFormFields = new ArrayList<Object>();
 					
@@ -83,6 +87,16 @@ public class UserDetailsModule{
 					 */
 					
 					//Set Data
+					
+					if(strTbName.equals("account") || strTbName.equals("auth")){
+						hasOp = true;
+					}else{
+						hasOp = false;
+					}
+					
+					if(hasOp){
+						cDetailsAndOperations.addComponent(getOperationsContainer(strTbName));
+					}
 					
 					
 					strUID = mappedData.get("arrUID")[0];
@@ -120,18 +134,22 @@ public class UserDetailsModule{
 					int isReadOnlyCombo = -1;
 					
 					//set TextField(tf) form objects
-					setTfs(isReadOnlyTf, arrLAllFormFields, arrLAllEditableFields, arrLTfEditableVals);
+					if(arrTfVals != null){
+						setTfs(isReadOnlyTf, arrLAllFormFields, arrLAllEditableFields, arrLTfEditableVals);
+					}
 					
 					//Set OptionGroup(opt) form objects
-					setOpts(isReadOnlyOpt, arrLAllFormFields,arrLAllEditableFields,arrLOptEditableVals);
-					
+					if(arrOptVals != null){
+						setOpts(isReadOnlyOpt, arrLAllFormFields,arrLAllEditableFields,arrLOptEditableVals);
+					}
 					//Set ComboBox(combo) form objects
-					setCombos(isReadOnlyCombo,arrLAllFormFields,arrLAllEditableFields,arrLComboEditableVals);
-
+					if(arrComboVals != null){
+						setCombos(isReadOnlyCombo,arrLAllFormFields,arrLAllEditableFields,arrLComboEditableVals);
+					}
 					//Set InlineDateField(dF) form objects
-					setDfs(isReadOnlyCombo, arrLAllFormFields, arrLAllEditableFields, arrLDfEditableVals);
-
-					
+					if(arrDfVals != null){
+						setDfs(isReadOnlyCombo, arrLAllFormFields, arrLAllEditableFields, arrLDfEditableVals);
+					}
 				
 					
 					
@@ -253,6 +271,12 @@ public class UserDetailsModule{
 						editUserDetails(arrLAllEditableFields, btnEdit, btnCancel, btnSaveId, cBtnEditCancel);
 					}
 					
+					/*if(strTbName.equals("account")){
+						VerticalLayout cOperations = getOperationsContainer();
+						cUPersonalDetails.addComponent(cOperations);
+						cUPersonalDetails.setComponentAlignment(cOperations, Alignment.TOP_LEFT);
+					}*/
+					
 				
 				}
 				
@@ -260,10 +284,12 @@ public class UserDetailsModule{
 			
 			
 			
+			
+			
 
 			
 		
-		return cUPersonalDetails;
+		return cDetailsAndOperations;
 	}
 	
 	
@@ -446,6 +472,39 @@ public class UserDetailsModule{
 			cBtnEditCancel.addComponent(btnCancel);	
 		}
 	}
+	
+	
+	
+	private VerticalLayout getOperationsContainer(String strTbName){
+		
+		VerticalLayout cOp = new VerticalLayout();
+		cOp.setSizeUndefined();
+		cOp.setSpacing(true);
+		cOp.setMargin(true);
+		Label lbOp;
+		
+		String[] arrAccBtnCaptions = {"Activate", "Deactivate", "Change Type"};
+		String[] arrAuthBtnCaptions = {"Reset Password", "Block", "Unblock"};
+		String[] arrBtnCaptions = null;
+		if(strTbName.equals("auth")){
+			lbOp = new Label("Authentication Operations");	
+			cOp.addComponent(lbOp);
+			arrBtnCaptions = arrAuthBtnCaptions;
+		}else if(strTbName.equals("account")){
+			lbOp = new Label("Account Operations");	
+			cOp.addComponent(lbOp);
+			arrBtnCaptions = arrAccBtnCaptions;
+		}
+		
+		
+		Button btnOp;
+		for(String strCap: arrBtnCaptions){
+			 btnOp = new Button(strCap);
+			 cOp.addComponent(btnOp);	
+		}
+		return cOp;
+	}
+	
 	
 	
 	

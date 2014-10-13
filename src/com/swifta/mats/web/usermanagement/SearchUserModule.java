@@ -54,7 +54,7 @@ public class SearchUserModule {
 		btnDelete = new BtnActions("Delete");
 		btnDelete.setIcon(icDelete);
 		btnMoreActions = new BtnActions("More...");
-		btnMoreActions.setIcon(FontAwesome.ANGLE_RIGHT);
+		btnMoreActions.setIcon(FontAwesome.ELLIPSIS_H);
 		arrLPopupParentClasses = new ArrayList<Object>();
 		arrLPopupParentClasses.add(this);
 		
@@ -117,10 +117,6 @@ public class SearchUserModule {
 		actionsC.addComponent(btnDelete);
 		actionsC.addComponent(btnMoreActions);
 	
-		
-		
-		
-		
 		
 		
 		

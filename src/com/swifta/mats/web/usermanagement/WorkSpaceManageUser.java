@@ -341,23 +341,28 @@ public class WorkSpaceManageUser{
 				String strUID = (String) UI.getCurrent().getSession().getAttribute(SearchUserModule.SESSION_USER_TABLE_ROW_ID);
 				String strAction = (String) UI.getCurrent().getSession().getAttribute(SearchUserModule.SESSION_USER_ACTION);
 				boolean boolEditStatus = false;
+				boolean hasOp = false;
 
 				contentC.removeComponent(searchResultsC);
 				searchC.setSizeUndefined();
 				//searchC.setSizeFull();
 				//contentC.setComponentAlignment(searchC, Alignment.TOP_LEFT);
 				contentC.setComponentAlignment(searchC, Alignment.TOP_RIGHT);
+				//mum.cPerAccAuthInfo.addComponent(mum.getOperationsContainer());
 				if(strAction.equals(SearchUserModule.ACTION_DETAILS) || strAction.equals(SearchUserModule.ACTION_EDIT)){
 					if(strAction.equals(SearchUserModule.ACTION_DETAILS)){
 						boolEditStatus = false;
-					}
-					
-					if(strAction.equals(SearchUserModule.ACTION_EDIT)){
+					}else if(strAction.equals(SearchUserModule.ACTION_EDIT)){
 						boolEditStatus = true;
 					}
-					cuDetails = mum.getUserDetailsContainer(strTbName, strUID, boolEditStatus);
+					
+					if(strTbName.equals("account") || strTbName.equals("auth")){
+						hasOp = true;
+					}
+					
+					cuDetails = mum.getUserDetailsContainer(strTbName, strUID, hasOp, boolEditStatus);
+					
 					contentC.addComponent(cuDetails);
-					//cuDetails.setSizeUndefined();
 					contentC.setComponentAlignment(cuDetails, Alignment.TOP_CENTER);
 					contentC.setExpandRatio(cuDetails, 1.0f);
 					
