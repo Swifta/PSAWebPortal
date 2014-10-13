@@ -1,6 +1,8 @@
 package com.swifta.mats.web.usermanagement;
 
-import com.jensjansson.pagedtable.PagedTable;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.IndexedContainer;
@@ -9,26 +11,68 @@ import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.Embedded;
+import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Table;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.TextArea;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.themes.Reindeer;
 import com.vaadin.ui.themes.ValoTheme;
 
 public class SearchUserModule {
+	public static  final String tbUsers = "user";
+	public static final String SESSION_USER_ACTION = "session_action";
+	public static final String SESSION_USER_TABLE = "tb";
+	public static final String SESSION_USER_TABLE_ROW_ID = "tb_rw_id";
+	public static final String ACTION_DETAILS = "details";
+	public static final String ACTION_EDIT = "edit";
+	public static final String ACTION_LINK = "link";
+	public static final String ACTION_DELETE = "delete";
+	public static final String ACTION_MORE = "more_actions";
+	
+	BtnActions btnDetails;
+	BtnActions btnEdit;
+	BtnActions btnLink;
+	BtnActions  btnDelete;
+	BtnActions  btnMoreActions;
+	HorizontalLayout actionsC;
+	List<Object> arrLPopupParentClasses; 
+	
+	Window popup;
 	
 	public SearchUserModule(){
+		ThemeResource icDelete = new ThemeResource("img/ic_delete_small.png");
+		btnDetails = new BtnActions("Details");
+		btnDetails.setIcon(FontAwesome.ALIGN_JUSTIFY);
+		btnEdit = new BtnActions("Edit");
+		btnEdit.setIcon(FontAwesome.EDIT);
+		btnLink = new BtnActions("Link");
+		btnLink.setIcon(FontAwesome.LINK);
+		btnDelete = new BtnActions("Delete");
+		btnDelete.setIcon(icDelete);
+		btnMoreActions = new BtnActions("More...");
+		btnMoreActions.setIcon(FontAwesome.ANGLE_RIGHT);
+		arrLPopupParentClasses = new ArrayList<Object>();
+		arrLPopupParentClasses.add(this);
+		
+		btnDetails.addClickListener(new BtnActionsClickListener(false, null));
+		btnEdit.addClickListener(new BtnActionsClickListener(false, null));
+		//btnLink.addClickListener(new BtnActionsClickListener());
+		btnDelete.addClickListener(new BtnActionsClickListener(true, arrLPopupParentClasses));
+		//btnMoreActions.addClickListener(new BtnActionsClickListener(true, null));
+		
+		actionsC = new HorizontalLayout();
+		actionsC.setSizeUndefined();
+		actionsC.setStyleName("c_actions");
 		
 	}
 	
 	@SuppressWarnings("unchecked")
 	public IndexedContainer queryBackEnd(){
-		
-		CheckBox chklb = new CheckBox();
 		IndexedContainer container = new IndexedContainer();//"Results for: \""+UI.getCurrent().getSession().getAttribute(ManageUserModule.UMANAGE_SESSION_SEARCH)+"\"  (Summary)");
-		CheckBox chk = new CheckBox("All");
 		container.addContainerProperty(" ", CheckBox.class, null);
 		container.addContainerProperty("UID", String.class, "000");
 		container.addContainerProperty("Username", String.class, "");
@@ -57,64 +101,21 @@ public class SearchUserModule {
 		tdPropertyFname.setValue("Yoweri");
 		tdPropertyLname.setValue("Amama");
 		tdPropertyACCType.setValue("Administrator");
-		
-		HorizontalLayout actionsC = new HorizontalLayout();
-		actionsC.setSizeUndefined();
-		actionsC.setStyleName("c_actions");
 		tdPropertyActions.setValue(actionsC);
+		String strUID = tdPropertyUID.getValue();
+		String strUname = tdPropertyUname.getValue();
 		
+		btnDetails.setId("user_"+strUID+"_details");
+		btnEdit.setId("user_"+strUID+"_edit");
+		btnLink.setId("user_"+strUID+"_link");
+		btnDelete.setId("user_"+strUID+"_"+strUname+"_delete");
+		btnMoreActions.setId("user_"+strUID+"_moreActions");
 		
-		BtnActionsClickable btnActionsClickListener = new BtnActionsClickable();
-		Button icDetails = new Button();
-		icDetails.setIcon(FontAwesome.ALIGN_JUSTIFY);
-		icDetails.setId("user_"+tdPropertyUID.getValue());
-		icDetails.setDescription("Details");
-		icDetails.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
-		icDetails.addClickListener(btnActionsClickListener);
-		actionsC.addComponent(icDetails);
-		
-		
-		//Embedded embDetails = new Embedded(null, FontAwesome.ALIGN_JUSTIFY);
-		/*VerticalLayout icDetails = new VerticalLayout();
-		icDetails.setSizeUndefined();
-		
-		
-		
-		icDetails.setStyleName("ic_details");
-		
-		icDetails.setIcon(FontAwesome.ALIGN_JUSTIFY);
-		actionsC.addComponent(icDetails);
-		actionsC.setComponentAlignment(icDetails, Alignment.MIDDLE_CENTER);*/
-		
-		
-		
-		Button icEdit = new Button();
-		icEdit.setIcon(FontAwesome.EDIT);
-		//icEdit.setStyleName(ValoTheme.BUTTON_TINY);
-		//icEdit.setStyleName(ValoTheme.BUTTON_BORDERLESS);
-		icEdit.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
-		icEdit.setDescription("Edit");
-		actionsC.addComponent(icEdit);
-		
-		Button icLink = new Button();
-		icLink.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
-		icLink.setIcon(FontAwesome.LINK);
-		icLink.setDescription("Link");
-		//icLink.setStyleName(ValoTheme.BUTTON_BORDERLESS);
-		actionsC.addComponent(icLink);
-		
-		Button icDelete = new Button();
-		icDelete.setIcon(new ThemeResource("img/ic_delete_small.png"));
-		icDelete.setDescription("Delete");
-		//icDelete.setStyleName(ValoTheme.BUTTON_BORDERLESS);
-		icDelete.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
-		actionsC.addComponent(icDelete);
-		
-		Button icMoreActions = new Button("...");
-		icMoreActions.setDescription("More...");
-		//icMoreActions.setStyleName(ValoTheme.BUTTON_BORDERLESS);
-		icMoreActions.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
-		actionsC.addComponent(icMoreActions);
+		actionsC.addComponent(btnDetails);
+		actionsC.addComponent(btnEdit);
+		actionsC.addComponent(btnLink);
+		actionsC.addComponent(btnDelete);
+		actionsC.addComponent(btnMoreActions);
 	
 		
 		
@@ -689,6 +690,81 @@ public class SearchUserModule {
 		
 		
 		return container;
+	}
+	
+	
+	public void showDeleteUserContainer(String username){
+		popup = new Window("Delete "+username);
+		ThemeResource r = new ThemeResource("img/ic_delete_small.png");
+		//popup.setIcon(r);
+		//popup.setStyleName(Reindeer.WINDOW_BLACK);
+		popup.center();
+		
+		VerticalLayout cDeletePrompt = new VerticalLayout();
+		cDeletePrompt.setSpacing(true);
+		cDeletePrompt.setMargin(true);
+		
+		Label lbDeleteMsg = new Label("Are you sure you want to delete "+username+"?");
+		cDeletePrompt.addComponent(lbDeleteMsg);
+		
+		FormLayout frmDeleteReason = new FormLayout();
+		frmDeleteReason.setSizeUndefined();
+		frmDeleteReason.setSpacing(true);
+		frmDeleteReason.setMargin(true);
+		cDeletePrompt.addComponent(frmDeleteReason);
+		
+		Label lbReason = new Label("Choose reason below:");
+		CheckBox chkNolongerExists = new CheckBox("User no longer exists.");
+		CheckBox chkDuplicate = new CheckBox("Duplicate user.");
+		TextArea taOthers = new TextArea();
+		
+		frmDeleteReason.addComponent(lbReason);
+		frmDeleteReason.addComponent(chkNolongerExists);
+		frmDeleteReason.addComponent(chkDuplicate);
+		
+		Label lbOthers = new Label("Others(Specify)");
+		frmDeleteReason.addComponent(lbOthers);
+		frmDeleteReason.addComponent(taOthers);
+		
+		HorizontalLayout cPopupBtns = new HorizontalLayout();
+		cPopupBtns.setSizeUndefined();
+		cPopupBtns.setSpacing(true);
+		
+		Button btnCancel = new Button("Cancel");
+		Button btnDelete = new Button("Delete");
+		btnDelete.setIcon(r);
+		cPopupBtns.addComponent(btnCancel);
+		cPopupBtns.addComponent(btnDelete);
+		cDeletePrompt.addComponent(cPopupBtns);
+		cDeletePrompt.setComponentAlignment(frmDeleteReason, Alignment.MIDDLE_CENTER);
+		cDeletePrompt.setComponentAlignment(cPopupBtns, Alignment.BOTTOM_CENTER);
+		popup.setContent(cDeletePrompt);
+		UI.getCurrent().addWindow(popup);
+		btnCancel.addClickListener(new Button.ClickListener() {
+			
+			private static final long serialVersionUID = -9071850366625898895L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				popup.close();
+				
+			}
+		});
+		
+		btnDelete.addClickListener(new Button.ClickListener() {
+			
+			private static final long serialVersionUID = -6318666715385643538L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				/*
+				 * 
+				 * TODO send user id to server for deletion and update the table.
+				 */
+				popup.close();
+				
+			}
+		});
 	}
 
 }
