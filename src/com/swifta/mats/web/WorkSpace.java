@@ -5,22 +5,26 @@ import com.swifta.mats.web.dashboard.Dashboard;
 import com.swifta.mats.web.report.Report;
 import com.swifta.mats.web.settings.Settings;
 import com.swifta.mats.web.transactions.Transactions;
-import com.swifta.mats.web.usermanagement.Usermanager;
+import com.swifta.mats.web.usermanagement.ManageUserModule;
+import com.swifta.mats.web.usermanagement.WorkSpaceManageUser;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
 
-public class WorkSpace extends VerticalLayout implements View {
+public class WorkSpace extends VerticalLayout implements View, TabSheet.SelectedTabChangeListener {
 	
+	public static WorkSpaceManageUser wsmu;
+	VerticalLayout dashboard3;
 	private Embedded emb;
 	private Button btnLogout;
 	/**
@@ -36,10 +40,15 @@ public class WorkSpace extends VerticalLayout implements View {
 	VerticalLayout dashboard6 = new VerticalLayout();
 	TabSheet tabsheet1 = new TabSheet();
 	
+	public WorkSpace(){
+		wsmu = new WorkSpaceManageUser();
+	}
+	
 	
 	
 	@Override
 	public void enter(ViewChangeEvent event) {
+		Notification.show("In WorkSpace");
 		//setSizeFull();
 		setMargin(true);
 		//setStyleName("parent_layout");
@@ -94,13 +103,18 @@ public class WorkSpace extends VerticalLayout implements View {
 		
 		
 		//Tab3 UserManager
-		VerticalLayout dashboard3 = new VerticalLayout();
+		dashboard3 = new VerticalLayout();
 		dashboard3.setImmediate(true);
 		dashboard3.setHeight("500px");
 		dashboard3.setCaption("Test3");
-		Usermanager usermanage = new Usermanager();
-		dashboard3.addComponent(usermanage.Addlabel());
+		dashboard3.addComponent(wsmu.getWorkSpaceManageUser());
 		tabsheet1.addTab(dashboard3,"User Management", null);
+		
+		
+		
+		
+		
+
 		
 		VerticalLayout dashboard4 = new VerticalLayout();
 		dashboard4.setImmediate(true);
@@ -128,33 +142,15 @@ public class WorkSpace extends VerticalLayout implements View {
 		dashboard6.setWidth("1000px");
 		dashboard6.setCaption("Test6");
 		Settings setting = new Settings();
-		dashboard6.addComponent(setting.Addlabel());
+		HorizontalLayout layoutnew = setting.Addlabel();
+		dashboard6.addComponent(layoutnew);
 		tabsheet1.addTab(dashboard6,"Settings", null);
-		//HorizontalLayout lay1 = new HorizontalLayout();
-		
-		
+		dashboard6.setComponentAlignment(layoutnew, Alignment.MIDDLE_CENTER);
 		
 		layout.addComponent(tabsheet1);
 		
 		
-		// TODO Auto-generated method stub
-	    
 		
-		/*tabsheet1.addSelectedTabChangeListener(new TabSheet.SelectedTabChangeListener() {
-			
-			
-			public void selectedTabChange(SelectedTabChangeEvent event) {
-				// TODO Auto-generated method stub
-				if(event.getTabSheet().getSelectedTab().getCaption() == "Test6" ){
-					
-					String het = tabsheet1.getSelectedTab().getCaption();
-					Label lbel = new Label(het);
-					Dashboard dash = new Dashboard();
-					dashboard6.addComponent(dash.Addlabel());
-					dashboard6.addComponent(lbel);
-				}
-			}
-		} );*/
 		btnLogout.addClickListener( new Button.ClickListener() {
 					
 					/**
@@ -165,8 +161,8 @@ public class WorkSpace extends VerticalLayout implements View {
 					@Override
 					public void buttonClick(ClickEvent event) {
 						UI.getCurrent().getSession().setAttribute("user", null);
-						UI.getCurrent().getSession().setAttribute(ManageUserModule.UMANAGE_SESSION_SEARCH, null);
-						UI.getCurrent().getSession().setAttribute(ManageUserModule.UMANAGE_SESSION_DETAILS, null);
+						UI.getCurrent().getSession().setAttribute(ManageUserModule.SESSION_UMANAGE, null);
+						UI.getCurrent().getSession().setAttribute(WorkSpaceManageUser.SESSION_WORK_AREA, null);
 						UI.getCurrent().getNavigator().navigateTo(WORK_SPACE);
 						
 					}
@@ -175,8 +171,17 @@ public class WorkSpace extends VerticalLayout implements View {
 	    
 		addComponent(layout);
 		setComponentAlignment(layout, Alignment.MIDDLE_CENTER);
+	
 		
 		
+		
+	}
+
+
+
+	@Override
+	public void selectedTabChange(SelectedTabChangeEvent event) {
+		Notification.show("I have been thoroughly clicked....!!");
 	}
 
 }

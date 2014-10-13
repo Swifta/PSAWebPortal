@@ -2,6 +2,8 @@ package com.swifta.mats.web;
 
 import javax.servlet.annotation.WebServlet;
 
+import com.swifta.mats.web.usermanagement.ManageUserModule;
+import com.swifta.mats.web.usermanagement.WorkSpaceManageUser;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.navigator.Navigator;
@@ -28,6 +30,15 @@ public class MatsWebPortalUI extends UI {
 		new Navigator(this, this);
 		getNavigator().addView(Login.LOGIN,  Login.class);
 		getNavigator().addView(WorkSpace.WORK_SPACE, WorkSpace.class);
+		//getNavigator().addView(WorkSpaceManageUser.WORK_AREA, WorkSpaceManageUser.class);
+		
+		
+		//Setting Default Sessions and Session Variable
+		UI.getCurrent().getSession().setAttribute(WorkSpaceManageUser.SESSION_WORK_AREA,
+				WorkSpaceManageUser.SESSION_VAR_WORK_AREA_MANAGE_USER);
+		
+		UI.getCurrent().getSession().setAttribute(ManageUserModule.SESSION_UMANAGE,
+				ManageUserModule.SESSION_VAR_UMANAGE_SEARCH);
 		
 		UI.getCurrent().getNavigator().addViewChangeListener(new ViewChangeListener(){
 

@@ -57,7 +57,7 @@ public class Login extends VerticalLayout implements View {
 		logoContainer.setSizeUndefined();
 		logoContainer.setStyleName("logo_and_slogan_container");
 		//logoAndSloganContainer.setMargin(true);
-		ThemeResource rLogo = new ThemeResource("img/logo.jpg");
+		ThemeResource rLogo = new ThemeResource("img/logo.png");
 		//System.out.println(rLogo.toString());
 		Embedded emb = new Embedded(null, rLogo);
 		emb.setWidth("100px");
