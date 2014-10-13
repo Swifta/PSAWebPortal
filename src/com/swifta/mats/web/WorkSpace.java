@@ -84,8 +84,8 @@ public class WorkSpace extends VerticalLayout implements View, TabSheet.Selected
 		//Tab1 Dashboard
 		VerticalLayout dashboard1 = new VerticalLayout();
 		dashboard1.setImmediate(true);
-		dashboard1.setHeight("500px");
-		dashboard1.setWidth("1000px");
+		//dashboard1.setHeight("500px");
+		//dashboard1.setWidth("1000px");
 		dashboard1.setCaption("Test1");
 		Dashboard dash = new Dashboard();
 		dashboard1.addComponent(dash.Addlabel());
@@ -94,8 +94,8 @@ public class WorkSpace extends VerticalLayout implements View, TabSheet.Selected
 		//Tab2 Report
 		VerticalLayout dashboard2 = new VerticalLayout();
 		dashboard2.setImmediate(true);
-		dashboard2.setHeight("500px");
-		dashboard2.setWidth("1000px");
+		//dashboard2.setHeight("500px");
+		//dashboard2.setWidth("1000px");
 		dashboard2.setCaption("Test2");
 		Report rep = new Report();
 		dashboard2.addComponent(rep.Addlabel());
@@ -105,7 +105,7 @@ public class WorkSpace extends VerticalLayout implements View, TabSheet.Selected
 		//Tab3 UserManager
 		dashboard3 = new VerticalLayout();
 		dashboard3.setImmediate(true);
-		dashboard3.setHeight("500px");
+		//dashboard3.setHeight("500px");
 		dashboard3.setCaption("Test3");
 		dashboard3.addComponent(wsmu.getWorkSpaceManageUser());
 		tabsheet1.addTab(dashboard3,"User Management", null);
@@ -118,8 +118,8 @@ public class WorkSpace extends VerticalLayout implements View, TabSheet.Selected
 		
 		VerticalLayout dashboard4 = new VerticalLayout();
 		dashboard4.setImmediate(true);
-		dashboard4.setHeight("500px");
-		dashboard4.setWidth("1000px");
+		//dashboard4.setHeight("500px");
+		//dashboard4.setWidth("1000px");
 		dashboard4.setCaption("Test4");
 		AccountProfile account = new AccountProfile();
 		dashboard4.addComponent(account.Addlabel());
@@ -127,8 +127,8 @@ public class WorkSpace extends VerticalLayout implements View, TabSheet.Selected
 		
 		VerticalLayout dashboard5 = new VerticalLayout();
 		dashboard5.setImmediate(true);
-		dashboard5.setHeight("500px");
-		dashboard5.setWidth("1000px");
+		//dashboard5.setHeight("500px");
+		//dashboard5.setWidth("1000px");
 		dashboard5.setCaption("Test5");
 		Transactions transaction = new Transactions();
 		dashboard5.addComponent(transaction.Addlabel());
@@ -139,11 +139,13 @@ public class WorkSpace extends VerticalLayout implements View, TabSheet.Selected
 		
 		dashboard6.setImmediate(true);
 		dashboard6.setMargin(true);
-		dashboard6.setHeight("500px");
-		dashboard6.setWidth("1000px");
+		//dashboard6.setSizeUndefined();
+		//dashboard6.setHeight("500px");
+		//dashboard6.setWidth("1000px");
 		dashboard6.setCaption("Test6");
 		Settings setting = new Settings();
 		HorizontalLayout layoutnew = setting.Addlabel();
+		layoutnew.setSizeUndefined();
 		dashboard6.addComponent(layoutnew);
 		tabsheet1.addTab(dashboard6,"Settings", null);
 		dashboard6.setComponentAlignment(layoutnew, Alignment.TOP_LEFT);

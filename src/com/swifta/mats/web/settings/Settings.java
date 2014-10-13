@@ -15,16 +15,36 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.TextArea;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Button.ClickEvent;
 import com.swifta.mats.web.usermanagement.BtnActions;
+import com.swifta.mats.web.usermanagement.ManageUserModule;
 import com.swifta.mats.web.usermanagement.PagedTableCustom;
 
 public class Settings extends VerticalLayout {
+	HorizontalLayout laying = new HorizontalLayout();
 
+	Button adduser = new Button("+Add User");
+	Button filter = new Button("Filter");
+	Button BulkImport = new Button("Bulk Import");
+	Button back = new Button("Back");
+	ComboBox selection = new ComboBox();
+	Button createAccount = new Button("Create");
+	Button cancelAccount = new Button("Cancel");
+	FormLayout addAccount = new FormLayout();
+	TextField nameOfAccount = new TextField("Name");
+	TextField codeOfAccount = new TextField("Code");
+	TextArea descOfAccount = new TextArea("Description");
+	HorizontalLayout layout2 = new HorizontalLayout();
+	
 	/**
 	 * 
 	 */
@@ -35,7 +55,7 @@ public class Settings extends VerticalLayout {
 		//setSizeFull();
 		setMargin(true);
 		AddIcons icon1 = new AddIcons();
-		final HorizontalLayout laying = new HorizontalLayout();
+		
 		VerticalLayout het1 = icon1.ImagesClicking("Account Management","img/use.png");
 		VerticalLayout het2 = icon1.ImagesClicking("Permissions","img/permission.png");
 		VerticalLayout het3 = icon1.ImagesClicking("Authentication","img/auth.png");
@@ -43,13 +63,18 @@ public class Settings extends VerticalLayout {
 		VerticalLayout het5 = icon1.ImagesClicking("Transfer","img/transfer.png");
 		VerticalLayout het6 = icon1.ImagesClicking("Threshold","img/threshold.png");
 		
-		
+		laying.setSizeUndefined();
+		//laying.setSizeFull();
 		laying.addComponent(het1);
 		laying.addComponent(het2);
 		laying.addComponent(het3);
 		laying.addComponent(het4);
 		laying.addComponent(het5);
 		laying.addComponent(het6);
+		
+		
+		
+		
 		
 		het1.addLayoutClickListener(new LayoutClickListener() {
             /**
@@ -58,11 +83,7 @@ public class Settings extends VerticalLayout {
 			private static final long serialVersionUID = 1L;
 
 			public void layoutClick(LayoutClickEvent event) {
-				Button adduser = new Button("+Add User");
-				Button filter = new Button("Filter");
-				Button BulkImport = new Button("Bulk Import");
-				Button back = new Button("Back");
-				ComboBox selection = new ComboBox();
+				
 				
 				VerticalLayout searchResultsContainer = new VerticalLayout();
 				searchResultsContainer.setSizeUndefined();
@@ -82,7 +103,7 @@ public class Settings extends VerticalLayout {
 				pnUserSearchResults.setMargin(false);
 				pnUserSearchResults.setSpacing(false);
 				
-				HorizontalLayout laybut = new HorizontalLayout();
+				final HorizontalLayout laybut = new HorizontalLayout();
 				laybut.setMargin(false);
 				//laybut.setSizeFull();
 				laybut.addComponent(adduser);
@@ -107,8 +128,35 @@ public class Settings extends VerticalLayout {
 				
 				laying.removeAllComponents();
 				laying.addComponent(searchResultsContainer);
+				
+				
             }
         });
+		
+		adduser.addClickListener(new Button.ClickListener() {
+			
+			private static final long serialVersionUID = -6399762731213165020L;
+
+			
+			@Override
+			public void buttonClick(ClickEvent event) {
+				adduser.setDisableOnClick(true);
+				
+				
+				addAccount.addComponent(nameOfAccount);
+				addAccount.addComponent(codeOfAccount);
+				addAccount.addComponent(descOfAccount);
+				layout2.addComponent(createAccount);
+				layout2.addComponent(cancelAccount);
+				addAccount.addComponent(layout2);
+				//laying.removeAllComponents();
+				
+				laying.addComponent(addAccount,0);
+				//adduser.setDisableOnClick(true);
+				
+			}
+		});
+		
 		
 		return laying;
 		
