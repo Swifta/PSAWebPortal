@@ -8,6 +8,7 @@ import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
@@ -31,6 +32,7 @@ public class WorkSpaceManageUser{
 	public final static  String SESSION_VAR_WORK_AREA_ADD_USER = "add_user";
 	public final static  String SESSION_VAR_WORK_AREA_MANAGE_USER= "manage_user";
 	private boolean wsmuInitStatus = false;
+	VerticalLayout cuDetails;
 	
 	
 	public WorkSpaceManageUser(){
@@ -305,53 +307,68 @@ public class WorkSpaceManageUser{
 		
 		
 			
-		if(curSessionWorkArea!= null && curSessionWorkArea.equals(SESSION_VAR_WORK_AREA_ADD_USER)){
+	if(curSessionWorkArea!= null && curSessionWorkArea.equals(SESSION_VAR_WORK_AREA_ADD_USER)){
 		contentC.removeAllComponents();
 		contentC.addComponent(uf);
 		contentC.setComponentAlignment(uf, Alignment.MIDDLE_CENTER);
 		contentC.setSpacing(false);
 		contentC.setMargin(true);
 		contentC.setSizeFull();
-		
-		
-		
 	}
 		
 	if(curSessionWorkArea!= null && curSessionWorkArea.equals(SESSION_VAR_WORK_AREA_MANAGE_USER)){
 		
 			if(curSessionUManage != null && curSessionUManage.equals(ManageUserModule.SESSION_VAR_UMANAGE_SEARCH_RESULTS)){
-				contentC.addComponent(searchC);
-				searchC.setSizeUndefined();
-				contentC.setComponentAlignment(searchC, Alignment.TOP_RIGHT);
-				
-				contentC.addComponent(searchResultsC);
-				contentC.setComponentAlignment(searchResultsC, Alignment.TOP_LEFT);
-				
-				contentC.setSizeUndefined();
-				contentC.setMargin(new MarginInfo(true, false, true, false));
-				contentC.setSpacing(false);
+				if(cuDetails != null){
+					contentC.removeComponent(cuDetails);
+				}
+					contentC.addComponent(searchC);
+					searchC.setSizeUndefined();
+					contentC.setComponentAlignment(searchC, Alignment.TOP_RIGHT);
+					
+					contentC.addComponent(searchResultsC);
+					contentC.setComponentAlignment(searchResultsC, Alignment.TOP_LEFT);
+					
+					contentC.setSizeUndefined();
+					contentC.setMargin(new MarginInfo(true, false, true, false));
+					contentC.setSpacing(false);
 			
 			}
 			
 			
-			if(curSessionUManage != null && curSessionUManage.equals(ManageUserModule.SESSION_VAR_UMANAGE_USER_DETAILS)){
+			if(curSessionUManage != null && curSessionUManage.equals(ManageUserModule.SESSION_VAR_UMANAGE_USER_ACTIONS)){
+				String strTbName = (String) UI.getCurrent().getSession().getAttribute(SearchUserModule.SESSION_USER_TABLE);
+				String strUID = (String) UI.getCurrent().getSession().getAttribute(SearchUserModule.SESSION_USER_TABLE_ROW_ID);
+				String strAction = (String) UI.getCurrent().getSession().getAttribute(SearchUserModule.SESSION_USER_ACTION);
+				boolean boolEditStatus = false;
+
 				contentC.removeComponent(searchResultsC);
 				searchC.setSizeUndefined();
 				//searchC.setSizeFull();
 				//contentC.setComponentAlignment(searchC, Alignment.TOP_LEFT);
 				contentC.setComponentAlignment(searchC, Alignment.TOP_RIGHT);
-								
-				VerticalLayout cuDetails = mum.getUserDetailsContainer();
+				if(strAction.equals(SearchUserModule.ACTION_DETAILS) || strAction.equals(SearchUserModule.ACTION_EDIT)){
+					if(strAction.equals(SearchUserModule.ACTION_DETAILS)){
+						boolEditStatus = false;
+					}
+					
+					if(strAction.equals(SearchUserModule.ACTION_EDIT)){
+						boolEditStatus = true;
+					}
+					cuDetails = mum.getUserDetailsContainer(strTbName, strUID, boolEditStatus);
+					contentC.addComponent(cuDetails);
+					//cuDetails.setSizeUndefined();
+					contentC.setComponentAlignment(cuDetails, Alignment.TOP_CENTER);
+					contentC.setExpandRatio(cuDetails, 1.0f);
+					
+					contentC.setSizeFull();
+					contentC.setMargin(new MarginInfo(true, false, true, false));
+					contentC.setSpacing(false);
+					contentC.setStyleName("content_c");
+					
+				}
 				
-				contentC.addComponent(cuDetails);
-				//cuDetails.setSizeUndefined();
-				contentC.setComponentAlignment(cuDetails, Alignment.TOP_CENTER);
-				contentC.setExpandRatio(cuDetails, 1.0f);
 				
-				contentC.setSizeFull();
-				contentC.setMargin(new MarginInfo(true, false, true, false));
-				contentC.setSpacing(false);
-				contentC.setStyleName("content_c");
 				
 			}
 	}	
