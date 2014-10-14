@@ -20,7 +20,7 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 	private ArrayList<BtnTabLike>arrLTabBtns;
 	private HorizontalLayout hTabContainer;
 	private Window popup;
-	private UserDetailsModule udm;
+	private Object udm;
 	private VerticalLayout cPopupMsg;
 	private String strTbName;
 	private String strUID;
@@ -33,7 +33,7 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 	BtnTabLike curBtn;
 	private boolean hasOp;
 	boolean boolEditStatus = false;
-	public BtnTabLikeClickListener(boolean isModifier, boolean hasSubMenu, ArrayList<BtnTabLike>arrLTabBtns, HorizontalLayout cSubMenu, HorizontalLayout hTabContainer, UserDetailsModule udm, String strTbName, String strUID, boolean hasOp, boolean boolEditStatus){
+	public BtnTabLikeClickListener(boolean isModifier, boolean hasSubMenu, ArrayList<BtnTabLike>arrLTabBtns, HorizontalLayout cSubMenu, HorizontalLayout hTabContainer, Object udm, String strTbName, String strUID, boolean hasOp, boolean boolEditStatus){
 		this.hasSubMenu = hasSubMenu;
 		this.cSubMenu = cSubMenu;
 		this.arrLTabBtns = arrLTabBtns;
@@ -46,7 +46,7 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 		this.hasOp = hasOp;
 		
 	}
-	public BtnTabLikeClickListener(boolean isModifier, boolean hasSubMenu, ArrayList<HorizontalLayout> arrLSubTabs, ArrayList<BtnTabLike>arrLTabBtns, HorizontalLayout tabContainer, UserDetailsModule udm, String strTbName, String strUID, boolean hasOp, boolean boolEditStatus){
+	public BtnTabLikeClickListener(boolean isModifier, boolean hasSubMenu, ArrayList<HorizontalLayout> arrLSubTabs, ArrayList<BtnTabLike>arrLTabBtns, HorizontalLayout tabContainer, Object udm, String strTbName, String strUID, boolean hasOp, boolean boolEditStatus){
 		this.arrLTabBtns = arrLTabBtns;
 		this.hTabContainer = tabContainer;
 		this.udm = udm;
@@ -57,6 +57,7 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 		this.arrLSubTabs = arrLSubTabs;
 		this.boolEditStatus = boolEditStatus;
 		this.hasOp = hasOp;
+		
 	}
 	
 	
@@ -79,8 +80,15 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 				setActiveTab(curBtn, arrLTabBtns);
 				cSubMenu.setStyleName("c_sub_menu_visible");
 				hTabContainer.removeAllComponents();
-				hTabContainer.addComponent(udm.getDetailsForm(strTbName, strUID, hasOp, boolEditStatus));
-			}else{
+					if(udm instanceof UserDetailsModule){
+					
+						hTabContainer.addComponent(((UserDetailsModule)udm).getDetailsForm(strTbName, strUID, hasOp, boolEditStatus));
+					}else if(udm instanceof AddUserModule){
+						VerticalLayout c = ((AddUserModule)udm).getAddUserForm();
+						hTabContainer.addComponent(c);
+						hTabContainer.setComponentAlignment(c, Alignment.TOP_CENTER);
+					}
+				}else{
 				
 				
 				
@@ -119,7 +127,18 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 							
 							setActiveTab(curBtn, arrLTabBtns);
 							hTabContainer.removeAllComponents();
-							hTabContainer.addComponent(udm.getDetailsForm(strTbName, strUID, hasOp, boolEditStatus));
+							if(udm instanceof UserDetailsModule){
+								
+								hTabContainer.addComponent(((UserDetailsModule)udm).getDetailsForm(strTbName, strUID, hasOp, boolEditStatus));
+							}else if(udm instanceof AddUserModule){
+								
+								VerticalLayout c = ((AddUserModule)udm).getAddUserForm();
+								hTabContainer.addComponent(c);
+								hTabContainer.setComponentAlignment(c, Alignment.TOP_CENTER);
+								
+
+							}
+							//hTabContainer.addComponent(udm.getDetailsForm(strTbName, strUID, hasOp, boolEditStatus));
 						}	
 					}
 			}
@@ -196,7 +215,13 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 					
 					setActiveTab(curBtn, arrLTabBtns);
 					hTabContainer.removeAllComponents();
-					hTabContainer.addComponent(udm.getDetailsForm(strTbName, strUID, hasOp, boolEditStatus));
+					if(udm instanceof UserDetailsModule){
+						
+						hTabContainer.addComponent(((UserDetailsModule)udm).getDetailsForm(strTbName, strUID, hasOp, boolEditStatus));
+					}else{
+						Notification.show("Leave me alone.");
+					}
+					//hTabContainer.addComponent(udm.getDetailsForm(strTbName, strUID, hasOp, boolEditStatus));
 				}
 				
 			}

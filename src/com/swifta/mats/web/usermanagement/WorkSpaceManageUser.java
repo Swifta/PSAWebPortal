@@ -153,6 +153,7 @@ public class WorkSpaceManageUser{
 		mCC.setExpandRatio(menuC, 0.0f);
 		mCC.setExpandRatio(contentC, 1.0f);
 		
+		
 		GridLayout g = new GridLayout(2,2);
 		g.setWidth("100%");
 		g.setHeightUndefined();
@@ -174,13 +175,14 @@ public class WorkSpaceManageUser{
 		//addComponent(g);
 		//setComponentAlignment(g, Alignment.MIDDLE_CENTER);
 		
-		AddUserForm auf = new AddUserForm();
-		uf = auf.getAddUserForm();
+		
+		AddUserModule aum = new AddUserModule();
+		uf = aum.getAddUserForm();
 		mum = new ManageUserModule();
 		searchC = mum.getSearchContainer();
 		searchResultsC = mum.getSearchResults();
 		searchResultsC.setSizeUndefined();
-		cParentLayout.addComponent(mum.addManageUserMenu(wsmuInitStatus));
+		cParentLayout.addComponent(mum.addManageUserMenu(wsmuInitStatus, false, false, contentC, aum));
 		
 		
 	}
@@ -349,16 +351,24 @@ public class WorkSpaceManageUser{
 				//contentC.setComponentAlignment(searchC, Alignment.TOP_LEFT);
 				contentC.setComponentAlignment(searchC, Alignment.TOP_RIGHT);
 				//mum.cPerAccAuthInfo.addComponent(mum.getOperationsContainer());
-				if(strAction.equals(SearchUserModule.ACTION_DETAILS) || strAction.equals(SearchUserModule.ACTION_EDIT)){
+				if(strAction.equals(SearchUserModule.ACTION_DETAILS) || strAction.equals(SearchUserModule.ACTION_EDIT) || strAction.equals(SearchUserModule.ACTION_MORE)){
 					if(strAction.equals(SearchUserModule.ACTION_DETAILS)){
 						boolEditStatus = false;
 					}else if(strAction.equals(SearchUserModule.ACTION_EDIT)){
-						boolEditStatus = true;
+							if(strTbName.equals("account") || strTbName.equals("auth")){
+								boolEditStatus = false;
+							}else{
+								boolEditStatus = true;
+							}
+					}else if(strAction.equals(SearchUserModule.ACTION_MORE)){
+						boolEditStatus = false;
 					}
 					
 					if(strTbName.equals("account") || strTbName.equals("auth")){
 						hasOp = true;
 					}
+					
+					System.out.println(strTbName);
 					
 					cuDetails = mum.getUserDetailsContainer(strTbName, strUID, hasOp, boolEditStatus);
 					
