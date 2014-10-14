@@ -46,6 +46,11 @@ public class UserDetailsModule{
 	String[] arrDfVals;
 	
 	EditCancelBtnsSingleField ecbsf;
+	List<Object> arrLComboSEditableField = new ArrayList<Object>();
+	ArrayList<String> arrLComboSEditableFieldVal = new ArrayList<String>();
+	
+	OptionGroup optSEditableField;
+	String strOptSEditableFieldVal;
 	
 	
 	public UserDetailsModule(){
@@ -96,6 +101,7 @@ public class UserDetailsModule{
 					
 					if(strTbName.equals("account") || strTbName.equals("auth")){
 						hasOp = true;
+						
 					}else{
 						hasOp = false;
 					}
@@ -201,7 +207,7 @@ public class UserDetailsModule{
 					 * If edit status is turn on, initiate editUserDetails
 					 * 
 					 */
-					if(boolEditStatus){
+					if(boolEditStatus && !hasOp){
 						editUserDetails(arrLAllEditableFields, btnEdit, btnCancel, btnSaveId, cBtnEditCancel);
 					}
 					
@@ -337,6 +343,7 @@ public class UserDetailsModule{
 			tfGen.setWidth("100%");
 			arrLAllFormFields.add(tfGen);
 			cUPersonalDetails.addComponent(tfGen);
+			//System.out.println(boolEditStatus);
 			
 			if(iTf != isReadOnlyTf){
 				arrLTfEditable.add(tfGen);
@@ -362,6 +369,15 @@ public class UserDetailsModule{
 			if(strTbName.equals("account") && arrOptCaptions[iOpt].equals("Status")){
 				Button btn = getOpBtn(strTbName,strUID, opt, "Deactivate", null);
 				arrLOpBtns.add(btn);
+				strOptSEditableFieldVal = arrOptVals[iOpt];
+				/*if(strOptSEditableFieldVal.equals("Active")){
+					opt.setValue(true);
+				}else if(strOptSEditableFieldVal.equals("Deactive")){
+					opt.setValue(false);
+				}*/
+				optSEditableField = opt;
+				
+				
 			}
 			
 			cUPersonalDetails.addComponent(opt);
@@ -384,10 +400,11 @@ public class UserDetailsModule{
 			
 			
 			if(strTbName.equals("account") && arrComboCaptions[iCombo].equals("Type")){
-				Button btn = getOpBtn(strTbName,strUID, combo, "Change Type", null);
+				arrLComboSEditableField.add(combo);
+				arrLComboSEditableFieldVal.add(arrComboVals[iCombo]);
+				
 				combo.addValueChangeListener(new ValueChangeListener(){
 					private static final long serialVersionUID = -2182355729919041184L;
-
 					@Override
 					public void valueChange(ValueChangeEvent event) {
 						ecbsf.btnEditS.setIcon(FontAwesome.SAVE);
@@ -400,7 +417,7 @@ public class UserDetailsModule{
 					}
 					
 				});
-				arrLOpBtns.add(btn);
+				
 				
 			}
 			
@@ -441,7 +458,7 @@ public class UserDetailsModule{
 	
 	
 	
-	private VerticalLayout getOperationsContainer(String strTbName, String strUID, List<Button> arrLOpBtns){
+	private VerticalLayout getOperationsContainer(String strTbName, final String strUID, List<Button> arrLOpBtns){
 		
 		VerticalLayout cOp = new VerticalLayout();
 		cOp.setSizeUndefined();
@@ -463,10 +480,114 @@ public class UserDetailsModule{
 			
 		}
 		
-		for(Button btn: arrLOpBtns){
+		/*for(Button btn: arrLOpBtns){
 			cOp.addComponent(btn);
+		}*/
+		
+		if(strTbName.equals("auth")){
+			Button btnPassReset = new Button("Trigger Password Reset");
+			cOp.addComponent(btnPassReset);
+			btnPassReset.addClickListener(new Button.ClickListener() {
+				
+				
+				private static final long serialVersionUID = -5995226525541204395L;
+
+				@Override
+				public void buttonClick(ClickEvent event) {
+					/*
+					 * 
+					 * TODO Send password reset URL to user.
+					 * 
+					 */
+					Notification.show("Password reset has been triggered for user of ID "+strUID);
+					
+				}
+			});
 		}
 		
+		if(strTbName.equals("account")){
+					final Button btnStatus = new Button();
+					
+					
+					
+					final Button btnChangeType = new Button("Change Type");
+					
+					if(optSEditableField.getValue().equals("Active")){
+						btnStatus.setCaption("Deactivate");
+					}else if(optSEditableField.getValue().equals("Deactivate")){
+						btnStatus.setCaption("Activate");
+						btnChangeType.setEnabled(false);
+					}
+					
+					
+					cOp.addComponent(btnStatus);
+					cOp.addComponent(btnChangeType);
+					
+						btnStatus.addClickListener(new Button.ClickListener() {
+						
+						private static final long serialVersionUID = -6318339408802346085L;
+						private String strNewStatus;
+						private String strOldStatus;
+						@Override
+						public void buttonClick(ClickEvent event) {
+							
+							if(optSEditableField.getValue().equals("Active")){
+								strNewStatus = "Deactive";
+								strOldStatus = "Active";
+								optSEditableField.setEnabled(true);
+								optSEditableField.setReadOnly(false);
+								
+								optSEditableField.setValue(false);
+								optSEditableField.removeItem(strOldStatus );
+								optSEditableField.addItem(strNewStatus);
+								optSEditableField.select(strNewStatus);
+								
+								optSEditableField.setEnabled(false);
+								optSEditableField.setReadOnly(true);
+								btnChangeType.setEnabled(false);
+								
+								btnStatus.setCaption("Activate");
+							 
+							}else if(optSEditableField.getValue().equals("Deactive")){
+									strNewStatus = "Active";
+									strOldStatus = "Deactive";
+									
+									optSEditableField.setEnabled(true);
+									optSEditableField.setReadOnly(false);
+									
+									optSEditableField.setValue(false);
+									optSEditableField.removeItem(strOldStatus);
+									optSEditableField.addItem(strNewStatus);
+									optSEditableField.select(strNewStatus);
+									
+									optSEditableField.setEnabled(false);
+									optSEditableField.setReadOnly(true);
+									btnStatus.setCaption("Deactivate");
+									btnChangeType.setEnabled(true);
+								}
+							
+							
+							/*
+							 * 
+							 * TODO Commit changes to the server.
+							 * 
+							 */
+							Notification.show("Account status of user of ID "+strUID+" has been changed to "+strNewStatus.toUpperCase());
+						}
+					});
+					btnChangeType.addClickListener(new Button.ClickListener() {
+						
+						private static final long serialVersionUID = -5995226525541204395L;
+			
+						@Override
+						public void buttonClick(ClickEvent event) {
+							enableEditableFormFields(arrLComboSEditableField);
+							
+						}
+					});
+					
+					
+		}
 		
 		
 		return cOp;
@@ -606,7 +727,17 @@ public class UserDetailsModule{
 
 				@Override
 				public void buttonClick(ClickEvent event) {
-					// TODO Auto-generated method stub
+					/*
+					 * 
+					 * TODO Commit changes to the server
+					 *
+					 **/
+					disableEditableFields(arrLComboSEditableField);
+					btnCancel.setVisible(false);
+					btnCancel.setEnabled(false);
+					btnEditS.setVisible(false);
+					btnEditS.setEnabled(false);
+					
 					
 				}
 			});
@@ -616,8 +747,13 @@ public class UserDetailsModule{
 
 				@Override
 				public void buttonClick(ClickEvent event) {
-					// TODO Auto-generated method stub
 					
+					resetForm(arrLComboSEditableField,  null, null, arrLComboSEditableFieldVal,null);	
+					uDetailsEditStatus = false;
+					btnCancel.setVisible(false);
+					btnCancel.setEnabled(false);
+					btnEditS.setVisible(false);
+					btnEditS.setEnabled(false);
 				}
 			});
 			
