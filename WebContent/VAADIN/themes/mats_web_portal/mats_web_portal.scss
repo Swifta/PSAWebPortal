@@ -439,7 +439,7 @@ ul.empty li{
 }
 
 .content_c{
-	//background: #4DF;
+	//background: #0F0;
 	//position: absolute;
 	//top: 0;
 	//right: 0;
@@ -471,7 +471,7 @@ ul.empty li{
 
 
 .parent_layout{
-	//background: #ABABAB;
+	//background: #F00;
 	min-width: 100%;
 	//width: 100%;
 	//min-height: 100%;
@@ -635,7 +635,7 @@ ul.empty li{
 	//background: #0F0;
 	border-right: 1px solid #DDD;
 	margin-bottom: 40px;
-	margin-top: 70px;
+	//margin-top: 70px;
 }
 
 .v-textfield-small{
@@ -779,13 +779,6 @@ ul.empty li{
 }
 
 
-
-.c_u_manage_menu{
-	
-	position: fixed;
-	z-index: 999;
-}
-
 .search_user_header{
     //background: #F00;
  	margin-top: 10px;
@@ -793,7 +786,11 @@ ul.empty li{
 
 .c_u_manage_menu{
 	//border-right: 1px solid #C5C5C5;
+	//background: #00F;
+	//position: fixed;
 	margin: 5px 0 0 5px;
+	z-index: 999;
+	
 }
 
 .c_u_log_menu{
