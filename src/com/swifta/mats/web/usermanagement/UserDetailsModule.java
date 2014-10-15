@@ -597,7 +597,7 @@ public class UserDetailsModule{
 		final String strBtnID = "opBtn_"+strTbName+"_"+strUID+"_"+strAction;
 		Button btnAct = new Button(strAction);
 		btnAct.setId(strBtnID);
-		btnAct.addClickListener(new BtnOpClickListener(objSlaveField, arrLSlaveBtn));
+		//btnAct.addClickListener(new BtnOpClickListener(objSlaveField, arrLSlaveBtn));
 		return btnAct;
 	}
 	

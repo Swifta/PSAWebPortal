@@ -107,8 +107,11 @@ public class WorkSpace extends VerticalLayout implements View, TabSheet.Selected
 		dashboard3.setImmediate(true);
 		//dashboard3.setHeight("500px");
 		dashboard3.setCaption("Test3");
-		dashboard3.addComponent(wsmu.getWorkSpaceManageUser());
-		tabsheet1.addTab(dashboard3,"User Management", null);
+		VerticalLayout cwsmu = wsmu.getWorkSpaceManageUser();
+		//dashboard3.addComponent(cwsmu);
+		//dashboard3.setExpandRatio(cwsmu, 1.0f);
+		//tabsheet1.addTab(dashboard3,"User Management", null);
+		tabsheet1.addTab(cwsmu,"User Management", null);
 		
 		
 		
@@ -155,10 +158,6 @@ public class WorkSpace extends VerticalLayout implements View, TabSheet.Selected
 		
 		
 		btnLogout.addClickListener( new Button.ClickListener() {
-					
-					/**
-					 * 
-					 */
 					private static final long serialVersionUID = 3110441023351142376L;
 		
 					@Override
