@@ -709,7 +709,16 @@ ul.empty li{
 	border-bottom: none;
 	background-image: none;
 	box-shadow: none;
+	color: #197DE1;
+	opacity: 1 !important;
 	
+}
+
+.btn_tab_like_active:active{
+	background-color: #F1F1F1;
+	background-image: linear-gradient(to bottom, #FAFAFA 2%, #EFEFEF 98%);
+	box-shadow: 0px 1px 0px #FFF inset, 0px -1px 0px #E7E7E7 inset, 0px 2px 3px rgba(0, 0, 0, 0.05);
+	text-shadow: 0px 1px 0px rgba(255, 255, 255, 0.05);
 }
 
 .btn_tab_like.v-button:focus:after{
