@@ -57,6 +57,7 @@ public class Settings extends VerticalLayout {
 	ComboBox selection = new ComboBox();
 	Button createAccount = new Button("Create");
 	Button cancelAccount = new Button("Cancel");
+	Button cancelBulk = new Button("Cancel");
 	FormLayout addAccount = new FormLayout();
 	TextField nameOfAccount = new TextField("Name");
 	TextField codeOfAccount = new TextField("Code");
@@ -204,11 +205,34 @@ public class Settings extends VerticalLayout {
 				laying.addComponent(het5);
 				laying.addComponent(het6);
 				// TODO Auto-generated method stub
+				BulkImport.setEnabled(true);
+				adduser.setEnabled(true);
+			}
+			
+			
+		});
+		
+		cancelBulk.addClickListener(new Button.ClickListener() {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				laying.removeAllComponents();
+	            laying.addComponent(searchResultsContainer);
+	            BulkImport.setEnabled(true);
+	            
+				// TODO Auto-generated method stub
 				
 			}
 			
 			
 		});
+		
+		
 		
 		BulkImport.addClickListener(new Button.ClickListener() {
 			
@@ -293,7 +317,7 @@ public class Settings extends VerticalLayout {
 				layoutFile.addComponent(upload);
 				layoutFile.addComponent(labFile);
 				layoutFile.addComponent(image);
-				
+				layoutFile.addComponent(cancelBulk);
 				
 				laying.addComponent(layoutFile,0);
 				
