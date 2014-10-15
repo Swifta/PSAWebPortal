@@ -25,13 +25,13 @@ import com.vaadin.ui.themes.ValoTheme;
 public class SearchUserModule {
 	public static  final String tbUsers = "user";
 	public static final String SESSION_USER_ACTION = "session_action";
-	public static final String SESSION_USER_TABLE = "tb";
+	public static final String SESSION_USER_TABLE = "users_table";
 	public static final String SESSION_USER_TABLE_ROW_ID = "tb_rw_id";
 	public static final String ACTION_DETAILS = "details";
 	public static final String ACTION_EDIT = "edit";
 	public static final String ACTION_LINK = "link";
 	public static final String ACTION_DELETE = "delete";
-	public static final String ACTION_MORE = "more_actions";
+	public static final String ACTION_MORE = "moreActions";
 	
 	BtnActions btnDetails;
 	BtnActions btnEdit;
@@ -54,7 +54,8 @@ public class SearchUserModule {
 		btnDelete = new BtnActions("Delete");
 		btnDelete.setIcon(icDelete);
 		btnMoreActions = new BtnActions("More...");
-		btnMoreActions.setIcon(FontAwesome.ANGLE_RIGHT);
+		btnMoreActions.setIcon(FontAwesome.ELLIPSIS_H);
+		btnMoreActions.addClickListener(new BtnActionsClickListener(false, null));
 		arrLPopupParentClasses = new ArrayList<Object>();
 		arrLPopupParentClasses.add(this);
 		
@@ -105,11 +106,11 @@ public class SearchUserModule {
 		String strUID = tdPropertyUID.getValue();
 		String strUname = tdPropertyUname.getValue();
 		
-		btnDetails.setId("user_"+strUID+"_details");
-		btnEdit.setId("user_"+strUID+"_edit");
-		btnLink.setId("user_"+strUID+"_link");
-		btnDelete.setId("user_"+strUID+"_"+strUname+"_delete");
-		btnMoreActions.setId("user_"+strUID+"_moreActions");
+		btnDetails.setId("users_personal_"+strUID+"_details");
+		btnEdit.setId("user_personal_"+strUID+"_edit");
+		btnLink.setId("user_account_"+strUID+"_link");
+		btnDelete.setId("user_account_"+strUID+"_"+strUname+"_delete");
+		btnMoreActions.setId("user_account_"+strUID+"_moreActions");
 		
 		actionsC.addComponent(btnDetails);
 		actionsC.addComponent(btnEdit);
@@ -117,10 +118,6 @@ public class SearchUserModule {
 		actionsC.addComponent(btnDelete);
 		actionsC.addComponent(btnMoreActions);
 	
-		
-		
-		
-		
 		
 		
 		

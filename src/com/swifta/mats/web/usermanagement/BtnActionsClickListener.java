@@ -34,9 +34,9 @@ public class BtnActionsClickListener implements ClickListener{
 				if(strTableAndUID.contains(SearchUserModule.tbUsers)){
 					String arrTableAndUID[] = strTableAndUID.toString().split("_");
 					UI.getCurrent().getSession().setAttribute(ManageUserModule.SESSION_UMANAGE, ManageUserModule.SESSION_VAR_UMANAGE_USER_ACTIONS);
-					UI.getCurrent().getSession().setAttribute(SearchUserModule.SESSION_USER_TABLE, arrTableAndUID[0]);
-					UI.getCurrent().getSession().setAttribute(SearchUserModule.SESSION_USER_TABLE_ROW_ID, arrTableAndUID[1]);
-					UI.getCurrent().getSession().setAttribute(SearchUserModule.SESSION_USER_ACTION, arrTableAndUID[2]);
+					UI.getCurrent().getSession().setAttribute(SearchUserModule.SESSION_USER_TABLE, arrTableAndUID[1]);
+					UI.getCurrent().getSession().setAttribute(SearchUserModule.SESSION_USER_TABLE_ROW_ID, arrTableAndUID[2]);
+					UI.getCurrent().getSession().setAttribute(SearchUserModule.SESSION_USER_ACTION, arrTableAndUID[3]);
 					if(WorkSpace.wsmu!=null)
 						WorkSpace.wsmu.wsmuModifier();	
 					
@@ -45,7 +45,7 @@ public class BtnActionsClickListener implements ClickListener{
 				String arrTableAndUIDAndUsername[] = strTableAndUID.toString().split("_");
 				for(Object obj:arrLCPopups){
 					if(obj instanceof SearchUserModule)
-						((SearchUserModule)obj).showDeleteUserContainer(arrTableAndUIDAndUsername[2]);
+						((SearchUserModule)obj).showDeleteUserContainer(arrTableAndUIDAndUsername[3]);
 				}
 			}
 		}

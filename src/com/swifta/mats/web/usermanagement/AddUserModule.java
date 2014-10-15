@@ -8,79 +8,16 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
-import com.vaadin.ui.Panel;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
-public class AddUserForm{
-	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -5960753514288746569L;
+public class AddUserModule{
 
-	public AddUserForm(){
-		
-		/*setWidthUndefined();
-		setHeightUndefined();
-		setStyleName("panel_add_user");
-		setCaption("Add New User");
-		setIcon(FontAwesome.USER_MD);
-		
-		
-		FormLayout fLayout = new FormLayout();
-		fLayout.setMargin(true);
-		fLayout.setSpacing(true);
-		fLayout.setStyleName("user_add_container");
-		setContent(fLayout);
-		
-		TextField tfFName = new TextField();
-		tfFName.setCaption("First Name");
-		fLayout.addComponent(tfFName);
-		
-		TextField tfLName = new TextField();
-		tfLName.setCaption("Last Name");
-		fLayout.addComponent(tfLName);
-		
-		OptionGroup optSex = new OptionGroup ("Sex");
-		optSex.addItem("Female");
-		optSex.addItem("Male");
-		fLayout.addComponent(optSex);
-		
-		PopupDateField doc = new PopupDateField ();
-		doc.setCaption("Account Date of Creation");
-		fLayout.addComponent(doc);
-		
-		ComboBox comboAccountType = new ComboBox();
-		comboAccountType.setCaption("Account Type");
-		fLayout.addComponent(comboAccountType);
-		
-		comboAccountType.addItem("Super User");
-		comboAccountType.addItem("Finance Controller");
-		comboAccountType.addItem("Transaction Manager");
-		
-		TextField tfUName = new TextField();
-		tfUName.setCaption("Username");
-		fLayout.addComponent(tfUName);
-		
-		PasswordField tfPass = new PasswordField();
-		tfPass.setCaption("Default Password");
-		fLayout.addComponent(tfPass);
-		
-		PasswordField tfRePass = new PasswordField();
-		tfRePass.setCaption("Re-enter Default Password");
-		fLayout.addComponent(tfRePass);
-		
-		Button btnSave = new Button("Save");
-		fLayout.addComponent(btnSave);
-		btnSave.setWidth("100%");
-		btnSave.setIcon(FontAwesome.SAVE);*/
-			
+	public AddUserModule(){
 		
 	}
 	
