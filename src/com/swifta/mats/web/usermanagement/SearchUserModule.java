@@ -736,7 +736,7 @@ public class SearchUserModule {
 		ArrayList<String> arrLTfCaptions = new ArrayList<String>();
 		arrLTfCaptions.add(strUserType+" ID");
 		arrLTfCaptions.add("Username");
-		arrLTfCaptions.add("MSIDN");
+		arrLTfCaptions.add("MSISDN");
 		arrLTfCaptions.add("Company");
 		arrLTfCaptions.add("First Name");
 		arrLTfCaptions.add("Last Name");
