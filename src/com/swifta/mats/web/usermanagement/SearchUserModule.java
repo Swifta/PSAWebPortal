@@ -1,20 +1,25 @@
 package com.swifta.mats.web.usermanagement;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
+import com.swifta.mats.web.WorkSpace;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.ThemeResource;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.Embedded;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextArea;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -32,6 +37,16 @@ public class SearchUserModule {
 	public static final String ACTION_LINK = "link";
 	public static final String ACTION_DELETE = "delete";
 	public static final String ACTION_MORE = "moreActions";
+	
+	public static final String SESSION_SEARCH_USER = "search_user";
+	public static final String SESSION_VAR_SEARCH_USER_DEFAULT = "agent";
+	/*public static final String SESSION_VAR_SEARCH_USER = "merchant";
+	public static final String SESSION_VAR_SEARCH_USER = "agent";
+	public static final String SESSION_VAR_SEARCH_USER = "agent";
+	public static final String SESSION_VAR_SEARCH_USER = "agent";
+	public static final String SESSION_VAR_SEARCH_USER = "agent";
+	public static final String SESSION_VAR_SEARCH_USER = "agent";*/
+	
 	
 	BtnActions btnDetails;
 	BtnActions btnEdit;
@@ -690,6 +705,87 @@ public class SearchUserModule {
 	}
 	
 	
+	public FormLayout getSearchForm(String strUserType){
+		
+		
+		FormLayout searchForm = new FormLayout();
+		searchForm.setSizeUndefined();
+		searchForm.setSpacing(true);
+		searchForm.setMargin(false);
+		searchForm.setStyleName("search_user_form");
+		
+		Embedded emb = new Embedded(null,new ThemeResource("img/search_user_icon.png"));
+		emb.setDescription("Search users");
+		emb.setStyleName("search_user_img");
+		emb.setSizeUndefined();
+		
+		
+		Label lbSearch = new Label("Search "+strUserType+" by: ");
+		lbSearch.setSizeUndefined();
+		lbSearch.setStyleName("label_search_user");
+		lbSearch.setSizeUndefined();
+		
+		VerticalLayout searchUserHeader = new VerticalLayout();
+		searchUserHeader.setHeightUndefined();
+		searchUserHeader.setMargin(false);
+		searchUserHeader.setSpacing(true);
+		searchUserHeader.addComponent(emb);
+		searchUserHeader.addComponent(lbSearch);
+		searchUserHeader.setStyleName("search_user_header");
+		
+		ArrayList<String> arrLTfCaptions = new ArrayList<String>();
+		arrLTfCaptions.add(strUserType+" ID");
+		arrLTfCaptions.add("Username");
+		arrLTfCaptions.add("MSISDN");
+		arrLTfCaptions.add("Company");
+		arrLTfCaptions.add("First Name");
+		arrLTfCaptions.add("Last Name");
+		arrLTfCaptions.add("Others");
+		
+		searchForm.addComponent(searchUserHeader);
+		addTfs(arrLTfCaptions, searchForm);
+		Button btnSearch = new Button("Search");
+		searchForm.addComponent(btnSearch);
+		
+		
+		
+		btnSearch.setIcon(FontAwesome.SEARCH);
+		
+		
+		btnSearch.addClickListener(new Button.ClickListener() {
+			private static final long serialVersionUID = -5894920456172825127L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				UI.getCurrent().getSession().setAttribute(ManageUserModule.SESSION_UMANAGE, ManageUserModule.SESSION_VAR_UMANAGE_SEARCH_RESULTS);
+				UI.getCurrent().getSession().setAttribute(ManageUserModule.SESSION_UMANAGE, ManageUserModule.SESSION_VAR_UMANAGE_SEARCH_RESULTS);
+				
+				if(WorkSpace.wsmu != null)
+					WorkSpace.wsmu.wsmuModifier();
+			}
+		});
+		
+	
+
+
+
+return searchForm;
+}
+	
+	
+	
+private void addTfs(ArrayList<String> arrLTfCaptions, FormLayout searchForm){
+
+	TextField tF;
+	for(String tFCaption: arrLTfCaptions){
+			tF = new TextField(tFCaption);
+			searchForm.addComponent(tF);
+	}
+}
+
+	
+	
+	
 	public void showDeleteUserContainer(String username){
 		popup = new Window("Delete "+username);
 		ThemeResource r = new ThemeResource("img/ic_delete_small.png");
@@ -763,5 +859,8 @@ public class SearchUserModule {
 			}
 		});
 	}
+	
+	
+	
 
 }

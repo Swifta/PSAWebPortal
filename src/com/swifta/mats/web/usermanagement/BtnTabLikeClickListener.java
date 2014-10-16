@@ -111,17 +111,20 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 				cSubMenu.setStyleName("c_sub_menu_visible");
 				hTabContainer.removeAllComponents();
 					if(udm instanceof UserDetailsModule){
-					
 						hTabContainer.addComponent(((UserDetailsModule)udm).getDetailsForm(strTbName, strUID, hasOp, boolEditStatus));
 					}else if(udm instanceof AddUserModule){
-						VerticalLayout c = ((AddUserModule)udm).getAddUserForm();
-						hTabContainer.addComponent(c);
-						hTabContainer.setComponentAlignment(c, Alignment.TOP_CENTER);
+						UI.getCurrent().getSession().setAttribute(WorkSpaceManageUser.SESSION_WORK_AREA, WorkSpaceManageUser.SESSION_VAR_WORK_AREA_ADD_USER);
+						if(WorkSpace.wsmu != null)
+							WorkSpace.wsmu.wsmuModifier();
 					}else if(udm instanceof ManageUserModule){
+						String strID = curBtn.getId();
+						String[] arrIDSeg = strID.split("_");
 						
-						VerticalLayout c = ((ManageUserModule)udm).getSearchContainer();
-						hTabContainer.addComponent(c);
-						hTabContainer.setComponentAlignment(c, Alignment.TOP_CENTER);
+						UI.getCurrent().getSession().setAttribute(SearchUserModule.SESSION_SEARCH_USER, arrIDSeg[1]);
+						UI.getCurrent().getSession().setAttribute(WorkSpaceManageUser.SESSION_WORK_AREA, WorkSpaceManageUser.SESSION_VAR_WORK_AREA_MANAGE_USER);
+						UI.getCurrent().getSession().setAttribute(ManageUserModule.SESSION_UMANAGE, ManageUserModule.SESSION_VAR_UMANAGE_SEARCH);
+						if(WorkSpace.wsmu != null)
+							WorkSpace.wsmu.wsmuModifier();
 					}
 				}else{
 				
@@ -168,16 +171,21 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 								
 								hTabContainer.addComponent(((UserDetailsModule)udm).getDetailsForm(strTbName, strUID, hasOp, boolEditStatus));
 							}else if(udm instanceof AddUserModule){
-								
-								VerticalLayout c = ((AddUserModule)udm).getAddUserForm();
-								hTabContainer.addComponent(c);
-								hTabContainer.setComponentAlignment(c, Alignment.TOP_CENTER);
+								UI.getCurrent().getSession().setAttribute(WorkSpaceManageUser.SESSION_WORK_AREA, WorkSpaceManageUser.SESSION_VAR_WORK_AREA_ADD_USER);
+								if(WorkSpace.wsmu != null)
+									WorkSpace.wsmu.wsmuModifier();
 
 							}else if(udm instanceof ManageUserModule){
+								String strID = curBtn.getId();
+								String[] arrIDSeg = strID.split("_");
 								
-								VerticalLayout c = ((ManageUserModule)udm).getSearchContainer();
-								hTabContainer.addComponent(c);
-								hTabContainer.setComponentAlignment(c, Alignment.TOP_CENTER);
+								UI.getCurrent().getSession().setAttribute(SearchUserModule.SESSION_SEARCH_USER, arrIDSeg[1]);
+								UI.getCurrent().getSession().setAttribute(WorkSpaceManageUser.SESSION_WORK_AREA, WorkSpaceManageUser.SESSION_VAR_WORK_AREA_MANAGE_USER);
+								UI.getCurrent().getSession().setAttribute(ManageUserModule.SESSION_UMANAGE, ManageUserModule.SESSION_VAR_UMANAGE_SEARCH);
+								if(WorkSpace.wsmu != null)
+									WorkSpace.wsmu.wsmuModifier();
+
+								
 							}
 							
 						}	
