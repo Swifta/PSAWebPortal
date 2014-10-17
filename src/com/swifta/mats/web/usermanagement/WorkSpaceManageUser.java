@@ -26,6 +26,7 @@ public class WorkSpaceManageUser{
 	VerticalLayout uf;
 	FormLayout searchC;
 	VerticalLayout searchResultsC;
+	
 	ManageUserModule mum;
 	VerticalLayout cParentLayout;
 	//static final String WORK_AREA = "work_area";
@@ -182,8 +183,7 @@ public class WorkSpaceManageUser{
 		uf = aum.getAddUserForm();
 		mum = new ManageUserModule();
 		searchC = mum.getSearchContainer(SearchUserModule.SESSION_VAR_SEARCH_USER_DEFAULT);
-		searchResultsC = mum.getSearchResults();
-		searchResultsC.setSizeUndefined();
+		
 		mm = mum.getManageUserMenu(wsmuInitStatus, false, false, contentC, aum);
 		
 		
@@ -299,7 +299,7 @@ public class WorkSpaceManageUser{
 		
 		String curSessionWorkArea = (String) UI.getCurrent().getSession().getAttribute(WorkSpaceManageUser.SESSION_WORK_AREA);
 		String curSessionUManage = (String) UI.getCurrent().getSession().getAttribute(ManageUserModule.SESSION_UMANAGE);
-
+		
 		if( curSessionWorkArea != null && curSessionWorkArea.equals(SESSION_VAR_WORK_AREA_MANAGE_USER)){
 			contentC.removeComponent(uf);
 			
@@ -338,17 +338,26 @@ public class WorkSpaceManageUser{
 					contentC.removeComponent(cuDetails);
 				}
 				
-				   //contentC.addComponent(searchC);
+				 
 				if(searchC != null){
 					searchC.setSizeUndefined();
 					contentC.setComponentAlignment(searchC, Alignment.TOP_RIGHT);
 				}
+				String strSessionSearchParam = (String) UI.getCurrent().getSession().getAttribute(SearchUserModule.SESSION_SEARCH_USER_PARAM);
+	
+				if(strSessionSearchParam != null){
+					if(searchResultsC != null ){
+						contentC.removeComponent(searchResultsC );
+					}
+					searchResultsC = mum.getSearchResults(strSessionSearchParam);
+				    searchResultsC.setSizeUndefined();
 					contentC.addComponent(searchResultsC);
 					contentC.setComponentAlignment(searchResultsC, Alignment.TOP_LEFT);
 					
 					contentC.setSizeUndefined();
 					contentC.setMargin(new MarginInfo(true, false, true, false));
 					contentC.setSpacing(false);
+				}
 			
 			}
 			
@@ -359,8 +368,9 @@ public class WorkSpaceManageUser{
 				String strAction = (String) UI.getCurrent().getSession().getAttribute(SearchUserModule.SESSION_USER_ACTION);
 				boolean boolEditStatus = false;
 				boolean hasOp = false;
-
-				contentC.removeComponent(searchResultsC);
+				if(searchResultsC != null){
+					contentC.removeComponent(searchResultsC);
+				}
 				searchC.setSizeUndefined();
 				//searchC.setSizeFull();
 				//contentC.setComponentAlignment(searchC, Alignment.TOP_LEFT);
