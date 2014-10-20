@@ -2,27 +2,13 @@ package com.swifta.mats.web.usermanagement;
 
 import java.util.ArrayList;
 
-import com.swifta.mats.web.WorkSpace;
-import com.vaadin.data.util.IndexedContainer;
-import com.vaadin.event.LayoutEvents.LayoutClickEvent;
-import com.vaadin.event.LayoutEvents.LayoutClickListener;
-import com.vaadin.server.FontAwesome;
-import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.Embedded;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.TextArea;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Window;
 
 public class ManageUserModule {
@@ -53,19 +39,11 @@ public class ManageUserModule {
 	private static final String btnIDManageUser= "manage_user";
 	
 	
-	private FormLayout uDetailsForm;
+	//private FormLayout uDetailsForm;
 	ArrayList<BtnTabLike> arrLTabBtns;
 	Window popup;
 	VerticalLayout cPopupMsg;
-	
-	
-	
-	
-	
-	
-	
-	
-	private TextField tfUname;
+	//private TextField tfUname;
 	
 	
 	
@@ -170,8 +148,10 @@ public class ManageUserModule {
 			
 			if(strTbName.equals("personal")){
 				btnPersonal.setStyleName("btn_tab_like btn_tab_like_active");
+				btnPersonal.setEnabled(false);
 			}else if(strTbName.equals("account")){
 				btnAccount.setStyleName("btn_tab_like btn_tab_like_active");
+				btnAccount.setEnabled(false);
 			}
 			
 			
@@ -193,7 +173,7 @@ public class ManageUserModule {
 			
 			HorizontalLayout cUDetailsAndOperations= udm.getDetailsForm(strTbName, "001", hasOp, boolEditStatus);
 			cPerAccAuthInfo.addComponent(cUDetailsAndOperations);
-			btnPersonal.setEnabled(false);
+			
 			//curIDDetails = btnPersonal.getId();
 			
 			
@@ -204,12 +184,6 @@ public class ManageUserModule {
 					"account", "001", hasOp, boolEditStatus));
 			btnAuth.addClickListener(new BtnTabLikeClickListener(false, false, arrLSubTabs, arrLTabBtns, cPerAccAuthInfo, udm,
 					"auth", "001", hasOp, boolEditStatus ));
-			
-			
-			
-			
-			
-			
 			
 		return cUDetails; 
 	}
@@ -232,8 +206,8 @@ public class ManageUserModule {
 				BtnTabLike btnManUser = new BtnTabLike("Manage", btnIDManageUser);
 				btnManUser.setStyleName("btn_tab_like btn_tab_like_active");
 				
-				UI.getCurrent().getSession().setAttribute(SearchUserModule.SESSION_SEARCH_USER, SearchUserModule.SESSION_VAR_SEARCH_USER_DEFAULT);
-
+				UI.getCurrent().getSession().setAttribute(WorkSpaceManageUser.SESSION_WORK_AREA_USER_TYPE, WorkSpaceManageUser.SESSION_VAR_WORK_AREA_DEFAULT_USER_TYPE);
+				//edit...
 				
 				BtnTabLike btnAddUser = new BtnTabLike("Add New", btnIDAddUser);
 				cManageAndAddTab.addComponent(btnManUser);
@@ -367,29 +341,27 @@ public class ManageUserModule {
 			/*btnLog.addClickListener(new BtnTabLikeClickListener(false, true, arrLTabBtns, cUserLogMenu, cPerAccAuthInfo, udm, 
 					"activity_log", "001"));*/
 			btnAddAgent.addClickListener(new BtnTabLikeClickListener(false, false, arrLAddUserSubTabs,  arrLSubTabBtns, cContent, aum,
-					"account_change_log", "001", hasOp, boolEditStatus ));
+					"account_change_log", "001", hasOp, boolEditStatus, WorkSpaceManageUser.SESSION_VAR_WORK_AREA_DEFAULT_USER_TYPE ));
 			
 			btnAddMerchant.addClickListener(new BtnTabLikeClickListener(false, false, arrLAddUserSubTabs, arrLSubTabBtns,  cContent, aum,
-					"activity_log", "001", hasOp, boolEditStatus ));
+					"activity_log", "001", hasOp, boolEditStatus, WorkSpaceManageUser.SESSION_VAR_WORK_AREA_USER_MERCHANT ));
 			
 			btnAddDealer.addClickListener(new BtnTabLikeClickListener(false, false, arrLAddUserSubTabs,  arrLSubTabBtns, cContent, aum,
-					"account_change_log", "001", hasOp, boolEditStatus ));
+					"account_change_log", "001", hasOp, boolEditStatus, WorkSpaceManageUser.SESSION_VAR_WORK_AREA_USER_DEALER ));
 			
 			btnAddPartner.addClickListener(new BtnTabLikeClickListener(false, false, arrLAddUserSubTabs,  arrLSubTabBtns, cContent, aum,
-					"account_change_log", "001", hasOp, boolEditStatus ));
+					"account_change_log", "001", hasOp, boolEditStatus, WorkSpaceManageUser.SESSION_VAR_WORK_AREA_USER_PARTNER ));
 			
 			btnAddFAdmin.addClickListener(new BtnTabLikeClickListener(false, false, arrLAddUserSubTabs,  arrLSubTabBtns, cContent, aum,
-					"account_change_log", "001", hasOp, boolEditStatus ));
+					"account_change_log", "001", hasOp, boolEditStatus, WorkSpaceManageUser.SESSION_VAR_WORK_AREA_USER_BA ));
 			
 			btnAddCCO.addClickListener(new BtnTabLikeClickListener(false, false, arrLAddUserSubTabs,  arrLSubTabBtns, cContent, aum,
-					"account_change_log", "001", hasOp, boolEditStatus ));
+					"account_change_log", "001", hasOp, boolEditStatus, WorkSpaceManageUser.SESSION_VAR_WORK_AREA_USER_CCO ));
 			
 			btnAddUser.addClickListener(new BtnTabLikeClickListener(false, true , arrLAddUserSubTabs, arrLTabBtns, cAddUserSubMenu, cContent, aum,
 					"activity_log", "001", hasOp, boolEditStatus));
 			//cUserLogMenu.setVisible(false);
 			//cLog.addComponent(cUserLogMenu);
-			
-			
 			
 			return cAddUserSubMenu;
 		}

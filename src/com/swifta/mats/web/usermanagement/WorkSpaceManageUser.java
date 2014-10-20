@@ -30,6 +30,14 @@ public class WorkSpaceManageUser{
 	ManageUserModule mum;
 	VerticalLayout cParentLayout;
 	//static final String WORK_AREA = "work_area";
+	public final static  String SESSION_WORK_AREA_USER_TYPE = "user_type";
+	public final static  String SESSION_VAR_WORK_AREA_DEFAULT_USER_TYPE = "agent";
+	public final static  String SESSION_VAR_WORK_AREA_USER_MERCHANT = "merchant";
+	public final static  String SESSION_VAR_WORK_AREA_USER_DEALER = "dealer";
+	public final static  String SESSION_VAR_WORK_AREA_USER_PARTNER = "partner";
+	public final static  String SESSION_VAR_WORK_AREA_USER_BA = "ba";
+	public final static  String SESSION_VAR_WORK_AREA_USER_CCO = "cco";
+	
 	public final static  String SESSION_WORK_AREA = "session_work_area";
 	public final static  String SESSION_VAR_WORK_AREA_ADD_USER = "add_user";
 	public final static  String SESSION_VAR_WORK_AREA_MANAGE_USER= "manage_user";
@@ -48,6 +56,7 @@ public class WorkSpaceManageUser{
 		cParentLayout.setSizeFull();
 		cParentLayout.setMargin(false);
 		cParentLayout.setStyleName("parent_layout");
+		UI.getCurrent().getSession().setAttribute(SESSION_WORK_AREA_USER_TYPE, SESSION_VAR_WORK_AREA_DEFAULT_USER_TYPE);
 		
 		/*logo*/
 		
@@ -182,12 +191,9 @@ public class WorkSpaceManageUser{
 		AddUserModule aum = new AddUserModule();
 		uf = aum.getAddUserForm();
 		mum = new ManageUserModule();
-		searchC = mum.getSearchContainer(SearchUserModule.SESSION_VAR_SEARCH_USER_DEFAULT);
-		
-		mm = mum.getManageUserMenu(wsmuInitStatus, false, false, contentC, aum);
-		
-		
-		
+		UI.getCurrent().getSession().setAttribute(SESSION_WORK_AREA_USER_TYPE, SESSION_VAR_WORK_AREA_DEFAULT_USER_TYPE);
+		searchC = mum.getSearchContainer(SESSION_VAR_WORK_AREA_DEFAULT_USER_TYPE);
+		mm = mum.getManageUserMenu(wsmuInitStatus, false, false, contentC, aum);	
 	}
 	
 	
