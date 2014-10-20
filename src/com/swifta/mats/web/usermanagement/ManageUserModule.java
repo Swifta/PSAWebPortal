@@ -41,6 +41,13 @@ public class ManageUserModule {
 	private static final String btnIDAuth = "user_details_auth";
 	private static final String btnIDAddUser = "add_user";
 	private static final String btnIDLog = "user_log";
+	
+	private static final String strBtnIDAgent = "agent";
+	private static final String strBtnIDMerchant = "merchant";
+	private static final String strBtnIDDealer = "dealer";
+	private static final String strBtnIDPartner = "partner";
+	private static final String strBtnIDBA = "ba";
+	private static final String strBtnIDCCO = "cco";
 	private String btnIDActLog;
 	private String btnIDAccChangeLog;
 	private static final String btnIDManageUser= "manage_user";
@@ -64,220 +71,15 @@ public class ManageUserModule {
 	
 	public ManageUserModule(){
 	}
-	public VerticalLayout getSearchContainer(){
-				VerticalLayout searchContainer = new VerticalLayout();
-				searchContainer.setSizeUndefined();
-				searchContainer.setSpacing(false);
-				searchContainer.setStyleName("c_search_user");
-				searchContainer.setMargin(new MarginInfo(false, true, false, true));
-		
-				FormLayout searchForm = new FormLayout();
-				searchForm.setSizeUndefined();
-				searchForm.setSpacing(true);
-				searchForm.setMargin(false);
-				searchForm.setStyleName("search_user_form");
-				
-				Embedded emb = new Embedded(null,new ThemeResource("img/search_user_icon.png"));
-				emb.setDescription("Search users");
-				emb.setStyleName("search_user_img");
-				emb.setSizeUndefined();
-				
-				
-				Label lbSearch = new Label("Search users by: ");
-				lbSearch.setSizeUndefined();
-				lbSearch.setStyleName("label_search_user");
-				lbSearch.setSizeUndefined();
-				
-				VerticalLayout searchUserHeader = new VerticalLayout();
-				searchUserHeader.setHeightUndefined();
-				searchUserHeader.setMargin(false);
-				searchUserHeader.setSpacing(true);
-				searchUserHeader.addComponent(emb);
-				searchUserHeader.addComponent(lbSearch);
-				searchContainer.addComponent(searchUserHeader);
-				searchUserHeader.setStyleName("search_user_header");
-				
-				TextField tfUid = new TextField();
-				tfUid.setCaption("User ID");
-				
-				tfUname = new TextField();
-				tfUname.setCaption("Username");
-				
-				TextField tfFn = new TextField();
-				tfFn.setCaption("First Name");
-				
-				TextField tfLn = new TextField();
-				tfLn.setCaption("Last Name");
-				
-				TextField tfOthers = new TextField();
-				tfOthers.setCaption("Others");
-				
-				Button btnSearch = new Button("Search");
-				btnSearch.setIcon(FontAwesome.SEARCH);
-				//ThemeResource r = new ThemeResource("img/search_small.png");
-				
-				//btnSearch.setIcon(r);
-				//btnSearch.setHeight("60px");
-				//btnSearch.setWidth("183px");
-				//searchForm.addComponent(lbSearch);
-				searchForm.addComponent(searchUserHeader);
-				searchForm.addComponent(tfUid);
-				searchForm.addComponent(tfUname);
-				searchForm.addComponent(tfFn);
-				searchForm.addComponent(tfLn);
-				searchForm.addComponent(tfOthers);
-				searchForm.addComponent(btnSearch);
-				searchContainer.addComponent(searchForm);
-				searchContainer.setComponentAlignment(searchForm, Alignment.TOP_RIGHT);
-				
-				
-				
-				btnSearch.addClickListener(new Button.ClickListener() {
-					
-					/**
-					 * 
-					 */
-					private static final long serialVersionUID = -5894920456172825127L;
-		
-					@Override
-					public void buttonClick(ClickEvent event) {
-						UI.getCurrent().getSession().setAttribute(SESSION_UMANAGE, SESSION_VAR_UMANAGE_SEARCH_RESULTS);
-						UI.getCurrent().getSession().setAttribute(SESSION_UMANAGE, SESSION_VAR_UMANAGE_SEARCH_RESULTS);
-						
-						if(WorkSpace.wsmu != null)
-							WorkSpace.wsmu.wsmuModifier();
-					}
-				});
-				
-			
-
-		
-		
-		return searchContainer;
+	public FormLayout getSearchContainer(String strUserType){
+		SearchUserModule sum = new SearchUserModule();
+		return sum.getSearchForm(strUserType);
 	}
 	
 	
-	public VerticalLayout getSearchResults(){
-		VerticalLayout searchContainer = new VerticalLayout();
-		
-		VerticalLayout searchResultsContainer = new VerticalLayout();
-		searchResultsContainer.setSizeUndefined();
-		searchResultsContainer.setSpacing(true);
-		searchResultsContainer.setMargin(new MarginInfo(false, true, true, true));
-		
-		
-		VerticalLayout searchUserHeader = new VerticalLayout();
-		searchUserHeader.setWidth("100%");
-		searchUserHeader.setHeightUndefined();
-		searchUserHeader.setMargin(true);
-		searchUserHeader.setSpacing(true);
-		searchUserHeader.setStyleName("search_user_header");
-		searchContainer.setStyleName("c_u_search_results");
-		
-		Embedded emb = new Embedded(null,new ThemeResource("img/search_user_1.png"));
-		emb.setDescription("Search users");
-		emb.setStyleName("search_user_img");
-		searchUserHeader.addComponent(emb);
-		searchUserHeader.setComponentAlignment(emb, Alignment.TOP_RIGHT);
-		
-		Button btnSearch = new Button();
-		btnSearch.setDescription("Search");
-		//ThemeResource r = new ThemeResource("img/search_small.png");
-		//btnSearch.setIcon(r);
-		btnSearch.setIcon(FontAwesome.SEARCH);
-		searchUserHeader.addComponent(btnSearch);
-		searchUserHeader.setComponentAlignment(btnSearch, Alignment.TOP_RIGHT);
-		
-		Label lbSearchResults = new Label("Search Results...");
-		lbSearchResults.setSizeUndefined();
-		lbSearchResults.setStyleName("label_search_results");
-		searchUserHeader.addComponent(lbSearchResults);
-		searchUserHeader.setComponentAlignment(lbSearchResults, Alignment.TOP_RIGHT);
-		
-		//searchContainer.addComponent(searchUserHeader);
-		
-		
+	public VerticalLayout getSearchResults(String strSearchParams){
 		SearchUserModule sum = new SearchUserModule();
-		IndexedContainer container = sum.queryBackEnd();
-		
-		
-		PagedTableCustom tb = new PagedTableCustom("Search results for: \"admin\"(Summary)");
-		
-		
-		tb.setContainerDataSource(container);
-		tb.setColumnIcon(" ", FontAwesome.CHECK_SQUARE_O);
-		//tb.setPageLength(5);
-		tb.setStyleName("tb_u_search_results");
-		
-		HorizontalLayout pnUserSearchResults = tb.createControls();
-		pnUserSearchResults.setSizeFull();
-		pnUserSearchResults.setMargin(false);
-		pnUserSearchResults.setSpacing(false);
-		
-		//int pageCur = tb.getCurrentPage();
-		//tb.previousPage();
-		//tb.nextPage();
-		//int pageTotal = tb.getTotalAmountOfPages();
-		
-		searchResultsContainer.addComponent(pnUserSearchResults);
-		searchResultsContainer.addComponent(tb);
-		//tb.setHeight("219px");
-		
-		VerticalLayout actionBulkC = new VerticalLayout();
-		actionBulkC.setWidth("100%");
-		actionBulkC.setStyleName("c_action_bulk");
-		
-		CheckBox chkAll = new CheckBox();
-		chkAll.setCaption("Select All");
-		
-		ComboBox cmbBulk = new ComboBox("Bulk Action");
-		cmbBulk.addItem("Delete");
-		cmbBulk.addItem("Link");
-		
-		Button btnBulkOk = new Button("Apply");
-		btnBulkOk.setStyleName("btn_link");
-		HorizontalLayout cBulk = new HorizontalLayout();
-		cBulk.setSizeUndefined();
-		cBulk.addComponent(cmbBulk);
-		cBulk.addComponent(btnBulkOk);
-		cBulk.setComponentAlignment(btnBulkOk, Alignment.BOTTOM_RIGHT);
-		
-		
-		actionBulkC.addComponent(chkAll);
-		actionBulkC.addComponent(cBulk);
-		
-		
-		
-		
-		searchResultsContainer.addComponent(actionBulkC);
-		searchContainer.addComponent(searchResultsContainer);
-		searchContainer.setComponentAlignment(searchResultsContainer, Alignment.TOP_RIGHT);
-		
-		
-		
-		
-		
-		btnSearch.addClickListener(new Button.ClickListener() {
-			
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 7182067560976379938L;
-
-			@Override
-			public void buttonClick(ClickEvent event) {
-				UI.getCurrent().getSession().setAttribute(SESSION_UMANAGE, SESSION_VAR_UMANAGE_SEARCH_RESULTS);
-				//UI.getCurrent().getNavigator().navigateTo(WorkSpaceManageUser.WORK_AREA+"/manage_user");
-				//WorkSpace.wsmu.getWorkSpaceManageUser();
-				//WorkSpace.wsmu.getWorkSpaceManageUser();
-				
-				
-			}
-		});
-		
-		
-		
-		return searchContainer;
+		return sum.getSearchResults(strSearchParams);
 	}
 		
 	
@@ -430,6 +232,9 @@ public class ManageUserModule {
 				BtnTabLike btnManUser = new BtnTabLike("Manage", btnIDManageUser);
 				btnManUser.setStyleName("btn_tab_like btn_tab_like_active");
 				
+				UI.getCurrent().getSession().setAttribute(SearchUserModule.SESSION_SEARCH_USER, SearchUserModule.SESSION_VAR_SEARCH_USER_DEFAULT);
+
+				
 				BtnTabLike btnAddUser = new BtnTabLike("Add New", btnIDAddUser);
 				cManageAndAddTab.addComponent(btnManUser);
 				cManageAndAddTab.addComponent(btnAddUser);
@@ -458,9 +263,11 @@ public class ManageUserModule {
 				cManageUserMenu.addComponent(cManUserSubMenu);
 				cManageUserMenu.addComponent(cAddUserSubMenu);
 				
+				String strManBtnPref = "man";
+				String strAddUserBtnPref = "add";
 				
-				cManUserSubMenu = getAddUserSubMenu(btnManUser,  arrLTabBtns, cManUserSubMenu, cContent, arrLSubTabs, hasOp, boolEditStatus, this);
-				cAddUserSubMenu = getAddUserSubMenu(btnAddUser,  arrLTabBtns, cAddUserSubMenu, cContent, arrLSubTabs, hasOp, boolEditStatus, aum);
+				cManUserSubMenu = getAddUserSubMenu(btnManUser, strManBtnPref,  arrLTabBtns, cManUserSubMenu, cContent, arrLSubTabs, hasOp, boolEditStatus, this);
+				cAddUserSubMenu = getAddUserSubMenu(btnAddUser, strAddUserBtnPref,  arrLTabBtns, cAddUserSubMenu, cContent, arrLSubTabs, hasOp, boolEditStatus, aum);
 				
 				cManUserSubMenu.setStyleName("c_u_sub_menu_visible");
 				cManUserSubMenu.setSizeUndefined();
@@ -517,26 +324,27 @@ public class ManageUserModule {
 		
 		
 		
-		private HorizontalLayout getAddUserSubMenu(BtnTabLike btnAddUser, ArrayList<BtnTabLike> arrLTabBtns,  HorizontalLayout cAddUserSubMenu, HorizontalLayout cContent, ArrayList<HorizontalLayout> arrLAddUserSubTabs, boolean hasOp, boolean boolEditStatus, Object aum){
+		private HorizontalLayout getAddUserSubMenu(BtnTabLike btnAddUser, String strBtnPref, ArrayList<BtnTabLike> arrLTabBtns,  HorizontalLayout cAddUserSubMenu, HorizontalLayout cContent, ArrayList<HorizontalLayout> arrLAddUserSubTabs, boolean hasOp, boolean boolEditStatus, Object aum){
 			//btnLog.addClickListener(new BtnTabLikeClickListener(false, arrLTabBtns, cPerAccAuthInfo, udm, "log", "001" ));
 			//VerticalLayout cLog = new VerticalLayout();
 			//cLog.setSizeUndefined();
 			cAddUserSubMenu.setStyleName("c_sub_menu_invisible");
 			cAddUserSubMenu.setSizeUndefined();
 			
-			BtnTabLike btnAddAgent = new BtnTabLike("Agent", btnIDActLog);
+			BtnTabLike btnAddAgent = new BtnTabLike("Agent",  strBtnPref+"_"+strBtnIDAgent);
+			
+			BtnTabLike btnAddMerchant = new BtnTabLike("Merchant", strBtnPref+"_"+strBtnIDMerchant);
+			
+			BtnTabLike btnAddDealer = new BtnTabLike("Dealer",  strBtnPref+"_"+strBtnIDDealer);
+			
+			BtnTabLike btnAddPartner = new BtnTabLike("Partner",  strBtnPref+"_"+strBtnIDPartner);
+			
+			BtnTabLike btnAddFAdmin = new BtnTabLike("Business Administrator",  strBtnPref+"_"+strBtnIDBA);
+			
+			BtnTabLike btnAddCCO = new BtnTabLike("CCO",  strBtnPref+"_"+strBtnIDCCO);
+			
 			btnAddAgent.setStyleName("btn_tab_like btn_tab_like_active");
 			btnAddAgent.setEnabled(false);
-			
-			BtnTabLike btnAddMerchant = new BtnTabLike("Merchant", btnIDAccChangeLog);
-			
-			BtnTabLike btnAddDealer = new BtnTabLike("Dealer", btnIDAccChangeLog);
-			
-			BtnTabLike btnAddPartner = new BtnTabLike("Partner", btnIDAccChangeLog);
-			
-			BtnTabLike btnAddFAdmin = new BtnTabLike("Business Administrator", btnIDAccChangeLog);
-			
-			BtnTabLike btnAddCCO = new BtnTabLike("CCO", btnIDAccChangeLog);
 			
 			
 			cAddUserSubMenu.addComponent(btnAddAgent);

@@ -6,6 +6,7 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Embedded;
+import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
@@ -23,8 +24,9 @@ public class WorkSpaceManageUser{
 	private Button btnLogout;
 	HorizontalLayout contentC;
 	VerticalLayout uf;
-	VerticalLayout searchC;
+	FormLayout searchC;
 	VerticalLayout searchResultsC;
+	
 	ManageUserModule mum;
 	VerticalLayout cParentLayout;
 	//static final String WORK_AREA = "work_area";
@@ -180,9 +182,8 @@ public class WorkSpaceManageUser{
 		AddUserModule aum = new AddUserModule();
 		uf = aum.getAddUserForm();
 		mum = new ManageUserModule();
-		searchC = mum.getSearchContainer();
-		searchResultsC = mum.getSearchResults();
-		searchResultsC.setSizeUndefined();
+		searchC = mum.getSearchContainer(SearchUserModule.SESSION_VAR_SEARCH_USER_DEFAULT);
+		
 		mm = mum.getManageUserMenu(wsmuInitStatus, false, false, contentC, aum);
 		
 		
@@ -298,15 +299,20 @@ public class WorkSpaceManageUser{
 		
 		String curSessionWorkArea = (String) UI.getCurrent().getSession().getAttribute(WorkSpaceManageUser.SESSION_WORK_AREA);
 		String curSessionUManage = (String) UI.getCurrent().getSession().getAttribute(ManageUserModule.SESSION_UMANAGE);
-
+		
 		if( curSessionWorkArea != null && curSessionWorkArea.equals(SESSION_VAR_WORK_AREA_MANAGE_USER)){
 			contentC.removeComponent(uf);
-			contentC.addComponent(searchC);
+			
 			if(curSessionUManage != null && curSessionUManage.equals(ManageUserModule.SESSION_VAR_UMANAGE_SEARCH)){
-				contentC.setComponentAlignment(searchC, Alignment.MIDDLE_CENTER);
-				contentC.setSizeFull();;
-				contentC.setSpacing(false);
-				contentC.setMargin(true);
+				String strSessionSearch = (String) UI.getCurrent().getSession().getAttribute(SearchUserModule.SESSION_SEARCH_USER);
+				if(strSessionSearch != null){
+					searchC = mum.getSearchContainer(strSessionSearch);
+					contentC.addComponent(searchC);
+					contentC.setComponentAlignment(searchC, Alignment.MIDDLE_CENTER);
+					contentC.setSizeFull();
+					contentC.setSpacing(false);
+					contentC.setMargin(true);
+				}
 				
 			}
 		
@@ -332,16 +338,26 @@ public class WorkSpaceManageUser{
 					contentC.removeComponent(cuDetails);
 				}
 				
-				   //contentC.addComponent(searchC);
+				 
+				if(searchC != null){
 					searchC.setSizeUndefined();
 					contentC.setComponentAlignment(searchC, Alignment.TOP_RIGHT);
-					
+				}
+				String strSessionSearchParam = (String) UI.getCurrent().getSession().getAttribute(SearchUserModule.SESSION_SEARCH_USER_PARAM);
+	
+				if(strSessionSearchParam != null){
+					if(searchResultsC != null ){
+						contentC.removeComponent(searchResultsC );
+					}
+					searchResultsC = mum.getSearchResults(strSessionSearchParam);
+				    searchResultsC.setSizeUndefined();
 					contentC.addComponent(searchResultsC);
 					contentC.setComponentAlignment(searchResultsC, Alignment.TOP_LEFT);
 					
 					contentC.setSizeUndefined();
 					contentC.setMargin(new MarginInfo(true, false, true, false));
 					contentC.setSpacing(false);
+				}
 			
 			}
 			
@@ -352,8 +368,9 @@ public class WorkSpaceManageUser{
 				String strAction = (String) UI.getCurrent().getSession().getAttribute(SearchUserModule.SESSION_USER_ACTION);
 				boolean boolEditStatus = false;
 				boolean hasOp = false;
-
-				contentC.removeComponent(searchResultsC);
+				if(searchResultsC != null){
+					contentC.removeComponent(searchResultsC);
+				}
 				searchC.setSizeUndefined();
 				//searchC.setSizeFull();
 				//contentC.setComponentAlignment(searchC, Alignment.TOP_LEFT);
