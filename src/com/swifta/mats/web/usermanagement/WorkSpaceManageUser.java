@@ -33,6 +33,7 @@ public class WorkSpaceManageUser{
 	public final static  String SESSION_VAR_WORK_AREA_MANAGE_USER= "manage_user";
 	private boolean wsmuInitStatus = false;
 	VerticalLayout cuDetails;
+	VerticalLayout mm;
 	
 	
 	public WorkSpaceManageUser(){
@@ -182,7 +183,10 @@ public class WorkSpaceManageUser{
 		searchC = mum.getSearchContainer();
 		searchResultsC = mum.getSearchResults();
 		searchResultsC.setSizeUndefined();
-		cParentLayout.addComponent(mum.addManageUserMenu(wsmuInitStatus, false, false, contentC, aum));
+	//Kindly comit codes without errors
+		//cParentLayout.addComponent(mum.addManageUserMenu(wsmuInitStatus, false, false, contentC, aum));
+		mm = mum.getManageUserMenu(wsmuInitStatus, false, false, contentC, aum);
+		
 		
 		
 	}
@@ -210,10 +214,15 @@ public class WorkSpaceManageUser{
 		}	
 			
 		
+		mm.setSizeUndefined();
+		//contentC.setSizeUndefined();
+		cParentLayout.addComponent(mm);
+		cParentLayout.setComponentAlignment(mm, Alignment.TOP_CENTER);
 		
 		
 		cParentLayout.addComponent(contentC);
-		cParentLayout.setExpandRatio(contentC, 1.0f);
+		//cParentLayout.setExpandRatio(mm, 1.0f);
+		//cParentLayout.setExpandRatio(contentC, 5.0f);
 		//if(!wsmuInitStatus){
 			return cParentLayout;
 		//}else{
@@ -324,7 +333,8 @@ public class WorkSpaceManageUser{
 				if(cuDetails != null){
 					contentC.removeComponent(cuDetails);
 				}
-					contentC.addComponent(searchC);
+				
+				   //contentC.addComponent(searchC);
 					searchC.setSizeUndefined();
 					contentC.setComponentAlignment(searchC, Alignment.TOP_RIGHT);
 					
@@ -379,7 +389,7 @@ public class WorkSpaceManageUser{
 					contentC.setSizeFull();
 					contentC.setMargin(new MarginInfo(true, false, true, false));
 					contentC.setSpacing(false);
-					contentC.setStyleName("content_c");
+					
 					
 				}
 				

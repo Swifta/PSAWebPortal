@@ -44,6 +44,8 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 		this.isModifier = isModifier;
 		this.boolEditStatus = boolEditStatus;
 		this.hasOp = hasOp;
+		this.arrLSubTabs = arrLSubTabs;
+		
 		
 	}
 	public BtnTabLikeClickListener(boolean isModifier, boolean hasSubMenu, ArrayList<HorizontalLayout> arrLSubTabs, ArrayList<BtnTabLike>arrLTabBtns, HorizontalLayout tabContainer, Object udm, String strTbName, String strUID, boolean hasOp, boolean boolEditStatus){
@@ -77,6 +79,19 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 			curBtn = (BtnTabLike) event.getButton();
 			
 			if(hasSubMenu){
+				if(arrLSubTabs != null){
+					for(HorizontalLayout sm: arrLSubTabs){
+						sm.setStyleName("c_sub_menu_invisible");
+					}
+					
+					
+					/*
+					 * Next line is important for only one reason...
+					 * 1. Ensure that child Menu does not hide Parent Menu
+					 */
+					curBtn.getParent().setStyleName("c_sub_menu_visible");
+				}
+				
 				setActiveTab(curBtn, arrLTabBtns);
 				cSubMenu.setStyleName("c_sub_menu_visible");
 				hTabContainer.removeAllComponents();
@@ -89,6 +104,20 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 						hTabContainer.setComponentAlignment(c, Alignment.TOP_CENTER);
 					}
 				}else{
+					if(udm instanceof UserDetailsModule){
+					
+						hTabContainer.addComponent(((UserDetailsModule)udm).getDetailsForm(strTbName, strUID, hasOp, boolEditStatus));
+					}else if(udm instanceof AddUserModule){
+						VerticalLayout c = ((AddUserModule)udm).getAddUserForm();
+						hTabContainer.addComponent(c);
+						hTabContainer.setComponentAlignment(c, Alignment.TOP_CENTER);
+					}else if(udm instanceof ManageUserModule){
+						
+						VerticalLayout c = ((ManageUserModule)udm).getSearchContainer();
+						hTabContainer.addComponent(c);
+						hTabContainer.setComponentAlignment(c, Alignment.TOP_CENTER);
+					}
+				}
 				
 				
 				
@@ -115,6 +144,8 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 						for(HorizontalLayout sm: arrLSubTabs){
 							sm.setStyleName("c_sub_menu_invisible");
 						}
+						
+						
 						/*
 						 * Next line is important for only one reason...
 						 * 1. Ensure that child Menu does not hide Parent Menu
@@ -139,10 +170,26 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 
 							}
 							//hTabContainer.addComponent(udm.getDetailsForm(strTbName, strUID, hasOp, boolEditStatus));
+							if(udm instanceof UserDetailsModule){
+								
+								hTabContainer.addComponent(((UserDetailsModule)udm).getDetailsForm(strTbName, strUID, hasOp, boolEditStatus));
+							}else if(udm instanceof AddUserModule){
+								
+								VerticalLayout c = ((AddUserModule)udm).getAddUserForm();
+								hTabContainer.addComponent(c);
+								hTabContainer.setComponentAlignment(c, Alignment.TOP_CENTER);
+
+							}else if(udm instanceof ManageUserModule){
+								
+								VerticalLayout c = ((ManageUserModule)udm).getSearchContainer();
+								hTabContainer.addComponent(c);
+								hTabContainer.setComponentAlignment(c, Alignment.TOP_CENTER);
+							}
+							
 						}	
 					}
 			}
-	}
+	
 	
 	
 	private void setActiveTab(BtnTabLike curBtn, ArrayList<BtnTabLike>arrLTabBtns){

@@ -415,10 +415,9 @@ public class ManageUserModule {
 	
 	
 
-		
-		public VerticalLayout addManageUserMenu(boolean boolAddHeaderStatus, boolean boolEditStatus, boolean hasOp, HorizontalLayout cContent, Object aum){
-			
-			if(!boolAddHeaderStatus){
+
+		public VerticalLayout getManageUserMenu(boolean boolAddHeaderStatus, boolean boolEditStatus, boolean hasOp, HorizontalLayout cContent, Object aum){
+	if(!boolAddHeaderStatus){
 				
 				
 				VerticalLayout cManageUserMenu = new VerticalLayout();
@@ -427,31 +426,49 @@ public class ManageUserModule {
 				
 				HorizontalLayout cManageAndAddTab = new HorizontalLayout();
 				
-				BtnTabLike btnManageU = new BtnTabLike("Manage", btnIDManageUser);
-				btnManageU.setStyleName("btn_tab_like btn_tab_like_active");
+				
+				BtnTabLike btnManUser = new BtnTabLike("Manage", btnIDManageUser);
+				btnManUser.setStyleName("btn_tab_like btn_tab_like_active");
 				
 				BtnTabLike btnAddUser = new BtnTabLike("Add New", btnIDAddUser);
-				cManageAndAddTab.addComponent(btnManageU);
+				cManageAndAddTab.addComponent(btnManUser);
 				cManageAndAddTab.addComponent(btnAddUser);
 				
 				final ArrayList<BtnTabLike> arrLTabBtns = new ArrayList<BtnTabLike>();
 				arrLTabBtns.add(btnAddUser);
-				arrLTabBtns.add(btnManageU);
-				
-				
-				btnManageU.addClickListener(new BtnTabLikeClickListener(true, arrLTabBtns, new String[]{WorkSpaceManageUser.SESSION_WORK_AREA, ManageUserModule.SESSION_UMANAGE}, new String[]{WorkSpaceManageUser.SESSION_VAR_WORK_AREA_MANAGE_USER, ManageUserModule.SESSION_VAR_UMANAGE_SEARCH}));
-				btnManageU.setEnabled(false);
-				
-				//btnAddUser.addClickListener(new BtnTabLikeClickListener(true, arrLTabBtns, new String[]{WorkSpaceManageUser.SESSION_WORK_AREA}, new String[]{WorkSpaceManageUser.SESSION_VAR_WORK_AREA_ADD_USER}));
-				
+
+				arrLTabBtns.add(btnManUser);
+
+				arrLTabBtns.add(btnManUser);
+				btnManUser.setEnabled(false);
+
 				ArrayList<HorizontalLayout> arrLSubTabs = new ArrayList<HorizontalLayout>();
+				
+				HorizontalLayout cManUserSubMenu = new HorizontalLayout();
 				HorizontalLayout cAddUserSubMenu = new HorizontalLayout();
+
 				arrLSubTabs.add(cAddUserSubMenu );
 				HorizontalLayout cLog = getAddUserSubMenu(btnAddUser,  arrLTabBtns, cAddUserSubMenu, cContent, arrLSubTabs, hasOp, boolEditStatus, aum);
 				cLog.setSizeUndefined();
 				cManageUserMenu.addComponent(cManageAndAddTab);
 				cManageUserMenu.addComponent(cLog);
+
 				
+				arrLSubTabs.add(cManUserSubMenu);
+				arrLSubTabs.add(cAddUserSubMenu);
+				
+				
+				cManageUserMenu.addComponent(cManageAndAddTab);
+				cManageUserMenu.addComponent(cManUserSubMenu);
+				cManageUserMenu.addComponent(cAddUserSubMenu);
+				
+				
+				cManUserSubMenu = getAddUserSubMenu(btnManUser,  arrLTabBtns, cManUserSubMenu, cContent, arrLSubTabs, hasOp, boolEditStatus, this);
+				cAddUserSubMenu = getAddUserSubMenu(btnAddUser,  arrLTabBtns, cAddUserSubMenu, cContent, arrLSubTabs, hasOp, boolEditStatus, aum);
+				
+				cManUserSubMenu.setStyleName("c_u_sub_menu_visible");
+				cManUserSubMenu.setSizeUndefined();
+				cAddUserSubMenu.setSizeUndefined();
 				
 				return cManageUserMenu;
 			}else{
@@ -561,8 +578,8 @@ public class ManageUserModule {
 			
 			btnAddCCO.addClickListener(new BtnTabLikeClickListener(false, false, arrLAddUserSubTabs,  arrLSubTabBtns, cContent, aum,
 					"account_change_log", "001", hasOp, boolEditStatus ));
-			
-			btnAddUser.addClickListener(new BtnTabLikeClickListener(false, true, arrLTabBtns, cAddUserSubMenu, cContent, aum,
+
+			btnAddUser.addClickListener(new BtnTabLikeClickListener(false, true , arrLAddUserSubTabs, arrLTabBtns, cContent, aum,
 					"activity_log", "001", hasOp, boolEditStatus));
 			//cUserLogMenu.setVisible(false);
 			//cLog.addComponent(cUserLogMenu);

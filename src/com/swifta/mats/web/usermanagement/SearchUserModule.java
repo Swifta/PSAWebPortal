@@ -106,11 +106,11 @@ public class SearchUserModule {
 		String strUID = tdPropertyUID.getValue();
 		String strUname = tdPropertyUname.getValue();
 		
-		btnDetails.setId("user_"+strUID+"_details");
-		btnEdit.setId("user_"+strUID+"_edit");
-		btnLink.setId("user_"+strUID+"_link");
-		btnDelete.setId("user_"+strUID+"_"+strUname+"_delete");
-		btnMoreActions.setId("user_"+strUID+"_moreActions");
+		btnDetails.setId("users_personal_"+strUID+"_details");
+		btnEdit.setId("user_personal_"+strUID+"_edit");
+		btnLink.setId("user_account_"+strUID+"_link");
+		btnDelete.setId("user_account_"+strUID+"_"+strUname+"_delete");
+		btnMoreActions.setId("user_account_"+strUID+"_moreActions");
 		
 		actionsC.addComponent(btnDetails);
 		actionsC.addComponent(btnEdit);
