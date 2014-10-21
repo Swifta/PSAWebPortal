@@ -430,7 +430,7 @@ public class Settings extends VerticalLayout {
 				nameOfAccount.setValue("");codeOfAccount.setValue("");descOfAccount.setValue("");
 				laying.addComponent(searchResultsContainer);
 				
-				filtercontainer2 = tb.getContainerDataSource();
+				//filtercontainer2 = tb.getContainerDataSource();
 				
 			}
 			
