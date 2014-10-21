@@ -33,6 +33,8 @@ public class WorkSpaceManageUser{
 	public final static  String SESSION_WORK_AREA = "session_work_area";
 	public final static  String SESSION_VAR_WORK_AREA_ADD_USER = "add_user";
 	public final static  String SESSION_VAR_WORK_AREA_MANAGE_USER= "manage_user";
+	public final static String  SESSION_WORK_AREA_USER_TYPE = "user_type";
+	public final static String  SESSION_VAR_WORK_AREA_DEFAULT_USER_TYPE = "agent";
 	private boolean wsmuInitStatus = false;
 	VerticalLayout cuDetails;
 	VerticalLayout mm;
