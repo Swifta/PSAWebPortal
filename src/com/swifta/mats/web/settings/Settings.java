@@ -8,8 +8,10 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Collection;
 import java.util.Date;
 
+import com.vaadin.data.Container.Indexed;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.IndexedContainer;
@@ -23,25 +25,16 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
-import com.vaadin.ui.Embedded;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.ProgressBar;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.Upload;
-import com.vaadin.ui.Upload.FailedEvent;
-import com.vaadin.ui.Upload.FinishedEvent;
-import com.vaadin.ui.Upload.Receiver;
-import com.vaadin.ui.Upload.StartedEvent;
-import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Window;
 import com.swifta.mats.web.usermanagement.BtnActions;
 import com.swifta.mats.web.usermanagement.PagedTableCustom;
 
@@ -74,6 +67,8 @@ public class Settings extends VerticalLayout {
 	
 	
 	IndexedContainer container = new IndexedContainer();
+	Indexed filtercontainer = new IndexedContainer();
+	Indexed filtercontainer2 = new IndexedContainer();
 	PagedTableCustom tb = new PagedTableCustom("Results for: Accounts");;
 	VerticalLayout searchResultsContainer = new VerticalLayout();
 	VerticalLayout layoutFile = new VerticalLayout();
@@ -164,7 +159,14 @@ public class Settings extends VerticalLayout {
 				
 				
 				laybut1.setMargin(new MarginInfo(false, false, true, false));
-				//laybut1.setSizeFull();
+				selection.addItem("All");
+				selection.addItem("Fees");
+				selection.addItem("Commission");
+				selection.addItem("Control");
+				selection.setNullSelectionAllowed(false);
+				
+				selection.setTextInputAllowed(false);
+				selection.setValue(selection.getItemIds().iterator().next());
 				laybut1.addComponent(selection);
 				laybut1.addComponent(filter);
 				
@@ -186,6 +188,44 @@ public class Settings extends VerticalLayout {
             }
         });
 		
+		
+		filter.addClickListener(new Button.ClickListener() {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				String selectedId = (String) selection.getValue();
+				String hi;
+				int i;
+				//Indexed filtercontainer2 = new IndexedContainer();
+				if (selectedId != null) {
+					  
+						 filtercontainer = tb.getContainerDataSource();
+						 
+						 for(i=0; i<2; i++){
+						  hi = filtercontainer.getContainerProperty(i+1, "Name").getValue().toString();
+						 
+							 if(hi.equals(selection.getValue())){
+								 filtercontainer.removeItem(i+1);
+								 Notification.show(hi+" Noted "+selectedId);
+							 }
+						 }
+						 
+						 laying.removeAllComponents();
+						 tb.setContainerDataSource(filtercontainer);
+						 laying.addComponent(searchResultsContainer);
+						 
+						  
+					 
+				}
+					
+			}
+		
+		});
 		
 		back.addClickListener(new Button.ClickListener() {
 
@@ -213,17 +253,22 @@ public class Settings extends VerticalLayout {
 		});
 		
 		cancelBulk.addClickListener(new Button.ClickListener() {
+			
+			
 
-			/**
+			/** This cancel button is bulk upload
 			 * 
 			 */
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				laying.removeAllComponents();
-	            laying.addComponent(searchResultsContainer);
+				
+				//laying.removeAllComponents();
+	            //laying.addComponent(searchResultsContainer);
+				laying.removeComponent(layoutFile);
 	            BulkImport.setEnabled(true);
+				
 	            
 				// TODO Auto-generated method stub
 				
@@ -244,6 +289,12 @@ public class Settings extends VerticalLayout {
 			@SuppressWarnings("deprecation")
 			@Override
 			public void buttonClick(ClickEvent event) {
+				
+				if(!adduser.isEnabled()){
+					
+					adduser.setEnabled(true);
+					laying.removeComponent(addAccount);
+				}
 				BulkImport.setEnabled(false);
 				layoutFile.removeAllComponents();
 				Upload upload = new Upload("Upload CSV File", new Upload.Receiver() {
@@ -339,6 +390,11 @@ public class Settings extends VerticalLayout {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				
+				if(!BulkImport.isEnabled()){
+					
+					BulkImport.setEnabled(true);
+					laying.removeComponent(layoutFile);
+				}
 				
 				
 				addAccount.addComponent(nameOfAccount);
@@ -374,6 +430,8 @@ public class Settings extends VerticalLayout {
 				nameOfAccount.setValue("");codeOfAccount.setValue("");descOfAccount.setValue("");
 				laying.addComponent(searchResultsContainer);
 				
+				filtercontainer2 = tb.getContainerDataSource();
+				
 			}
 			
 			
@@ -381,13 +439,14 @@ public class Settings extends VerticalLayout {
 		
 		cancelAccount.addClickListener(new Button.ClickListener() {
 
-			/**
+			/**This button is for Add user
 			 * 
 			 */
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void buttonClick(ClickEvent event) {
+								
 				adduser.setEnabled(true);
 				laying.removeComponent(addAccount);
 				// TODO Auto-generated method stub

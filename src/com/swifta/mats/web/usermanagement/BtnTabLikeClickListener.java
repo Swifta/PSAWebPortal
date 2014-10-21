@@ -33,6 +33,9 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 	BtnTabLike curBtn;
 	private boolean hasOp;
 	boolean boolEditStatus = false;
+	private String strUserType;
+	
+	
 	public BtnTabLikeClickListener(boolean isModifier, boolean hasSubMenu, ArrayList<BtnTabLike>arrLTabBtns, HorizontalLayout cSubMenu, HorizontalLayout hTabContainer, Object udm, String strTbName, String strUID, boolean hasOp, boolean boolEditStatus){
 		this.hasSubMenu = hasSubMenu;
 		this.cSubMenu = cSubMenu;
@@ -46,9 +49,19 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 		this.hasOp = hasOp;
 		
 		
+		
 	}
 	
-	public BtnTabLikeClickListener(boolean isModifier, boolean hasSubMenu, ArrayList<HorizontalLayout> arrLSubTabs, ArrayList<BtnTabLike>arrLTabBtns, HorizontalLayout cSubMenu, HorizontalLayout hTabContainer, Object udm, String strTbName, String strUID, boolean hasOp, boolean boolEditStatus){
+	public BtnTabLikeClickListener(boolean isModifier,
+			boolean hasSubMenu,
+			ArrayList<HorizontalLayout> arrLSubTabs,
+			ArrayList<BtnTabLike>arrLTabBtns,
+			HorizontalLayout cSubMenu,
+			HorizontalLayout hTabContainer,
+			Object udm, String strTbName,
+			String strUID, boolean hasOp,
+			boolean boolEditStatus){
+		
 		this.hasSubMenu = hasSubMenu;
 		this.cSubMenu = cSubMenu;
 		this.arrLTabBtns = arrLTabBtns;
@@ -63,7 +76,17 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 		
 		
 	}
-	public BtnTabLikeClickListener(boolean isModifier, boolean hasSubMenu, ArrayList<HorizontalLayout> arrLSubTabs, ArrayList<BtnTabLike>arrLTabBtns, HorizontalLayout tabContainer, Object udm, String strTbName, String strUID, boolean hasOp, boolean boolEditStatus){
+	public BtnTabLikeClickListener(boolean isModifier,
+			boolean hasSubMenu,
+			ArrayList<HorizontalLayout> arrLSubTabs, 
+			ArrayList<BtnTabLike>arrLTabBtns,
+			HorizontalLayout tabContainer,
+			Object udm,
+			String strTbName,
+			String strUID,
+			boolean hasOp,
+			boolean boolEditStatus,
+			String strUserType){
 		this.arrLTabBtns = arrLTabBtns;
 		this.hTabContainer = tabContainer;
 		this.udm = udm;
@@ -74,6 +97,33 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 		this.arrLSubTabs = arrLSubTabs;
 		this.boolEditStatus = boolEditStatus;
 		this.hasOp = hasOp;
+		this.strUserType = strUserType;
+		
+		
+	}
+	
+	public BtnTabLikeClickListener(boolean isModifier,
+			boolean hasSubMenu,
+			ArrayList<HorizontalLayout> arrLSubTabs, 
+			ArrayList<BtnTabLike>arrLTabBtns,
+			HorizontalLayout tabContainer,
+			Object udm,
+			String strTbName,
+			String strUID,
+			boolean hasOp,
+			boolean boolEditStatus){
+		this.arrLTabBtns = arrLTabBtns;
+		this.hTabContainer = tabContainer;
+		this.udm = udm;
+		this.strTbName = strTbName;
+		this.strUID = strUID;
+		this.isModifier = isModifier;
+		this.hasSubMenu = hasSubMenu;
+		this.arrLSubTabs = arrLSubTabs;
+		this.boolEditStatus = boolEditStatus;
+		this.hasOp = hasOp;
+		
+		
 		
 	}
 	
@@ -92,7 +142,7 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 	@Override
 	public void buttonClick(ClickEvent event) {
 			curBtn = (BtnTabLike) event.getButton();
-			
+						
 			if(hasSubMenu){
 				if(arrLSubTabs != null){
 					for(HorizontalLayout sm: arrLSubTabs){
@@ -113,13 +163,15 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 					if(udm instanceof UserDetailsModule){
 						hTabContainer.addComponent(((UserDetailsModule)udm).getDetailsForm(strTbName, strUID, hasOp, boolEditStatus));
 					}else if(udm instanceof AddUserModule){
+						UI.getCurrent().getSession().setAttribute(WorkSpaceManageUser.SESSION_WORK_AREA_USER_TYPE, strUserType);
 						UI.getCurrent().getSession().setAttribute(WorkSpaceManageUser.SESSION_WORK_AREA, WorkSpaceManageUser.SESSION_VAR_WORK_AREA_ADD_USER);
+						
 						if(WorkSpace.wsmu != null)
 							WorkSpace.wsmu.wsmuModifier();
 					}else if(udm instanceof ManageUserModule){
 						String strID = curBtn.getId();
 						String[] arrIDSeg = strID.split("_");
-						
+						UI.getCurrent().getSession().setAttribute(WorkSpaceManageUser.SESSION_WORK_AREA_USER_TYPE, strUserType);
 						UI.getCurrent().getSession().setAttribute(SearchUserModule.SESSION_SEARCH_USER, arrIDSeg[1]);
 						UI.getCurrent().getSession().setAttribute(WorkSpaceManageUser.SESSION_WORK_AREA, WorkSpaceManageUser.SESSION_VAR_WORK_AREA_MANAGE_USER);
 						UI.getCurrent().getSession().setAttribute(ManageUserModule.SESSION_UMANAGE, ManageUserModule.SESSION_VAR_UMANAGE_SEARCH);
@@ -171,6 +223,7 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 								
 								hTabContainer.addComponent(((UserDetailsModule)udm).getDetailsForm(strTbName, strUID, hasOp, boolEditStatus));
 							}else if(udm instanceof AddUserModule){
+								UI.getCurrent().getSession().setAttribute(WorkSpaceManageUser.SESSION_WORK_AREA_USER_TYPE, strUserType);
 								UI.getCurrent().getSession().setAttribute(WorkSpaceManageUser.SESSION_WORK_AREA, WorkSpaceManageUser.SESSION_VAR_WORK_AREA_ADD_USER);
 								if(WorkSpace.wsmu != null)
 									WorkSpace.wsmu.wsmuModifier();
@@ -178,7 +231,7 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 							}else if(udm instanceof ManageUserModule){
 								String strID = curBtn.getId();
 								String[] arrIDSeg = strID.split("_");
-								
+								UI.getCurrent().getSession().setAttribute(WorkSpaceManageUser.SESSION_WORK_AREA_USER_TYPE, strUserType);
 								UI.getCurrent().getSession().setAttribute(SearchUserModule.SESSION_SEARCH_USER, arrIDSeg[1]);
 								UI.getCurrent().getSession().setAttribute(WorkSpaceManageUser.SESSION_WORK_AREA, WorkSpaceManageUser.SESSION_VAR_WORK_AREA_MANAGE_USER);
 								UI.getCurrent().getSession().setAttribute(ManageUserModule.SESSION_UMANAGE, ManageUserModule.SESSION_VAR_UMANAGE_SEARCH);

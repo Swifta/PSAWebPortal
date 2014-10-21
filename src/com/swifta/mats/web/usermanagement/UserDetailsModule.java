@@ -2,14 +2,13 @@ package com.swifta.mats.web.usermanagement;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.server.FontAwesome;
-import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
@@ -20,7 +19,7 @@ import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 
 public class UserDetailsModule{
@@ -88,7 +87,7 @@ public class UserDetailsModule{
 					
 					
 					List<Object> arrLAllFormFields = new ArrayList<Object>();
-					List<Button> arrLOpBtns = new ArrayList<Button>();
+					HashMap<String, Object> mapSlaveFields = new HashMap<String,Object>();
 					
 					/*TODO
 					 * 
@@ -105,8 +104,6 @@ public class UserDetailsModule{
 					}else{
 						hasOp = false;
 					}
-					
-					
 					
 					
 					arrTfCaptions = mappedData.get("arrTfCaptions");
@@ -127,11 +124,12 @@ public class UserDetailsModule{
 					
 					final List<Object> arrLAllEditableFields = new ArrayList<Object>();
 					
-					//Holders of editable form components original values
+					//Holders of editable form components original values to be used for undoing/resetting the form.
 					final ArrayList<String> arrLTfEditableVals = new ArrayList<String>();
 					final ArrayList<String> arrLOptEditableVals = new ArrayList<String>();
 					final ArrayList<String> arrLComboEditableVals = new ArrayList<String>();
 					final ArrayList<String> arrLDfEditableVals = new ArrayList<String>();
+					
 					
 					
 					
@@ -149,12 +147,11 @@ public class UserDetailsModule{
 					
 					//Set OptionGroup(opt) form objects
 					if(arrOptVals != null){
-						
-						setOpts(strTbName, strUID, isReadOnlyOpt, arrLAllFormFields,arrLAllEditableFields,arrLOptEditableVals, arrLOpBtns);
+						setOpts(strTbName, strUID, isReadOnlyOpt, arrLAllFormFields,arrLAllEditableFields,arrLOptEditableVals, mapSlaveFields);
 					}
 					//Set ComboBox(combo) form objects
 					if(arrComboVals != null){
-						setCombos(strTbName, strUID,isReadOnlyCombo,arrLAllFormFields,arrLAllEditableFields,arrLComboEditableVals, arrLOpBtns);
+						setCombos(strTbName, strUID,isReadOnlyCombo,arrLAllFormFields,arrLAllEditableFields,arrLComboEditableVals, mapSlaveFields);
 					}
 					//Set InlineDateField(dF) form objects
 					if(arrDfVals != null){
@@ -188,8 +185,9 @@ public class UserDetailsModule{
 					
 					
 					if(hasOp){
-						cDetailsAndOperations.addComponent(getOperationsContainer(strTbName, strUID, arrLOpBtns));
+						//Notification.show(Integer.toString(arrLOpBtns.size()));
 						ecbsf = new EditCancelBtnsSingleField(cUPersonalDetails);
+						cDetailsAndOperations.addComponent(getOpForm(strTbName, strUID,mapSlaveFields));
 						
 					}else{
 						wrapperEditCancelBtnsClickListener(btnEdit, btnCancel, btnEditId, btnSaveId, arrLAllEditableFields, cBtnEditCancel, arrLTfEditableVals, 
@@ -204,7 +202,7 @@ public class UserDetailsModule{
 					
 					/*
 					 * 
-					 * If edit status is turn on, initiate editUserDetails
+					 * If edit status is true and has no operations, initiate editUserDetails
 					 * 
 					 */
 					if(boolEditStatus && !hasOp){
@@ -219,14 +217,6 @@ public class UserDetailsModule{
 				
 			}
 			
-			
-			
-			
-				
-			
-
-			
-		
 		return cDetailsAndOperations;
 	}
 	
@@ -240,10 +230,8 @@ public class UserDetailsModule{
 		int iTf = 0;
 		int iOpt = 0;
 		int iCombo = 0;
-		int iDf = 0;
 		uDetailsEditStatus = false;
 		for(Object f: lAllEditableFields){
-			
 			if(f instanceof TextField){
 				
 					((TextField) f).setValue(arrLTfVals.get(iTf));
@@ -256,8 +244,7 @@ public class UserDetailsModule{
 					((OptionGroup) f).setValue(arrLOptVals.get(iOpt));
 					((OptionGroup) f).setReadOnly(true);
 					iOpt++;
-				
-				
+			
 			}else if(f instanceof ComboBox){
 				
 					((ComboBox) f).setValue(arrLComboSelVals.get(iCombo));
@@ -343,8 +330,6 @@ public class UserDetailsModule{
 			tfGen.setWidth("100%");
 			arrLAllFormFields.add(tfGen);
 			cUPersonalDetails.addComponent(tfGen);
-			//System.out.println(boolEditStatus);
-			
 			if(iTf != isReadOnlyTf){
 				arrLTfEditable.add(tfGen);
 				arrLTfEditableVals.add(arrTfVals[iTf]);
@@ -354,7 +339,7 @@ public class UserDetailsModule{
 	}
 	
 	private void setOpts(String strTbName, String strUID, int isReadOnlyOpt, List<Object>lAllFormFields,
-			List<Object>arrLOptEditable, ArrayList<String>arrLOptEditableVals, List<Button> arrLOpBtns){
+			List<Object>arrLOptEditable, ArrayList<String>arrLOptEditableVals, HashMap<String, Object> mapSlaveFields){
 		for(int iOpt = 0; iOpt < arrOptVals.length; iOpt++){
 			opt = new OptionGroup();
 			opt.setCaption(arrOptCaptions[iOpt]);
@@ -367,16 +352,10 @@ public class UserDetailsModule{
 				arrLOptEditableVals.add(arrOptVals[iOpt]);
 			}
 			if(strTbName.equals("account") && arrOptCaptions[iOpt].equals("Status")){
-				Button btn = getOpBtn(strTbName,strUID, opt, "Deactivate", null);
-				arrLOpBtns.add(btn);
 				strOptSEditableFieldVal = arrOptVals[iOpt];
-				/*if(strOptSEditableFieldVal.equals("Active")){
-					opt.setValue(true);
-				}else if(strOptSEditableFieldVal.equals("Deactive")){
-					opt.setValue(false);
-				}*/
 				optSEditableField = opt;
-				
+				mapSlaveFields.put(arrOptCaptions[iOpt], opt);
+			
 				
 			}
 			
@@ -385,7 +364,7 @@ public class UserDetailsModule{
 	}
 	
 	private void setCombos(String strTbName, String strUID,int isReadOnlyCombo, List<Object>lAllFormFields,
-			List<Object>arrLComboEditable, ArrayList<String>arrLComboEditableVals, List<Button> arrLOpBtns){
+			List<Object>arrLComboEditable, ArrayList<String>arrLComboEditableVals, HashMap<String,Object> mapSlaveFields){
 		for(int iCombo = 0; iCombo < arrComboVals.length; iCombo++){
 			combo = new ComboBox();
 			combo.setCaption(arrComboCaptions[iCombo]);
@@ -402,6 +381,9 @@ public class UserDetailsModule{
 			if(strTbName.equals("account") && arrComboCaptions[iCombo].equals("Type")){
 				arrLComboSEditableField.add(combo);
 				arrLComboSEditableFieldVal.add(arrComboVals[iCombo]);
+				
+				//addOpBtn(strTbName,strUID, opt, "Change Type", arrLOpBtns);
+				mapSlaveFields.put(arrComboCaptions[iCombo], combo);
 				
 				combo.addValueChangeListener(new ValueChangeListener(){
 					private static final long serialVersionUID = -2182355729919041184L;
@@ -458,147 +440,18 @@ public class UserDetailsModule{
 	
 	
 	
-	private VerticalLayout getOperationsContainer(String strTbName, final String strUID, List<Button> arrLOpBtns){
-		
-		VerticalLayout cOp = new VerticalLayout();
-		cOp.setSizeUndefined();
-		cOp.setSpacing(true);
-		cOp.setMargin(true);
-		Label lbOp;
-		
-		
-		
-		
-		
-		if(strTbName.equals("auth")){
-			lbOp = new Label("Authentication Operations");	
-			cOp.addComponent(lbOp);
-		}else if(strTbName.equals("account")){
-			
-			lbOp = new Label("Account Operations");	
-			cOp.addComponent(lbOp);
-			
-		}
-		
-		/*for(Button btn: arrLOpBtns){
-			cOp.addComponent(btn);
-		}*/
-		
-		if(strTbName.equals("auth")){
-			Button btnPassReset = new Button("Trigger Password Reset");
-			cOp.addComponent(btnPassReset);
-			btnPassReset.addClickListener(new Button.ClickListener() {
-				
-				
-				private static final long serialVersionUID = -5995226525541204395L;
-
-				@Override
-				public void buttonClick(ClickEvent event) {
-					/*
-					 * 
-					 * TODO Send password reset URL to user.
-					 * 
-					 */
-					Notification.show("Password reset has been triggered for user of ID "+strUID);
-					
-				}
-			});
-		}
-		
-		if(strTbName.equals("account")){
-					final Button btnStatus = new Button();
-					
-					
-					
-					final Button btnChangeType = new Button("Change Type");
-					
-					if(optSEditableField.getValue().equals("Active")){
-						btnStatus.setCaption("Deactivate");
-					}else if(optSEditableField.getValue().equals("Deactivate")){
-						btnStatus.setCaption("Activate");
-						btnChangeType.setEnabled(false);
-					}
-					
-					
-					cOp.addComponent(btnStatus);
-					cOp.addComponent(btnChangeType);
-					
-						btnStatus.addClickListener(new Button.ClickListener() {
-						
-						private static final long serialVersionUID = -6318339408802346085L;
-						private String strNewStatus;
-						private String strOldStatus;
-						@Override
-						public void buttonClick(ClickEvent event) {
-							
-							if(optSEditableField.getValue().equals("Active")){
-								strNewStatus = "Deactive";
-								strOldStatus = "Active";
-								optSEditableField.setEnabled(true);
-								optSEditableField.setReadOnly(false);
-								
-								optSEditableField.setValue(false);
-								optSEditableField.removeItem(strOldStatus );
-								optSEditableField.addItem(strNewStatus);
-								optSEditableField.select(strNewStatus);
-								
-								optSEditableField.setEnabled(false);
-								optSEditableField.setReadOnly(true);
-								btnChangeType.setEnabled(false);
-								
-								btnStatus.setCaption("Activate");
-							 
-							}else if(optSEditableField.getValue().equals("Deactive")){
-									strNewStatus = "Active";
-									strOldStatus = "Deactive";
-									
-									optSEditableField.setEnabled(true);
-									optSEditableField.setReadOnly(false);
-									
-									optSEditableField.setValue(false);
-									optSEditableField.removeItem(strOldStatus);
-									optSEditableField.addItem(strNewStatus);
-									optSEditableField.select(strNewStatus);
-									
-									optSEditableField.setEnabled(false);
-									optSEditableField.setReadOnly(true);
-									btnStatus.setCaption("Deactivate");
-									btnChangeType.setEnabled(true);
-								}
-							
-							
-							/*
-							 * 
-							 * TODO Commit changes to the server.
-							 * 
-							 */
-							Notification.show("Account status of user of ID "+strUID+" has been changed to "+strNewStatus.toUpperCase());
-						}
-					});
-					btnChangeType.addClickListener(new Button.ClickListener() {
-						
-						private static final long serialVersionUID = -5995226525541204395L;
-			
-						@Override
-						public void buttonClick(ClickEvent event) {
-							enableEditableFormFields(arrLComboSEditableField);
-							
-						}
-					});
-					
-					
-		}
-		
-		
-		return cOp;
-	}
 	
-	public Button getOpBtn(String strTbName, String strUID, Object objSlaveField, String strAction, List<Button> arrLSlaveBtn){
-		final String strBtnID = "opBtn_"+strTbName+"_"+strUID+"_"+strAction;
-		Button btnAct = new Button(strAction);
-		btnAct.setId(strBtnID);
-		//btnAct.addClickListener(new BtnOpClickListener(objSlaveField, arrLSlaveBtn));
-		return btnAct;
+	
+	public FormLayout getOpForm(String strTbName, String strUID, HashMap<String, Object> mapSlaveFields){
+		
+		String strUserType = (String) UI.getCurrent().getSession().getAttribute(WorkSpaceManageUser.SESSION_WORK_AREA_USER_TYPE);
+		Notification.show(strUserType);
+		if(strUserType.equals(WorkSpaceManageUser.SESSION_VAR_WORK_AREA_DEFAULT_USER_TYPE)){
+			return getAgentOpForm(strTbName, strUID, mapSlaveFields);
+		}else{
+			return new FormLayout();
+		}
+		
 	}
 	
 	
@@ -690,6 +543,9 @@ public class UserDetailsModule{
 	}
 	
 	
+
+	
+	
 	private class EditCancelBtnsSingleField{
 		
 		String strBtnIDEdit = "btn_account_status_edit";
@@ -757,9 +613,12 @@ public class UserDetailsModule{
 				}
 			});
 			
+			
 		}
 		
 		
+	
+			
 		
 	}
 	
@@ -768,18 +627,142 @@ public class UserDetailsModule{
 	
 	
 	
+	private class BtnOpClickListener implements Button.ClickListener{
+		
+		private static final long serialVersionUID = -8361209098934409391L;
+		private Object objSlaveF;
+		private Button btnSlave;
+		
+		
+			public BtnOpClickListener(Object objSlaveF, Button btnSlave){
+				this.objSlaveF= objSlaveF;
+				this.btnSlave = btnSlave;
+					
+			}
+			
+			@Override
+			public void buttonClick(ClickEvent event) {
+						Button btn = event.getButton();
+						String strBtnID = btn.getId();
+						String[] arrData = strBtnID.split("_");
+						String strTbName = arrData[0];
+						String strUID = arrData[1];
+						String strAction = arrData[2];
+						
+						
+						String strNewStatus = null;
+						String strOldStatus;
+						String strNewAction;
+						if(strAction.equals("Activate")||strAction.equals("Deactivate")){
+							OptionGroup opt = ((OptionGroup)objSlaveF);
+							if(strAction.equals("Activate")){
+								strNewStatus = "Active";
+								strOldStatus = "Deactive";
+								strNewAction = "Deactivate";
+								
+								opt.setEnabled(true);
+								opt.setReadOnly(false);
+								
+								opt.setValue(false);
+								opt.removeItem(strOldStatus );
+								opt.addItem(strNewStatus);
+								opt.select(strNewStatus);
+								
+								opt.setEnabled(false);
+								opt.setReadOnly(true);
+								btn.setCaption(strNewAction);
+								btn.setId(strTbName+"_"+strUID+"_"+strNewAction);
+								
+									if(btnSlave != null)
+										btnSlave.setEnabled(true);
+							}else if(strAction.equals("Deactivate")){
+								strNewStatus = "Deactive";
+								strOldStatus = "Active";
+								strNewAction = "Activate";
+								
+								opt.setEnabled(true);
+								opt.setReadOnly(false);
+								
+								opt.setValue(false);
+								opt.removeItem(strOldStatus);
+								opt.addItem(strNewStatus);
+								opt.select(strNewStatus);
+								
+								opt.setEnabled(false);
+								opt.setReadOnly(true);
+								btn.setCaption(strNewAction);
+								btn.setId(strTbName+"_"+strUID+"_"+strNewAction);
+								if(btnSlave != null)
+									btnSlave.setEnabled(false);
+							}
+								
+								 //TODO Commit changes to the server.
+								Notification.show("Account status of user of ID "+strUID+" has been changed to "+strNewStatus.toUpperCase());
+
+						}else if(strAction.equals("Change Type")){
+							ArrayList<Object> arrLEditableField = new ArrayList<Object>();
+							arrLEditableField.add(combo);
+							enableEditableFormFields(arrLEditableField);
+							//Notification.show("Yeah!");
+						}
+						
+						
+									
+											
+								
+						
+						
+					
+					}
+		
+	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	private FormLayout getAgentOpForm(String strTbName, String strUID, HashMap<String, Object>mapSlaveFields){
+		
+		FormLayout frmOps = new FormLayout();
+		frmOps.setSizeUndefined();
+		Label lbOp = new Label();
+		
+		
+		if(strTbName.equals("account")){
+			Button btnOpSt = new Button();
+			Button btnOpTyp = new Button();
+			
+			lbOp.setValue("Account Operations");
+			frmOps.addComponent(lbOp);
+			String strAction;
+			String strCurVal = null;
+			
+			OptionGroup opt = (OptionGroup) mapSlaveFields.get("Status");
+			strCurVal = (String) opt.getValue();
+			
+			if(strCurVal.equals("Active"))
+			{
+				strAction = "Deactivate";
+			}else{
+				strAction = "Activate";
+			}
+			
+			//Notification.show(strAction);
+			
+			btnOpSt.setCaption(strAction);
+			btnOpSt.addClickListener(new BtnOpClickListener(opt, btnOpTyp));
+			btnOpSt.setId(strTbName+"_"+strUID+"_"+ strAction);
+			frmOps.addComponent(btnOpSt);
+			
+			strAction = "Change Type";
+			//ComboBox combo = (ComboBox) mapSlaveFields.get("Type");
+			btnOpTyp.setCaption(strAction);
+			btnOpTyp.addClickListener(new BtnOpClickListener(opt, null));
+			btnOpTyp.setId(strTbName+"_"+strUID+"_"+ strAction);
+			frmOps.addComponent(btnOpTyp);
+		}
+		
+		
+		return frmOps;
+		
+	}
+
 	
 	
 	
