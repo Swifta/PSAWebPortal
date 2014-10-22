@@ -52,6 +52,7 @@
  .tabref{
 	//border: 1px solid #7ec0ee;
 	//border-radius: 5px;
+	min-height: 560px;
 		
 }
  
@@ -518,8 +519,9 @@ ul.empty li{
 
 .c_search_user{
 	//background: gray;
-	border-right: 1px solid #DDD;
+	//border-right: 1px solid #DDD;
 	//height: 1000px;
+	margin-top: -120px;
 }
 
 .u_operation_container{
@@ -644,9 +646,9 @@ ul.empty li{
 .c_add_user{
 	//background: #0F0;
 	border-right: 1px solid #DDD;
-	margin-bottom: 40px;
+	//margin-bottom: 40px;
 
-	margin-top: 70px;
+	//margin-top: 70px;
 
 	//margin-top: 70px;
 
@@ -848,6 +850,26 @@ ul.empty li{
 }
 
 .search_results_header {
+}
+
+.c_parent{
+	background: #F00;
+}
+
+.c_menu{
+	background: #00F;
+}
+
+.c_content{
+	//background: #0F0;
+}
+
+.layout{
+	//background: #FF0;
+	
+}
+
+.c_search_user{
 }
 
 

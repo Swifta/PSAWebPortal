@@ -1,9 +1,6 @@
 package com.swifta.mats.web.usermanagement;
 
-import java.util.ArrayList;
-
 import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
 
 public class BtnTabLike extends Button{
 	

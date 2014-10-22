@@ -1,7 +1,6 @@
 package com.swifta.mats.web.usermanagement;
 
 import com.jensjansson.pagedtable.PagedTableContainer;
-import com.vaadin.data.Container;
 
 public class PagedTableContainerCustom extends PagedTableContainer {
 

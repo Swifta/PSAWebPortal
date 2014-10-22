@@ -1,6 +1,7 @@
 package com.swifta.mats.web;
 
 import com.swifta.mats.web.accountprofile.AccountProfile;
+import com.swifta.mats.web.accountprofile.WorkSpaceAccountProfile;
 import com.swifta.mats.web.dashboard.Dashboard;
 import com.swifta.mats.web.report.Report;
 import com.swifta.mats.web.settings.Settings;
@@ -24,6 +25,7 @@ import com.vaadin.ui.Button.ClickEvent;
 public class WorkSpace extends VerticalLayout implements View, TabSheet.SelectedTabChangeListener {
 	
 	public static WorkSpaceManageUser wsmu;
+	public static WorkSpaceAccountProfile wsap;
 	VerticalLayout dashboard3;
 	private Embedded emb;
 	private Button btnLogout;
@@ -42,6 +44,7 @@ public class WorkSpace extends VerticalLayout implements View, TabSheet.Selected
 	
 	public WorkSpace(){
 		wsmu = new WorkSpaceManageUser();
+		wsap = new WorkSpaceAccountProfile();
 	}
 	
 	
@@ -77,7 +80,7 @@ public class WorkSpace extends VerticalLayout implements View, TabSheet.Selected
 		
 		
 		
-        tabsheet1.setHeight("560px");
+       // tabsheet1.setHeight("560px");
 		tabsheet1.setSizeFull();
 		tabsheet1.addStyleName("tabref");
 	
@@ -117,16 +120,19 @@ public class WorkSpace extends VerticalLayout implements View, TabSheet.Selected
 		
 		
 		
+		
 
 		
-		VerticalLayout dashboard4 = new VerticalLayout();
-		dashboard4.setImmediate(true);
+		//VerticalLayout dashboard4 = new VerticalLayout();
+		//dashboard4.setImmediate(true);
 		//dashboard4.setHeight("500px");
 		//dashboard4.setWidth("1000px");
-		dashboard4.setCaption("Test4");
-		AccountProfile account = new AccountProfile();
-		dashboard4.addComponent(account.Addlabel());
-		tabsheet1.addTab(dashboard4,"Account Profile", null);
+		//dashboard4.setCaption("Test4");
+		//AccountProfile account = new AccountProfile();
+		//dashboard4.addComponent(account.Addlabel());
+		
+		
+		tabsheet1.addTab(WorkSpace.wsap.getWorkSpaceAccountProfile(),"Account Profile", null);
 		
 		VerticalLayout dashboard5 = new VerticalLayout();
 		dashboard5.setImmediate(true);
@@ -154,6 +160,8 @@ public class WorkSpace extends VerticalLayout implements View, TabSheet.Selected
 		dashboard6.setComponentAlignment(layoutnew, Alignment.TOP_LEFT);
 		
 		layout.addComponent(tabsheet1);
+		layout.setSizeFull();
+		
 		
 		
 		
