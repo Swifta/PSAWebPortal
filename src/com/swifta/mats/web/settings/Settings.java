@@ -8,7 +8,6 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Collection;
 import java.util.Date;
 
 import com.vaadin.data.Container.Indexed;
@@ -55,6 +54,7 @@ public class Settings extends VerticalLayout {
 	TextField nameOfAccount = new TextField("Name");
 	TextField codeOfAccount = new TextField("Code");
 	TextArea descOfAccount = new TextArea("Description");
+	ComboBox type = new ComboBox("Type");
 	HorizontalLayout layout2 = new HorizontalLayout();
 	DateField date = new DateField();
 	BtnActions btnDetails;
@@ -67,9 +67,11 @@ public class Settings extends VerticalLayout {
 	
 	
 	IndexedContainer container = new IndexedContainer();
-	Indexed filtercontainer = new IndexedContainer();
-	Indexed filtercontainer2 = new IndexedContainer();
-	PagedTableCustom tb = new PagedTableCustom("Results for: Accounts");;
+	IndexedContainer filtercontainer2 = new IndexedContainer();
+	IndexedContainer filtercontainer3 = new IndexedContainer();
+	
+	PagedTableCustom tb = new PagedTableCustom("Results for: Accounts");
+	
 	VerticalLayout searchResultsContainer = new VerticalLayout();
 	VerticalLayout layoutFile = new VerticalLayout();
 	Integer x = 1;
@@ -90,16 +92,11 @@ public class Settings extends VerticalLayout {
 	
 	public HorizontalLayout Addlabel() {
 		
+		addProperties(container);
+		addProperties(filtercontainer2);
+		addProperties(filtercontainer3);
 		
 		
-		
-		
-		container.addContainerProperty(" ", CheckBox.class, null);
-		container.addContainerProperty("Date Created", String.class, "");
-		container.addContainerProperty("Name", String.class, "");
-		container.addContainerProperty("Code", String.class, "");
-		container.addContainerProperty("Description", String.class, "");
-		container.addContainerProperty("Actions", HorizontalLayout.class, null);
 		
 		// TODO Auto-generated method stub
 		//setSizeFull();
@@ -121,6 +118,14 @@ public class Settings extends VerticalLayout {
 		laying.addComponent(het4);
 		laying.addComponent(het5);
 		laying.addComponent(het6);
+		
+		
+		type.addItem("Fees");
+		type.addItem("Commission");
+		type.addItem("Control");
+		type.setNullSelectionAllowed(false);
+		type.setTextInputAllowed(false);
+		type.setValue(type.getItemIds().iterator().next());
 		
 		
 		
@@ -199,33 +204,64 @@ public class Settings extends VerticalLayout {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				String selectedId = (String) selection.getValue();
-				String hi;
-				int i;
-				//Indexed filtercontainer2 = new IndexedContainer();
-				if (selectedId != null) {
-					  
-						 filtercontainer = tb.getContainerDataSource();
+				String date,name,code,desc,typer;
+				int i; int r;
+				
+				
+				r = container.size();
+				if (selectedId != "All") {
+					    if(r != 0){
+					     IndexedContainer filtercontainer = new IndexedContainer();
+					     addProperties(filtercontainer);
 						 
-						 for(i=0; i<2; i++){
-						  hi = filtercontainer.getContainerProperty(i+1, "Name").getValue().toString();
-						 
-							 if(hi.equals(selection.getValue())){
-								 filtercontainer.removeItem(i+1);
-								 Notification.show(hi+" Noted "+selectedId);
+						 for(i=0; i<r; i++){
+							 date = container.getContainerProperty(i+1, "Date Created").getValue().toString();
+							 name = container.getContainerProperty(i+1, "Name").getValue().toString();
+							 typer = container.getContainerProperty(i+1, "Type").getValue().toString();
+							 code = container.getContainerProperty(i+1, "Code").getValue().toString();
+							 desc = container.getContainerProperty(i+1, "Description").getValue().toString();
+							 //Notification.show(typer+ " Noted "+selection.getValue());
+							 if(typer.equals(selection.getValue())){
+								
+								 het1click(date ,name,typer, code, desc,filtercontainer);
+								 //Notification.show(" Noted "+selectedId);
+							 }else{
+								 //Notification.show("Container");
+								 continue;
 							 }
 						 }
+						 if(filtercontainer.size() ==0){
+							 Notification.show("No result found");
+						 }
 						 
-						 laying.removeAllComponents();
+						 //Notification.show(Integer.toString(filtercontainer.size()));
+						 
 						 tb.setContainerDataSource(filtercontainer);
-						 laying.addComponent(searchResultsContainer);
+						 //laying.removeAllComponents();
+				         //laying.addComponent(searchResultsContainer);
 						 
-						  
+						 
+						 
+						 
+						 
+					    }  else{
+					    	Notification.show("No result found, table is empty");
+					    }
 					 
+				}else{
+					//Notification.show(Integer.toString(container.size()));
+					if (container.size() == 0){
+						Notification.show("Table is Empty");
+					}
+					tb.setContainerDataSource(container);
+					 
+					
 				}
 					
 			}
 		
 		});
+		
 		
 		back.addClickListener(new Button.ClickListener() {
 
@@ -339,9 +375,9 @@ public class Settings extends VerticalLayout {
 							          String[] record;
 							          while ((record = csvReader.readNext()) != null) {
 							        	  Date newFieldValue2 = new Date();
+							        	  filtercontainer2 =  het1click(newFieldValue2.toString() ,record[0], record[1], record[2],record[3], container);
+							        	  tb.setContainerDataSource(filtercontainer2);
 							        	  
-							            tb.setContainerDataSource(het1click(newFieldValue2.toString() ,record[0], record[1], record[2]));
-							            
 							            //Notification.show("Bulk Creation in progress");
 							            
 							           
@@ -397,7 +433,9 @@ public class Settings extends VerticalLayout {
 				}
 				
 				
+				
 				addAccount.addComponent(nameOfAccount);
+				addAccount.addComponent(type);
 				addAccount.addComponent(codeOfAccount);
 				addAccount.addComponent(descOfAccount);
 				layout2.addComponent(createAccount);
@@ -420,17 +458,16 @@ public class Settings extends VerticalLayout {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				x=container.size();
-				x = x+1;
 				adduser.setEnabled(true);
 				laying.removeAllComponents();
 				Date newFieldValue = new Date();
-				tb.setContainerDataSource(het1click(newFieldValue.toString() ,nameOfAccount.getValue(), codeOfAccount.getValue(), descOfAccount.getValue()));
+				filtercontainer2 = het1click(newFieldValue.toString() ,nameOfAccount.getValue(),type.getValue().toString(), codeOfAccount.getValue(), descOfAccount.getValue(),container);
+				tb.setContainerDataSource(filtercontainer2);
 				// TODO Auto-generated method stub
-				nameOfAccount.setValue("");codeOfAccount.setValue("");descOfAccount.setValue("");
+				nameOfAccount.setValue("");codeOfAccount.setValue("");descOfAccount.setValue("");type.setValue("Fees");
 				laying.addComponent(searchResultsContainer);
 				
-				//filtercontainer2 = tb.getContainerDataSource();
+				
 				
 			}
 			
@@ -460,7 +497,17 @@ public class Settings extends VerticalLayout {
 		
 	}
 	
-	public IndexedContainer het1click(String a, String b, String c, String d) {
+	public void addProperties(IndexedContainer containa){
+		containa.addContainerProperty(" ", CheckBox.class, null);
+		containa.addContainerProperty("Date Created", String.class, "");
+		containa.addContainerProperty("Name", String.class, "");
+		containa.addContainerProperty("Type", String.class, "");
+		containa.addContainerProperty("Code", String.class, "");
+		containa.addContainerProperty("Description", String.class, "");
+		containa.addContainerProperty("Actions", HorizontalLayout.class, null);
+		}
+	
+	public IndexedContainer het1click(String a, String b,String e, String c, String d, IndexedContainer tabContainer) {
 				
 		//Button actionsC = new Button("Details");		
 		
@@ -486,14 +533,15 @@ public class Settings extends VerticalLayout {
 		actionsC.addComponent(btnMoreActions);
 		
 		Item trItem;
-		Object itemId = container.addItem();
+		Object itemId = tabContainer.addItem();
 		
 		
 		//container.addItem(e);
-		trItem = container.getItem(itemId);
+		trItem = tabContainer.getItem(itemId);
 		Property<CheckBox> tdPropertyCheck =trItem.getItemProperty(" ");
 		Property<String> tdPropertyUID =trItem.getItemProperty("Date Created");
 		Property<String> tdPropertyUname =trItem.getItemProperty("Name");
+		Property<String> tdPropertyUtype =trItem.getItemProperty("Type");
 		Property<String> tdPropertyFname =trItem.getItemProperty("Code");
 		Property<String> tdPropertyLname =trItem.getItemProperty("Description");
 		Property<HorizontalLayout> tdPropertyActions =trItem.getItemProperty("Actions");
@@ -501,6 +549,7 @@ public class Settings extends VerticalLayout {
 		tdPropertyCheck.setValue(new CheckBox());
 		tdPropertyUID.setValue(a);
 		tdPropertyUname.setValue(b);
+		tdPropertyUtype.setValue(e);
 		tdPropertyFname.setValue(c);
 		tdPropertyLname.setValue(d);
 		tdPropertyActions.setValue(actionsC);
@@ -509,7 +558,7 @@ public class Settings extends VerticalLayout {
 		
 	
 		
-		return container;
+		return tabContainer;
 		}
 	
 
