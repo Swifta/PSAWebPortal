@@ -1,8 +1,6 @@
 package com.swifta.mats.web.usermanagement;
 
-import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
-
 public class Usermanager extends VerticalLayout {
 
 	/**

@@ -3,13 +3,9 @@ package com.swifta.mats.web.usermanagement;
 import java.util.List;
 
 import com.swifta.mats.web.WorkSpace;
-import com.vaadin.server.FontAwesome;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.UI;
-
-import elemental.events.MouseEvent.Button;
 
 
 

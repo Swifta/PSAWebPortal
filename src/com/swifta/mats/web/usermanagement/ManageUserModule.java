@@ -2,6 +2,7 @@ package com.swifta.mats.web.usermanagement;
 
 import java.util.ArrayList;
 
+import com.swifta.mats.web.WorkSpace;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.FormLayout;
@@ -338,6 +339,8 @@ public class ManageUserModule {
 			
 			
 			
+			
+			
 			/*btnLog.addClickListener(new BtnTabLikeClickListener(false, true, arrLTabBtns, cUserLogMenu, cPerAccAuthInfo, udm, 
 					"activity_log", "001"));*/
 			btnAddAgent.addClickListener(new BtnTabLikeClickListener(false, false, arrLAddUserSubTabs,  arrLSubTabBtns, cContent, aum,
@@ -362,6 +365,10 @@ public class ManageUserModule {
 					"activity_log", "001", hasOp, boolEditStatus));
 			//cUserLogMenu.setVisible(false);
 			//cLog.addComponent(cUserLogMenu);
+			
+			if(WorkSpace.wsmu != null) WorkSpace.wsmu.wsmuModifier();
+				
+			
 			
 			return cAddUserSubMenu;
 		}

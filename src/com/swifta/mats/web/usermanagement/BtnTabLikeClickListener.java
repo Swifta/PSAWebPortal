@@ -3,7 +3,6 @@ package com.swifta.mats.web.usermanagement;
 import java.util.ArrayList;
 
 import com.swifta.mats.web.WorkSpace;
-import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -127,6 +126,39 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 		
 	}
 	
+
+	
+	public BtnTabLikeClickListener(boolean isModifier,
+			boolean hasSubMenu,
+			ArrayList<HorizontalLayout> arrLSubTabs, 
+			ArrayList<BtnTabLike>arrLTabBtns,
+			HorizontalLayout tabContainer,
+			Object udm,
+			String strTbName,
+			String strUID,
+			boolean hasOp,
+			boolean boolEditStatus,
+			String[] strSession,
+			String[] strSessionVar){
+		
+		this.arrLTabBtns = arrLTabBtns;
+		this.strSession = strSession;
+		this.strSessionVar = strSessionVar;
+		this.isModifier = isModifier;
+		this.arrLTabBtns = arrLTabBtns;
+		this.hTabContainer = tabContainer;
+		this.udm = udm;
+		this.strTbName = strTbName;
+		this.strUID = strUID;
+		this.hasSubMenu = hasSubMenu;
+		this.arrLSubTabs = arrLSubTabs;
+		this.boolEditStatus = boolEditStatus;
+		this.hasOp = hasOp;
+		
+	}
+	
+	
+	
 	
 	public BtnTabLikeClickListener(boolean isModifier, ArrayList<BtnTabLike>arrLTabBtns, String[] strSession,String[] strSessionVar){
 		this.arrLTabBtns = arrLTabBtns;
@@ -143,7 +175,7 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 	public void buttonClick(ClickEvent event) {
 			curBtn = (BtnTabLike) event.getButton();
 						
-			if(hasSubMenu){
+			if(!isModifier && hasSubMenu){
 				if(arrLSubTabs != null){
 					for(HorizontalLayout sm: arrLSubTabs){
 						sm.setStyleName("c_sub_menu_invisible");
@@ -159,6 +191,8 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 				
 				setActiveTab(curBtn, arrLTabBtns);
 				cSubMenu.setStyleName("c_sub_menu_visible");
+				if(hTabContainer == null)return;
+						
 				hTabContainer.removeAllComponents();
 					if(udm instanceof UserDetailsModule){
 						hTabContainer.addComponent(((UserDetailsModule)udm).getDetailsForm(strTbName, strUID, hasOp, boolEditStatus));
@@ -179,11 +213,22 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 							WorkSpace.wsmu.wsmuModifier();
 					}
 				}else{
-				
-				
-				
-			
-					if(isModifier){
+
+					if(isModifier && !hasSubMenu){
+						
+						if(arrLSubTabs != null){
+							for(HorizontalLayout sm: arrLSubTabs){
+								sm.setStyleName("c_sub_menu_invisible");
+							}
+							
+							
+							/*
+							 * Next line is important for only one reason...
+							 * 1. Ensure that child Menu does not hide Parent Menu
+							 */
+							curBtn.getParent().setStyleName("c_sub_menu_visible");
+						}
+						
 						if(UserDetailsModule.uDetailsEditStatus){
 							UI.getCurrent().addWindow(getWarningPopWindow());
 						}else{
@@ -218,6 +263,7 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 						}else{
 							
 							setActiveTab(curBtn, arrLTabBtns);
+							if(hTabContainer == null)return;
 							hTabContainer.removeAllComponents();
 							if(udm instanceof UserDetailsModule){
 								

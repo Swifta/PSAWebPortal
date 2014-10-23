@@ -9,7 +9,6 @@ import com.vaadin.ui.Embedded;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
@@ -208,6 +207,7 @@ public class WorkSpaceManageUser{
 			contentC.addComponent(searchC);
 			if(curSessionUManage != null && curSessionUManage.equals(ManageUserModule.SESSION_VAR_UMANAGE_SEARCH)){
 				contentC.setComponentAlignment(searchC, Alignment.MIDDLE_CENTER);
+				contentC.removeStyleName("c_search_user");
 				contentC.setSizeFull();;
 				contentC.setSpacing(false);
 				contentC.setMargin(true);
@@ -313,6 +313,7 @@ public class WorkSpaceManageUser{
 				String strSessionSearch = (String) UI.getCurrent().getSession().getAttribute(SearchUserModule.SESSION_SEARCH_USER);
 				if(strSessionSearch != null){
 					searchC = mum.getSearchContainer(strSessionSearch);
+					searchC.removeStyleName("c_search_user");
 					contentC.addComponent(searchC);
 					contentC.setComponentAlignment(searchC, Alignment.MIDDLE_CENTER);
 					contentC.setSizeFull();
@@ -347,6 +348,7 @@ public class WorkSpaceManageUser{
 				 
 				if(searchC != null){
 					searchC.setSizeUndefined();
+					searchC.setStyleName("c_search_user");
 					contentC.setComponentAlignment(searchC, Alignment.TOP_RIGHT);
 				}
 				String strSessionSearchParam = (String) UI.getCurrent().getSession().getAttribute(SearchUserModule.SESSION_SEARCH_USER_PARAM);
