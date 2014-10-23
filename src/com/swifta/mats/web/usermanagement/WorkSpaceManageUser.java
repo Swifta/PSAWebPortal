@@ -199,7 +199,7 @@ public class WorkSpaceManageUser{
 	
 	
 	public VerticalLayout getWorkSpaceManageUser() {
-		
+		//Notification.show("I have been thoroughly clicked....!!");
 		String curSessionWorkArea = (String) UI.getCurrent().getSession().getAttribute(WorkSpaceManageUser.SESSION_WORK_AREA);
 		String curSessionUManage = (String) UI.getCurrent().getSession().getAttribute(ManageUserModule.SESSION_UMANAGE);
 		if(curSessionWorkArea != null && curSessionWorkArea.equals(SESSION_VAR_WORK_AREA_MANAGE_USER)){

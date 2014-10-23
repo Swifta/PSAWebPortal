@@ -3,11 +3,11 @@ package com.swifta.mats.web.usermanagement;
 import java.util.ArrayList;
 
 import com.swifta.mats.web.WorkSpace;
+import com.swifta.mats.web.accountprofile.ManageProfileModule;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -211,7 +211,12 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 						UI.getCurrent().getSession().setAttribute(ManageUserModule.SESSION_UMANAGE, ManageUserModule.SESSION_VAR_UMANAGE_SEARCH);
 						if(WorkSpace.wsmu != null)
 							WorkSpace.wsmu.wsmuModifier();
+					}else if(udm instanceof ManageProfileModule){
+						UI.getCurrent().getSession().setAttribute(ManageProfileModule.SESSION_MPM, ManageProfileModule.SESSION_VAR_MPM_ACT_LOG);
+						if(WorkSpace.wsap != null)
+							WorkSpace.wsap.wsapModifier();
 					}
+					
 				}else{
 
 					if(isModifier && !hasSubMenu){
@@ -233,15 +238,25 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 							UI.getCurrent().addWindow(getWarningPopWindow());
 						}else{
 							
-							
-							if(WorkSpace.wsmu != null){
+							if(udm instanceof ManageProfileModule){
+								//Notification.show("Hello....");
 								for(int i = 0; i < strSession.length; i++){
 									 UI.getCurrent().getSession().setAttribute(strSession[i],strSessionVar[i]);
 									}
-								WorkSpace.wsmu.wsmuModifier();
-								
-								setActiveTab(curBtn, arrLTabBtns);
-							} 
+								if(WorkSpace.wsap != null) 
+									WorkSpace.wsap.wsapModifier();
+										setActiveTab(curBtn, arrLTabBtns);
+							}else{
+									if(WorkSpace.wsmu != null){
+										//Notification.show("Non........");
+										for(int i = 0; i < strSession.length; i++){
+											 UI.getCurrent().getSession().setAttribute(strSession[i],strSessionVar[i]);
+											}
+											WorkSpace.wsmu.wsmuModifier();
+										
+										setActiveTab(curBtn, arrLTabBtns);
+									} 
+							}
 						
 						}
 					
@@ -351,14 +366,25 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 				UserDetailsModule.uDetailsEditStatus = false;
 				popup.close();
 				if(isModifier){
-					if(WorkSpace.wsmu != null){
+					if(udm instanceof ManageProfileModule){
+						//Notification.show("Hello....");
 						for(int i = 0; i < strSession.length; i++){
 							 UI.getCurrent().getSession().setAttribute(strSession[i],strSessionVar[i]);
 							}
-						WorkSpace.wsmu.wsmuModifier();
-						
-						setActiveTab(curBtn, arrLTabBtns);
-					} 
+						if(WorkSpace.wsap != null) 
+							WorkSpace.wsap.wsapModifier();
+								setActiveTab(curBtn, arrLTabBtns);
+					}else{	
+					
+						if(WorkSpace.wsmu != null){
+							for(int i = 0; i < strSession.length; i++){
+								 UI.getCurrent().getSession().setAttribute(strSession[i],strSessionVar[i]);
+								}
+							WorkSpace.wsmu.wsmuModifier();
+							
+							setActiveTab(curBtn, arrLTabBtns);
+						} 
+					}
 				}else{
 					
 					setActiveTab(curBtn, arrLTabBtns);
@@ -367,7 +393,7 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 						
 						hTabContainer.addComponent(((UserDetailsModule)udm).getDetailsForm(strTbName, strUID, hasOp, boolEditStatus));
 					}else{
-						Notification.show("Leave me alone.");
+						//Notification.show("Leave me alone.");
 					}
 					//hTabContainer.addComponent(udm.getDetailsForm(strTbName, strUID, hasOp, boolEditStatus));
 				}

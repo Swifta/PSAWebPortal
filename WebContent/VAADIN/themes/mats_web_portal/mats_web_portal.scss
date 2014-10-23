@@ -828,6 +828,7 @@ ul.empty li{
 	//position: fixed;
 	margin: 5px 0 0 5px;
 	z-index: 999;
+	padding: 0;
 	
 }
 
@@ -883,6 +884,10 @@ ul.empty li{
 }
 
 .c_search_user{
+}
+
+.btn_repositioned{
+	margin-top: 24px;
 }
 
 

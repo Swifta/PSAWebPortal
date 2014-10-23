@@ -18,9 +18,10 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
 public class AccountProfileModule{
-
+	UserDetailsModule udm;
+	HorizontalLayout udc;
 	public AccountProfileModule(){
-		
+		 udm = new UserDetailsModule();
 	}
 	
 	public HorizontalLayout getProfileContainer(){
@@ -123,11 +124,39 @@ public class AccountProfileModule{
 				btnACLog.setEnabled(false);
 			}*/
 			
+			udc = udm.getDetailsForm("personal", "001",false, false);
 			
-			UserDetailsModule udm = new UserDetailsModule();
-				
 
-	return udm.getDetailsForm("personal", "001",false, false);
+	return udc;
+}
+	
+	
+public void apmModifier(String strCurSession, HorizontalLayout cContent){
+	  if(strCurSession.equals(ManageProfileModule.SESSION_VAR_MPM_PERSONAL)){
+		  if(udc != null){
+			  cContent.removeComponent(udc);
+		  }
+		  udc = udm.getDetailsForm("personal", "001", false, false);
+		  cContent.addComponent(udc);
+	  }else  if(strCurSession.equals(ManageProfileModule.SESSION_VAR_MPM_AUTH)){
+		  if(udc != null){
+			  cContent.removeComponent(udc);
+		  }
+		  udc = udm.getDetailsForm("cur_user_auth", "001", false, false);
+		  cContent.addComponent(udc);
+	  }else  if(strCurSession.equals(ManageProfileModule.SESSION_VAR_MPM_ACT_LOG)){
+		  if(udc != null){
+			  cContent.removeComponent(udc);
+		  }
+		  udc = udm.getDetailsForm("activity_log", "001", false, false);
+		  cContent.addComponent(udc);
+	  }else  if(strCurSession.equals(ManageProfileModule.SESSION_VAR_MPM_ACC_LOG)){
+		  if(udc != null){
+			  cContent.removeComponent(udc);
+		  }
+		  udc = udm.getDetailsForm("account_log", "001", false, false);
+		  cContent.addComponent(udc);
+	  }
 }
 	
 	

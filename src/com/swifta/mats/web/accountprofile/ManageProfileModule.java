@@ -36,7 +36,7 @@ public class ManageProfileModule {
 		BtnTabLike btnLog = new BtnTabLike("Log", null);
 		btnProfile.setStyleName("btn_tab_like btn_tab_like_active");
 		
-		UI.getCurrent().getSession().setAttribute(SESSION_MPM, SESSION_VAR_MPM_PERSONAL);
+		
 		//edit...
 		
 		cManageAndAddTab.addComponent(btnProfile);
@@ -81,7 +81,8 @@ public class ManageProfileModule {
 		cLogSubMenu.setSizeUndefined();
 		cLogSubMenu.setSizeUndefined();
 		
-		if(WorkSpace.wsmu != null) WorkSpace.wsmu.wsmuModifier();
+		UI.getCurrent().getSession().setAttribute(SESSION_MPM, SESSION_VAR_MPM_PERSONAL);
+		//if(WorkSpace.wsmu != null) WorkSpace.wsmu.wsmuModifier();
 		
 		
 		return cManageUserMenu;
