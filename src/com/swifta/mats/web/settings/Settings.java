@@ -23,6 +23,7 @@ import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.server.Resource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
@@ -49,7 +50,7 @@ public class Settings extends VerticalLayout {
 	
 	
 	HorizontalLayout laying = new HorizontalLayout();
-
+	int ret;
 	Button adduser = new Button("+Add New");
 	Button filter = new Button("Filter");
 	Button BulkImport = new Button("Bulk Import");
@@ -59,10 +60,22 @@ public class Settings extends VerticalLayout {
 	Button cancelAccount = new Button("Cancel");
 	Button cancelBulk = new Button("Cancel");
 	Button applyBulk = new Button("Apply");
+	
 	FormLayout addAccount = new FormLayout();
 	TextField nameOfAccount = new TextField("Name");
 	TextField codeOfAccount = new TextField("Code");
 	TextArea descOfAccount = new TextArea("Description");
+	
+	FormLayout addAccount2 = new FormLayout();
+	TextField nameOfAccount2 = new TextField("Name");
+	Label codeOfAccount2 = new Label();
+	TextArea descOfAccount2 = new TextArea("Description");
+	Label dateCreated = new Label("Date Created");
+	Label index = new Label("Index");
+	ComboBox type2 = new ComboBox("Type");
+	Button editAccount = new Button("Save");
+	Button cancelAccount2 = new Button("Cancel");
+	
 	ComboBox type = new ComboBox("Type");
 	ComboBox bulkAction = new ComboBox();
 	HorizontalLayout layout2 = new HorizontalLayout();
@@ -140,6 +153,13 @@ public class Settings extends VerticalLayout {
 		type.setNullSelectionAllowed(false);
 		type.setTextInputAllowed(false);
 		type.setValue(type.getItemIds().iterator().next());
+		
+		type2.addItem("Fees");
+		type2.addItem("Commission");
+		type2.addItem("Control");
+		type2.setNullSelectionAllowed(false);
+		type2.setTextInputAllowed(false);
+		type2.setValue(type.getItemIds().iterator().next());
 		
 		//bulkAction.addItem("Delete");
 		bulkAction.addItem("Disable");
@@ -474,12 +494,9 @@ public class Settings extends VerticalLayout {
 							          String[] record;
 							          while ((record = csvReader.readNext()) != null) {
 							        	  Date newFieldValue2 = new Date();
-							        	  filtercontainer2 =  het1click(newFieldValue2.toString() ,record[0], record[1], record[2],record[3], container);
-							        	  tb.setContainerDataSource(filtercontainer2);
-							        	  
-							            //Notification.show("Bulk Creation in progress");
-							            
-							           
+							        	  filtercontainer2 =  het1click(newFieldValue2.toString() ,record[0], record[1], record[2],record[3], container,0);
+							        	  //tb.setContainerDataSource(filtercontainer2);
+							        	 
 							            laying.removeAllComponents();
 							            laying.addComponent(searchResultsContainer);
 							            BulkImport.setEnabled(true);
@@ -531,7 +548,8 @@ public class Settings extends VerticalLayout {
 					laying.removeComponent(layoutFile);
 				}
 				
-				
+				addAccount.removeAllComponents();
+				layout2.removeAllComponents();
 				
 				addAccount.addComponent(nameOfAccount);
 				addAccount.addComponent(type);
@@ -562,8 +580,8 @@ public class Settings extends VerticalLayout {
 				adduser.setEnabled(true);
 				laying.removeAllComponents();
 				Date newFieldValue = new Date();
-				filtercontainer2 = het1click(newFieldValue.toString() ,nameOfAccount.getValue(),type.getValue().toString(), codeOfAccount.getValue(), descOfAccount.getValue(),container);
-				tb.setContainerDataSource(filtercontainer2);
+				het1click(newFieldValue.toString() ,nameOfAccount.getValue(),type.getValue().toString(), codeOfAccount.getValue(), descOfAccount.getValue(),container,0);
+				tb.setContainerDataSource(container);
 				// TODO Auto-generated method stub
 				nameOfAccount.setValue("");codeOfAccount.setValue("");descOfAccount.setValue("");type.setValue("Fees");
 				laying.addComponent(searchResultsContainer);
@@ -594,12 +612,32 @@ public class Settings extends VerticalLayout {
 			
 		});
 		
+		editAccount.addClickListener(new Button.ClickListener() {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				container.removeItem(ret);
+				het1click(dateCreated.getValue() ,nameOfAccount2.getValue(),type2.getValue().toString(), codeOfAccount2.getValue(), descOfAccount2.getValue(),container,ret);
+				
+				laying.removeComponent(addAccount);
+				// TODO Auto-generated method stub
+				
+			}			
+		});
+		
+		
+		
 		return laying;
 		
 	}
 	
 	public void addProperties(IndexedContainer containa){
-		//containa.
+		
 		containa.addContainerProperty(" ", CheckBox.class, "");
 		containa.addContainerProperty("Date Created", String.class, "");
 		containa.addContainerProperty("Name", String.class, "");
@@ -610,7 +648,7 @@ public class Settings extends VerticalLayout {
 		
 		}
 	
-	public IndexedContainer het1click(String a, String b,String e, String c, String d, IndexedContainer tabContainer) {
+	public IndexedContainer het1click(String a, String b,String e, String c, String d, IndexedContainer tabContainer, int id) {
 				
 		//Button actionsC = new Button("Details");		
 		
@@ -619,7 +657,7 @@ public class Settings extends VerticalLayout {
 		btnEdit = new BtnActions("Edit");
 		btnEdit.setIcon(FontAwesome.EDIT);
 		btnLink = new BtnActions("Disable Account");
-		btnLink.setIcon(FontAwesome.THUMBS_UP);
+		btnLink.setIcon(FontAwesome.CHECK);
 		btnDelete = new BtnActions("Delete");
 		btnDelete.setIcon(icDelete);
 		btnMoreActions = new BtnActions("More...");
@@ -655,13 +693,47 @@ public class Settings extends VerticalLayout {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				 tb.setEditable(true);
-				Notification.show("btnDetails Clicked");
+				ret = Integer.parseInt(event.getButton().getId().replace("Edit", ""));
+				
+				tb.getContainerProperty(ret, "Name").getValue();
+				
+				nameOfAccount2.setValue(tb.getContainerProperty(ret, "Name").getValue().toString());
+				codeOfAccount2.setValue(tb.getContainerProperty(ret, "Code").getValue().toString());
+				descOfAccount2.setValue(tb.getContainerProperty(ret, "Description").getValue().toString());
+				type2.setValue(tb.getContainerProperty(ret, "Type").getValue().toString());
+				dateCreated.setValue(tb.getContainerProperty(ret, "Date Created").getValue().toString());
+				index.setValue(String.valueOf(ret));
+				
+				codeOfAccount2.setCaption("Account Code");
+				
+				addAccount.removeAllComponents();
+				
+				layout2.removeAllComponents();
+				
+				addAccount.addComponent(codeOfAccount2);
+				addAccount.addComponent(nameOfAccount2);
+				addAccount.addComponent(type2);
+				
+				addAccount.addComponent(descOfAccount2);
+				//addAccount.addComponent(index);
+				//addAccount.addComponent(dateCreated);
+				
+				layout2.addComponent(editAccount);
+				layout2.addComponent(cancelAccount);
+				addAccount.addComponent(layout2);
+				//laying.removeAllComponents();
+				
+				laying.addComponent(addAccount,0);
+				//adduser.setDisableOnClick(true);
+				btnEdit.setEnabled(false);
+												 
+				//Notification.show("btnDetails Clicked");
 				// TODO Auto-generated method stub
 				
 			}
 						
 		});
+		
 		
 		btnLink.addClickListener(new Button.ClickListener() {
 					
@@ -679,7 +751,8 @@ public class Settings extends VerticalLayout {
 						
 							event.getButton().setDescription("Enable Account");
 							event.getButton().setStyleName("butDisable");
-							event.getButton().setIcon(FontAwesome.FROWN_O);
+							Resource icon = new ThemeResource("img/stop.png");
+							event.getButton().setIcon(icon);
 							int reti = Integer.parseInt(Idc.replace("Link", ""));
 							String reti2 = tb.getContainerDataSource().getContainerProperty(reti, "Name").getValue().toString();
 							Notification.show(reti2+" Account Disabled");
@@ -687,7 +760,7 @@ public class Settings extends VerticalLayout {
 						
 							event.getButton().setDescription("Disable Account");
 							event.getButton().setStyleName("butEnable");
-							event.getButton().setIcon(FontAwesome.THUMBS_UP);
+							event.getButton().setIcon(FontAwesome.CHECK);
 							int reta = Integer.parseInt(Idc.replace("Link", ""));
 							String reta2 = tb.getContainerDataSource().getContainerProperty(reta, "Name").getValue().toString();
 							Notification.show(reta2+" Account Disabled");
@@ -713,10 +786,18 @@ public class Settings extends VerticalLayout {
 				
 			}
 		});
-		
+		Object itemId,pitemId;
 		Item trItem;
-		Object itemId = tabContainer.addItem();
-		CheckBox checky = new CheckBox();
+				if(id == 0){
+					itemId = tabContainer.addItem();
+				}else{
+					itemId = id;
+					//pitemId=id+1;
+					tabContainer.addItemAt(id-1, itemId);
+					
+					
+				}
+		CheckBox checky = new CheckBox(); 
 		
 		trItem = tabContainer.getItem(itemId);
 		
