@@ -11,6 +11,7 @@ import com.vaadin.ui.Embedded;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.PopupDateField;
@@ -132,6 +133,7 @@ public class AccountProfileModule{
 	
 	
 public void apmModifier(String strCurSession, HorizontalLayout cContent){
+	
 	  if(strCurSession.equals(ManageProfileModule.SESSION_VAR_MPM_PERSONAL)){
 		  if(udc != null){
 			  cContent.removeComponent(udc);
@@ -145,11 +147,13 @@ public void apmModifier(String strCurSession, HorizontalLayout cContent){
 		  udc = udm.getDetailsForm("cur_user_auth", "001", false, false);
 		  cContent.addComponent(udc);
 	  }else  if(strCurSession.equals(ManageProfileModule.SESSION_VAR_MPM_ACT_LOG)){
+		 
 		  if(udc != null){
 			  cContent.removeComponent(udc);
 		  }
 		  udc = udm.getDetailsForm("activity_log", "001", false, false);
 		  cContent.addComponent(udc);
+		 // Notification.show(strCurSession);
 	  }else  if(strCurSession.equals(ManageProfileModule.SESSION_VAR_MPM_ACC_LOG)){
 		  if(udc != null){
 			  cContent.removeComponent(udc);

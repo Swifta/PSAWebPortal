@@ -167,7 +167,7 @@ public class BackEndEmulator {
 			String arrTbName[] = {"cur_user_auth"};
 			String arrUID[] = {"001"};
 			
-			String[] arrTfCaptions =  new String[]{"Account ID", "User Name", "Password"};
+			String[] arrTfCaptions =  new String[]{"Account ID", "Username", "Password"};
 			String[] arrTfVals =  new String[]{"001", "Amama", "************"};
 			
 			String[] arrOptCaptions = null;

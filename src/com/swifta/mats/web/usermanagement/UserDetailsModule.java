@@ -6,9 +6,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.swifta.mats.web.accountprofile.ManageProfileModule;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
@@ -18,6 +20,7 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -32,6 +35,8 @@ public class UserDetailsModule{
 	OptionGroup opt;
 	ComboBox combo;
 	PopupDateField dF;
+	
+	
 	
 	//Declaration of data containers...
 	
@@ -99,13 +104,6 @@ public class UserDetailsModule{
 					
 					//Set Data
 					
-					if(strTbName.equals("account") || strTbName.equals("auth")){
-						hasOp = true;
-						
-					}else{
-						hasOp = false;
-					}
-					
 					
 					arrTfCaptions = mappedData.get("arrTfCaptions");
 					arrOptCaptions = mappedData.get("arrOptCaptions");
@@ -145,7 +143,18 @@ public class UserDetailsModule{
 					//set TextField(tf) form objects
 					if(arrTfVals != null){
 						if(strCurUserType.equals("cur_user")){
-							setCurUserTfs(isReadOnlyTf, arrLAllFormFields, arrLAllEditableFields, arrLTfEditableVals);
+							String strCurUserAction  = (String) UI.getCurrent().getSession().getAttribute(ManageProfileModule.SESSION_MPM_CUR_ACTION);
+							
+							
+							if(strCurUserAction != null){
+								//Notification.show(strCurUserAction);
+								if(strCurUserAction.equals("cur_user_action_auth")){
+									setCurUserTfs(isReadOnlyTf, arrLAllFormFields, arrLAllEditableFields, arrLTfEditableVals);
+								}
+										
+							}else{
+								setTfs(isReadOnlyTf, arrLAllFormFields, arrLAllEditableFields, arrLTfEditableVals);
+							}
 						}else{
 							setTfs(isReadOnlyTf, arrLAllFormFields, arrLAllEditableFields, arrLTfEditableVals);
 						}
@@ -189,19 +198,22 @@ public class UserDetailsModule{
 					final HorizontalLayout cBtnEditCancel = new HorizontalLayout();
 					cBtnEditCancel.setSizeUndefined();
 					cBtnEditCancel.addComponent(btnEdit);
-					if(strCurUserType.equals("cur_user")){
-						btnEdit.setVisible(false);
-					}else{
-						btnEdit.setVisible(true);
+					
+					
+					String strCurUserAction  = (String) UI.getCurrent().getSession().getAttribute(ManageProfileModule.SESSION_MPM_CUR_ACTION);
+					if(strCurUserAction != null){
+						if(strCurUserAction.equals("cur_user_action_auth")){
+							btnEdit.setVisible(false);
+						}
 					}
-					
-					
-					
 					
 					if(hasOp){
 						//Notification.show(Integer.toString(arrLOpBtns.size()));
 						ecbsf = new EditCancelBtnsSingleField(cUPersonalDetails, false);
 						cDetailsAndOperations.addComponent(getOpForm(strTbName, strUID,mapSlaveFields));
+						btnEdit.setVisible(false);
+						btnEdit.setEnabled(false);
+						ecbsf.btnEditS.setVisible(false);
 						
 					}else{
 						wrapperEditCancelBtnsClickListener(btnEdit, btnCancel, btnEditId, btnSaveId, arrLAllEditableFields, cBtnEditCancel, arrLTfEditableVals, 
@@ -244,7 +256,6 @@ public class UserDetailsModule{
 		int iTf = 0;
 		int iOpt = 0;
 		int iCombo = 0;
-		TextField tF;
 		uDetailsEditStatus = false;
 		//Notification.show(Integer.toString(arrTfVals.length)+" I have");
 		for(Object f: lAllEditableFields){
@@ -568,16 +579,21 @@ public class UserDetailsModule{
 	
 	private class EditCancelBtnsSingleField{
 		
-		String strBtnIDEdit = "btn_account_status_edit";
-		final Button btnEditS = new Button();
+		final private Button btnEditS = new Button();
 		final Button btnCancel = new Button();
 		final HorizontalLayout cBtnEditCancel = new HorizontalLayout();
 		private Object c;
 		private boolean isInlineEdit = false;
 		private ArrayList<Object> arrLEf;
 		private ArrayList<String> arrLEfVal;
-		String strE = "cur_user_edit_pass";
-		String strS = "cur_user_save_pass";
+		private final String strEPass = "cur_user_btn_id_edit_pass";
+		private final String strSPass = "cur_user_btn_id_save_pass";
+		private final String strCPass = "cur_user_btn_id_cancel_pass";
+		
+		private final String strEUname = "cur_user_btn_id_edit_uname";
+		private final String strSUname = "cur_user_btn_id_save_uname";
+		private final String strCUname = "cur_user_btn_id_cancel_uname";
+		
 		
 		public EditCancelBtnsSingleField(FormLayout c, boolean isInlineEdit){
 			 this.c = c;
@@ -602,7 +618,7 @@ public class UserDetailsModule{
 			btnEditS.setStyleName("btn_link btn_repositioned");
 			//btnEditS.setVisible(false);
 			//btnEditS.setEnabled(false);
-			btnEditS.setId(strE);
+			//btnEditS.setId(strE);
 			
 			
 			
@@ -664,14 +680,48 @@ public class UserDetailsModule{
 				});
 				
 			}else if(isInlineEdit){
-				btnEditS.addClickListener(new Button.ClickListener() {
+				    btnEditS.addClickListener(new Button.ClickListener() {
+					private String strEID = null;
 					
 					private static final long serialVersionUID = 5258861566127416396L;
 
 					@Override
 					public void buttonClick(ClickEvent event) {
-						enableEditableFormFields(arrLEf);
-						if(btnEditS.getId().equals(strE)){
+						
+						strEID = btnEditS.getId();
+						if(strEID.equals(strEPass) || strEID.equals(strEUname) ){
+							
+							if(strEID.equals(strEPass)){
+								//btnEditS.setId(strSPass);
+								showPasswordChangeWindow();
+							}else if(strEID.equals(strEUname)){
+								enableEditableFormFields(arrLEf);
+								btnEditS.setId(strSUname);
+								btnCancel.setVisible(true);
+								btnCancel.setEnabled(true);
+								btnEditS.setIcon(FontAwesome.SAVE);
+							}
+						}else if(strEID.equals(strSPass) || strEID.equals(strSUname) ){
+							
+							
+							disableEditableFields(arrLEf);
+							btnEditS.setIcon(FontAwesome.EDIT);
+							btnCancel.setVisible(false);
+							btnCancel.setEnabled(false);
+							if(strEID.equals(strSPass)){
+								btnEditS.setId(strEPass);
+								
+							}else if(strEID.equals(strSUname)){
+								btnEditS.setId(strEUname);
+							}
+							
+							/*
+							 * TODO commit changes to server
+							 */
+							
+						}
+						
+						/*if(btnEditS.getId().equals(strEPass) ){
 							btnCancel.setVisible(true);
 							btnCancel.setEnabled(true);
 							btnEditS.setIcon(FontAwesome.SAVE);
@@ -683,10 +733,8 @@ public class UserDetailsModule{
 							btnEditS.setId(strE);
 							btnCancel.setVisible(false);
 							btnCancel.setEnabled(false);
-							/*
-							 * TODO commit changes to server
-							 */
-						}
+							
+						}*/
 						
 						
 								
@@ -697,20 +745,33 @@ public class UserDetailsModule{
 				
 				btnCancel.addClickListener(new Button.ClickListener() {
 					private static final long serialVersionUID = 7008276156596987435L;
+					String strCID = null;
 	
 					@Override
 					public void buttonClick(ClickEvent event) {
 						
-						//Notification.show(arrLEfVal.get(0));
-						//Notification.show(Integer.toString(arrLEf.size())+" I have size");
+						strCID = btnCancel.getId();
+						if(strCID.equals(strCPass) || strCID.equals(strCUname) ){
+							resetForm(arrLEf,  arrLEfVal, null, null,null);	
+							uDetailsEditStatus = false;
+							btnEditS.setIcon(FontAwesome.EDIT);
+							btnCancel.setVisible(false);
+							btnCancel.setEnabled(false);
+					
+							if(btnEditS.getId().equals(strSPass)){
+								btnEditS.setId(strEPass);
+							}else if(btnEditS.getId().equals(strSUname)){
+								btnEditS.setId(strEUname);
+							}
+						}
 						
 						
-						resetForm(arrLEf,  arrLEfVal, null, null,null);	
+						/*resetForm(arrLEf,  arrLEfVal, null, null,null);	
 						uDetailsEditStatus = false;
 						btnCancel.setVisible(false);
 						btnCancel.setEnabled(false);
 						btnEditS.setIcon(FontAwesome.EDIT);
-						btnEditS.setId(strE);
+						btnEditS.setId(strE);*/
 						
 					}
 				});
@@ -863,12 +924,94 @@ public class UserDetailsModule{
 		
 	}
 	
+	private void showPasswordChangeWindow(){
+		
+			final Window popup = new Window("Change Password");
+			popup.setIcon(FontAwesome.EDIT);
+			popup.center();
+			popup.setStyleName("w_change_pass");
+			
+			VerticalLayout cPopupMsg = new VerticalLayout();
+			//cPopupMsg.setMargin(true);
+			//cPopupMsg.setSpacing(true);
+			
+			
+			VerticalLayout frm = new VerticalLayout();
+			frm.setSpacing(true);
+			frm.setSizeUndefined();
+			
+			Label lbChangePass = new Label("Change your Password");
+			lbChangePass.setStyleName("label_search_user");
+			TextField tfCurPass = new TextField("Current Password");
+			TextField tfNewPass = new TextField("New Password");
+			TextField tfReNewPass = new TextField("Re-Enter Password");
+			frm.addComponent(lbChangePass);
+			frm.addComponent(tfCurPass);
+			frm.addComponent(tfNewPass);
+			frm.addComponent(tfReNewPass);
+			
+			cPopupMsg.addComponent(frm);
+			
+			
+			
+			HorizontalLayout cPopupBtns = new HorizontalLayout();
+			cPopupBtns.setSizeUndefined();
+			cPopupBtns.setSpacing(true);
+			
+			Button btnSave = new Button();
+			btnSave.setIcon(FontAwesome.SAVE);
+			Button btnCancel = new Button("Cancel");
+			cPopupBtns.addComponent(btnSave);
+			cPopupBtns.addComponent(btnCancel);
+			frm.addComponent(cPopupBtns);
+			frm.setComponentAlignment(cPopupBtns, Alignment.BOTTOM_CENTER);
+			
+			
+			cPopupMsg.addComponent(frm);
+			cPopupMsg.setComponentAlignment(frm, Alignment.TOP_CENTER);
+			
+			
+			
+			btnSave.addClickListener(new Button.ClickListener() {
+				
+			
+				private static final long serialVersionUID = -4241921726926290840L;
+
+				@Override
+				public void buttonClick(ClickEvent event) {
+					
+					/*
+					 * TODO Verify current Password and new password.
+					 * Save/indicate errors.
+					 */
+					
+				}
+			});
+			
+			btnCancel.addClickListener(new Button.ClickListener() {
+				
+			
+				private static final long serialVersionUID = 7890239257486668503L;
+
+				@Override
+				public void buttonClick(ClickEvent event) {
+						popup.close();
+					}
+				});
+					
+			popup.setContent(cPopupMsg);
+			UI.getCurrent().addWindow(popup);
+		}
+		
+	
+	
 	private void setCurUserTfs(int isReadOnlyTf, List<Object>arrLAllFormFields, List<Object>arrLTfEditable, ArrayList<String>arrLTfEditableVals){
 		VerticalLayout frm = new VerticalLayout();
 		HorizontalLayout cTf;
 		//EditCancelBtnsSingleField ecbsfInline;
 		ArrayList<Object> arrLEf;
 		ArrayList<String> arrLEfVal;
+		String strEID = null;
 		
 		
 		for(int iTf = 0; iTf < arrTfVals.length; iTf++){
@@ -896,11 +1039,21 @@ public class UserDetailsModule{
 				ecbsf.btnEditS.setVisible(true);
 				ecbsf.btnEditS.setEnabled(true);
 				
+				if(arrTfCaptions[iTf].equals("Username")){
+					ecbsf.btnEditS.setId("cur_user_btn_id_edit_uname");
+					ecbsf.btnCancel.setId("cur_user_btn_id_cancel_uname");
+				}else if(arrTfCaptions[iTf].equals("Password")){
+					ecbsf.btnEditS.setId("cur_user_btn_id_edit_pass");
+					ecbsf.btnCancel.setId("cur_user_btn_id_cancel_pass");
+				}
+				
 				
 				arrLTfEditable.add(tfGen);
 				arrLTfEditableVals.add(arrTfVals[iTf]);
 			}
 		}
+		
+		
 		
 	}
 

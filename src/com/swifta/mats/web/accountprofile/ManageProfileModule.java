@@ -14,6 +14,7 @@ import com.vaadin.ui.VerticalLayout;
 public class ManageProfileModule {
 	
 	public static final String SESSION_MPM = "manage_profile";
+	public static final String SESSION_MPM_CUR_ACTION = "manage_profile_cur_action";
 	public static String SESSION_VAR_MPM_PERSONAL = "personal";
 	public static String SESSION_VAR_MPM_AUTH = "auth";
 	public static String SESSION_VAR_MPM_LOG = "log";
@@ -68,9 +69,9 @@ public class ManageProfileModule {
 		//cManageUserMenu.addComponent(cAddUserSubMenu);
 		
 		btnProfile.addClickListener(new BtnTabLikeClickListener(true, false, arrLSubTabs, arrLTabBtns, cContent, this,
-				"personal", "001", false, false, new String[]{SESSION_MPM}, new String[]{SESSION_VAR_MPM_PERSONAL} ));
+				"personal", "001", false, false, new String[]{SESSION_MPM, SESSION_MPM_CUR_ACTION}, new String[]{SESSION_VAR_MPM_PERSONAL, null} ));
 		btnAuth.addClickListener(new BtnTabLikeClickListener(true, false, arrLSubTabs, arrLTabBtns, cContent, this,
-				"personal", "001", false, false , new String[]{SESSION_MPM}, new String[]{SESSION_VAR_MPM_AUTH}));
+				"personal", "001", false, false , new String[]{SESSION_MPM, SESSION_MPM_CUR_ACTION}, new String[]{SESSION_VAR_MPM_AUTH, "cur_user_action_auth"}));
 
 		
 		cLogSubMenu = getUserLogSubMenu(btnLog, arrLTabBtns, cLogSubMenu, arrLSubTabs,cContent, false, false);

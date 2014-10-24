@@ -1,6 +1,7 @@
 package com.swifta.mats.web.accountprofile;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
@@ -52,6 +53,7 @@ public class WorkSpaceAccountProfile {
 	
 	public void wsapModifier(){
 		String strCurSession = (String) UI.getCurrent().getSession().getAttribute(ManageProfileModule.SESSION_MPM);
+		//Notification.show(strCurSession);
 		apm.apmModifier(strCurSession, cContent);
 	}
 	
