@@ -134,19 +134,19 @@ public class AccountProfileModule{
 	
 public void apmModifier(String strCurSession, HorizontalLayout cContent){
 	
-	  if(strCurSession.equals(ManageProfileModule.SESSION_VAR_MPM_PERSONAL)){
+	  if(strCurSession.equals(WorkSpaceManageProfile.SESSION_VAR_WSMP_PERSONAL)){
 		  if(udc != null){
 			  cContent.removeComponent(udc);
 		  }
 		  udc = udm.getDetailsForm("personal", "001", false, false);
 		  cContent.addComponent(udc);
-	  }else  if(strCurSession.equals(ManageProfileModule.SESSION_VAR_MPM_AUTH)){
+	  }else  if(strCurSession.equals(WorkSpaceManageProfile.SESSION_VAR_WSMP_AUTH)){
 		  if(udc != null){
 			  cContent.removeComponent(udc);
 		  }
 		  udc = udm.getDetailsForm("cur_user_auth", "001", false, false);
 		  cContent.addComponent(udc);
-	  }else  if(strCurSession.equals(ManageProfileModule.SESSION_VAR_MPM_ACT_LOG)){
+	  }else  if(strCurSession.equals(WorkSpaceManageProfile.SESSION_VAR_WSMP_ACT_LOG)){
 		 
 		  if(udc != null){
 			  cContent.removeComponent(udc);
@@ -154,7 +154,7 @@ public void apmModifier(String strCurSession, HorizontalLayout cContent){
 		  udc = udm.getDetailsForm("activity_log", "001", false, false);
 		  cContent.addComponent(udc);
 		 // Notification.show(strCurSession);
-	  }else  if(strCurSession.equals(ManageProfileModule.SESSION_VAR_MPM_ACC_LOG)){
+	  }else  if(strCurSession.equals(WorkSpaceManageProfile.SESSION_VAR_WSMP_ACC_LOG)){
 		  if(udc != null){
 			  cContent.removeComponent(udc);
 		  }

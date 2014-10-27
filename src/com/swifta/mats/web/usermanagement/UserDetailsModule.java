@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.swifta.mats.web.accountprofile.ManageProfileModule;
+import com.swifta.mats.web.accountprofile.WorkSpaceManageProfile;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.server.FontAwesome;
@@ -133,7 +134,7 @@ public class UserDetailsModule{
 					
 					
 					
-					String strCurUserType  = (String) UI.getCurrent().getSession().getAttribute(WorkSpaceManageUser.SESSION_WORK_AREA_USER_TYPE);
+					String strCurUser  = (String) UI.getCurrent().getSession().getAttribute(WorkSpaceManageProfile.SESSION_WSMP);
 					//Notification.show(strCurUserType+" +++++++");
 					//For testing purposes, we assume that every first item of each for category is read-only, hence the isReadOnly = 0
 					int isReadOnlyTf = 0;
@@ -142,19 +143,14 @@ public class UserDetailsModule{
 					
 					//set TextField(tf) form objects
 					if(arrTfVals != null){
-						if(strCurUserType.equals("cur_user")){
-							String strCurUserAction  = (String) UI.getCurrent().getSession().getAttribute(ManageProfileModule.SESSION_MPM_CUR_ACTION);
-							
-							
-							if(strCurUserAction != null){
-								//Notification.show(strCurUserAction);
-								if(strCurUserAction.equals("cur_user_action_auth")){
-									setCurUserTfs(isReadOnlyTf, arrLAllFormFields, arrLAllEditableFields, arrLTfEditableVals);
-								}
-										
+						if(strCurUser != null){
+							String strCurUserAction  = (String) UI.getCurrent().getSession().getAttribute(WorkSpaceManageProfile.SESSION_WSMP_CUR_ACTION);
+							if(strCurUserAction.equals(WorkSpaceManageProfile.SESSION_VAR_WSMP_AUTH)){
+								setCurUserTfs(isReadOnlyTf, arrLAllFormFields, arrLAllEditableFields, arrLTfEditableVals);
 							}else{
 								setTfs(isReadOnlyTf, arrLAllFormFields, arrLAllEditableFields, arrLTfEditableVals);
 							}
+										
 						}else{
 							setTfs(isReadOnlyTf, arrLAllFormFields, arrLAllEditableFields, arrLTfEditableVals);
 						}
@@ -200,9 +196,9 @@ public class UserDetailsModule{
 					cBtnEditCancel.addComponent(btnEdit);
 					
 					
-					String strCurUserAction  = (String) UI.getCurrent().getSession().getAttribute(ManageProfileModule.SESSION_MPM_CUR_ACTION);
+					String strCurUserAction  = (String) UI.getCurrent().getSession().getAttribute(WorkSpaceManageProfile.SESSION_WSMP_CUR_ACTION);
 					if(strCurUserAction != null){
-						if(strCurUserAction.equals("cur_user_action_auth")){
+						if(strCurUserAction.equals(WorkSpaceManageProfile.SESSION_VAR_WSMP_AUTH)){
 							btnEdit.setVisible(false);
 						}
 					}

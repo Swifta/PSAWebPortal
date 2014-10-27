@@ -21,7 +21,8 @@ public class BackEndEmulator {
 		String strTbNameActLog = "activity_log";
 		String strTbNameAccChangeLog = "account_change_log";
 		
-		String strTbNameCurUser = "cur_user_auth";
+		String strTbNameCurUserAuth = "cur_user_auth";
+		//String strTbNameCurUser = "cur_user_personal";
 		String strUserType = (String) UI.getCurrent().getSession().getAttribute(WorkSpaceManageUser.SESSION_WORK_AREA_USER_TYPE);
 		
 		
@@ -161,7 +162,7 @@ public class BackEndEmulator {
 			
 		}else if(strTbName.equals(strTbNameAccChangeLog) && strUID.equals(strUser001)){
 			
-		}else if(strTbName.equals(strTbNameCurUser) && strUID.equals(strUser001)){
+		}else if(strTbName.equals(strTbNameCurUserAuth) && strUID.equals(strUser001)){
 			
 
 			String arrTbName[] = {"cur_user_auth"};

@@ -1,6 +1,6 @@
 package com.swifta.mats.web;
 
-import com.swifta.mats.web.accountprofile.WorkSpaceAccountProfile;
+import com.swifta.mats.web.accountprofile.WorkSpaceManageProfile;
 import com.swifta.mats.web.dashboard.Dashboard;
 import com.swifta.mats.web.report.Report;
 import com.swifta.mats.web.settings.Settings;
@@ -14,6 +14,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.UI;
@@ -23,9 +24,9 @@ import com.vaadin.ui.Button.ClickEvent;
 public class WorkSpace extends VerticalLayout implements View, TabSheet.SelectedTabChangeListener {
 	
 	public static WorkSpaceManageUser wsmu;
-	public static WorkSpaceAccountProfile wsap;
+	public static WorkSpaceManageProfile wsmp;
 	VerticalLayout cwsmu;
-	VerticalLayout cwsap;
+	VerticalLayout cwsmp;
 	VerticalLayout dashboard3;
 	private Embedded emb;
 	private Button btnLogout;
@@ -44,7 +45,7 @@ public class WorkSpace extends VerticalLayout implements View, TabSheet.Selected
 	
 	public WorkSpace(){
 		wsmu = new WorkSpaceManageUser();
-		wsap = new WorkSpaceAccountProfile();
+		wsmp = new WorkSpaceManageProfile();
 	}
 	
 	
@@ -125,8 +126,8 @@ public class WorkSpace extends VerticalLayout implements View, TabSheet.Selected
 		//AccountProfile account = new AccountProfile();
 		//dashboard4.addComponent(account.Addlabel());
 		
-		cwsap = WorkSpace.wsap.getWorkSpaceAccountProfile();
-		tabsheet1.addTab(cwsap,"Account Profile", null);
+		cwsmp = WorkSpace.wsmp.getWorkSpaceAccountProfile();
+		tabsheet1.addTab(cwsmp,"Account Profile", null);
 		
 		
 		VerticalLayout dashboard5 = new VerticalLayout();
@@ -190,14 +191,15 @@ public class WorkSpace extends VerticalLayout implements View, TabSheet.Selected
 	@Override
 	public void selectedTabChange(SelectedTabChangeEvent event) {
 		     Object cCurTab = event.getTabSheet().getSelectedTab();
-			 if(cwsmu.equals(cCurTab)){
+		       if(cwsmu.equals(cCurTab)){
+		    	UI.getCurrent().getSession().setAttribute(WorkSpaceManageProfile.SESSION_WSMP, null);
 				
-				UI.getCurrent().getSession().setAttribute(WorkSpaceManageUser.SESSION_WORK_AREA_USER_TYPE,
-						WorkSpaceManageUser.SESSION_VAR_WORK_AREA_DEFAULT_USER_TYPE );
-			 }else if(cwsap.equals(cCurTab)){
-				
-					UI.getCurrent().getSession().setAttribute(WorkSpaceManageUser.SESSION_WORK_AREA_USER_TYPE,
+			}else if(cwsmp.equals(cCurTab)){
+					UI.getCurrent().getSession().setAttribute(WorkSpaceManageProfile.SESSION_WSMP,
 							"cur_user" );
+					if(WorkSpace.wsmp != null){
+						WorkSpace.wsmp.wsmpModifier();
+					}
 			 }
 	}
 

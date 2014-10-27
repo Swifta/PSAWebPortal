@@ -40,6 +40,7 @@ public class ManageUserModule {
 	private static final String btnIDManageUser= "manage_user";
 	
 	
+	
 	//private FormLayout uDetailsForm;
 	ArrayList<BtnTabLike> arrLTabBtns;
 	Window popup;
@@ -147,12 +148,15 @@ public class ManageUserModule {
 			cCHeader.addComponent(lbCHeader);
 			cCHeader.addComponent(cTabLike);
 			
+			
 			if(strTbName.equals("personal")){
 				btnPersonal.setStyleName("btn_tab_like btn_tab_like_active");
 				btnPersonal.setEnabled(false);
+				BtnTabLike.btnTabPrev = btnPersonal;
 			}else if(strTbName.equals("account")){
 				btnAccount.setStyleName("btn_tab_like btn_tab_like_active");
 				btnAccount.setEnabled(false);
+				BtnTabLike.btnTabPrev = btnAccount;
 			}
 			
 			
@@ -306,7 +310,9 @@ public class ManageUserModule {
 			cAddUserSubMenu.setStyleName("c_sub_menu_invisible");
 			cAddUserSubMenu.setSizeUndefined();
 			
+			
 			BtnTabLike btnAddAgent = new BtnTabLike("Agent",  strBtnPref+"_"+strBtnIDAgent);
+			
 			
 			BtnTabLike btnAddMerchant = new BtnTabLike("Merchant", strBtnPref+"_"+strBtnIDMerchant);
 			
@@ -320,6 +326,7 @@ public class ManageUserModule {
 			
 			btnAddAgent.setStyleName("btn_tab_like btn_tab_like_active");
 			btnAddAgent.setEnabled(false);
+			BtnTabLike.btnTabPrev = btnAddAgent;
 			
 			
 			cAddUserSubMenu.addComponent(btnAddAgent);
