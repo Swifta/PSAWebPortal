@@ -670,10 +670,12 @@ public class Settings extends VerticalLayout {
 				container.removeItem(ret);
 				container.removeAllContainerFilters();
 				het1click(dateCreated.getValue() ,nameOfAccount2.getValue(),type2.getValue().toString(), codeOfAccount2.getValue(), descOfAccount2.getValue(),container,ret);
-				 
+				
+				if (selection.getValue().toString() != "All") { 
 				Filter filter = new SimpleStringFilter("Type",selection.getValue().toString(), true, true);
+				container.addContainerFilter(filter);
+				}
 				 
-				 container.addContainerFilter(filter);
 				 tb.setContainerDataSource(container);
 				laying.removeComponent(addAccount);
 				//btnEdit.setEnabled(true);
@@ -746,7 +748,7 @@ public class Settings extends VerticalLayout {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				ret = Integer.parseInt(event.getButton().getId().replace("Edit", ""));
-				
+			
 				tb.getContainerProperty(ret, "Name").getValue();
 				
 				nameOfAccount2.setValue(tb.getContainerProperty(ret, "Name").getValue().toString());

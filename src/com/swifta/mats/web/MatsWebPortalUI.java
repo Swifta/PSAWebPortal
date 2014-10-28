@@ -10,7 +10,7 @@ import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet; 
-import com.vaadin.ui.UI;
+import com.vaadin.ui.UI; 
 
 @SuppressWarnings("serial")
 @Theme("mats_web_portal")
@@ -19,7 +19,7 @@ import com.vaadin.ui.UI;
 public class MatsWebPortalUI extends UI {
 	
 	@WebServlet(value = "/*", asyncSupported = true)
-	@VaadinServletConfiguration(productionMode = false, ui = MatsWebPortalUI.class)
+	@VaadinServletConfiguration(productionMode = false, ui = MatsWebPortalUI.class, widgetset = "com.swifta.mats.web.widgetset.Mats_web_portalWidgetset")
 	public static class Servlet extends VaadinServlet {
 	}
 	
