@@ -1,7 +1,6 @@
 package com.swifta.mats.web;
 
-import com.swifta.mats.web.accountprofile.AccountProfile;
-import com.swifta.mats.web.accountprofile.WorkSpaceAccountProfile;
+import com.swifta.mats.web.accountprofile.WorkSpaceManageProfile;
 import com.swifta.mats.web.dashboard.Dashboard;
 import com.swifta.mats.web.report.Report;
 import com.swifta.mats.web.settings.Settings;
@@ -25,7 +24,9 @@ import com.vaadin.ui.Button.ClickEvent;
 public class WorkSpace extends VerticalLayout implements View, TabSheet.SelectedTabChangeListener {
 	
 	public static WorkSpaceManageUser wsmu;
-	public static WorkSpaceAccountProfile wsap;
+	public static WorkSpaceManageProfile wsmp;
+	VerticalLayout cwsmu;
+	VerticalLayout cwsmp;
 	VerticalLayout dashboard3;
 	private Embedded emb;
 	private Button btnLogout;
@@ -44,14 +45,14 @@ public class WorkSpace extends VerticalLayout implements View, TabSheet.Selected
 	
 	public WorkSpace(){
 		wsmu = new WorkSpaceManageUser();
-		wsap = new WorkSpaceAccountProfile();
+		wsmp = new WorkSpaceManageProfile();
 	}
 	
 	
 	
 	@Override
 	public void enter(ViewChangeEvent event) {
-		Notification.show("In WorkSpace");
+		//Notification.show("In WorkSpace");
 		//setSizeFull();
 		setMargin(true);
 		//setStyleName("parent_layout");
@@ -106,14 +107,8 @@ public class WorkSpace extends VerticalLayout implements View, TabSheet.Selected
 		
 		
 		//Tab3 UserManager
-		dashboard3 = new VerticalLayout();
-		dashboard3.setImmediate(true);
-		//dashboard3.setHeight("500px");
-		dashboard3.setCaption("Test3");
-		VerticalLayout cwsmu = wsmu.getWorkSpaceManageUser();
-		//dashboard3.addComponent(cwsmu);
-		//dashboard3.setExpandRatio(cwsmu, 1.0f);
-		//tabsheet1.addTab(dashboard3,"User Management", null);
+		
+		cwsmu = wsmu.getWorkSpaceManageUser();
 		tabsheet1.addTab(cwsmu,"User Management", null);
 		
 		
@@ -131,8 +126,9 @@ public class WorkSpace extends VerticalLayout implements View, TabSheet.Selected
 		//AccountProfile account = new AccountProfile();
 		//dashboard4.addComponent(account.Addlabel());
 		
+		cwsmp = WorkSpace.wsmp.getWorkSpaceAccountProfile();
+		tabsheet1.addTab(cwsmp,"Account Profile", null);
 		
-		tabsheet1.addTab(WorkSpace.wsap.getWorkSpaceAccountProfile(),"Account Profile", null);
 		
 		VerticalLayout dashboard5 = new VerticalLayout();
 		dashboard5.setImmediate(true);
@@ -177,10 +173,13 @@ public class WorkSpace extends VerticalLayout implements View, TabSheet.Selected
 						
 					}
 				});
-	    
+		
 	    
 		addComponent(layout);
 		setComponentAlignment(layout, Alignment.MIDDLE_CENTER);
+		
+		
+		tabsheet1.addListener(this);
 	
 		
 		
@@ -191,7 +190,17 @@ public class WorkSpace extends VerticalLayout implements View, TabSheet.Selected
 
 	@Override
 	public void selectedTabChange(SelectedTabChangeEvent event) {
-		Notification.show("I have been thoroughly clicked....!!");
+		     Object cCurTab = event.getTabSheet().getSelectedTab();
+		       if(cwsmu.equals(cCurTab)){
+		    	UI.getCurrent().getSession().setAttribute(WorkSpaceManageProfile.SESSION_WSMP, null);
+				
+			}else if(cwsmp.equals(cCurTab)){
+					UI.getCurrent().getSession().setAttribute(WorkSpaceManageProfile.SESSION_WSMP,
+							"cur_user" );
+					if(WorkSpace.wsmp != null){
+						WorkSpace.wsmp.wsmpModifier();
+					}
+			 }
 	}
 
 }

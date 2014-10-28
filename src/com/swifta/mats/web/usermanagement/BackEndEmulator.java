@@ -20,6 +20,9 @@ public class BackEndEmulator {
 		String strTbNameAuth = "auth";
 		String strTbNameActLog = "activity_log";
 		String strTbNameAccChangeLog = "account_change_log";
+		
+		String strTbNameCurUserAuth = "cur_user_auth";
+		//String strTbNameCurUser = "cur_user_personal";
 		String strUserType = (String) UI.getCurrent().getSession().getAttribute(WorkSpaceManageUser.SESSION_WORK_AREA_USER_TYPE);
 		
 		
@@ -158,6 +161,39 @@ public class BackEndEmulator {
 		}else if(strTbName.equals(strTbNameActLog) && strUID.equals(strUser001)){
 			
 		}else if(strTbName.equals(strTbNameAccChangeLog) && strUID.equals(strUser001)){
+			
+		}else if(strTbName.equals(strTbNameCurUserAuth) && strUID.equals(strUser001)){
+			
+
+			String arrTbName[] = {"cur_user_auth"};
+			String arrUID[] = {"001"};
+			
+			String[] arrTfCaptions =  new String[]{"Account ID", "Username", "Password"};
+			String[] arrTfVals =  new String[]{"001", "Amama", "************"};
+			
+			String[] arrOptCaptions = null;
+			String[] arrOptSelVals = null;
+			
+			String[] arrComboCaptions =  null;
+			String[] arrComboSelVals =  null;
+			
+			String[] arrDfCaptions =  null;
+			String[] arrDfVals =  null;
+			
+			String[][] allData = new String[][] {arrTbName,arrUID, arrTfCaptions, arrTfVals, 
+					arrOptCaptions, arrOptSelVals, arrComboCaptions, arrComboSelVals, arrDfCaptions,  arrDfVals } ;
+			
+				
+				mappedAllData.put("arrTbName", allData[0]);
+				mappedAllData.put("arrUID", allData[1]);
+				mappedAllData.put("arrTfCaptions", allData[2]);
+				mappedAllData.put("arrTfVals", allData[3]);
+				mappedAllData.put("arrOptCaptions", allData[4]);
+				mappedAllData.put("arrOptVals", allData[5]);
+				mappedAllData.put("arrComboCaptions", allData[6]);
+				mappedAllData.put("arrComboVals", allData[7]);
+				mappedAllData.put("arrDfCaptions", allData[8]);
+				mappedAllData.put("arrDfVals", allData[9]);
 			
 		}
 		

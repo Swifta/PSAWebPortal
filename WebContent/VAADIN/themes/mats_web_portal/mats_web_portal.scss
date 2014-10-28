@@ -658,7 +658,7 @@ ul.empty li{
 
 .c_add_user{
 	//background: #0F0;
-	border-right: 1px solid #DDD;
+	//border-right: 1px solid #DDD;
 	//margin-bottom: 40px;
 
 	//margin-top: 70px;
@@ -709,6 +709,7 @@ ul.empty li{
 	
 	border: none;
 	margin-right: 2px;
+	margin-top: 4px;
 }
 
 .c_u_details{
@@ -828,6 +829,7 @@ ul.empty li{
 	//position: fixed;
 	margin: 5px 0 0 5px;
 	z-index: 999;
+	padding: 0;
 	
 }
 
@@ -885,6 +887,21 @@ ul.empty li{
 .c_search_user{
 }
 
+.btn_repositioned{
+	margin-top: 24px;
+}
+
+.w_change_pass{
+	 padding: 5px 60px 60px 60px;
+}
+
+.c_body_visible{
+	display: block;
+}
+
+.c_body_invisible{
+	display: none;
+}
 
 
 

@@ -13,12 +13,7 @@ import com.vaadin.ui.VerticalLayout;
 
 public class ManageProfileModule {
 	
-	public static final String SESSION_MPM = "manage_profile";
-	public static String SESSION_VAR_MPM_PERSONAL = "personal";
-	public static String SESSION_VAR_MPM_AUTH = "auth";
-	public static String SESSION_VAR_MPM_LOG = "log";
-	public static String SESSION_VAR_MPM_ACT_LOG = "act_log";
-	public static String SESSION_VAR_MPM_ACC_LOG = "acc_log";
+	
 	
 	
 	public VerticalLayout getMenu(HorizontalLayout cContent){
@@ -36,7 +31,7 @@ public class ManageProfileModule {
 		BtnTabLike btnLog = new BtnTabLike("Log", null);
 		btnProfile.setStyleName("btn_tab_like btn_tab_like_active");
 		
-		UI.getCurrent().getSession().setAttribute(SESSION_MPM, SESSION_VAR_MPM_PERSONAL);
+		
 		//edit...
 		
 		cManageAndAddTab.addComponent(btnProfile);
@@ -68,9 +63,9 @@ public class ManageProfileModule {
 		//cManageUserMenu.addComponent(cAddUserSubMenu);
 		
 		btnProfile.addClickListener(new BtnTabLikeClickListener(true, false, arrLSubTabs, arrLTabBtns, cContent, this,
-				"personal", "001", false, false, new String[]{SESSION_MPM}, new String[]{SESSION_VAR_MPM_PERSONAL} ));
+				"personal", "001", false, false, new String[]{WorkSpaceManageProfile.SESSION_WSMP_CUR_ACTION}, new String[]{WorkSpaceManageProfile.SESSION_VAR_WSMP_PERSONAL} ));
 		btnAuth.addClickListener(new BtnTabLikeClickListener(true, false, arrLSubTabs, arrLTabBtns, cContent, this,
-				"personal", "001", false, false , new String[]{SESSION_MPM}, new String[]{SESSION_VAR_MPM_AUTH}));
+				"personal", "001", false, false , new String[]{ WorkSpaceManageProfile.SESSION_WSMP_CUR_ACTION}, new String[]{WorkSpaceManageProfile.SESSION_VAR_WSMP_AUTH}));
 
 		
 		cLogSubMenu = getUserLogSubMenu(btnLog, arrLTabBtns, cLogSubMenu, arrLSubTabs,cContent, false, false);
@@ -81,7 +76,8 @@ public class ManageProfileModule {
 		cLogSubMenu.setSizeUndefined();
 		cLogSubMenu.setSizeUndefined();
 		
-		if(WorkSpace.wsmu != null) WorkSpace.wsmu.wsmuModifier();
+		UI.getCurrent().getSession().setAttribute(WorkSpaceManageProfile.SESSION_WSMP_CUR_ACTION, WorkSpaceManageProfile.SESSION_VAR_WSMP_PERSONAL);
+		if(WorkSpace.wsmp != null) WorkSpace.wsmp.wsmpModifier();
 		
 		
 		return cManageUserMenu;
@@ -163,9 +159,9 @@ private HorizontalLayout getUserLogSubMenu(BtnTabLike btnLog, ArrayList<BtnTabLi
 	
 	
 	btnActLog.addClickListener(new BtnTabLikeClickListener(true, false, arrLSubTabs, arrLSubTabBtns,  cContent, this,
-			"activity_log", "001", hasOp, boolEditStatus, new String[]{SESSION_MPM}, new String[]{SESSION_VAR_MPM_ACT_LOG} ));
+			"activity_log", "001", hasOp, boolEditStatus, new String[]{WorkSpaceManageProfile.SESSION_WSMP_CUR_ACTION}, new String[]{WorkSpaceManageProfile.SESSION_VAR_WSMP_ACT_LOG} ));
 	btnAccChangeLog.addClickListener(new BtnTabLikeClickListener(true, false, arrLSubTabs,  arrLSubTabBtns, cContent, this,
-			"account_change_log", "001", hasOp, boolEditStatus, new String[]{SESSION_MPM}, new String[]{SESSION_VAR_MPM_ACC_LOG} ));
+			"account_change_log", "001", hasOp, boolEditStatus, new String[]{WorkSpaceManageProfile.SESSION_WSMP_CUR_ACTION}, new String[]{WorkSpaceManageProfile.SESSION_VAR_WSMP_ACC_LOG} ));
 	
 	btnLog.addClickListener(new BtnTabLikeClickListener(false, true, arrLTabBtns, cUserLogMenu, cContent, this,
 			"activity_log", "001", hasOp, boolEditStatus));

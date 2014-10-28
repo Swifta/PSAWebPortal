@@ -9,6 +9,7 @@ import com.vaadin.ui.Embedded;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
@@ -25,6 +26,7 @@ public class WorkSpaceManageUser{
 	VerticalLayout uf;
 	FormLayout searchC;
 	VerticalLayout searchResultsC;
+	AddUserModule aum;
 	
 	ManageUserModule mum;
 	VerticalLayout cParentLayout;
@@ -187,8 +189,8 @@ public class WorkSpaceManageUser{
 		//setComponentAlignment(g, Alignment.MIDDLE_CENTER);
 		
 		
-		AddUserModule aum = new AddUserModule();
-		uf = aum.getAddUserForm();
+		aum = new AddUserModule();
+		
 		mum = new ManageUserModule();
 		UI.getCurrent().getSession().setAttribute(SESSION_WORK_AREA_USER_TYPE, SESSION_VAR_WORK_AREA_DEFAULT_USER_TYPE);
 		searchC = mum.getSearchContainer(SESSION_VAR_WORK_AREA_DEFAULT_USER_TYPE);
@@ -199,7 +201,7 @@ public class WorkSpaceManageUser{
 	
 	
 	public VerticalLayout getWorkSpaceManageUser() {
-		
+		//Notification.show("I have been thoroughly clicked....!!");
 		String curSessionWorkArea = (String) UI.getCurrent().getSession().getAttribute(WorkSpaceManageUser.SESSION_WORK_AREA);
 		String curSessionUManage = (String) UI.getCurrent().getSession().getAttribute(ManageUserModule.SESSION_UMANAGE);
 		if(curSessionWorkArea != null && curSessionWorkArea.equals(SESSION_VAR_WORK_AREA_MANAGE_USER)){
@@ -307,11 +309,14 @@ public class WorkSpaceManageUser{
 		String curSessionUManage = (String) UI.getCurrent().getSession().getAttribute(ManageUserModule.SESSION_UMANAGE);
 		
 		if( curSessionWorkArea != null && curSessionWorkArea.equals(SESSION_VAR_WORK_AREA_MANAGE_USER)){
-			contentC.removeComponent(uf);
+			
+			if(uf !=null)
+				contentC.removeComponent(uf);
 			
 			if(curSessionUManage != null && curSessionUManage.equals(ManageUserModule.SESSION_VAR_UMANAGE_SEARCH)){
-				String strSessionSearch = (String) UI.getCurrent().getSession().getAttribute(SearchUserModule.SESSION_SEARCH_USER);
+				String strSessionSearch = (String) UI.getCurrent().getSession().getAttribute(WorkSpaceManageUser.SESSION_WORK_AREA_USER_TYPE);
 				if(strSessionSearch != null){
+					Notification.show(strSessionSearch);
 					searchC = mum.getSearchContainer(strSessionSearch);
 					searchC.removeStyleName("c_search_user");
 					contentC.addComponent(searchC);
@@ -331,6 +336,8 @@ public class WorkSpaceManageUser{
 			
 	if(curSessionWorkArea!= null && curSessionWorkArea.equals(SESSION_VAR_WORK_AREA_ADD_USER)){
 		contentC.removeAllComponents();
+		//Notification.show((String)UI.getCurrent().getSession().getAttribute(SESSION_WORK_AREA_USER_TYPE));
+		uf = aum.getAddUserForm();
 		contentC.addComponent(uf);
 		contentC.setComponentAlignment(uf, Alignment.MIDDLE_CENTER);
 		contentC.setSpacing(false);
@@ -339,7 +346,7 @@ public class WorkSpaceManageUser{
 	}
 		
 	if(curSessionWorkArea!= null && curSessionWorkArea.equals(SESSION_VAR_WORK_AREA_MANAGE_USER)){
-		
+		Notification.show((String)UI.getCurrent().getSession().getAttribute(SESSION_WORK_AREA_USER_TYPE));
 			if(curSessionUManage != null && curSessionUManage.equals(ManageUserModule.SESSION_VAR_UMANAGE_SEARCH_RESULTS)){
 				if(cuDetails != null){
 					contentC.removeComponent(cuDetails);
