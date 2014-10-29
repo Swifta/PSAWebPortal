@@ -94,7 +94,7 @@ public class WorkSpace extends VerticalLayout implements View, TabSheet.Selected
 		Dashboard dash = new Dashboard();
 		PiechartDash pie = new PiechartDash();
 		
-		dashboard1.addComponent(PiechartDash.createChart());
+		dashboard1.addComponent(dash.Addlabel());
 		tabsheet1.addTab(dashboard1,"Dashboard", null);
 		
 		//Tab2 Report
