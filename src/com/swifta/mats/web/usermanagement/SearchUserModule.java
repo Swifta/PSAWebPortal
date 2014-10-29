@@ -18,6 +18,7 @@ import com.vaadin.ui.Embedded;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
@@ -55,6 +56,8 @@ public class SearchUserModule {
 	BtnActions  btnMoreActions;
 	HorizontalLayout actionsC;
 	List<Object> arrLPopupParentClasses; 
+	private FormLayout searchC;
+	private VerticalLayout searchResultsC;
 	
 	Window popup;
 	
@@ -909,9 +912,9 @@ private ArrayList<TextField>addTfs(ArrayList<String> arrLTfCaptions, FormLayout 
 	
 	public void showDeleteUserContainer(String username){
 		popup = new Window("Delete "+username);
+		popup.setStyleName("w_delete_user");
 		ThemeResource r = new ThemeResource("img/ic_delete_small.png");
-		//popup.setIcon(r);
-		//popup.setStyleName(Reindeer.WINDOW_BLACK);
+		
 		popup.center();
 		
 		VerticalLayout cDeletePrompt = new VerticalLayout();
@@ -980,6 +983,62 @@ private ArrayList<TextField>addTfs(ArrayList<String> arrLTfCaptions, FormLayout 
 			}
 		});
 	}
+	
+	
+	
+	
+	public Object sumModifier(String strSessionSearch, HorizontalLayout contentC, FormLayout searchC){
+		Object cObj = null;
+		String strUserType = (String) UI.getCurrent().getSession().getAttribute(WorkSpaceManageUser.SESSION_WORK_AREA_USER_TYPE);
+			
+			searchC = getSearchForm(strUserType);
+			contentC.addComponent(searchC);
+		
+		if(strSessionSearch.equals(ManageUserModule.SESSION_VAR_UMANAGE_SEARCH)){
+			searchC.removeStyleName("c_search_user");
+			contentC.setComponentAlignment(searchC, Alignment.MIDDLE_CENTER);
+			contentC.setSizeFull();
+			contentC.setSpacing(false);
+			contentC.setMargin(true);
+			cObj = searchC;
+		}else if(strSessionSearch.equals(ManageUserModule.SESSION_VAR_UMANAGE_SEARCH_RESULTS)){
+			searchC.setSizeUndefined();
+			searchC.setStyleName("c_search_user");
+			contentC.setComponentAlignment(searchC, Alignment.TOP_RIGHT);
+			
+			String strSessionSearchParam = (String) UI.getCurrent().getSession().getAttribute(SearchUserModule.SESSION_SEARCH_USER_PARAM);
+			if(strSessionSearchParam != null){
+				if(searchResultsC == null ){
+					searchResultsC = getSearchResults(strSessionSearchParam);
+					contentC.addComponent(searchResultsC);
+				}
+				
+			    searchResultsC.setSizeUndefined();
+				contentC.setComponentAlignment(searchResultsC, Alignment.TOP_LEFT);
+				contentC.setSizeUndefined();
+				contentC.setMargin(new MarginInfo(true, false, true, false));
+				contentC.setSpacing(false);
+			}
+			
+			cObj = searchResultsC;
+		}
+		return cObj;
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	

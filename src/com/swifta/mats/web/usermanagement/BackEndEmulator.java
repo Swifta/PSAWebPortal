@@ -95,12 +95,12 @@ public class BackEndEmulator {
 			
 		}else if(strTbName.equals(strTbNameAuth) && strUID.equals(strUser001)){
 			
-			if(strUserType.equals("agent")){
+			if(strUserType.equals(WorkSpaceManageUser.SESSION_VAR_WORK_AREA_DEFAULT_USER_TYPE)){
 				String arrTbName[] = {"auth"};
 				String arrUID[] = {"001"};
 				
 				String[] arrTfCaptions =  new String[]{"Agent ID","Agent Name", "MSISDN", "PIN Status"};
-				String[] arrTfVals =  new String[]{arrUID[0], "Seno and Co.", "+256707181923", "Set."};
+				String[] arrTfVals =  new String[]{arrUID[0], "Seno and Co.", "+256707181923", "Set"};
 				
 				String[] arrOptCaptions = null;
 				String[] arrOptSelVals = null;
