@@ -6,11 +6,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.swifta.mats.web.accountprofile.ManageProfileModule;
 import com.swifta.mats.web.accountprofile.WorkSpaceManageProfile;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
@@ -36,6 +36,18 @@ public class UserDetailsModule{
 	OptionGroup opt;
 	ComboBox combo;
 	PopupDateField dF;
+	public static final String SESSION_UDM = "session_user_details";
+	public static final String SESSION_VAR_UDM_PER = "personal";
+	public static final String SESSION_VAR_UDM_ACC = "account";
+	public static final String SESSION_VAR_UDM_ACC_LOG = "account_change_log";
+	public static final String SESSION_VAR_UDM_ACT_LOG = "activity_log";
+	
+	private static final String btnIDPersonal = "user_details_personal";
+	private static final String btnIDAccount = "user_details_account";
+	private static final String btnIDAuth = "user_details_auth";
+	private static final String btnIDLog = "user_log";
+	private String btnIDActLog;
+	private String btnIDAccChangeLog;
 	
 	
 	
@@ -57,6 +69,9 @@ public class UserDetailsModule{
 	
 	OptionGroup optSEditableField;
 	String strOptSEditableFieldVal;
+	ArrayList<BtnTabLike> arrLTabBtns;
+	HorizontalLayout cPerAccAuthInfo;
+	VerticalLayout cuDetails = null;
 	
 	
 	public UserDetailsModule(){
@@ -70,6 +85,8 @@ public class UserDetailsModule{
 	private HorizontalLayout setDetailsForm(Map<String, String[]> mappedData, boolean hasOp, boolean boolEditStatus){
 		cDetailsAndOperations = new HorizontalLayout();
 		cDetailsAndOperations.setSizeFull();
+		
+		//Notification.show(Boolean.toString(hasOp));
 		
 		cUPersonalDetails = new FormLayout();
 		cUPersonalDetails.setMargin(true);
@@ -200,11 +217,13 @@ public class UserDetailsModule{
 					if(strCurUserAction != null){
 						if(strCurUserAction.equals(WorkSpaceManageProfile.SESSION_VAR_WSMP_AUTH)){
 							btnEdit.setVisible(false);
+						}else{
+							btnEdit.setVisible(true);
+							btnEdit.setEnabled(true);
 						}
 					}
 					
 					if(hasOp){
-						//Notification.show(Integer.toString(arrLOpBtns.size()));
 						ecbsf = new EditCancelBtnsSingleField(cUPersonalDetails, false);
 						cDetailsAndOperations.addComponent(getOpForm(strTbName, strUID,mapSlaveFields));
 						btnEdit.setVisible(false);
@@ -408,13 +427,13 @@ public class UserDetailsModule{
 				arrLComboSEditableField.add(combo);
 				arrLComboSEditableFieldVal.add(arrComboVals[iCombo]);
 				
-				//addOpBtn(strTbName,strUID, opt, "Change Type", arrLOpBtns);
 				mapSlaveFields.put(arrComboCaptions[iCombo], combo);
 				
 				combo.addValueChangeListener(new ValueChangeListener(){
 					private static final long serialVersionUID = -2182355729919041184L;
 					@Override
 					public void valueChange(ValueChangeEvent event) {
+						if(ecbsf == null) return;
 						ecbsf.btnEditS.setIcon(FontAwesome.SAVE);
 						ecbsf.btnEditS.setVisible(true);
 						ecbsf.btnCancel.setVisible(true);
@@ -475,6 +494,7 @@ public class UserDetailsModule{
 		if(strUserType.equals(WorkSpaceManageUser.SESSION_VAR_WORK_AREA_DEFAULT_USER_TYPE)){
 			return getAgentOpForm(strTbName, strUID, mapSlaveFields);
 		}else{
+			//Notification.show("Nothing.");
 			return new FormLayout();
 		}
 		
@@ -1007,7 +1027,7 @@ public class UserDetailsModule{
 		//EditCancelBtnsSingleField ecbsfInline;
 		ArrayList<Object> arrLEf;
 		ArrayList<String> arrLEfVal;
-		String strEID = null;
+		//String strEID = null;
 		
 		
 		for(int iTf = 0; iTf < arrTfVals.length; iTf++){
@@ -1052,6 +1072,222 @@ public class UserDetailsModule{
 		
 		
 	}
+	
+	
+	
+	
+	public VerticalLayout getUserDetailsContainer(String strTbName, String strUID, boolean hasOp, boolean boolEditStatus){
+		VerticalLayout cUDetails = new VerticalLayout();
+		cUDetails.setMargin(new MarginInfo(false, true, true, true));
+		
+		cUDetails.setStyleName("c_u_details");
+		cUDetails.setSizeFull();
+		
+		
+		VerticalLayout cCHeader = new VerticalLayout();
+		cCHeader.setSizeUndefined();
+		cCHeader.setStyleName("c_c_header");
+		cCHeader.setMargin(new MarginInfo(false, true, false, false));
+		String strCHeader;
+		
+		if(boolEditStatus){
+			strCHeader = "Edit Details of Sevo";
+		}else{
+			strCHeader = "Showing Details of Sevo";
+		}
+		
+		Label lbCHeader = new Label(strCHeader);
+		lbCHeader.setStyleName("label_c_header");
+		lbCHeader.setSizeUndefined();
+		
+		
+		
+		
+		
+		
+		cPerAccAuthInfo = new HorizontalLayout();
+		cPerAccAuthInfo.setStyleName("c_per_acc_auth_info");
+		cPerAccAuthInfo.setSizeFull();
+					
+		
+		
+		BtnTabLike btnPersonal;
+		BtnTabLike btnAccount;
+		BtnTabLike btnAuth;
+		BtnTabLike btnLog;
+		
+		
+		
+		arrLTabBtns = new ArrayList<>();
+		
+		
+		btnPersonal = new BtnTabLike("Personal", btnIDPersonal);
+		btnAccount = new BtnTabLike("Account", btnIDAccount);
+		btnAuth = new BtnTabLike("Authentication", btnIDAuth);
+		btnLog = new BtnTabLike("Log", btnIDLog);
+		
+		VerticalLayout cTabLike = new VerticalLayout();
+		cTabLike.setSizeUndefined();
+		
+		HorizontalLayout cInfoCategory = new HorizontalLayout();
+		cInfoCategory.setSizeUndefined();
+		cInfoCategory.setStyleName("c_info_category");
+		cInfoCategory.addComponent(btnPersonal);
+		cInfoCategory.addComponent(btnAccount);
+		cInfoCategory.addComponent(btnAuth);
+		cInfoCategory.addComponent(btnLog);
+		
+		arrLTabBtns.add(btnPersonal);
+		arrLTabBtns.add(btnAccount);
+		arrLTabBtns.add(btnAuth);
+		arrLTabBtns.add(btnLog);
+		
+		cTabLike.addComponent(cInfoCategory);
+		
+		ArrayList<HorizontalLayout> arrLSubTabs = new ArrayList<HorizontalLayout>();
+		HorizontalLayout cUserLogMenu = new HorizontalLayout();
+		arrLSubTabs.add(cUserLogMenu);
+		HorizontalLayout cLog = getUserLogSubMenu(btnLog, cUserLogMenu, arrLSubTabs, hasOp, boolEditStatus);
+		cLog.setSizeUndefined();
+		cTabLike.addComponent(cLog);
+		cTabLike.setComponentAlignment(cLog, Alignment.TOP_RIGHT);
+		
+		
+		cCHeader.addComponent(lbCHeader);
+		cCHeader.addComponent(cTabLike);
+		
+		
+		if(strTbName.equals("personal")){
+			btnPersonal.setStyleName("btn_tab_like btn_tab_like_active");
+			btnPersonal.setEnabled(false);
+			
+		}else if(strTbName.equals("account")){
+			btnAccount.setStyleName("btn_tab_like btn_tab_like_active");
+			btnAccount.setEnabled(false);
+			
+		}
+		
+		
+		
+		cUDetails.addComponent(cCHeader);
+		cUDetails.setComponentAlignment(cCHeader, Alignment.TOP_LEFT);
+		
+		cUDetails.addComponent(cPerAccAuthInfo);
+		cUDetails.setComponentAlignment(cPerAccAuthInfo, Alignment.TOP_LEFT);
+		cUDetails.setExpandRatio(cPerAccAuthInfo, 1.0f);
+		
+		
+		HorizontalLayout cUDetailsAndOperations= getDetailsForm(strTbName, "001", hasOp, boolEditStatus);
+		cPerAccAuthInfo.addComponent(cUDetailsAndOperations);
+		
+		
+		btnPersonal.addClickListener(new BtnTabLikeClickListener(false, arrLSubTabs, arrLTabBtns, cPerAccAuthInfo, null,
+				"personal", "001", hasOp, boolEditStatus ));
+		/*btnAccount.addClickListener(new BtnTabLikeClickListener(false, arrLSubTabs,  arrLTabBtns, cPerAccAuthInfo, null,
+				"account", "001", hasOp, boolEditStatus));*/
+		
+		String[] arrSessions = {UserDetailsModule.SESSION_UDM};
+		btnAccount.addClickListener(new BtnTabLikeClickListener(false, arrLSubTabs,  arrLTabBtns, null, null,
+				"account", "001", hasOp, boolEditStatus,   arrSessions, new String[]{UserDetailsModule.SESSION_VAR_UDM_ACC} ));
+	
+		btnAuth.addClickListener(new BtnTabLikeClickListener(false, arrLSubTabs, arrLTabBtns, cPerAccAuthInfo, null,
+				"auth", "001", hasOp, boolEditStatus ));
+		
+	return cUDetails; 
+}
+	
+	
+	
+	private HorizontalLayout getUserLogSubMenu(BtnTabLike btnLog, HorizontalLayout cUserLogMenu, ArrayList<HorizontalLayout> arrLSubTabs, boolean hasOp, boolean boolEditStatus){
+		//btnLog.addClickListener(new BtnTabLikeClickListener(false, arrLTabBtns, cPerAccAuthInfo, udm, "log", "001" ));
+		//VerticalLayout cLog = new VerticalLayout();
+		//cLog.setSizeUndefined();
+		cUserLogMenu.setStyleName("c_sub_menu_invisible");
+		cUserLogMenu.setSizeUndefined();
+		
+		BtnTabLike btnAccChangeLog = new BtnTabLike("User Log", btnIDActLog);
+		btnAccChangeLog.setStyleName("btn_tab_like btn_tab_like_active");
+		btnAccChangeLog.setEnabled(false);
+		
+		BtnTabLike btnActLog = new BtnTabLike("Account Log", btnIDAccChangeLog);
+		cUserLogMenu.addComponent(btnAccChangeLog);
+		cUserLogMenu.addComponent(btnActLog);
+		
+		final ArrayList<BtnTabLike> arrLSubTabBtns = new ArrayList<BtnTabLike>();
+		arrLSubTabBtns.add(btnActLog);
+		arrLSubTabBtns.add(btnAccChangeLog);
+		/*btnLog.addClickListener(new BtnTabLikeClickListener(false, true, arrLTabBtns, cUserLogMenu, cPerAccAuthInfo, null, 
+				"activity_log", "001"));*/
+		
+		
+		
+		
+		btnActLog.addClickListener(new BtnTabLikeClickListener(false, arrLSubTabs, arrLSubTabBtns,  cPerAccAuthInfo, null,
+				"activity_log", "001", hasOp, boolEditStatus ));
+		btnAccChangeLog.addClickListener(new BtnTabLikeClickListener(false, arrLSubTabs,  arrLSubTabBtns, cPerAccAuthInfo, null,
+				"account_change_log", "001", hasOp, boolEditStatus ));
+		
+		btnLog.addClickListener(new BtnTabLikeClickListener(true, arrLTabBtns, cUserLogMenu, cPerAccAuthInfo, null,
+				"activity_log", "001", hasOp, boolEditStatus));
+		//cUserLogMenu.setVisible(false);
+		//cLog.addComponent(cUserLogMenu);
+		
+		
+		
+		return cUserLogMenu;
+	}
+	
+	
+	public VerticalLayout udmModifier(HorizontalLayout contentC){
+		
+		String strTbName = (String) UI.getCurrent().getSession().getAttribute(SearchUserModule.SESSION_USER_TABLE);
+		String strUID = (String)UI.getCurrent().getSession().getAttribute(SearchUserModule.SESSION_USER_TABLE_ROW_ID);
+		String strAction = (String) UI.getCurrent().getSession().getAttribute(SearchUserModule.SESSION_USER_ACTION);
+		String strSessionUDM = (String)UI.getCurrent().getSession().getAttribute(UserDetailsModule.SESSION_UDM);
+		
+		
+		
+		
+		
+		if(strAction.equals(SearchUserModule.ACTION_DETAILS) || 
+				strAction.equals(SearchUserModule.ACTION_EDIT) ||
+				strAction.equals(SearchUserModule.ACTION_MORE)){
+			
+			if(strAction.equals(SearchUserModule.ACTION_DETAILS)){
+			}else if(strAction.equals(SearchUserModule.ACTION_EDIT)){
+					if(strTbName.equals("account") || strTbName.equals("auth")){
+					}else{
+					}
+			}else if(strAction.equals(SearchUserModule.ACTION_MORE)){
+			}
+			
+			if(strTbName.equals("account") || strTbName.equals("auth")){
+			}
+			
+				
+		}
+		
+		
+		
+		if(strSessionUDM == null){
+			cuDetails = getUserDetailsContainer(strTbName, strUID, false, false);
+			contentC.addComponent(cuDetails);
+			contentC.setComponentAlignment(cuDetails, Alignment.TOP_CENTER);
+			contentC.setExpandRatio(cuDetails, 1.0f);
+			
+			contentC.setSizeFull();
+			contentC.setMargin(new MarginInfo(true, false, true, false));
+			contentC.setSpacing(false);
+		}
+		
+		
+		return cuDetails;
+
+	}
+	
+	
+	
+	
 
 	
 	

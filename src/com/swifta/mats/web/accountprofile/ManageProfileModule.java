@@ -62,11 +62,11 @@ public class ManageProfileModule {
 		cManageUserMenu.addComponent(cLogSubMenu);
 		//cManageUserMenu.addComponent(cAddUserSubMenu);
 		
-		btnProfile.addClickListener(new BtnTabLikeClickListener(true, false, arrLSubTabs, arrLTabBtns, cContent, this,
+		/*xxxxbtnProfile.addClickListener(new BtnTabLikeClickListener(false, arrLSubTabs, arrLTabBtns, cContent, this,
 				"personal", "001", false, false, new String[]{WorkSpaceManageProfile.SESSION_WSMP_CUR_ACTION}, new String[]{WorkSpaceManageProfile.SESSION_VAR_WSMP_PERSONAL} ));
-		btnAuth.addClickListener(new BtnTabLikeClickListener(true, false, arrLSubTabs, arrLTabBtns, cContent, this,
+		btnAuth.addClickListener(new BtnTabLikeClickListener(false, arrLSubTabs, arrLTabBtns, cContent, this,
 				"personal", "001", false, false , new String[]{ WorkSpaceManageProfile.SESSION_WSMP_CUR_ACTION}, new String[]{WorkSpaceManageProfile.SESSION_VAR_WSMP_AUTH}));
-
+		xxxxx*/
 		
 		cLogSubMenu = getUserLogSubMenu(btnLog, arrLTabBtns, cLogSubMenu, arrLSubTabs,cContent, false, false);
 		//cAddUserSubMenu = getAddUserSubMenu(btnAuth, strAddUserBtnPref,  arrLTabBtns, cAddUserSubMenu, cContent, arrLSubTabs, false, false, this);
@@ -119,13 +119,13 @@ public HorizontalLayout getAddUserSubMenu(BtnTabLike btnAddUser, String strBtnPr
 	
 	/*btnLog.addClickListener(new BtnTabLikeClickListener(false, true, arrLTabBtns, cUserLogMenu, cPerAccAuthInfo, udm, 
 			"activity_log", "001"));*/
-	btnAddAgent.addClickListener(new BtnTabLikeClickListener(false, false, arrLAddUserSubTabs,  arrLSubTabBtns, cContent, aum,
+	/*xxxx//btnAddAgent.addClickListener(new BtnTabLikeClickListener(false, arrLAddUserSubTabs,  arrLSubTabBtns, cContent, aum,
 			"account_change_log", "001", hasOp, boolEditStatus, WorkSpaceManageUser.SESSION_VAR_WORK_AREA_DEFAULT_USER_TYPE ));
 	
-	btnAddMerchant.addClickListener(new BtnTabLikeClickListener(false, false, arrLAddUserSubTabs, arrLSubTabBtns,  cContent, aum,
+	btnAddMerchant.addClickListener(new BtnTabLikeClickListener(false, arrLAddUserSubTabs, arrLSubTabBtns,  cContent, aum,
 			"activity_log", "001", hasOp, boolEditStatus, WorkSpaceManageUser.SESSION_VAR_WORK_AREA_USER_MERCHANT ));
 	
-	
+	*/
 	
 	
 		
@@ -158,13 +158,13 @@ private HorizontalLayout getUserLogSubMenu(BtnTabLike btnLog, ArrayList<BtnTabLi
 	
 	
 	
-	btnActLog.addClickListener(new BtnTabLikeClickListener(true, false, arrLSubTabs, arrLSubTabBtns,  cContent, this,
+	/*xxxxxxxx///btnActLog.addClickListener(new BtnTabLikeClickListener(false, arrLSubTabs, arrLSubTabBtns,  cContent, this,
 			"activity_log", "001", hasOp, boolEditStatus, new String[]{WorkSpaceManageProfile.SESSION_WSMP_CUR_ACTION}, new String[]{WorkSpaceManageProfile.SESSION_VAR_WSMP_ACT_LOG} ));
-	btnAccChangeLog.addClickListener(new BtnTabLikeClickListener(true, false, arrLSubTabs,  arrLSubTabBtns, cContent, this,
+	btnAccChangeLog.addClickListener(new BtnTabLikeClickListener(false, arrLSubTabs,  arrLSubTabBtns, cContent, this,
 			"account_change_log", "001", hasOp, boolEditStatus, new String[]{WorkSpaceManageProfile.SESSION_WSMP_CUR_ACTION}, new String[]{WorkSpaceManageProfile.SESSION_VAR_WSMP_ACC_LOG} ));
 	
-	btnLog.addClickListener(new BtnTabLikeClickListener(false, true, arrLTabBtns, cUserLogMenu, cContent, this,
-			"activity_log", "001", hasOp, boolEditStatus));
+	btnLog.addClickListener(new BtnTabLikeClickListener(true, arrLTabBtns, cUserLogMenu, cContent, this,
+			"activity_log", "001", hasOp, boolEditStatus)); xxxxx*/
 	//cUserLogMenu.setVisible(false);
 	//cLog.addComponent(cUserLogMenu);
 	
