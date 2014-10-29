@@ -1,7 +1,7 @@
 package com.swifta.mats.web;
 
 import com.swifta.mats.web.accountprofile.WorkSpaceManageProfile;
-import com.swifta.mats.web.dashboard.Dashboard;
+import com.swifta.mats.web.dashboard.*;
 import com.swifta.mats.web.report.Report;
 import com.swifta.mats.web.settings.Settings;
 import com.swifta.mats.web.transactions.Transactions;
@@ -92,7 +92,9 @@ public class WorkSpace extends VerticalLayout implements View, TabSheet.Selected
 		//dashboard1.setWidth("1000px");
 		dashboard1.setCaption("Test1");
 		Dashboard dash = new Dashboard();
-		dashboard1.addComponent(dash.Addlabel());
+		PiechartDash pie = new PiechartDash();
+		
+		dashboard1.addComponent(PiechartDash.createChart());
 		tabsheet1.addTab(dashboard1,"Dashboard", null);
 		
 		//Tab2 Report
