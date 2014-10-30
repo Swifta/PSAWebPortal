@@ -1,66 +1,44 @@
 package com.swifta.mats.web.dashboard;
 
 
-import com.vaadin.addon.charts.Chart;
-import com.vaadin.addon.charts.model.ChartType;
-import com.vaadin.addon.charts.model.Configuration;
-import com.vaadin.addon.charts.model.ListSeries;
-import com.vaadin.addon.charts.model.XAxis;
-import com.vaadin.addon.charts.model.YAxis;
+import com.vaadin.server.ExternalResource;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.*; 
 
 
 
-public class Dashboard extends VerticalLayout {
-
-	/**
-	 * 
-	 */ 
-	private static final long serialVersionUID = 1866681927023505574L;
+public class Dashboard {
 
 	public VerticalLayout Addlabel() {
-		// TODO Auto-generated method stub
 		
-		VerticalLayout lay = new VerticalLayout();
-		Chart chart = new Chart(ChartType.BAR);
-		chart.setWidth("400px");
-		chart.setHeight("300px");
-		        
-		// Modify the default configuration a bit
-		Configuration conf = chart.getConfiguration();
-		conf.setTitle("Planets");
-		conf.setSubTitle("The bigger they are the harder they pull");
-		conf.getLegend().setEnabled(false); // Disable legend
-
-		// The data
-		ListSeries series = new ListSeries("Diameter");
-		series.setData(4900,  12100,  12800,
-		               6800,  143000, 125000,
-		               51100, 49500);
-		conf.addSeries(series);
-
-		// Set the category labels on the axis correspondingly
-		XAxis xaxis = new XAxis();
-		xaxis.setCategories("Mercury", "Venus",   "Earth",
-		                    "Mars",    "Jupiter", "Saturn",
-		                    "Uranus",  "Neptune");
-		xaxis.setTitle("Planet");
-		conf.addxAxis(xaxis);
-
-		// Set the Y axis title
-		YAxis yaxis = new YAxis();
-		yaxis.setTitle("Diameter");
-		yaxis.getLabels().setFormatter(
-		  "function() {return Math.floor(this.value/1000) + \'Mm\';}");
-		yaxis.getLabels().setStep(2);
-		conf.addyAxis(yaxis);
-		        
-		lay.addComponent(chart);
 		
-		Label j = new Label("Hi");
-		lay.addComponent(j);
-		 		
-		return lay;
+		
+		
+		Flash player = new Flash("Charts", new ThemeResource("Charts/FCF_Column3D.swf"));
+		   
+		   player.setCodebase("http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0");
+		   player.setId("clsid:D27CDB6E-AE6D-11cf-96B8-444553540000");
+           player.setWidth(900 + "px");
+           player.setHeight(400 + "px");
+           //player.setCodetype(Flash.TYPE_OBJECT);
+          // player.setMimeType("application/x-shockwave-flash");
+           //String url = "http://www.youtube.com/v/"+videoId+"&autoplay=1";
+           //player.setSource(new ExternalResource(url));
+           
+           
+           player.setParameter("id", "Column3D");
+           //player.setSource(new ThemeResource("Charts/FCF_Column3D.swf"));
+           player.setParameter("movie", "Charts/FCF_Column3D.swf");
+           player.setParameter("FlashVars", "&dataXML=Data.xml");
+           player.setParameter("quality", "high");
+           player.setImmediate(true); 
+           VerticalLayout d = new VerticalLayout();
+           d.addComponent(player);
+           return d;
+		
+		
+		
+		
 	}
 	
 	
