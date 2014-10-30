@@ -4,12 +4,11 @@ import java.util.ArrayList;
 
 import com.swifta.mats.web.WorkSpace;
 import com.swifta.mats.web.accountprofile.ManageProfileModule;
-import com.swifta.mats.web.accountprofile.WorkSpaceManageProfile;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
+
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -23,16 +22,12 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 	private Window popup;
 	private Object udm;
 	private VerticalLayout cPopupMsg;
-	private String strTbName;
-	private String strUID;
-	
 	private String[] arrSessions;
 	private String[] arrSessionVars;
 	private boolean hasSubMenu = false;
 	private HorizontalLayout cSubMenu;
 	private ArrayList<HorizontalLayout> arrLSubTabs;
 	BtnTabLike curBtn;
-	private boolean hasOp;
 	boolean boolEditStatus = false;
 	private String strUserType;
 	
@@ -50,13 +45,9 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 		this.hasSubMenu = hasSubMenu;
 		this.cSubMenu = cSubMenu;
 		this.arrLTabBtns = arrLTabBtns;
-		//this.hTabContainer = hTabContainer;
-		this.strTbName = strTbName;
-		this.strUID = strUID;
 		this.udm = udm;
 		
 		this.boolEditStatus = boolEditStatus;
-		this.hasOp = hasOp;
 		
 		
 		
@@ -77,44 +68,16 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 		this.hasSubMenu = hasSubMenu;
 		this.cSubMenu = cSubMenu;
 		this.arrLTabBtns = arrLTabBtns;
-		//this.hTabContainer = hTabContainer;
-		this.strTbName = strTbName;
-		this.strUID = strUID;
 		this.udm = udm;
 		
 		this.boolEditStatus = boolEditStatus;
-		this.hasOp = hasOp;
 		this.arrLSubTabs = arrLSubTabs;
 		
 		
 		
 	}
 	
-	/*public BtnTabLikeClickListenerx(
-			boolean hasSubMenu,
-			ArrayList<HorizontalLayout> arrLSubTabs, 
-			ArrayList<BtnTabLike>arrLTabBtns,
-			HorizontalLayout tabContainer,
-			Object udm,
-			String strTbName,
-			String strUID,
-			boolean hasOp,
-			boolean boolEditStatus,
-			String strUserType){
-		this.arrLTabBtns = arrLTabBtns;
-		this.hTabContainer = tabContainer;
-		this.udm = udm;
-		this.strTbName = strTbName;
-		this.strUID = strUID;
-		
-		this.hasSubMenu = hasSubMenu;
-		this.arrLSubTabs = arrLSubTabs;
-		this.boolEditStatus = boolEditStatus;
-		this.hasOp = hasOp;
-		this.strUserType = strUserType;
-		
-		
-	}*/
+	
 
 	
 	//Original No submenu constructor
@@ -131,12 +94,9 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 		this.arrLTabBtns = arrLTabBtns;
 		//this.hTabContainer = tabContainer;
 		this.udm = udm;
-		this.strTbName = strTbName;
-		this.strUID = strUID;
 		this.hasSubMenu = hasSubMenu;
 		this.arrLSubTabs = arrLSubTabs;
 		this.boolEditStatus = boolEditStatus;
-		this.hasOp = hasOp;
 		
 		
 		
@@ -165,12 +125,9 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 		this.arrLTabBtns = arrLTabBtns;
 		this.cSubMenu = cSubMenu;
 		this.udm = udm;
-		this.strTbName = strTbName;
-		this.strUID = strUID;
 		this.hasSubMenu = hasSubMenu;
 		this.arrLSubTabs = arrLSubTabs;
 		this.boolEditStatus = boolEditStatus;
-		this.hasOp = hasOp;
 		
 	}
 	
@@ -332,6 +289,8 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 			return;
 		}
 		
+		
+		
 		if(hasSubMenu){
 			if(arrLSubTabs != null){
 				for(HorizontalLayout sm: arrLSubTabs){
@@ -351,22 +310,22 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 				selectActiveUserType();	
 			}
 		}else if(!hasSubMenu){
-			BtnTabLike.btnTabPrev = BtnTabLike.btnTabCur;
-			BtnTabLike.btnTabCur = this.curBtn;
-			
-			
+			if(arrSessionVars[0] != null){
+				BtnTabLike.btnTabPrev = BtnTabLike.btnTabCur;
+				BtnTabLike.btnTabCur = this.curBtn;
+			}else{
+				strUserType = (String)UI.getCurrent().getSession().getAttribute(WorkSpaceManageUser.SESSION_WORK_AREA_USER_TYPE);
+				arrSessionVars[0] = strUserType;
+			}
 		}
 		
 		
 		setActiveTab(curBtn, arrLTabBtns);
 		for(int i = 0; i < arrSessions.length; i++){
-			
 			 UI.getCurrent().getSession().setAttribute(arrSessions[i], arrSessionVars[i]);
-			 
 		}
 		
-		UI.getCurrent().getSession().setAttribute(ManageUserModule.SESSION_UMANAGE, ManageUserModule.SESSION_VAR_UMANAGE_SEARCH);
-		if(WorkSpace.wsmu != null)
+			if(WorkSpace.wsmu != null)
 			WorkSpace.wsmu.wsmuModifier();
 		
 		
@@ -412,64 +371,6 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 		
 				
 	}
-	
-	
-	private void modifyContent(){
-		
-		if(UserDetailsModule.uDetailsEditStatus){
-			UI.getCurrent().addWindow(getWarningPopWindow());
-			return;
-		}
-		BtnTabLike.btnTabPrev = BtnTabLike.btnTabCur;
-		BtnTabLike.btnTabCur = this.curBtn;
-		
-		if(arrLSubTabs != null){
-			for(HorizontalLayout sm: arrLSubTabs){
-				sm.setStyleName("c_sub_menu_invisible");
-			}
-			
-			
-			/*
-			 * Next line is important for only one reason...
-			 * 1. Ensure that child Menu does not hide Parent Menu
-			 */
-			curBtn.getParent().setStyleName("c_sub_menu_visible");
-		}
-			
-				setActiveTab(curBtn, arrLTabBtns);
-			
-				if(udm instanceof UserDetailsModule){
-					///hTabContainer.addComponent(((UserDetailsModule)udm).getDetailsForm(strTbName, strUID, hasOp, boolEditStatus));
-				}else if(udm instanceof AddUserModule){
-					UI.getCurrent().getSession().setAttribute(WorkSpaceManageUser.SESSION_WORK_AREA_USER_TYPE, strUserType);
-					UI.getCurrent().getSession().setAttribute(WorkSpaceManageUser.SESSION_WORK_AREA, WorkSpaceManageUser.SESSION_VAR_WORK_AREA_ADD_USER);
-					if(WorkSpace.wsmu != null)
-						WorkSpace.wsmu.wsmuModifier();
-					
-									
-				}else if(udm instanceof ManageUserModule){
-					
-					UI.getCurrent().getSession().setAttribute(WorkSpaceManageUser.SESSION_WORK_AREA_USER_TYPE, strUserType);
-					UI.getCurrent().getSession().setAttribute(WorkSpaceManageUser.SESSION_WORK_AREA, WorkSpaceManageUser.SESSION_VAR_WORK_AREA_MANAGE_USER);
-					UI.getCurrent().getSession().setAttribute(ManageUserModule.SESSION_UMANAGE, ManageUserModule.SESSION_VAR_UMANAGE_SEARCH);
-					
-					if(WorkSpace.wsmu != null)
-						WorkSpace.wsmu.wsmuModifier();
-					
-				}else if(udm instanceof ManageProfileModule){
-					
-					UI.getCurrent().getSession().setAttribute(WorkSpaceManageProfile.SESSION_WSMP_CUR_ACTION, WorkSpaceManageProfile.SESSION_VAR_WSMP_ACT_LOG);
-					if(WorkSpace.wsmp != null)
-						WorkSpace.wsmp.wsmpModifier();
-					
-					
-			}
-		
-		}
-	
-	
-	
-	
 	
 	
 	
