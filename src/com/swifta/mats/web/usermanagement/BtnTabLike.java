@@ -4,8 +4,8 @@ import com.vaadin.ui.Button;
 
 public class BtnTabLike extends Button{
 public static BtnTabLike btnTabPrev;
-public static BtnTabLike btnTabCur = null;
-	
+public static BtnTabLike btnTabCur;
+
 
 	/**
 	 * 

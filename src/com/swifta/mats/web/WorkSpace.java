@@ -94,7 +94,7 @@ public class WorkSpace extends VerticalLayout implements View, TabSheet.Selected
 		Dashboard dash = new Dashboard();
 		PiechartDash pie = new PiechartDash();
 		
-		dashboard1.addComponent(PiechartDash.createChart());
+		dashboard1.addComponent(dash.Addlabel());
 		tabsheet1.addTab(dashboard1,"Dashboard", null);
 		
 		//Tab2 Report
@@ -169,8 +169,8 @@ public class WorkSpace extends VerticalLayout implements View, TabSheet.Selected
 					@Override
 					public void buttonClick(ClickEvent event) {
 						UI.getCurrent().getSession().setAttribute("user", null);
-						UI.getCurrent().getSession().setAttribute(ManageUserModule.SESSION_UMANAGE, null);
-						UI.getCurrent().getSession().setAttribute(WorkSpaceManageUser.SESSION_WORK_AREA, null);
+						//UI.getCurrent().getSession().setAttribute(ManageUserModule.SESSION_UMANAGE, null);
+						//UI.getCurrent().getSession().setAttribute(WorkSpaceManageUser.SESSION_WORK_AREA, null);
 						UI.getCurrent().getNavigator().navigateTo(WORK_SPACE);
 						
 					}
@@ -195,7 +195,7 @@ public class WorkSpace extends VerticalLayout implements View, TabSheet.Selected
 		     Object cCurTab = event.getTabSheet().getSelectedTab();
 		       if(cwsmu.equals(cCurTab)){
 		    	UI.getCurrent().getSession().setAttribute(WorkSpaceManageProfile.SESSION_WSMP, null);
-				
+		    	
 			}else if(cwsmp.equals(cCurTab)){
 					UI.getCurrent().getSession().setAttribute(WorkSpaceManageProfile.SESSION_WSMP,
 							"cur_user" );
