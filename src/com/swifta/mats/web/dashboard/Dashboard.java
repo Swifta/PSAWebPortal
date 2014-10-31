@@ -1,7 +1,6 @@
 package com.swifta.mats.web.dashboard;
 
 
-import com.vaadin.server.ExternalResource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.*; 
 

@@ -1,5 +1,6 @@
 package com.swifta.mats.web;
 
+import com.google.gwt.user.datepicker.client.DatePicker;
 import com.swifta.mats.web.accountprofile.WorkSpaceManageProfile;
 import com.swifta.mats.web.dashboard.*;
 import com.swifta.mats.web.report.Report;
@@ -11,12 +12,16 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.DateField;
 import com.vaadin.ui.Embedded;
+import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
@@ -30,6 +35,10 @@ public class WorkSpace extends VerticalLayout implements View, TabSheet.Selected
 	VerticalLayout dashboard3;
 	private Embedded emb;
 	private Button btnLogout;
+	 TextField lab1 = new TextField();
+	 DateField dat = new DateField();
+	 DateField dat2 = new DateField();
+	 Button filter =  new Button("Filter");
 	/**
 	 * 
 	 */
@@ -93,9 +102,27 @@ public class WorkSpace extends VerticalLayout implements View, TabSheet.Selected
 		dashboard1.setCaption("Test1");
 		Dashboard dash = new Dashboard();
 		PiechartDash pie = new PiechartDash();
+		GridLayout lut = new GridLayout(2,1);
+		VerticalLayout former = new VerticalLayout();
+		lab1.setCaption("Agent ID");
+		dat.setCaption("Start Date");
+		dat2.setCaption("End Date");
+		former.addComponent(lab1);
+		former.addComponent(dat);
+		former.addComponent(dat2);
+		former.addComponent(filter);
+	
+		lut.addComponent(former);
+		lut.addComponent(pie.getChart());
 		
-		dashboard1.addComponent(dash.Addlabel());
+		
+		//dashboard1.addComponent(former, 0);
+		dashboard1.addComponent(lut);
 		tabsheet1.addTab(dashboard1,"Dashboard", null);
+		
+		
+		
+		
 		
 		//Tab2 Report
 		VerticalLayout dashboard2 = new VerticalLayout();
