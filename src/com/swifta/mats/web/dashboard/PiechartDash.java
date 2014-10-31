@@ -25,7 +25,9 @@ public class PiechartDash {
 	    public Component getChart() {
 	        Component ret = createChart();
 	        ret.setWidth("100%");
-	        ret.setHeight("450px");
+	       // ret.setHeight("450px");
+	        ret.setSizeFull();
+	        
 	        return ret;
 	    }
 

@@ -15,6 +15,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.Embedded;
+import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -102,21 +103,27 @@ public class WorkSpace extends VerticalLayout implements View, TabSheet.Selected
 		dashboard1.setCaption("Test1");
 		Dashboard dash = new Dashboard();
 		PiechartDash pie = new PiechartDash();
+		FormLayout pi = new FormLayout();
 		HorizontalLayout lut = new HorizontalLayout();
 		VerticalLayout former = new VerticalLayout();
 		BarChartDash bar = new BarChartDash();
 		lab1.setCaption("Agent ID");
 		dat.setCaption("Start Date");
 		dat2.setCaption("End Date");
+		
 		former.addComponent(lab1);
 		former.addComponent(dat);
 		former.addComponent(dat2);
 		former.addComponent(filter);
+		former.setWidth("50px");
+		pi.addComponent(pie.getChart());
+		pi.addComponent(bar.getChart());
 		
-		lut.setSizeUndefined();
+		lut.setSizeFull();
 		lut.addComponent(former);
-		lut.addComponent(pie.getChart());
-		lut.addComponent(bar.getChart());
+		lut.addComponent(pi);
+		//lut.addComponent(bar.getChart());
+		
 		
 		
 		//dashboard1.addComponent(former, 0);

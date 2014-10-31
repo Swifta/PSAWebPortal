@@ -29,7 +29,7 @@ public class BarChartDash {
 	        Chart chart = new Chart(ChartType.COLUMN);
 	        String user = "Agent 001";
 	        Configuration conf = chart.getConfiguration();
-	        conf.getChart().setMargin(50, 80, 100, 50);
+	        //conf.getChart().setMargin(50, 80, 100, 50);
 
 	        conf.setTitle(new Title("Data Chart "+user));
 
@@ -79,8 +79,9 @@ public class BarChartDash {
 	        conf.addSeries(serie);
 
 	        chart.drawChart(conf);
-	        chart.setWidth("100%");
-	        chart.setHeight("450px");
+	       // chart.setWidth("100%");
+	       // chart.setHeight("450px");
+	        chart.setSizeFull();
 
 	        return chart;
 	    }
