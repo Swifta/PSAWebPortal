@@ -42,10 +42,7 @@ public class ManageUserModule {
 	
 	
 	
-	public VerticalLayout getUserDetailsContainer(){
-		UserDetailsModule udm = new UserDetailsModule();
-		return udm.getUserDetailsContainer("personal", "001", false, false);
-	}
+	
 		
 	
 	
@@ -59,9 +56,6 @@ public class ManageUserModule {
 		
 		public VerticalLayout getManageUserMenu(boolean boolAddHeaderStatus, boolean boolEditStatus, boolean hasOp, Object aum){
 			
-			if(!boolAddHeaderStatus){
-				
-				
 				VerticalLayout cManageUserMenu = new VerticalLayout();
 				cManageUserMenu.setStyleName("c_u_manage_menu");
 				cManageUserMenu.setSizeUndefined();
@@ -72,7 +66,6 @@ public class ManageUserModule {
 				btnManUser.setStyleName("btn_tab_like btn_tab_like_active");
 				
 				UI.getCurrent().getSession().setAttribute(WorkSpaceManageUser.SESSION_WORK_AREA_USER_TYPE, WorkSpaceManageUser.SESSION_VAR_WORK_AREA_DEFAULT_USER_TYPE);
-				//edit...
 				
 				BtnTabLike btnAddUser = new BtnTabLike("Add New", btnIDAddUser);
 				cManageAndAddTab.addComponent(btnManUser);
@@ -82,12 +75,9 @@ public class ManageUserModule {
 				arrLTabBtns.add(btnAddUser);
 				arrLTabBtns.add(btnManUser);
 				
-				
-				//btnManUser.addClickListener(new BtnTabLikeClickListener(true, arrLTabBtns, new String[]{WorkSpaceManageUser.SESSION_WORK_AREA, ManageUserModule.SESSION_UMANAGE}, new String[]{WorkSpaceManageUser.SESSION_VAR_WORK_AREA_MANAGE_USER, ManageUserModule.SESSION_VAR_UMANAGE_SEARCH}));
 				btnManUser.setEnabled(false);
 				
-				//btnAddUser.addClickListener(new BtnTabLikeClickListener(true, arrLTabBtns, new String[]{WorkSpaceManageUser.SESSION_WORK_AREA}, new String[]{WorkSpaceManageUser.SESSION_VAR_WORK_AREA_ADD_USER}));
-				
+					
 				ArrayList<HorizontalLayout> arrLSubTabs = new ArrayList<HorizontalLayout>();
 				
 				HorizontalLayout cManUserSubMenu = new HorizontalLayout();
@@ -117,9 +107,7 @@ public class ManageUserModule {
 				
 				
 				return cManageUserMenu;
-			}else{
-				return null;
-			}
+			
 			
 		}
 		
@@ -144,7 +132,9 @@ public class ManageUserModule {
 			
 			btnAddAgent.setStyleName("btn_tab_like btn_tab_like_active");
 			btnAddAgent.setEnabled(false);
+			BtnTabLike.btnPrevMenuState = BtnTabLike.btnTabCur;
 			BtnTabLike.btnTabCur = btnAddAgent;
+			
 			
 			
 			cAddUserSubMenu.addComponent(btnAddAgent);
@@ -168,23 +158,34 @@ public class ManageUserModule {
 					WorkSpaceManageUser.SESSION_WORK_AREA,
 					ManageUserModule.SESSION_UMANAGE };
 			
+			String[] arrSessionsMan = new String[]{
+					WorkSpaceManageUser.SESSION_WORK_AREA,
+					ManageUserModule.SESSION_UMANAGE };
 			
-			btnAddAgent.addClickListener(new BtnTabLikeClickListener(false, arrLAddUserSubTabs,  arrLSubTabBtns, null, aum,
+			
+			btnAddAgent.addClickListener(new BtnTabLikeClickListener(true,false, arrLAddUserSubTabs,  arrLSubTabBtns, null, aum,
 					"account_change_log", "001", hasOp, boolEditStatus,   arrSessions, new String[]{WorkSpaceManageUser.SESSION_VAR_WORK_AREA_DEFAULT_USER_TYPE, strSessionVar,  strSessionSub} ));
 			
-			btnAddMerchant.addClickListener(new BtnTabLikeClickListener(false, arrLAddUserSubTabs, arrLSubTabBtns,  null, aum,
+			btnAddMerchant.addClickListener(new BtnTabLikeClickListener(true,false, arrLAddUserSubTabs, arrLSubTabBtns,  null, aum,
 					"activity_log", "001", hasOp, boolEditStatus, arrSessions, new String[]{WorkSpaceManageUser.SESSION_VAR_WORK_AREA_USER_MERCHANT, strSessionVar,  strSessionSub} ));
 			
-			btnAddDealer.addClickListener(new BtnTabLikeClickListener(false, arrLAddUserSubTabs,  arrLSubTabBtns, null, aum,
+			btnAddDealer.addClickListener(new BtnTabLikeClickListener(true,false, arrLAddUserSubTabs,  arrLSubTabBtns, null, aum,
 					"account_change_log", "001", hasOp, boolEditStatus, arrSessions, new String[]{WorkSpaceManageUser.SESSION_VAR_WORK_AREA_USER_DEALER, strSessionVar,  strSessionSub} ));
 			
-			btnAddPartner.addClickListener(new BtnTabLikeClickListener(false, arrLAddUserSubTabs,  arrLSubTabBtns, null, aum,
+			btnAddPartner.addClickListener(new BtnTabLikeClickListener(true, false, arrLAddUserSubTabs,  arrLSubTabBtns, null, aum,
 					"account_change_log", "001", hasOp, boolEditStatus, arrSessions, new String[]{WorkSpaceManageUser.SESSION_VAR_WORK_AREA_USER_PARTNER, strSessionVar,  strSessionSub} ));
 			
-			btnAddFAdmin.addClickListener(new BtnTabLikeClickListener(false, arrLAddUserSubTabs,  arrLSubTabBtns, null, aum,
+			btnAddFAdmin.addClickListener(new BtnTabLikeClickListener(
+					true,
+					false,
+					arrLAddUserSubTabs,
+					arrLSubTabBtns,
+					null,
+					aum,
 					"account_change_log", "001", hasOp, boolEditStatus, arrSessions, new String[]{WorkSpaceManageUser.SESSION_VAR_WORK_AREA_USER_BA, strSessionVar,  strSessionSub} ));
 			
 			btnAddCCO.addClickListener(new BtnTabLikeClickListener(
+					true,
 					false,
 					arrLAddUserSubTabs,
 					arrLSubTabBtns,
@@ -198,6 +199,7 @@ public class ManageUserModule {
 					new String[]{WorkSpaceManageUser.SESSION_VAR_WORK_AREA_USER_CCO, strSessionVar, strSessionSub} ));
 			
 			btnAddUser.addClickListener(new BtnTabLikeClickListener(
+					true,
 					true ,
 					arrLAddUserSubTabs,
 					arrLTabBtns,
@@ -207,8 +209,8 @@ public class ManageUserModule {
 					"001",
 					hasOp,
 					boolEditStatus,
-					arrSessions,
-					new String[]{WorkSpaceManageUser.SESSION_VAR_WORK_AREA_DEFAULT_USER_TYPE, strSessionVar, strSessionSub}
+					arrSessionsMan,
+					new String[]{strSessionVar, strSessionSub}
 					
 					));
 			

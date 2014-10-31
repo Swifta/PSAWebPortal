@@ -153,7 +153,7 @@ public void apmModifier(String strCurSession, HorizontalLayout cContent){
 		  }
 		  udc = udm.getDetailsForm("activity_log", "001", false, false);
 		  cContent.addComponent(udc);
-		 // Notification.show(strCurSession);
+		
 	  }else  if(strCurSession.equals(WorkSpaceManageProfile.SESSION_VAR_WSMP_ACC_LOG)){
 		  if(udc != null){
 			  cContent.removeComponent(udc);

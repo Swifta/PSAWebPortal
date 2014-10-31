@@ -19,6 +19,7 @@ public class WorkSpaceManageUser{
 	VerticalLayout searchResultsC;
 	AddUserModule aum;
 	ManageUserModule mum;
+	UserDetailsModule udm;
 	VerticalLayout cParentLayout;
 	VerticalLayout cuDetails;
 	VerticalLayout mm;
@@ -118,15 +119,20 @@ public class WorkSpaceManageUser{
 			return;
 			
 		}else if(curSessionUManage != null && curSessionUManage.equals(ManageUserModule.SESSION_VAR_UMANAGE_USER_ACTIONS)){
-			//Notification.show(curSessionUManage);
+			
 			if(searchResultsC != null){
 				contentC.removeComponent(searchResultsC);
 			}
-			if(cuDetails != null){
-				contentC.removeComponent(cuDetails);
+			String strUDM =	(String) UI.getCurrent().getSession().getAttribute(UserDetailsModule.SESSION_UDM);
+			if(strUDM == null){
+				udm = new UserDetailsModule();
+				cuDetails = udm.udmModifier(contentC, udm);
+				UI.getCurrent().getSession().setAttribute(UserDetailsModule.SESSION_UDM, "active");
+				
+			}else{
+				cuDetails = udm.udmModifier(contentC, udm);
 			}
-			UserDetailsModule udm = new UserDetailsModule();
-			cuDetails = udm.udmModifier(contentC);
+			
 			return;
 		}
 			

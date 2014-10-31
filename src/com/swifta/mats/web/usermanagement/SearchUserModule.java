@@ -125,6 +125,7 @@ public class SearchUserModule {
 				String strParams = strBuilder.toString();
 				
 				UI.getCurrent().getSession().setAttribute(ManageUserModule.SESSION_VAR_UMANAGE_SEARCH, null);
+				UI.getCurrent().getSession().setAttribute(UserDetailsModule.SESSION_UDM, null);
 				UI.getCurrent().getSession().setAttribute(ManageUserModule.SESSION_UMANAGE, ManageUserModule.SESSION_VAR_UMANAGE_SEARCH_RESULTS);
 				UI.getCurrent().getSession().setAttribute(SESSION_SEARCH_USER_PARAM, strParams);
 

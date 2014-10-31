@@ -8,7 +8,7 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -30,81 +30,18 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 	BtnTabLike curBtn;
 	boolean boolEditStatus = false;
 	private String strUserType;
+	private boolean isMainMenuItem;
 	
-	
-	//Original subMenu
-	public BtnTabLikeClickListener(
-			boolean hasSubMenu,
-			ArrayList<BtnTabLike>arrLTabBtns,
-			HorizontalLayout cSubMenu,
-			HorizontalLayout hTabContainer,
-			Object udm, String strTbName,
-			String strUID, boolean hasOp,
-			boolean boolEditStatus){
-		
-		this.hasSubMenu = hasSubMenu;
-		this.cSubMenu = cSubMenu;
-		this.arrLTabBtns = arrLTabBtns;
-		this.udm = udm;
-		
-		this.boolEditStatus = boolEditStatus;
-		
-		
-		
-	}
-	
-	
-	//HasSubMenu constructor
-	public BtnTabLikeClickListener(
-			boolean hasSubMenu,
-			ArrayList<HorizontalLayout> arrLSubTabs,
-			ArrayList<BtnTabLike>arrLTabBtns,
-			HorizontalLayout cSubMenu,
-			HorizontalLayout hTabContainer,
-			Object udm, String strTbName,
-			String strUID, boolean hasOp,
-			boolean boolEditStatus){
-		
-		this.hasSubMenu = hasSubMenu;
-		this.cSubMenu = cSubMenu;
-		this.arrLTabBtns = arrLTabBtns;
-		this.udm = udm;
-		
-		this.boolEditStatus = boolEditStatus;
-		this.arrLSubTabs = arrLSubTabs;
-		
-		
-		
-	}
 	
 	
 
 	
-	//Original No submenu constructor
-	public BtnTabLikeClickListener(
-			boolean hasSubMenu,
-			ArrayList<HorizontalLayout> arrLSubTabs, 
-			ArrayList<BtnTabLike>arrLTabBtns,
-			HorizontalLayout tabContainer,
-			Object udm,
-			String strTbName,
-			String strUID,
-			boolean hasOp,
-			boolean boolEditStatus){
-		this.arrLTabBtns = arrLTabBtns;
-		//this.hTabContainer = tabContainer;
-		this.udm = udm;
-		this.hasSubMenu = hasSubMenu;
-		this.arrLSubTabs = arrLSubTabs;
-		this.boolEditStatus = boolEditStatus;
-		
-		
-		
-	}
+	
 	
 	
 	//No subMenu
 	public BtnTabLikeClickListener(
+			boolean isMainMenuItem,
 			boolean hasSubMenu,
 			ArrayList<HorizontalLayout> arrLSubTabs, 
 			ArrayList<BtnTabLike>arrLTabBtns,
@@ -128,6 +65,7 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 		this.hasSubMenu = hasSubMenu;
 		this.arrLSubTabs = arrLSubTabs;
 		this.boolEditStatus = boolEditStatus;
+		this.isMainMenuItem= isMainMenuItem;
 		
 	}
 	
@@ -162,21 +100,33 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 		
 		if(BtnTabLike.btnTabPrev == null)return;
 		
-		String strCurBtnCap = BtnTabLike.btnTabCur.getCaption();
-		//String strPrevBtnCap = BtnTabLike.btnTabPrev.getCaption();
+		
+		String strCurBtnCap;
+		if(isMainMenuItem){
+			strCurBtnCap = (String) UI.getCurrent().getSession().getAttribute(WorkSpaceManageUser.SESSION_WORK_AREA_USER_TYPE);
+		}else{
+			strCurBtnCap = BtnTabLike.btnTabCur.getCaption();
+		}
+			
+		Notification.show(BtnTabLike.btnTabCur.getCaption());
+		
 		BtnTabLike btn = null;
 		
 		BtnTabLike.btnTabPrev.setStyleName("btn_tab_like");
 		BtnTabLike.btnTabPrev.setEnabled(true);
+		
+		
 		
 		for(HorizontalLayout h: arrLSubTabs){
 			for(int i = 0; i < h.getComponentCount(); i++){
 				
 				if(h.getStyleName().equals("c_sub_menu_visible")){
 					btn = (BtnTabLike)h.getComponent(i);
+					
 					if(strCurBtnCap.equals(btn.getCaption())){
 						btn.setStyleName("btn_tab_like btn_tab_like_active");
 						btn.setEnabled(false);
+						
 					}else{
 						btn.setStyleName("btn_tab_like");
 						btn.setEnabled(true);
@@ -185,6 +135,8 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 					
 			}
 		}
+		
+		
 		
 		
 	}
@@ -261,17 +213,6 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 						} 
 					}
 				
-					
-					/*/x/setActiveTab(curBtn, arrLTabBtns);
-					hTabContainer.removeAllComponents();
-					if(udm instanceof UserDetailsModule){
-						
-						hTabContainer.addComponent(((UserDetailsModule)udm).getDetailsForm(strTbName, strUID, hasOp, boolEditStatus));
-					}else{
-						//Notification.show("Leave me alone.");
-					}/x/*/
-					//hTabContainer.addComponent(udm.getDetailsForm(strTbName, strUID, hasOp, boolEditStatus));
-				
 				
 			}
 		});
@@ -292,31 +233,21 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 		
 		
 		if(hasSubMenu){
-			if(arrLSubTabs != null){
-				for(HorizontalLayout sm: arrLSubTabs){
-					sm.setStyleName("c_sub_menu_invisible");
-				}
-				
-				
-				/*
-				 * Next line is important for only one reason...
-				 * 1. Ensure that child Menu does not hide its Parent
-				 */
-				curBtn.getParent().setStyleName("c_sub_menu_visible");
-				cSubMenu.setStyleName("c_sub_menu_visible");
-				
-				strUserType = (String)UI.getCurrent().getSession().getAttribute(WorkSpaceManageUser.SESSION_WORK_AREA_USER_TYPE);
-				arrSessionVars[0] = strUserType;
+			showHideSubMenu();
+			cSubMenu.setStyleName("c_sub_menu_visible");
+			if(isMainMenuItem){
 				selectActiveUserType();	
 			}
+			
 		}else if(!hasSubMenu){
-			if(arrSessionVars[0] != null){
+			showHideSubMenu();
+			if(!isMainMenuItem){
 				BtnTabLike.btnTabPrev = BtnTabLike.btnTabCur;
 				BtnTabLike.btnTabCur = this.curBtn;
-			}else{
-				strUserType = (String)UI.getCurrent().getSession().getAttribute(WorkSpaceManageUser.SESSION_WORK_AREA_USER_TYPE);
-				arrSessionVars[0] = strUserType;
 			}
+				
+			
+
 		}
 		
 		
@@ -329,47 +260,25 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 			WorkSpace.wsmu.wsmuModifier();
 		
 		
-		//if(hTabContainer == null)return;		
-		//hTabContainer.removeAllComponents();
-			/*xxxx/if(udm instanceof UserDetailsModule){
-				//hTabContainer.addComponent(((UserDetailsModule)udm).getDetailsForm(strTbName, strUID, hasOp, boolEditStatus));
-			}else if(udm instanceof AddUserModule){
-				
-				for(int i = 0; i < arrSessions.length; i++){
-					 UI.getCurrent().getSession().setAttribute(arrSessions[i], arrSessionVars[i]);
-				}
-				
-				UI.getCurrent().getSession().setAttribute(WorkSpaceManageUser.SESSION_WORK_AREA, WorkSpaceManageUser.SESSION_VAR_WORK_AREA_ADD_USER);
-				if(WorkSpace.wsmu != null)
-					WorkSpace.wsmu.wsmuModifier();
-				
-				
-								
-			}else if(udm instanceof ManageUserModule){
-				
-								
-				for(int i = 0; i < arrSessions.length; i++){
-					 UI.getCurrent().getSession().setAttribute(arrSessions[i], arrSessionVars[i]);
-				}
-				
-				UI.getCurrent().getSession().setAttribute(WorkSpaceManageUser.SESSION_WORK_AREA, WorkSpaceManageUser.SESSION_VAR_WORK_AREA_MANAGE_USER);
-				UI.getCurrent().getSession().setAttribute(ManageUserModule.SESSION_UMANAGE, ManageUserModule.SESSION_VAR_UMANAGE_SEARCH);
-				
-				if(WorkSpace.wsmu != null)
-					WorkSpace.wsmu.wsmuModifier();
-				
-				
-			}else if(udm instanceof ManageProfileModule){
-				
-				UI.getCurrent().getSession().setAttribute(WorkSpaceManageProfile.SESSION_WSMP_CUR_ACTION, WorkSpaceManageProfile.SESSION_VAR_WSMP_ACT_LOG);
-				if(WorkSpace.wsmp != null)
-					WorkSpace.wsmp.wsmpModifier();
-				
-				
-		}xxxxx*/
-			
 		
 				
+	}
+	
+	
+	private void showHideSubMenu(){
+			if(arrLSubTabs != null){
+				for(HorizontalLayout sm: arrLSubTabs){
+					sm.setStyleName("c_sub_menu_invisible");
+				}
+			
+			
+			/*
+			 * Next line is important for only one reason...
+			 * 1. Ensure that child Menu does not hide its Parent
+			 */
+			curBtn.getParent().setStyleName("c_sub_menu_visible");
+		}
+			
 	}
 	
 	
