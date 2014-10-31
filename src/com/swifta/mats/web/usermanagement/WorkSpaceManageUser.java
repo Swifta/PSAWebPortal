@@ -1,9 +1,9 @@
 package com.swifta.mats.web.usermanagement;
 
-import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 	
@@ -18,9 +18,13 @@ public class WorkSpaceManageUser{
 	FormLayout searchC;
 	VerticalLayout searchResultsC;
 	AddUserModule aum;
-	
 	ManageUserModule mum;
 	VerticalLayout cParentLayout;
+	VerticalLayout cuDetails;
+	VerticalLayout mm;
+	SearchUserModule sum;
+	String curSessionUManage;
+	
 	//static final String WORK_AREA = "work_area";
 	public final static  String SESSION_WORK_AREA_USER_TYPE = "user_type";
 	public final static  String SESSION_VAR_WORK_AREA_DEFAULT_USER_TYPE = "Agent";
@@ -34,10 +38,7 @@ public class WorkSpaceManageUser{
 	public final static  String SESSION_VAR_WORK_AREA_ADD_USER = "add_user";
 	public final static  String SESSION_VAR_WORK_AREA_MANAGE_USER= "manage_user";
 	private boolean wsmuInitStatus = false;
-	VerticalLayout cuDetails;
-	VerticalLayout mm;
-	SearchUserModule sum;
-	String curSessionUManage;
+	
 	
 	
 	public WorkSpaceManageUser(){
@@ -46,7 +47,8 @@ public class WorkSpaceManageUser{
 	
 	public void setCoreUI(){
 		UI.getCurrent().getSession().setAttribute(SESSION_WORK_AREA_USER_TYPE, SESSION_VAR_WORK_AREA_DEFAULT_USER_TYPE);
-		
+		//UI.getCurrent().getSession().setAttribute(SESSION_WORK_AREA, SESSION_VAR_WORK_AREA_MANAGE_USER);
+
 		cParentLayout = new VerticalLayout();
 		
 		contentC = new HorizontalLayout();
@@ -70,7 +72,7 @@ public class WorkSpaceManageUser{
 	
 	public VerticalLayout getWorkSpaceManageUser() {
 		String curSessionUManage = (String) UI.getCurrent().getSession().getAttribute(ManageUserModule.SESSION_UMANAGE);
-		searchC = (FormLayout)sum.sumModifier(curSessionUManage, contentC, searchC);
+		searchC = (FormLayout)sum.sumModifier(curSessionUManage, contentC);
 		return cParentLayout;
 		
 		
@@ -80,16 +82,16 @@ public class WorkSpaceManageUser{
 	public void wsmuModifier(){
 		
 	String curSessionWorkArea = (String) UI.getCurrent().getSession().getAttribute(WorkSpaceManageUser.SESSION_WORK_AREA);
-	String curSessionUManage = (String) UI.getCurrent().getSession().getAttribute(ManageUserModule.SESSION_UMANAGE);
-			
+				
 	if(curSessionWorkArea!= null && curSessionWorkArea.equals(SESSION_VAR_WORK_AREA_ADD_USER)){
 		contentC.removeAllComponents();
 		uf = aum.aumModifier(contentC);
+		return;
 		
 	}else if(curSessionWorkArea!= null && curSessionWorkArea.equals(SESSION_VAR_WORK_AREA_MANAGE_USER)){
-		
-		
+		String curSessionUManage = (String) UI.getCurrent().getSession().getAttribute(ManageUserModule.SESSION_UMANAGE);
 		if(curSessionUManage != null && curSessionUManage.equals(ManageUserModule.SESSION_VAR_UMANAGE_SEARCH)){
+			
 			String strSessionSearch = (String) UI.getCurrent().getSession().getAttribute(WorkSpaceManageUser.SESSION_WORK_AREA_USER_TYPE);
 			if(strSessionSearch != null){
 				if(searchC != null)
@@ -103,7 +105,8 @@ public class WorkSpaceManageUser{
 				
 				if(searchResultsC != null)
 					contentC.removeComponent(searchResultsC);
-				    searchC = (FormLayout)sum.sumModifier(curSessionUManage, contentC, searchC);
+				    searchC = (FormLayout)sum.sumModifier(curSessionUManage, contentC);
+				    return;
 				
 			}
 
@@ -111,14 +114,20 @@ public class WorkSpaceManageUser{
 			if(cuDetails != null){
 				contentC.removeComponent(cuDetails);
 			}
-			searchResultsC = (VerticalLayout)sum.sumModifier(curSessionUManage, contentC, searchC);
+			searchResultsC = (VerticalLayout)sum.sumModifier(curSessionUManage, contentC);
+			return;
 			
 		}else if(curSessionUManage != null && curSessionUManage.equals(ManageUserModule.SESSION_VAR_UMANAGE_USER_ACTIONS)){
+			//Notification.show(curSessionUManage);
 			if(searchResultsC != null){
 				contentC.removeComponent(searchResultsC);
 			}
+			if(cuDetails != null){
+				contentC.removeComponent(cuDetails);
+			}
 			UserDetailsModule udm = new UserDetailsModule();
 			cuDetails = udm.udmModifier(contentC);
+			return;
 		}
 			
 

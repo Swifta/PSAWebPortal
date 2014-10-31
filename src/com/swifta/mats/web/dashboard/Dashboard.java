@@ -1,6 +1,7 @@
 package com.swifta.mats.web.dashboard;
 
 
+import com.vaadin.server.ExternalResource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.*; 
 
@@ -23,7 +24,7 @@ public class Dashboard {
           // player.setMimeType("application/x-shockwave-flash");
            //String url = "http://www.youtube.com/v/"+videoId+"&autoplay=1";
            //player.setSource(new ExternalResource(url));
-           
+            
            
            player.setParameter("id", "Column3D");
            //player.setSource(new ThemeResource("Charts/FCF_Column3D.swf"));

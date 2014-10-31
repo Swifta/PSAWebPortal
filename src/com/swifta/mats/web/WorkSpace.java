@@ -102,7 +102,7 @@ public class WorkSpace extends VerticalLayout implements View, TabSheet.Selected
 		dashboard1.setCaption("Test1");
 		Dashboard dash = new Dashboard();
 		PiechartDash pie = new PiechartDash();
-		GridLayout lut = new GridLayout(2,1);
+		GridLayout lut = new GridLayout(2,2);
 		VerticalLayout former = new VerticalLayout();
 		lab1.setCaption("Agent ID");
 		dat.setCaption("Start Date");
