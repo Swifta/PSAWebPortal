@@ -102,8 +102,9 @@ public class WorkSpace extends VerticalLayout implements View, TabSheet.Selected
 		dashboard1.setCaption("Test1");
 		Dashboard dash = new Dashboard();
 		PiechartDash pie = new PiechartDash();
-		GridLayout lut = new GridLayout(2,2);
+		HorizontalLayout lut = new HorizontalLayout();
 		VerticalLayout former = new VerticalLayout();
+		BarChartDash bar = new BarChartDash();
 		lab1.setCaption("Agent ID");
 		dat.setCaption("Start Date");
 		dat2.setCaption("End Date");
@@ -111,9 +112,11 @@ public class WorkSpace extends VerticalLayout implements View, TabSheet.Selected
 		former.addComponent(dat);
 		former.addComponent(dat2);
 		former.addComponent(filter);
-	
+		
+		lut.setSizeUndefined();
 		lut.addComponent(former);
 		lut.addComponent(pie.getChart());
+		lut.addComponent(bar.getChart());
 		
 		
 		//dashboard1.addComponent(former, 0);
