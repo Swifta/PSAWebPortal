@@ -10,6 +10,7 @@ class VerifyUser implements Validator  {
 
 	public VerifyUser(){
 		
+		
 	}
 
 	@Override
