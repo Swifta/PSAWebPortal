@@ -30,6 +30,7 @@ import com.vaadin.ui.themes.ValoTheme;
 public class UserDetailsModule{
 	public static boolean uDetailsEditStatus = false;
 	FormLayout  cUPersonalDetails;
+	VerticalLayout cUDetails;
 	HorizontalLayout cDetailsAndOperations;
 	//Declaration of form fields
 	TextField tfGen;
@@ -37,8 +38,13 @@ public class UserDetailsModule{
 	ComboBox combo;
 	PopupDateField dF;
 	public static final String SESSION_UDM = "session_user_details";
+	public static final String SESSION_UDM_TABLE = "session_user_details_table";
+	public static final String SESSION_UDM_ID = "uid";
+	public static final String SESSION_UDM_UNAME = "uname";
+	//public static final String SESSION_UDM = "session_user_details";
 	public static final String SESSION_VAR_UDM_PER = "personal";
 	public static final String SESSION_VAR_UDM_ACC = "account";
+	public static final String SESSION_VAR_UDM_AUTH = "auth";
 	public static final String SESSION_VAR_UDM_ACC_LOG = "account_change_log";
 	public static final String SESSION_VAR_UDM_ACT_LOG = "activity_log";
 	
@@ -71,8 +77,6 @@ public class UserDetailsModule{
 	String strOptSEditableFieldVal;
 	ArrayList<BtnTabLike> arrLTabBtns;
 	HorizontalLayout cPerAccAuthInfo;
-	VerticalLayout cuDetails = null;
-	
 	
 	public UserDetailsModule(){
 		
@@ -1077,7 +1081,7 @@ public class UserDetailsModule{
 	
 	
 	public VerticalLayout getUserDetailsContainer(String strTbName, String strUID, boolean hasOp, boolean boolEditStatus){
-		VerticalLayout cUDetails = new VerticalLayout();
+		cUDetails = new VerticalLayout();
 		cUDetails.setMargin(new MarginInfo(false, true, true, true));
 		
 		cUDetails.setStyleName("c_u_details");
@@ -1177,21 +1181,59 @@ public class UserDetailsModule{
 		cUDetails.setExpandRatio(cPerAccAuthInfo, 1.0f);
 		
 		
-		HorizontalLayout cUDetailsAndOperations= getDetailsForm(strTbName, "001", hasOp, boolEditStatus);
+		HorizontalLayout cUDetailsAndOperations= getDetailsForm(strTbName, strUID, hasOp, boolEditStatus);
 		cPerAccAuthInfo.addComponent(cUDetailsAndOperations);
 		
+		UI.getCurrent().getSession().setAttribute(SESSION_UDM, null);
 		
-		btnPersonal.addClickListener(new BtnTabLikeClickListener(false, arrLSubTabs, arrLTabBtns, cPerAccAuthInfo, null,
-				"personal", "001", hasOp, boolEditStatus ));
-		/*btnAccount.addClickListener(new BtnTabLikeClickListener(false, arrLSubTabs,  arrLTabBtns, cPerAccAuthInfo, null,
-				"account", "001", hasOp, boolEditStatus));*/
 		
-		String[] arrSessions = {UserDetailsModule.SESSION_UDM};
-		btnAccount.addClickListener(new BtnTabLikeClickListener(false, arrLSubTabs,  arrLTabBtns, null, null,
-				"account", "001", hasOp, boolEditStatus,   arrSessions, new String[]{UserDetailsModule.SESSION_VAR_UDM_ACC} ));
+		String[] arrSessions = new String[]{WorkSpaceManageUser.SESSION_WORK_AREA_USER_TYPE,
+				ManageUserModule.SESSION_UMANAGE, SESSION_UDM_TABLE };
+		
+		
 	
-		btnAuth.addClickListener(new BtnTabLikeClickListener(false, arrLSubTabs, arrLTabBtns, cPerAccAuthInfo, null,
-				"auth", "001", hasOp, boolEditStatus ));
+		
+		btnPersonal.addClickListener(new BtnTabLikeClickListener(
+				false,
+				arrLSubTabs,
+				arrLTabBtns,
+				null,
+				null,
+				"account_change_log",
+				"001",
+				hasOp,
+				boolEditStatus,
+				arrSessions,
+				new String[]{null, ManageUserModule.SESSION_VAR_UMANAGE_USER_ACTIONS, SESSION_VAR_UDM_PER}));
+		
+		
+		btnAccount.addClickListener(new BtnTabLikeClickListener(
+				false,
+				arrLSubTabs,
+				arrLTabBtns,
+				null,
+				null,
+				"account_change_log",
+				"001",
+				hasOp,
+				boolEditStatus,
+				arrSessions,
+				new String[]{null, ManageUserModule.SESSION_VAR_UMANAGE_USER_ACTIONS, SESSION_VAR_UDM_ACC}));
+		
+		btnAuth.addClickListener(new BtnTabLikeClickListener(
+				false,
+				arrLSubTabs,
+				arrLTabBtns,
+				null,
+				null,
+				"account_change_log",
+				"001",
+				hasOp,
+				boolEditStatus,
+				arrSessions,
+				new String[]{null, ManageUserModule.SESSION_VAR_UMANAGE_USER_ACTIONS, SESSION_VAR_UDM_AUTH}));
+	
+		
 		
 	return cUDetails; 
 }
@@ -1240,16 +1282,18 @@ public class UserDetailsModule{
 	
 	public VerticalLayout udmModifier(HorizontalLayout contentC){
 		
-		String strTbName = (String) UI.getCurrent().getSession().getAttribute(SearchUserModule.SESSION_USER_TABLE);
-		String strUID = (String)UI.getCurrent().getSession().getAttribute(SearchUserModule.SESSION_USER_TABLE_ROW_ID);
-		String strAction = (String) UI.getCurrent().getSession().getAttribute(SearchUserModule.SESSION_USER_ACTION);
-		String strSessionUDM = (String)UI.getCurrent().getSession().getAttribute(UserDetailsModule.SESSION_UDM);
+		String strUDM =	(String) UI.getCurrent().getSession().getAttribute(SESSION_UDM);
+		String strTbName = (String) UI.getCurrent().getSession().getAttribute(SESSION_UDM_TABLE);
+		String strUID = (String) UI.getCurrent().getSession().getAttribute(SESSION_UDM_ID);
+		String strUserName = (String) UI.getCurrent().getSession().getAttribute(SESSION_UDM_UNAME);
+		//String strAction = (String) UI.getCurrent().getSession().getAttribute(SearchUserModule.SESSION_USER_ACTION);
+		//String strSessionUDM = (String)UI.getCurrent().getSession().getAttribute(UserDetailsModule.SESSION_UDM);
 		
 		
 		
 		
 		
-		if(strAction.equals(SearchUserModule.ACTION_DETAILS) || 
+		/*if(strAction.equals(SearchUserModule.ACTION_DETAILS) || 
 				strAction.equals(SearchUserModule.ACTION_EDIT) ||
 				strAction.equals(SearchUserModule.ACTION_MORE)){
 			
@@ -1265,23 +1309,24 @@ public class UserDetailsModule{
 			}
 			
 				
-		}
+		}*/
 		
-		
-		
-		if(strSessionUDM == null){
-			cuDetails = getUserDetailsContainer(strTbName, strUID, false, false);
-			contentC.addComponent(cuDetails);
-			contentC.setComponentAlignment(cuDetails, Alignment.TOP_CENTER);
-			contentC.setExpandRatio(cuDetails, 1.0f);
 			
-			contentC.setSizeFull();
-			contentC.setMargin(new MarginInfo(true, false, true, false));
-			contentC.setSpacing(false);
-		}
+				//Notification.show(strTbName);
+				
+				cUDetails = getUserDetailsContainer(strTbName, strUID, false, false);
+				contentC.addComponent(cUDetails);
+				contentC.setComponentAlignment(cUDetails, Alignment.TOP_CENTER);
+				contentC.setExpandRatio(cUDetails, 1.0f);
+				
+				contentC.setSizeFull();
+				contentC.setMargin(new MarginInfo(true, false, true, false));
+				contentC.setSpacing(false);
+				UI.getCurrent().getSession().setAttribute(SESSION_UDM, "active");
+			
 		
 		
-		return cuDetails;
+		return cUDetails;
 
 	}
 	

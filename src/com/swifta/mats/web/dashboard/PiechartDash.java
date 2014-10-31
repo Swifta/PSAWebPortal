@@ -27,7 +27,7 @@ public class PiechartDash {
         return "Donut chart";
     }
 
-    protected Component getChart() {
+    protected Component gethart() {
         Component ret = createChart();
         ret.setWidth("100%");
         ret.setHeight("450px");
