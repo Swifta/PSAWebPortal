@@ -60,7 +60,7 @@ public class BarChartDash {
 	                + "+ Highcharts.numberFormat(this.y, 1) +' percent'");
 	        conf.setTooltip(tooltip);
 
-	        ListSeries serie = new ListSeries("Percentage", new Number[] { 50,32,28});
+	        ListSeries serie = new ListSeries("Percentage", new Number[] { 50,32,18});
 	        Labels dataLabels = new Labels();
 	        dataLabels.setEnabled(true);
 	        dataLabels.setRotation(-90);
@@ -79,9 +79,9 @@ public class BarChartDash {
 	        conf.addSeries(serie);
 
 	        chart.drawChart(conf);
-	       // chart.setWidth("100%");
-	       // chart.setHeight("450px");
-	        chart.setSizeFull();
+	       chart.setWidth("490px");
+	        chart.setHeight("450px");
+	        //chart.setSizeFull();
 
 	        return chart;
 	    }

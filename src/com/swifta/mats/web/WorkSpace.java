@@ -103,7 +103,7 @@ public class WorkSpace extends VerticalLayout implements View, TabSheet.Selected
 		dashboard1.setCaption("Test1");
 		Dashboard dash = new Dashboard();
 		PiechartDash pie = new PiechartDash();
-		FormLayout pi = new FormLayout();
+		HorizontalLayout pi = new HorizontalLayout();
 		HorizontalLayout lut = new HorizontalLayout();
 		VerticalLayout former = new VerticalLayout();
 		BarChartDash bar = new BarChartDash();
@@ -123,6 +123,8 @@ public class WorkSpace extends VerticalLayout implements View, TabSheet.Selected
 		lut.addComponent(former);
 		lut.addComponent(pi);
 		//lut.addComponent(bar.getChart());
+		lut.setExpandRatio(former, 1);
+		lut.setExpandRatio(pi, 5);
 		
 		
 		

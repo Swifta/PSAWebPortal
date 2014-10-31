@@ -1,15 +1,4 @@
 com.vaadin.integration.eclipse.useLatestNightly=false
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-com.vaadin.integration.eclipse.widgetsetCompilationEta=92626
 com.vaadin.integration.eclipse.widgetsetDirty=true
-<<<<<<< HEAD
-=======
-=======
->>>>>>> branch 'development' of https://github.com/Swifta/PSAWebPortal.git
 com.vaadin.integration.eclipse.widgetsetCompilationEta=121424
-com.vaadin.integration.eclipse.widgetsetDirty=false
->>>>>>> branch 'development' of https://github.com/Swifta/PSAWebPortal.git
->>>>>>> branch 'development' of https://github.com/Swifta/PSAWebPortal.git
 eclipse.preferences.version=1

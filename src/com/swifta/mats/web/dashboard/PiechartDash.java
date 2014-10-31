@@ -2,32 +2,32 @@ package com.swifta.mats.web.dashboard;
 
 
 import com.vaadin.addon.charts.Chart;
-import com.vaadin.addon.charts.PointClickEvent;
-import com.vaadin.addon.charts.PointClickListener;
 import com.vaadin.addon.charts.model.ChartType;
 import com.vaadin.addon.charts.model.Configuration;
+import com.vaadin.addon.charts.model.CreditPosition;
+import com.vaadin.addon.charts.model.Credits;
 import com.vaadin.addon.charts.model.Cursor;
 import com.vaadin.addon.charts.model.DataSeries;
 import com.vaadin.addon.charts.model.DataSeriesItem;
+import com.vaadin.addon.charts.model.HorizontalAlign;
 import com.vaadin.addon.charts.model.Labels;
 import com.vaadin.addon.charts.model.PlotOptionsPie;
+import com.vaadin.addon.charts.model.VerticalAlign;
 import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.Notification;
 
- 
 public class PiechartDash {
 
-	 public String getDescription() {
-	        return "Pie chart";
+	 
+	    public String getDescription() {
+	        return "Pie chart with customized credits";
 	    }
 
+	   
 	    public Component getChart() {
 	        Component ret = createChart();
-	        ret.setWidth("100%");
-	       // ret.setHeight("450px");
-	        ret.setSizeFull();
-	        
+	        ret.setWidth("500px");
+	        ret.setHeight("450px");
 	        return ret;
 	    }
 
@@ -36,7 +36,15 @@ public class PiechartDash {
 	        String user = "Agent 001";
 	        Configuration conf = chart.getConfiguration();
 
-	        conf.setTitle("Data Chart "+user );
+	        conf.setTitle("Data Chart "+user);
+
+	        Credits credits = new Credits(true);
+	        credits.setPosition(new CreditPosition());
+	        credits.getPosition().setHorizontalAlign(HorizontalAlign.CENTER);
+	        credits.getPosition().setVerticalAlign(VerticalAlign.MIDDLE);
+	        credits.getPosition().setX(0);
+	        credits.getPosition().setY(10);
+	        conf.setCredits(credits);
 
 	        PlotOptionsPie plotOptions = new PlotOptionsPie();
 	        plotOptions.setCursor(Cursor.POINTER);
@@ -50,24 +58,15 @@ public class PiechartDash {
 	        plotOptions.setDataLabels(dataLabels);
 	        conf.setPlotOptions(plotOptions);
 
-	        final DataSeries series = new DataSeries();
+	        DataSeries series = new DataSeries();
 	        series.add(new DataSeriesItem("Cash in", 50));
 	        series.add(new DataSeriesItem("Cash out", 32));
 	        DataSeriesItem chrome = new DataSeriesItem("Airtime", 18);
 	        chrome.setSliced(true);
 	        chrome.setSelected(true);
 	        series.add(chrome);
-	       
+	        
 	        conf.setSeries(series);
-
-	        chart.addPointClickListener(new PointClickListener() {
-
-	            @Override
-	            public void onClick(PointClickEvent event) {
-	                Notification.show("Click: "
-	                        + series.get(event.getPointIndex()).getName());
-	            }
-	        });
 
 	        chart.drawChart(conf);
 
