@@ -142,7 +142,7 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 	}
 	
 	
-	private Window getWarningPopWindow(){
+	public Window getWarningPopWindow(){
 		curBtn.addStyleName("btn_tab_like");
 		popup = new Window("Unsaved changes");
 		popup.center();
@@ -186,33 +186,7 @@ public class BtnTabLikeClickListener implements Button.ClickListener{
 			public void buttonClick(ClickEvent event) {
 				UserDetailsModule.uDetailsEditStatus = false;
 				popup.close();
-				
-				if(hasSubMenu){
-					modifyMenuContent();
-				}
-				
-				
-					
-					if(udm instanceof ManageProfileModule){
-						//Notification.show("Hello....");
-						for(int i = 0; i < arrSessions.length; i++){
-							 UI.getCurrent().getSession().setAttribute(arrSessions[i],arrSessionVars[i]);
-							}
-						if(WorkSpace.wsmp != null) 
-							WorkSpace.wsmp.wsmpModifier();
-								setActiveTab(curBtn, arrLTabBtns);
-					}else{	
-					
-						if(WorkSpace.wsmu != null){
-							for(int i = 0; i < arrSessions.length; i++){
-								 UI.getCurrent().getSession().setAttribute(arrSessions[i],arrSessionVars[i]);
-								}
-							WorkSpace.wsmu.wsmuModifier();
-			
-							setActiveTab(curBtn, arrLTabBtns);
-						} 
-					}
-				
+				 modifyMenuContent();	
 				
 			}
 		});

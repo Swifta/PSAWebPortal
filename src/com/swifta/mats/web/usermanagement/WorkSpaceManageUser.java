@@ -1,5 +1,7 @@
 package com.swifta.mats.web.usermanagement;
 
+import com.swifta.mats.web.WorkSpace;
+import com.swifta.mats.web.accountprofile.WorkSpaceManageProfile;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
@@ -83,7 +85,17 @@ public class WorkSpaceManageUser{
 	public void wsmuModifier(){
 		
 	String curSessionWorkArea = (String) UI.getCurrent().getSession().getAttribute(WorkSpaceManageUser.SESSION_WORK_AREA);
-				
+	//Notification.show("Yes, I mind: "+(String)UI.getCurrent().getSession().getAttribute(WorkSpaceManageProfile.SESSION_WSMP));
+	
+	if((String)UI.getCurrent().getSession().getAttribute(WorkSpaceManageProfile.SESSION_WSMP) != null){
+		if(WorkSpace.wsmp != null)
+			WorkSpace.wsmp.wsmpModifier();
+		return;
+		
+	}
+	
+	
+	
 	if(curSessionWorkArea!= null && curSessionWorkArea.equals(SESSION_VAR_WORK_AREA_ADD_USER)){
 		contentC.removeAllComponents();
 		uf = aum.aumModifier(contentC);
@@ -135,6 +147,7 @@ public class WorkSpaceManageUser{
 			
 			return;
 		}
+		
 			
 
 	}

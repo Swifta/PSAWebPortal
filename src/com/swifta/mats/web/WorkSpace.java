@@ -221,6 +221,7 @@ public class WorkSpace extends VerticalLayout implements View, TabSheet.Selected
 		
 		
 		tabsheet1.addListener(this);
+		
 	
 		
 		
@@ -231,16 +232,13 @@ public class WorkSpace extends VerticalLayout implements View, TabSheet.Selected
 
 	@Override
 	public void selectedTabChange(SelectedTabChangeEvent event) {
-		     Object cCurTab = event.getTabSheet().getSelectedTab();
+		    Object cCurTab = event.getTabSheet().getSelectedTab();
 		       if(cwsmu.equals(cCurTab)){
 		    	UI.getCurrent().getSession().setAttribute(WorkSpaceManageProfile.SESSION_WSMP, null);
 		    	
 			}else if(cwsmp.equals(cCurTab)){
 					UI.getCurrent().getSession().setAttribute(WorkSpaceManageProfile.SESSION_WSMP,
 							"cur_user" );
-					if(WorkSpace.wsmp != null){
-						WorkSpace.wsmp.wsmpModifier();
-					}
 			 }
 	}
 

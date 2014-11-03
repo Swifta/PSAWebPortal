@@ -55,12 +55,7 @@ public class UserDetailsModule{
 	public static final String SESSION_VAR_UDM_ACC_LOG = "account_change_log";
 	public static final String SESSION_VAR_UDM_ACT_LOG = "activity_log";
 	
-	private static final String btnIDPersonal = "user_details_personal";
-	private static final String btnIDAccount = "user_details_account";
-	private static final String btnIDAuth = "user_details_auth";
-	private static final String btnIDLog = "user_log";
-	private String btnIDActLog;
-	private String btnIDAccChangeLog;
+	
 	
 	
 	
@@ -1213,7 +1208,7 @@ public class UserDetailsModule{
 					hasOp,
 					boolEditStatus,
 					arrSessions,
-					new String[]{ManageUserModule.SESSION_VAR_UMANAGE_USER_ACTIONS, SESSION_VAR_UDM_PER, SESSION_VAR_UDM_IS_LOG_FALSE}));
+					new String[]{ManageUserModule.SESSION_VAR_UMANAGE_USER_ACTIONS, SESSION_VAR_UDM_PER, null}));
 			
 			
 			btnAccount.addClickListener(new BtnTabLikeClickListener(
@@ -1228,7 +1223,7 @@ public class UserDetailsModule{
 					hasOp,
 					boolEditStatus,
 					arrSessions,
-					new String[]{ManageUserModule.SESSION_VAR_UMANAGE_USER_ACTIONS, SESSION_VAR_UDM_ACC, SESSION_VAR_UDM_IS_LOG_FALSE}));
+					new String[]{ManageUserModule.SESSION_VAR_UMANAGE_USER_ACTIONS, SESSION_VAR_UDM_ACC, null}));
 			
 			btnAuth.addClickListener(new BtnTabLikeClickListener(
 					false,
@@ -1242,7 +1237,7 @@ public class UserDetailsModule{
 					hasOp,
 					boolEditStatus,
 					arrSessions,
-					new String[]{ManageUserModule.SESSION_VAR_UMANAGE_USER_ACTIONS, SESSION_VAR_UDM_AUTH, SESSION_VAR_UDM_IS_LOG_FALSE}));
+					new String[]{ManageUserModule.SESSION_VAR_UMANAGE_USER_ACTIONS, SESSION_VAR_UDM_AUTH, null}));
 			
 			
 			
@@ -1346,11 +1341,11 @@ public class UserDetailsModule{
 				"001",
 				hasOp,
 				boolEditStatus,
-				new String[]{ManageUserModule.SESSION_UMANAGE,SESSION_UDM_IS_LOG},
+				new String[]{ManageUserModule.SESSION_UMANAGE, SESSION_UDM_IS_LOG},
 				new String[]{ManageUserModule.SESSION_VAR_UMANAGE_USER_ACTIONS, SESSION_VAR_UDM_IS_LOG_TRUE}));
 		
 	
-		UI.getCurrent().getSession().setAttribute(SESSION_UDM_LOG, null);
+		UI.getCurrent().getSession().setAttribute(SESSION_UDM_TABLE_LOG, SESSION_VAR_UDM_ACT_LOG);
 		
 		return cAddUserSubMenu;
 	}
@@ -1365,9 +1360,7 @@ public class UserDetailsModule{
 		String strUDM =	(String) UI.getCurrent().getSession().getAttribute(SESSION_UDM);
 		String strTbName = (String) UI.getCurrent().getSession().getAttribute(SESSION_UDM_TABLE);
 		String strUID = (String) UI.getCurrent().getSession().getAttribute(SESSION_UDM_ID);
-		String strUserName = (String) UI.getCurrent().getSession().getAttribute(SESSION_UDM_UNAME);
-		//String strAction = (String) UI.getCurrent().getSession().getAttribute(SearchUserModule.SESSION_USER_ACTION);
-		//String strSessionUDM = (String)UI.getCurrent().getSession().getAttribute(UserDetailsModule.SESSION_UDM);
+		UI.getCurrent().getSession().getAttribute(SESSION_UDM_UNAME);
 		
 		
 		
@@ -1407,15 +1400,9 @@ public class UserDetailsModule{
 					contentC .setMargin(new MarginInfo(true, false, true, false));
 					contentC .setSpacing(false);
 				}else{
-						if(UI.getCurrent().getSession().getAttribute(SESSION_UDM_IS_LOG).toString().equals(SESSION_VAR_UDM_IS_LOG_TRUE)){
-							String strLog = (String) UI.getCurrent().getSession().getAttribute(SESSION_UDM_LOG);
-							if(strLog == null){
-								UI.getCurrent().getSession().setAttribute(SESSION_UDM_LOG, "active");
-								UI.getCurrent().getSession().setAttribute(SESSION_UDM_TABLE_LOG, SESSION_VAR_UDM_ACT_LOG);
-							}
+						if(UI.getCurrent().getSession().getAttribute(SESSION_UDM_IS_LOG) != null){
 							strTbName = (String) UI.getCurrent().getSession().getAttribute(SESSION_UDM_TABLE_LOG);
 						}
-						
 						udm.cPerAccAuthInfo.removeAllComponents();
 						udm.cPerAccAuthInfo.addComponent(udm.getDetailsForm(strTbName, strUID, hasOp, false));
 						

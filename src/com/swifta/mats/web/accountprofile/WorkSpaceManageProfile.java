@@ -1,4 +1,5 @@
 package com.swifta.mats.web.accountprofile;
+import com.swifta.mats.web.WorkSpace;
 import com.swifta.mats.web.usermanagement.WorkSpaceManageUser;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.HorizontalLayout;
@@ -10,15 +11,20 @@ public class WorkSpaceManageProfile {
 	public static final String SESSION_WSMP = "manage_profile";
 	public static final String SESSION_WSMP_CUR_ACTION = "manage_profile_cur_action";
 	public static String SESSION_VAR_WSMP_PERSONAL = "personal";
-	public static String SESSION_VAR_WSMP_AUTH = "auth";
+	public static String SESSION_VAR_WSMP_AUTH = "cur_user_auth";
 	public static String SESSION_VAR_WSMP_LOG = "log";
 	public static String SESSION_VAR_WSMP_ACT_LOG = "act_log";
 	public static String SESSION_VAR_WSMP_ACC_LOG = "acc_log";
 	
+	public static  String SESSION_UDM_TABLE_LOG = "cur_user_log_table";
+	public static  String SESSION_UDM_LOG = "cur_user_log";
+	public static String SESSION_UDM_IS_LOG= "cur_user_log";
+	public static String SESSION_VAR_UDM_LOG= "true";
+	
 	private VerticalLayout cParent;
 	private VerticalLayout cMenu;
 	private HorizontalLayout cContent;
-	AccountProfileModule apm;
+	public AccountProfileModule apm;
 	
 	public WorkSpaceManageProfile(){
 		setCoreUI();
@@ -41,7 +47,7 @@ public class WorkSpaceManageProfile {
 		cContent.setComponentAlignment(pf, Alignment.TOP_LEFT);
 		
 		ManageProfileModule mpm = new ManageProfileModule();
-		cMenu= mpm.getMenu(cContent);
+		cMenu= mpm.getMenu(false, false, false);
 		cC.addComponent(cMenu);
 		cMenu.setSizeUndefined();
 		cC.setComponentAlignment(cMenu, Alignment.TOP_LEFT);
@@ -63,6 +69,7 @@ public class WorkSpaceManageProfile {
 	public void wsmpModifier(){
 		String strCurSession = (String) UI.getCurrent().getSession().getAttribute(SESSION_WSMP_CUR_ACTION);
 		apm.apmModifier(strCurSession, cContent);
+		
 	}
 	
 }
