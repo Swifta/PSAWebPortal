@@ -9,39 +9,39 @@ import org.apache.commons.httpclient.methods.PostMethod;
 
 public class utils {
 	String url = "http://54.164.96.105:8283/perform/authentication?username=AG000001&password=password";
-    InputStream in = null;
-    String u;
-public String queryServer(){
-    try {
-        HttpClient client = new HttpClient();
-        PostMethod method = new PostMethod(url);
-        
-      
-		//Add any parameter if u want to send it with Post req.
-       
-        //method.addParameter("username", "emeka@swifta.com");
-       // method.addParameter("password", "emeka");
-        int statusCode = client.executeMethod(method);
+	InputStream in = null;
+	String u;
 
-        if (statusCode != -1) {
-            in = method.getResponseBodyAsStream();
+	public String queryServer() {
+		try {
+			HttpClient client = new HttpClient();
+			PostMethod method = new PostMethod(url);
 
-        }
-        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-        StringBuilder out = new StringBuilder();
-        String line;
-        while ((line = reader.readLine()) != null) {
-            out.append(line);
-           
-        }
-        u = line;
-        
-        System.out.println(out.toString());			  
-        
+			// Add any parameter if u want to send it with Post req.
 
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
-	return u;
-}
+			// method.addParameter("username", "emeka@swifta.com");
+			// method.addParameter("password", "emeka");
+			int statusCode = client.executeMethod(method);
+
+			if (statusCode != -1) {
+				in = method.getResponseBodyAsStream();
+
+			}
+			BufferedReader reader = new BufferedReader(
+					new InputStreamReader(in));
+			StringBuilder out = new StringBuilder();
+			String line;
+			while ((line = reader.readLine()) != null) {
+				out.append(line);
+
+			}
+			u = line;
+
+			System.out.println(out.toString());
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return u;
+	}
 }
