@@ -21,6 +21,7 @@ public class utils {
 
 			// method.addParameter("username", "emeka@swifta.com");
 			// method.addParameter("password", "emeka");
+			// this is just a new test
 			int statusCode = client.executeMethod(method);
 
 			if (statusCode != -1) {
