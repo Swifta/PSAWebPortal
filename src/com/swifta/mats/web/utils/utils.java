@@ -3,6 +3,8 @@ package com.swifta.mats.web.utils;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Calendar;
+import java.util.Date;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.PostMethod;
@@ -44,5 +46,11 @@ public class utils {
 			e.printStackTrace();
 		}
 		return u;
+	}
+
+	public static Calendar DateToCalendar(Date date) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		return cal;
 	}
 }
