@@ -125,6 +125,22 @@
             }
                 
            /**
+            * auto generated Axis2 call back method for isProfileauthorised method
+            * override this method for handling normal response from isProfileauthorised operation
+            */
+           public void receiveResultisProfileauthorised(
+                    com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.IsProfileauthorisedResponse1 result
+                        ) {
+           }
+
+          /**
+           * auto generated Axis2 Error handler
+           * override this method for handling error response from isProfileauthorised operation
+           */
+            public void receiveErrorisProfileauthorised(java.lang.Exception e) {
+            }
+                
+           /**
             * auto generated Axis2 call back method for addpermissionstoaccountprofile method
             * override this method for handling normal response from addpermissionstoaccountprofile operation
             */
@@ -237,6 +253,22 @@
             }
                 
            /**
+            * auto generated Axis2 call back method for authenticate method
+            * override this method for handling normal response from authenticate operation
+            */
+           public void receiveResultauthenticate(
+                    com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.AuthenticateResponseE result
+                        ) {
+           }
+
+          /**
+           * auto generated Axis2 Error handler
+           * override this method for handling error response from authenticate operation
+           */
+            public void receiveErrorauthenticate(java.lang.Exception e) {
+            }
+                
+           /**
             * auto generated Axis2 call back method for activation method
             * override this method for handling normal response from activation operation
             */
@@ -266,6 +298,22 @@
            * override this method for handling error response from addprofile operation
            */
             public void receiveErroraddprofile(java.lang.Exception e) {
+            }
+                
+           /**
+            * auto generated Axis2 call back method for getProfileofUser method
+            * override this method for handling normal response from getProfileofUser operation
+            */
+           public void receiveResultgetProfileofUser(
+                    com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.GetProfileofUserResponse0 result
+                        ) {
+           }
+
+          /**
+           * auto generated Axis2 Error handler
+           * override this method for handling error response from getProfileofUser operation
+           */
+            public void receiveErrorgetProfileofUser(java.lang.Exception e) {
             }
                 
            /**
@@ -301,19 +349,35 @@
             }
                 
            /**
-            * auto generated Axis2 call back method for viewbackofusers method
-            * override this method for handling normal response from viewbackofusers operation
+            * auto generated Axis2 call back method for disconnectaccount method
+            * override this method for handling normal response from disconnectaccount operation
             */
-           public void receiveResultviewbackofusers(
-                    com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ViewbackofusersResponseE result
+           public void receiveResultdisconnectaccount(
+                    com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.DisconnectaccountResponseE result
                         ) {
            }
 
           /**
            * auto generated Axis2 Error handler
-           * override this method for handling error response from viewbackofusers operation
+           * override this method for handling error response from disconnectaccount operation
            */
-            public void receiveErrorviewbackofusers(java.lang.Exception e) {
+            public void receiveErrordisconnectaccount(java.lang.Exception e) {
+            }
+                
+           /**
+            * auto generated Axis2 call back method for connectaccountrequest method
+            * override this method for handling normal response from connectaccountrequest operation
+            */
+           public void receiveResultconnectaccountrequest(
+                    com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ConnectaccountrequestResponse2 result
+                        ) {
+           }
+
+          /**
+           * auto generated Axis2 Error handler
+           * override this method for handling error response from connectaccountrequest operation
+           */
+            public void receiveErrorconnectaccountrequest(java.lang.Exception e) {
             }
                 
            /**
@@ -330,6 +394,22 @@
            * override this method for handling error response from addservicetouserprofile operation
            */
             public void receiveErroraddservicetouserprofile(java.lang.Exception e) {
+            }
+                
+           /**
+            * auto generated Axis2 call back method for viewbackofusers method
+            * override this method for handling normal response from viewbackofusers operation
+            */
+           public void receiveResultviewbackofusers(
+                    com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ViewbackofusersResponseE result
+                        ) {
+           }
+
+          /**
+           * auto generated Axis2 Error handler
+           * override this method for handling error response from viewbackofusers operation
+           */
+            public void receiveErrorviewbackofusers(java.lang.Exception e) {
             }
                 
            /**
@@ -365,6 +445,38 @@
             }
                 
            /**
+            * auto generated Axis2 call back method for addcustodyaccount method
+            * override this method for handling normal response from addcustodyaccount operation
+            */
+           public void receiveResultaddcustodyaccount(
+                    com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.AddcustodyaccountResponseE result
+                        ) {
+           }
+
+          /**
+           * auto generated Axis2 Error handler
+           * override this method for handling error response from addcustodyaccount operation
+           */
+            public void receiveErroraddcustodyaccount(java.lang.Exception e) {
+            }
+                
+           /**
+            * auto generated Axis2 call back method for setprofilerequest method
+            * override this method for handling normal response from setprofilerequest operation
+            */
+           public void receiveResultsetprofilerequest(
+                    com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.SetprofilerequestResponseE result
+                        ) {
+           }
+
+          /**
+           * auto generated Axis2 Error handler
+           * override this method for handling error response from setprofilerequest operation
+           */
+            public void receiveErrorsetprofilerequest(java.lang.Exception e) {
+            }
+                
+           /**
             * auto generated Axis2 call back method for editbackofusers method
             * override this method for handling normal response from editbackofusers operation
             */
@@ -394,6 +506,22 @@
            * override this method for handling error response from addpermissionstouserprofile operation
            */
             public void receiveErroraddpermissionstouserprofile(java.lang.Exception e) {
+            }
+                
+           /**
+            * auto generated Axis2 call back method for addaccounttoexistinguser method
+            * override this method for handling normal response from addaccounttoexistinguser operation
+            */
+           public void receiveResultaddaccounttoexistinguser(
+                    com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.AddaccounttoexistinguserResponseE result
+                        ) {
+           }
+
+          /**
+           * auto generated Axis2 Error handler
+           * override this method for handling error response from addaccounttoexistinguser operation
+           */
+            public void receiveErroraddaccounttoexistinguser(java.lang.Exception e) {
             }
                 
            /**
