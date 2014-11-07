@@ -6,27 +6,27 @@ import java.util.Date;
 
 import org.apache.axis2.AxisFault;
 
-import com.swifta.subsidiary.mats.operation.financial.v1_0.FinancialsStub;
-import com.swifta.subsidiary.mats.operation.financial.v1_0.FinancialsStub.Adjustaccount;
-import com.swifta.subsidiary.mats.operation.financial.v1_0.FinancialsStub.AdjustaccountE;
-import com.swifta.subsidiary.mats.operation.financial.v1_0.FinancialsStub.AdjustaccountresponseE;
-import com.swifta.subsidiary.mats.operation.financial.v1_0.FinancialsStub.Adjustaccounttransactionparameters;
-import com.swifta.subsidiary.mats.operation.financial.v1_0.FinancialsStub.AdjustmentType;
-import com.swifta.subsidiary.mats.operation.financial.v1_0.FinancialsStub.Floattransfer;
-import com.swifta.subsidiary.mats.operation.financial.v1_0.FinancialsStub.FloattransferE;
-import com.swifta.subsidiary.mats.operation.financial.v1_0.FinancialsStub.FloattransferresponseE;
+import com.swifta.sub.mats.operation.financial.v1_0.FinancialsStub;
+import com.swifta.sub.mats.operation.financial.v1_0.FinancialsStub.Adjustaccountrequest;
+import com.swifta.sub.mats.operation.financial.v1_0.FinancialsStub.AdjustaccountrequestE;
+import com.swifta.sub.mats.operation.financial.v1_0.FinancialsStub.Adjustaccountresponse;
+import com.swifta.sub.mats.operation.financial.v1_0.FinancialsStub.Adjustaccounttransactionparameters;
+import com.swifta.sub.mats.operation.financial.v1_0.FinancialsStub.AdjustmentType;
+import com.swifta.sub.mats.operation.financial.v1_0.FinancialsStub.Floattransferrequest;
+import com.swifta.sub.mats.operation.financial.v1_0.FinancialsStub.FloattransferrequestE;
+import com.swifta.sub.mats.operation.financial.v1_0.FinancialsStub.Floattransferresponse;
 
 public class TransactionsService {
 
 	FinancialsStub financial;
 
-	public FloattransferresponseE Floattransfer(String OriginatingResourceid,
+	public Floattransferresponse Floattransfer(String OriginatingResourceid,
 			String DestinationResourceid, String ReceivingDesc, String Amount,
 			String SendingDesc) throws RemoteException, AxisFault {
 
 		financial = new FinancialsStub();
 
-		Floattransfer floattransfer = new Floattransfer();
+		Floattransferrequest floattransfer = new Floattransferrequest();
 
 		floattransfer.setOrginatingresourceid(OriginatingResourceid);
 		floattransfer.setDestinationresourceid(DestinationResourceid);
@@ -34,11 +34,12 @@ public class TransactionsService {
 		floattransfer.setReceivingdescription(ReceivingDesc);
 		floattransfer.setSendingdescription(SendingDesc);
 
-		FloattransferE floattransfer6 = new FloattransferE();
-		floattransfer6.setFloattransfer(floattransfer);
+		FloattransferrequestE floattransfer6 = new FloattransferrequestE();
+		floattransfer6.setFloattransferrequest(floattransfer);
 
-		FloattransferresponseE resp = financial.floattransfer(floattransfer6)
-				.getFloattransferResponse().get_return();
+		Floattransferresponse resp = financial
+				.floattransferrequest(floattransfer6)
+				.getFloattransferrequestResponse().get_return();
 		return resp;
 
 	}
@@ -47,7 +48,7 @@ public class TransactionsService {
 
 	}
 
-	public AdjustaccountresponseE AdjustAccount(AdjustmentType adjustmentType,
+	public Adjustaccountresponse AdjustAccount(AdjustmentType adjustmentType,
 			String DescResourcedesc, String DescResourceID,
 			String OriginatingResourceID, String OriginatingResourceDesc)
 			throws RemoteException, AxisFault {
@@ -55,8 +56,8 @@ public class TransactionsService {
 		Date newFieldValue = new Date();
 		Calendar cal = utils.DateToCalendar(newFieldValue);
 
-		AdjustaccountE adjustaccount4 = new AdjustaccountE();
-		Adjustaccount adjustParam = new Adjustaccount();
+		AdjustaccountrequestE adjustaccount4 = new AdjustaccountrequestE();
+		Adjustaccountrequest adjustParam = new Adjustaccountrequest();
 		Adjustaccounttransactionparameters param = new Adjustaccounttransactionparameters();
 
 		param.setAdjusttype(adjustmentType);
@@ -67,11 +68,11 @@ public class TransactionsService {
 		param.setOriginatingresourcedescription(OriginatingResourceDesc);
 
 		adjustParam.setAdjustaccountinstruction(param);
-		adjustaccount4.setAdjustaccount(adjustParam);
+		adjustaccount4.setAdjustaccountrequest(adjustParam);
 
-		AdjustaccountresponseE response = financial
-				.adjustaccount(adjustaccount4).getAdjustaccountResponse()
-				.get_return();
+		Adjustaccountresponse response = financial
+				.adjustaccountrequest(adjustaccount4)
+				.getAdjustaccountrequestResponse().get_return();
 
 		return response;
 	}
