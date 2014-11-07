@@ -3,10 +3,12 @@ package com.swifta.mats.web.utils;
 import org.apache.log4j.Logger;
 
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Addaccountrequestresponse;
 
 public class StubTester {
-	private ProvisioningStub provisioningStub = null;
+	private ProvisioningStub provisioningStub;
 	private static final Logger logger = Logger.getLogger(StubTester.class);
+	Addaccountrequestresponse finalResponse;
 
 	/*
 	 * public void createAddAccountProvisioning(String accountType, String

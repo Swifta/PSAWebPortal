@@ -1,6 +1,5 @@
 package com.swifta.mats.web.dashboard;
 
-
 import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.charts.model.ChartType;
 import com.vaadin.addon.charts.model.Configuration;
@@ -18,72 +17,71 @@ import com.vaadin.addon.charts.model.style.Style;
 import com.vaadin.ui.Component;
 
 public class BarChartDash {
-	
-	  
-	    public String getDescription() {
-	        return "Column with rotated labels";
-	    }
 
-	   
-	    public Component getChart() {
-	        Chart chart = new Chart(ChartType.COLUMN);
-	        String user = "Agent 001";
-	        Configuration conf = chart.getConfiguration();
-	        //conf.getChart().setMargin(50, 80, 100, 50);
+	public String getDescription() {
+		return "Column with rotated labels";
+	}
 
-	        conf.setTitle(new Title("Data Chart "+user));
+	public Component getChart() {
+		Chart chart = new Chart(ChartType.COLUMN);
+		String user = "Agent 001";
+		Configuration conf = chart.getConfiguration();
+		// conf.getChart().setMargin(50, 80, 100, 50);
 
-	        XAxis xAxis = new XAxis();
-	        xAxis.setCategories(new String[] { "Cash in", "Cash out","Airtime" });
-	        
-	        Labels labels = new Labels();
-	        labels.setRotation(-45);
-	        labels.setAlign(HorizontalAlign.RIGHT);
-	        Style style = new Style();
-	        style.setFontSize("13px");
-	        style.setFontFamily("Verdana, sans-serif");
-	        labels.setStyle(style);
-	        xAxis.setLabels(labels);
-	        conf.addxAxis(xAxis);
+		conf.setTitle(new Title("Data Chart " + user));
 
-	        YAxis yAxis = new YAxis();
-	        yAxis.setMin(0);
-	        yAxis.setTitle(new Title("Percentage"));
-	        conf.addyAxis(yAxis);
+		XAxis xAxis = new XAxis();
+		xAxis.setCategories(new String[] { "Cash in", "Cash out", "Airtime" });
 
-	        Legend legend = new Legend();
-	        legend.setEnabled(false);
-	        conf.setLegend(legend);
+		Labels labels = new Labels();
+		labels.setRotation(-45);
+		labels.setAlign(HorizontalAlign.RIGHT);
+		Style style = new Style();
+		style.setFontSize("13px");
+		style.setFontFamily("Verdana, sans-serif");
+		labels.setStyle(style);
+		xAxis.setLabels(labels);
+		conf.addxAxis(xAxis);
 
-	        Tooltip tooltip = new Tooltip();
-	        tooltip.setFormatter("''+ this.x +''+'data chart: '"
-	                + "+ Highcharts.numberFormat(this.y, 1) +' percent'");
-	        conf.setTooltip(tooltip);
+		YAxis yAxis = new YAxis();
+		yAxis.setMin(0);
+		yAxis.setTitle(new Title("Percentage"));
+		conf.addyAxis(yAxis);
 
-	        ListSeries serie = new ListSeries("Percentage", new Number[] { 50,32,18});
-	        Labels dataLabels = new Labels();
-	        dataLabels.setEnabled(true);
-	        dataLabels.setRotation(-90);
-	        dataLabels.setColor(new SolidColor(255, 255, 255));
-	        dataLabels.setAlign(HorizontalAlign.RIGHT);
-	        dataLabels.setX(4);
-	        dataLabels.setY(10);
-	        dataLabels.setFormatter("this.y");
-	        style = new Style();
-	        style.setFontSize("13px");
-	        style.setFontFamily("Verdana, sans-serif");
-	        dataLabels.setStyle(style);
-	        PlotOptionsColumn plotOptionsColumn = new PlotOptionsColumn();
-	        plotOptionsColumn.setDataLabels(dataLabels);
-	        serie.setPlotOptions(plotOptionsColumn);
-	        conf.addSeries(serie);
+		Legend legend = new Legend();
+		legend.setEnabled(false);
+		conf.setLegend(legend);
 
-	        chart.drawChart(conf);
-	       chart.setWidth("490px");
-	        chart.setHeight("450px");
-	        //chart.setSizeFull();
+		Tooltip tooltip = new Tooltip();
+		tooltip.setFormatter("''+ this.x +''+'data chart: '"
+				+ "+ Highcharts.numberFormat(this.y, 1) +' percent'");
+		conf.setTooltip(tooltip);
 
-	        return chart;
-	    }
+		ListSeries serie = new ListSeries("Percentage", new Number[] { 50, 32,
+				18 });
+		Labels dataLabels = new Labels();
+		dataLabels.setEnabled(true);
+		dataLabels.setRotation(-90);
+		dataLabels.setColor(new SolidColor(255, 255, 255));
+		dataLabels.setAlign(HorizontalAlign.RIGHT);
+		dataLabels.setX(4);
+		dataLabels.setY(10);
+		dataLabels.setFormatter("this.y");
+		style = new Style();
+		style.setFontSize("13px");
+		style.setFontFamily("Verdana, sans-serif");
+		dataLabels.setStyle(style);
+		PlotOptionsColumn plotOptionsColumn = new PlotOptionsColumn();
+		plotOptionsColumn.setDataLabels(dataLabels);
+		serie.setPlotOptions(plotOptionsColumn);
+		conf.addSeries(serie);
+
+		chart.drawChart(conf);
+		chart.setWidth("400px");
+		chart.setHeight("450px");
+		// chart.setSizeFull();
+
+		return chart;
+	}
 
 }

@@ -20,6 +20,12 @@ public class Adjustment {
 		TextField text4 = new TextField("Destination Resource ID");
 		TextField text5 = new TextField("Account");
 		ComboBox type = new ComboBox("Type");
+		type.addItem("ADJUST");
+		type.addItem("ADJUST_FEE");
+		type.addItem("ADJUST_COMMISSION");
+		type.setNullSelectionAllowed(false);
+		type.setTextInputAllowed(false);
+		type.setInputPrompt("Select");
 
 		adjustPan.setMargin(true);
 		adjustPan.addComponent(lab);
