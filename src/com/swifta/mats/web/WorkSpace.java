@@ -15,6 +15,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.Embedded;
+import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
@@ -33,6 +34,7 @@ public class WorkSpace extends VerticalLayout implements View,
 	VerticalLayout dashboard3;
 	private Embedded emb;
 	private Button btnLogout;
+	Label la = new Label("Search details by:");
 	TextField lab1 = new TextField();
 	DateField dat = new DateField();
 	DateField dat2 = new DateField();
@@ -89,17 +91,19 @@ public class WorkSpace extends VerticalLayout implements View,
 		PiechartDash pie = new PiechartDash();
 		HorizontalLayout pi = new HorizontalLayout();
 		HorizontalLayout lut = new HorizontalLayout();
-		VerticalLayout former = new VerticalLayout();
+		FormLayout former = new FormLayout();
 		BarChartDash bar = new BarChartDash();
+
 		lab1.setCaption("Agent ID");
 		dat.setCaption("Start Date");
 		dat2.setCaption("End Date");
 
+		former.addComponent(la);
 		former.addComponent(lab1);
 		former.addComponent(dat);
 		former.addComponent(dat2);
 		former.addComponent(filter);
-		former.setWidth("50px");
+		former.setWidth("100px");
 		pi.addComponent(pie.getChart());
 		pi.addComponent(bar.getChart());
 
@@ -107,8 +111,8 @@ public class WorkSpace extends VerticalLayout implements View,
 		lut.addComponent(former);
 		lut.addComponent(pi);
 		// lut.addComponent(bar.getChart());
-		lut.setExpandRatio(former, 1);
-		lut.setExpandRatio(pi, 5);
+		lut.setExpandRatio(former, 2);
+		lut.setExpandRatio(pi, 6);
 
 		// dashboard1.addComponent(former, 0);
 		dashboard1.addComponent(lut);
