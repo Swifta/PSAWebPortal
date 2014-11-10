@@ -50,8 +50,8 @@ public class TransactionsService {
 
 	public Adjustaccountresponse AdjustAccount(AdjustmentType adjustmentType,
 			String DescResourcedesc, String DescResourceID,
-			String OriginatingResourceID, String OriginatingResourceDesc)
-			throws RemoteException, AxisFault {
+			String OriginatingResourceID, String OriginatingResourceDesc,
+			String Amount) throws RemoteException, AxisFault {
 		financial = new FinancialsStub();
 		Date newFieldValue = new Date();
 		Calendar cal = utils.DateToCalendar(newFieldValue);
@@ -66,6 +66,7 @@ public class TransactionsService {
 		param.setDestinationresourceid(DescResourceID);
 		param.setOrginatingresourceid(OriginatingResourceID);
 		param.setOriginatingresourcedescription(OriginatingResourceDesc);
+		param.setAmount(Amount);
 
 		adjustParam.setAdjustaccountinstruction(param);
 		adjustaccount4.setAdjustaccountrequest(adjustParam);
