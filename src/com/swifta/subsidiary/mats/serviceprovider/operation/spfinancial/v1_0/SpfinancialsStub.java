@@ -886,6 +886,48 @@
                             
 
                         /**
+                        * field for Financialtransactionid
+                        */
+
+                        
+                                    protected java.lang.String localFinancialtransactionid ;
+                                
+                           /*  This tracker boolean wil be used to detect whether the user called the set method
+                          *   for this attribute. It will be used to determine whether to include this field
+                           *   in the serialized XML
+                           */
+                           protected boolean localFinancialtransactionidTracker = false ;
+
+                           public boolean isFinancialtransactionidSpecified(){
+                               return localFinancialtransactionidTracker;
+                           }
+
+                           
+
+                           /**
+                           * Auto generated getter method
+                           * @return java.lang.String
+                           */
+                           public  java.lang.String getFinancialtransactionid(){
+                               return localFinancialtransactionid;
+                           }
+
+                           
+                        
+                            /**
+                               * Auto generated setter method
+                               * @param param Financialtransactionid
+                               */
+                               public void setFinancialtransactionid(java.lang.String param){
+                            localFinancialtransactionidTracker = param != null;
+                                   
+                                            this.localFinancialtransactionid=param;
+                                    
+
+                               }
+                            
+
+                        /**
                         * field for ResponseMessage
                         */
 
@@ -1087,7 +1129,25 @@
                                             }
                                            localStatuscode.serialize(new javax.xml.namespace.QName("","statuscode"),
                                                xmlWriter);
-                                        } if (localResponseMessageTracker){
+                                        } if (localFinancialtransactionidTracker){
+                                    namespace = "";
+                                    writeStartElement(null, namespace, "financialtransactionid", xmlWriter);
+                             
+
+                                          if (localFinancialtransactionid==null){
+                                              // write the nil attribute
+                                              
+                                                     throw new org.apache.axis2.databinding.ADBException("financialtransactionid cannot be null!!");
+                                                  
+                                          }else{
+
+                                        
+                                                   xmlWriter.writeCharacters(localFinancialtransactionid);
+                                            
+                                          }
+                                    
+                                   xmlWriter.writeEndElement();
+                             } if (localResponseMessageTracker){
                                     namespace = "";
                                     writeStartElement(null, namespace, "ResponseMessage", xmlWriter);
                              
@@ -1332,7 +1392,16 @@
                                          throw new org.apache.axis2.databinding.ADBException("statuscode cannot be null!!");
                                     }
                                     elementList.add(localStatuscode);
-                                } if (localResponseMessageTracker){
+                                } if (localFinancialtransactionidTracker){
+                                      elementList.add(new javax.xml.namespace.QName("",
+                                                                      "financialtransactionid"));
+                                 
+                                        if (localFinancialtransactionid != null){
+                                            elementList.add(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localFinancialtransactionid));
+                                        } else {
+                                           throw new org.apache.axis2.databinding.ADBException("financialtransactionid cannot be null!!");
+                                        }
+                                    } if (localResponseMessageTracker){
                                       elementList.add(new javax.xml.namespace.QName("",
                                                                       "ResponseMessage"));
                                  
@@ -1504,6 +1573,30 @@
                                     if (reader.isStartElement() && new javax.xml.namespace.QName("","statuscode").equals(reader.getName())){
                                 
                                                 object.setStatuscode(StatusCode.Factory.parse(reader));
+                                              
+                                        reader.next();
+                                    
+                              }  // End of if for expected property start element
+                                
+                                    else {
+                                        
+                                    }
+                                
+                                    
+                                    while (!reader.isStartElement() && !reader.isEndElement()) reader.next();
+                                
+                                    if (reader.isStartElement() && new javax.xml.namespace.QName("","financialtransactionid").equals(reader.getName())){
+                                
+                                    nillableValue = reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance","nil");
+                                    if ("true".equals(nillableValue) || "1".equals(nillableValue)){
+                                        throw new org.apache.axis2.databinding.ADBException("The element: "+"financialtransactionid" +"  cannot be null");
+                                    }
+                                    
+
+                                    java.lang.String content = reader.getElementText();
+                                    
+                                              object.setFinancialtransactionid(
+                                                    org.apache.axis2.databinding.utils.ConverterUtil.convertToString(content));
                                               
                                         reader.next();
                                     
