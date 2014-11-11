@@ -4,6 +4,9 @@ import java.rmi.RemoteException;
 
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Accountholderdetails;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Activation;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ActivationE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Activationrequestresponse;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Registration;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.RegistrationE;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.RegistrationResponse;
@@ -63,6 +66,14 @@ public class UserManagementService {
 
 		return statusMessage;
 
+	}
+
+	public Activationrequestresponse activateUser() throws RemoteException {
+		Activation act = new Activation();
+		ActivationE actE = new ActivationE();
+		actE.setActivation(act);
+		matsStub.activation(actE);
+		return matsStub.activation(actE).getActivationResponse().get_return();
 	}
 
 }

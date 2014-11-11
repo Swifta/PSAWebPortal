@@ -4,6 +4,7 @@ import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -44,6 +45,9 @@ public class AddUserModule {
 		cBasic.addComponent(lbB);
 
 		TextField tF = new TextField("First Name");
+		cBasic.addComponent(tF);
+
+		tF = new TextField("Middle Name");
 		cBasic.addComponent(tF);
 
 		tF = new TextField("Last Name");
@@ -154,7 +158,11 @@ public class AddUserModule {
 
 		VerticalLayout pC = new VerticalLayout();
 		lbC = new Label("Primary Contacts");
-		pC.addComponent(lbC);
+		HorizontalLayout cLbc = new HorizontalLayout();
+		cLbc.setSizeUndefined();
+		cLbc.setMargin(new MarginInfo(true, false, false, false));
+		cLbc.addComponent(lbC);
+		pC.addComponent(cLbc);
 
 		tF = new TextField("Mobile Phone No.");
 		pC.addComponent(tF);
@@ -168,7 +176,11 @@ public class AddUserModule {
 
 		VerticalLayout sC = new VerticalLayout();
 		lbC = new Label("Secondary Contacts");
-		sC.addComponent(lbC);
+		cLbc = new HorizontalLayout();
+		cLbc.setSizeUndefined();
+		cLbc.setMargin(new MarginInfo(true, false, false, false));
+		cLbc.addComponent(lbC);
+		sC.addComponent(cLbc);
 
 		tF = new TextField("Mobile Phone No.");
 		sC.addComponent(tF);
@@ -183,7 +195,11 @@ public class AddUserModule {
 
 		VerticalLayout physicalC = new VerticalLayout();
 		lbC = new Label("Physical Address");
-		physicalC.addComponent(lbC);
+		cLbc = new HorizontalLayout();
+		cLbc.setSizeUndefined();
+		cLbc.setMargin(new MarginInfo(true, false, false, false));
+		cLbc.addComponent(lbC);
+		physicalC.addComponent(cLbc);
 
 		tF = new TextField("Street");
 		physicalC.addComponent(tF);
@@ -245,19 +261,28 @@ public class AddUserModule {
 		tF = new TextField("Email");
 		cLBody.addComponent(tF);
 
-		tF = new TextField("Bank Code ID");
-		cLBody.addComponent(tF);
+		combo = new ComboBox("Bank Domain");
+		cLBody.addComponent(combo);
+
+		combo = new ComboBox("Bank Code ID");
+		cLBody.addComponent(combo);
 
 		tF = new TextField("Bank Account");
 		cLBody.addComponent(tF);
+
+		combo = new ComboBox("Currency");
+		cLBody.addComponent(combo);
 
 		tF = new TextField("Clearing Number");
 		cLBody.addComponent(tF);
 
 		Label lbAccRec = new Label("Account Recovery");
-		lbAccRec.setStyleName("r");
 
-		cLBody.addComponent(lbAccRec);
+		HorizontalLayout cLbAccRec = new HorizontalLayout();
+		cLbAccRec.setSizeUndefined();
+		cLbAccRec.setMargin(new MarginInfo(true, false, false, false));
+		cLbAccRec.addComponent(lbAccRec);
+		cLBody.addComponent(cLbAccRec);
 
 		combo = new ComboBox("Security Question");
 		combo.addItem("What is your grandfather's last name?");
@@ -267,6 +292,14 @@ public class AddUserModule {
 
 		tF = new TextField("Answer");
 		cLBody.addComponent(tF);
+
+		CheckBox chk = new CheckBox("I accept the terms" + " and conditons.");
+		chk.setStyleName("check_t_and_c");
+		HorizontalLayout cChk = new HorizontalLayout();
+		cChk.setSizeUndefined();
+		cChk.setMargin(new MarginInfo(true, false, true, false));
+		cChk.addComponent(chk);
+		cLBody.addComponent(cChk);
 
 		final VerticalLayout cRBody = new VerticalLayout();
 		String strNameCap = null;
