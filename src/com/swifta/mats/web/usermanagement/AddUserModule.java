@@ -1,13 +1,20 @@
 package com.swifta.mats.web.usermanagement;
 
+import com.swifta.mats.web.utils.UserManagementService;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Address;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Identification;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.PopupDateField;
@@ -16,6 +23,28 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 public class AddUserModule {
+
+	private TextField tFFN;
+	private TextField tFMN;
+	private TextField tFLN;
+	private TextField tFOcc;
+	private TextField tFEmp;
+	private TextField tFUN;
+	private TextField tFMSISDN;
+	private TextField tFBAcc;
+	private TextField tFAccEmail;
+	private TextField tFClrNo;
+	private TextField tFSecAns;
+	// private TextField tFMSISDN;
+	private Address addr;
+	private Identification idInfo;
+	private CheckBox chcTAndC;
+	private ComboBox comboPref;
+	private ComboBox comboSuff;
+	private ComboBox comboState;
+	private ComboBox comboCountry;
+	private ComboBox comboLang;
+	private OptionGroup optSex;
 
 	public AddUserModule() {
 
@@ -45,17 +74,29 @@ public class AddUserModule {
 		cBasic.addComponent(lbB);
 
 		TextField tF = new TextField("First Name");
+		tFFN = tF;
 		cBasic.addComponent(tF);
 
 		tF = new TextField("Middle Name");
+		tFMN = tF;
 		cBasic.addComponent(tF);
 
 		tF = new TextField("Last Name");
+		tFMN = tF;
 		cBasic.addComponent(tF);
 
 		OptionGroup opt = new OptionGroup("Gender");
 		opt.addItem("Female");
 		opt.addItem("Male");
+		opt.addValueChangeListener(new ValueChangeListener() {
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				Notification.show(event.getProperty().getValue().toString());
+
+			}
+
+		});
 		cBasic.addComponent(opt);
 
 		ComboBox combo = new ComboBox("Prefix");
@@ -80,9 +121,11 @@ public class AddUserModule {
 		cBasic.addComponent(combo);
 
 		tF = new TextField("Occupation");
+		tFOcc = tF;
 		cBasic.addComponent(tF);
 
 		tF = new TextField("Employer");
+		tFEmp = tF;
 		cBasic.addComponent(tF);
 
 		PopupDateField dF = new PopupDateField("DoB");
@@ -208,9 +251,11 @@ public class AddUserModule {
 		physicalC.addComponent(tF);
 
 		tF = new TextField("City");
+		// tFCity
 		physicalC.addComponent(tF);
 
 		tF = new TextField("Province");
+		// tFProv = tF;
 		physicalC.addComponent(tF);
 
 		cC.addComponent(physicalC);
@@ -250,15 +295,18 @@ public class AddUserModule {
 		// cLBody.addComponent(tF);
 
 		tF = new TextField("Username");
+		tFUN = tF;
 		cLBody.addComponent(tF);
 
 		tF = new TextField("MSISDN");
+		tFMSISDN = tF;
 		cLBody.addComponent(tF);
 
 		// / tF = new TextField("PIN");
 		// / cLBody.addComponent(tF);
 
 		tF = new TextField("Email");
+		tFAccEmail = tF;
 		cLBody.addComponent(tF);
 
 		combo = new ComboBox("Bank Domain");
@@ -268,12 +316,14 @@ public class AddUserModule {
 		cLBody.addComponent(combo);
 
 		tF = new TextField("Bank Account");
+		tFBAcc = tF;
 		cLBody.addComponent(tF);
 
 		combo = new ComboBox("Currency");
 		cLBody.addComponent(combo);
 
 		tF = new TextField("Clearing Number");
+		tFClrNo = tF;
 		cLBody.addComponent(tF);
 
 		Label lbAccRec = new Label("Account Recovery");
@@ -291,10 +341,20 @@ public class AddUserModule {
 		cLBody.addComponent(combo);
 
 		tF = new TextField("Answer");
+		tFSecAns = tF;
 		cLBody.addComponent(tF);
 
 		CheckBox chk = new CheckBox("I accept the terms" + " and conditons.");
 		chk.setStyleName("check_t_and_c");
+		chk.addValueChangeListener(new ValueChangeListener() {
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				Notification.show(event.getProperty().getValue().toString());
+
+			}
+
+		});
 		HorizontalLayout cChk = new HorizontalLayout();
 		cChk.setSizeUndefined();
 		cChk.setMargin(new MarginInfo(true, false, true, false));
@@ -430,6 +490,27 @@ public class AddUserModule {
 			cRBody.setStyleName("c_body_visible");
 		}
 
+		btnSave.addClickListener(new Button.ClickListener() {
+
+			private static final long serialVersionUID = -935880570210949227L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				UserManagementService ums = new UserManagementService();
+
+				/*
+				 * ums.CreateProfile(addr, countryID, DOB, tFEmp.getValue(),
+				 * tFFN.getValue(), idInfo, gender, lang, tFLN.getValue(), lga,
+				 * tFMN.getValue(), tFOcc.getValue(), prefix, Scontact,
+				 * Pcontact, stateID, suffix, bankdomainname, bankcodeID,
+				 * tFBAcc.getValue(), tFClrNo.getValue(), currency,
+				 * tFAccEmail.getValue(), tFMSISDN.getValue(), profileID,
+				 * secQuestion, TermsCondition, tFUN.getValue());
+				 */
+
+			}
+		});
+
 		return cAgentInfo;
 	}
 
@@ -442,6 +523,17 @@ public class AddUserModule {
 		contentC.setMargin(true);
 		contentC.setSizeFull();
 		return uf;
+	}
+
+	private void setAddressInfo(String strName, String strValue, Address addr) {
+		if (strName.equals("Street"))
+			addr.setStreetaddress(strValue);
+		if (strName.equals("City"))
+			addr.setCity(strValue);
+		if (strName.equals("Province"))
+			addr.setProvince(strValue);
+		if (strName.equals("Postal Code"))
+			addr.setPostalCode(strValue);
 	}
 
 }
