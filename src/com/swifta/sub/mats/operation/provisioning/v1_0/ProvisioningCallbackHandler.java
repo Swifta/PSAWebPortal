@@ -109,6 +109,22 @@
             }
                 
            /**
+            * auto generated Axis2 call back method for isProfileauthorised method
+            * override this method for handling normal response from isProfileauthorised operation
+            */
+           public void receiveResultisProfileauthorised(
+                    com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.IsProfileauthorisedResponseE result
+                        ) {
+           }
+
+          /**
+           * auto generated Axis2 Error handler
+           * override this method for handling error response from isProfileauthorised operation
+           */
+            public void receiveErrorisProfileauthorised(java.lang.Exception e) {
+            }
+                
+           /**
             * auto generated Axis2 call back method for suspendaccountholder method
             * override this method for handling normal response from suspendaccountholder operation
             */
@@ -125,19 +141,19 @@
             }
                 
            /**
-            * auto generated Axis2 call back method for isProfileauthorised method
-            * override this method for handling normal response from isProfileauthorised operation
+            * auto generated Axis2 call back method for linkaccountrequest method
+            * override this method for handling normal response from linkaccountrequest operation
             */
-           public void receiveResultisProfileauthorised(
-                    com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.IsProfileauthorisedResponse1 result
+           public void receiveResultlinkaccountrequest(
+                    com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.LinkaccountrequestResponseE result
                         ) {
            }
 
           /**
            * auto generated Axis2 Error handler
-           * override this method for handling error response from isProfileauthorised operation
+           * override this method for handling error response from linkaccountrequest operation
            */
-            public void receiveErrorisProfileauthorised(java.lang.Exception e) {
+            public void receiveErrorlinkaccountrequest(java.lang.Exception e) {
             }
                 
            /**
@@ -237,6 +253,22 @@
             }
                 
            /**
+            * auto generated Axis2 call back method for authenticate method
+            * override this method for handling normal response from authenticate operation
+            */
+           public void receiveResultauthenticate(
+                    com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.AuthenticateResponseE result
+                        ) {
+           }
+
+          /**
+           * auto generated Axis2 Error handler
+           * override this method for handling error response from authenticate operation
+           */
+            public void receiveErrorauthenticate(java.lang.Exception e) {
+            }
+                
+           /**
             * auto generated Axis2 call back method for changepassword method
             * override this method for handling normal response from changepassword operation
             */
@@ -253,19 +285,19 @@
             }
                 
            /**
-            * auto generated Axis2 call back method for authenticate method
-            * override this method for handling normal response from authenticate operation
+            * auto generated Axis2 call back method for setdefaultaccount method
+            * override this method for handling normal response from setdefaultaccount operation
             */
-           public void receiveResultauthenticate(
-                    com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.AuthenticateResponseE result
+           public void receiveResultsetdefaultaccount(
+                    com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.SetdefaultaccountResponseE result
                         ) {
            }
 
           /**
            * auto generated Axis2 Error handler
-           * override this method for handling error response from authenticate operation
+           * override this method for handling error response from setdefaultaccount operation
            */
-            public void receiveErrorauthenticate(java.lang.Exception e) {
+            public void receiveErrorsetdefaultaccount(java.lang.Exception e) {
             }
                 
            /**
@@ -301,22 +333,6 @@
             }
                 
            /**
-            * auto generated Axis2 call back method for getProfileofUser method
-            * override this method for handling normal response from getProfileofUser operation
-            */
-           public void receiveResultgetProfileofUser(
-                    com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.GetProfileofUserResponse0 result
-                        ) {
-           }
-
-          /**
-           * auto generated Axis2 Error handler
-           * override this method for handling error response from getProfileofUser operation
-           */
-            public void receiveErrorgetProfileofUser(java.lang.Exception e) {
-            }
-                
-           /**
             * auto generated Axis2 call back method for addthreadholdmessagetouserprofile method
             * override this method for handling normal response from addthreadholdmessagetouserprofile operation
             */
@@ -333,19 +349,35 @@
             }
                 
            /**
-            * auto generated Axis2 call back method for registration method
-            * override this method for handling normal response from registration operation
+            * auto generated Axis2 call back method for setparentaccount method
+            * override this method for handling normal response from setparentaccount operation
             */
-           public void receiveResultregistration(
-                    com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.RegistrationResponseE result
+           public void receiveResultsetparentaccount(
+                    com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.SetparentaccountResponseE result
                         ) {
            }
 
           /**
            * auto generated Axis2 Error handler
-           * override this method for handling error response from registration operation
+           * override this method for handling error response from setparentaccount operation
            */
-            public void receiveErrorregistration(java.lang.Exception e) {
+            public void receiveErrorsetparentaccount(java.lang.Exception e) {
+            }
+                
+           /**
+            * auto generated Axis2 call back method for getProfileofUser method
+            * override this method for handling normal response from getProfileofUser operation
+            */
+           public void receiveResultgetProfileofUser(
+                    com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.GetProfileofUserResponseE result
+                        ) {
+           }
+
+          /**
+           * auto generated Axis2 Error handler
+           * override this method for handling error response from getProfileofUser operation
+           */
+            public void receiveErrorgetProfileofUser(java.lang.Exception e) {
             }
                 
            /**
@@ -365,19 +397,19 @@
             }
                 
            /**
-            * auto generated Axis2 call back method for connectaccountrequest method
-            * override this method for handling normal response from connectaccountrequest operation
+            * auto generated Axis2 call back method for registration method
+            * override this method for handling normal response from registration operation
             */
-           public void receiveResultconnectaccountrequest(
-                    com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ConnectaccountrequestResponse2 result
+           public void receiveResultregistration(
+                    com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.RegistrationResponseE result
                         ) {
            }
 
           /**
            * auto generated Axis2 Error handler
-           * override this method for handling error response from connectaccountrequest operation
+           * override this method for handling error response from registration operation
            */
-            public void receiveErrorconnectaccountrequest(java.lang.Exception e) {
+            public void receiveErrorregistration(java.lang.Exception e) {
             }
                 
            /**

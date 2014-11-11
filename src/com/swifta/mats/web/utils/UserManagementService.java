@@ -61,8 +61,8 @@ public class UserManagementService {
 		registrationDetails.setAccountholderdetails(AccountHolderDetails);
 		registrationDetails.setBankaccount(bankAccount);
 		registrationDetails.setBankcodeid(bankcodeID);
-		registrationDetails.setBankdomainname(bankdomainname);
-		registrationDetails.setCurrency(currency);
+		registrationDetails.setBankdomainnameid(bankdomainname);
+		registrationDetails.setCurrencyid(currency);
 		registrationDetails.setClearingnumber(clearingNumber);
 		registrationDetails.setEmail(email);
 		registrationDetails.setMsisdn(msisdn);
