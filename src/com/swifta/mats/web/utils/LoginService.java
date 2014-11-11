@@ -5,11 +5,18 @@ import java.rmi.RemoteException;
 import org.apache.log4j.Logger;
 
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Activation;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ActivationE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ActivationResponse;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ActivationResponseE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Activationrequestresponse;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Authenticate;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.AuthenticateE;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.AuthenticateResponse;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.AuthenticateResponseE;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Authenticationresponse;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Credentials;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.StatusCode;
 
 public class LoginService {
 	private ProvisioningStub provisioningStub;
@@ -45,8 +52,9 @@ public class LoginService {
 				Authenticationresponse formattedResponse = response
 						.get_return();
 				if (formattedResponse != null) {
-					statusCode = formattedResponse.getStatuscode();
-					if (statusCode != null) {
+					StatusCode statusC = formattedResponse.getStatuscode();
+					if (statusC != null) {
+						statusCode = statusC.getValue();
 						logger.info("---------------Status code is not null");
 					} else {
 						logger.info("---------------Status code is null");
@@ -68,6 +76,47 @@ public class LoginService {
 			status = false;
 		}
 		return status;
+	}
+
+	public boolean activateUser(String bankdomainid, String currency,
+			String IDnumber, String resourceid, String SecurityAns,
+			String firstPin, String confirmPin) throws RemoteException {
+		String statusMessage;
+		provisioningStub = new ProvisioningStub();
+		Credentials cre = new Credentials();
+		cre.setFirstpin(firstPin);
+		cre.setConfirmpin(confirmPin);
+
+		Activation act = new Activation();
+		act.setBankdomainid(bankdomainid);
+		act.setCredential(cre);
+		act.setCurrency(currency);
+		act.setIdentificationno(IDnumber);
+		act.setResourceid(resourceid);
+		act.setSecurityquestionanswer(SecurityAns);
+
+		ActivationE actE = new ActivationE();
+		actE.setActivation(act);
+		ActivationResponseE response = provisioningStub.activation(actE);
+
+		if (response != null) {
+			ActivationResponse response2 = response.getActivationResponse();
+			if (response2 != null) {
+				Activationrequestresponse response3 = response2.get_return();
+				statusMessage = response3.getResponsemessage();
+
+			} else {
+				statusMessage = "Activation Response is empty";
+			}
+		} else {
+			statusMessage = "Activation Response is empty";
+		}
+		boolean status = false;
+		if (statusMessage.equalsIgnoreCase("true")) {
+			status = true;
+		}
+		return status;
+		// return statusMessage;
 	}
 
 }
