@@ -53,9 +53,8 @@ public class Adjustment {
 
 		adjust.addClickListener(new Button.ClickListener() {
 
-			/**
+			/*
 			 * This cancel button is bulk upload
-			 * 
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -99,9 +98,8 @@ public class Adjustment {
 
 		Test.addClickListener(new Button.ClickListener() {
 
-			/**
+			/*
 			 * This cancel button is bulk upload
-			 * 
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -109,46 +107,47 @@ public class Adjustment {
 			public void buttonClick(ClickEvent event) {
 				UserManagementService register = new UserManagementService();
 
-				String bankAccount = "4326829833";
-				int bankCodeid = 1;
-				String bankdomainNameid = "1";
+				String bankAccount = "4326829803";
+				int bankCodeid = 1232232;
+				String bankdomainNameid = "145";
 				String clearingNumber = "65733";
 				String currencyid = "6357";
-				String email = "jau@yewutj.com";
-				String msisdn = "08087980449";
-				int profileid = 1;
-				String securityQuest = "Hello";
+				String email = "kadeqiyi@yahoo.com";
+				String msisdn = "08062944008";
+				int profileid = 2;
+				String securityQuest = "Hello Africa";
 				String securityAns = "How r u";
 				String termscondition = "gdeyu";
-				String username = "kaykaygf";
+				String username = "Kachiolay";
 				int countryid = 165;
 				Date dateofBirth = new Date();
 				String employer = "Swifta";
 				String firstname = "Kay";
 				String province = "Kay";
 				Date Expirydate = new Date();
-				String idNumber = "65898856";
+				String idNumber = "6589856456";
 				String idType = "Kay";
 				Date Issuedate = new Date();
 				String Issue = "Kay";
-				int genderid = 1;
-				int languageid = 1;
+				int genderid = 2;
+				int languageid = 2;
 				String lastname = "Kayo";
 				int Lgaid = 42;
 				String middlename = "Kay";
-				String PrimaryMobilenumber = "08087280449";
+				String PrimaryMobilenumber = "08062944496";
 				String PrimaryEmail = "Kay@gesg.com";
-				String PrimaryPhonenumber = "08087280449";
+				String PrimaryPhonenumber = "08062944496";
 				String occupation = "Kay";
 				String prefix = "K";
-				String SecondaryMobilenumber = "08087280449";
+				String SecondaryMobilenumber = "08062944496";
 				String SecondaryEmail = "Kayo@gfgy.com";
 				String suffix = "Kay";
-				int stateid = 53;
-				String city = "Kay";
-				String postalcode = "Kay";
+				int stateid = 503;
+				String city = "Kaytyu";
+				String postalcode = "234";
 				String SecondaryPhonenumber = "08087280449";
 				String streetAddress = "Kaygafg7u";
+
 				try {
 					String ret = register.registerUser(bankAccount, bankCodeid,
 							bankdomainNameid, clearingNumber, currencyid,
@@ -167,19 +166,16 @@ public class Adjustment {
 					adjustPan.addComponent(rep, 0);
 					Notification.show(ret);
 
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
+				} catch (RemoteException e) { // TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-
-				// TODO Auto-generated method stub
-
 			}
+
+			// TODO Auto-generated method stub
 
 		});
 
 		return adjustPan;
 
 	}
-
 }

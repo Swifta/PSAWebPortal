@@ -59,6 +59,7 @@ public class UserManagementService {
 		Identification identification = new Identification();
 		identification.setExpirydate(utils.DateToCalendar(Expirydate));
 		identification.setIdentificationNo(idNumber);
+
 		IdentificationType idType3 = null;
 
 		identification.setIdentificationType(idType3);
@@ -120,13 +121,17 @@ public class UserManagementService {
 			RegistrationResponse response2 = response.getRegistrationResponse();
 			if (response2 != null) {
 				Registrationrequestresponse response3 = response2.get_return();
-				statusMessage = response3.getResponsemessage();
+				if (response3 != null) {
+					statusMessage = response3.getResponsemessage();
+				} else {
+					statusMessage = "Response3 is empty";
+				}
 
 			} else {
-				statusMessage = "Response is empty";
+				statusMessage = "Response2 is empty";
 			}
 		} else {
-			statusMessage = "Response is empty";
+			statusMessage = "Response1 is empty";
 		}
 
 		return statusMessage;
