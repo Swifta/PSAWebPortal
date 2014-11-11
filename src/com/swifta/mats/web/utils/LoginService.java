@@ -10,7 +10,6 @@ import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Authenti
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.AuthenticateResponse;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.AuthenticateResponseE;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Authenticationresponse;
-import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.StatusCode;
 
 public class LoginService {
 	private ProvisioningStub provisioningStub;
@@ -21,6 +20,7 @@ public class LoginService {
 		boolean status = false;
 
 		AuthenticateE authenticate = new AuthenticateE();
+
 		Authenticate authenticateParam = new Authenticate();
 		logger.info("---------------Instantiate authenticate class");
 		authenticateParam.setPassword(password);
@@ -45,9 +45,9 @@ public class LoginService {
 				Authenticationresponse formattedResponse = response
 						.get_return();
 				if (formattedResponse != null) {
-					StatusCode statusC = formattedResponse.getStatuscode();
-					if (statusC != null) {
-						statusCode = statusC.getValue();
+					statusCode = formattedResponse.getStatuscode();
+					if (statusCode != null) {
+						logger.info("---------------Status code is not null");
 					} else {
 						logger.info("---------------Status code is null");
 					}
