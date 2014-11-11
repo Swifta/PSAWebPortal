@@ -8,6 +8,9 @@ import org.apache.axis2.AxisFault;
 
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Accountholderdetails;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Activation;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ActivationE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Activationrequestresponse;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Address;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Identification;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Operationresponse;
@@ -77,6 +80,14 @@ public class UserManagementService {
 				.get_return();
 		return response;
 
+	}
+
+	public Activationrequestresponse activateUser() throws RemoteException {
+		Activation act = new Activation();
+		ActivationE actE = new ActivationE();
+		actE.setActivation(act);
+		provision.activation(actE);
+		return provision.activation(actE).getActivationResponse().get_return();
 	}
 
 }
