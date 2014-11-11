@@ -13,6 +13,7 @@ import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Activati
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Address;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Credentials;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Identification;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.IdentificationType;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.PrimaryContactInfo;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Registration;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.RegistrationE;
@@ -58,7 +59,9 @@ public class UserManagementService {
 		Identification identification = new Identification();
 		identification.setExpirydate(utils.DateToCalendar(Expirydate));
 		identification.setIdentificationNo(idNumber);
-		identification.setIdentificationType(idType);
+		IdentificationType idType3 = null;
+
+		identification.setIdentificationType(idType3);
 		identification.setIssueDate(String.valueOf(Issuedate));
 		identification.setIssuer(Issue);
 
@@ -88,7 +91,7 @@ public class UserManagementService {
 
 		Registration registration = new Registration();
 
-		String statusMessage = "";
+		String statusMessage = "Hello";
 
 		registration.setAccountholderdetails(accountholderdetails);
 		registration.setBankaccount(bankAccount);

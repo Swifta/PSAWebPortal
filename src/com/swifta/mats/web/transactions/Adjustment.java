@@ -24,7 +24,7 @@ public class Adjustment {
 		final FormLayout adjustPan = new FormLayout();
 		Label lab = new Label("Adjustment");
 		Button adjust = new Button("Adjust");
-		Button Test = new Button("Test Regitration");
+		Button Test = new Button("Test Registration");
 		TextField text1 = new TextField("Originating Resource ID");
 		TextArea mess = new TextArea("Originating Resource Description");
 		TextField text2 = new TextField("Destination Resource ID");
@@ -114,13 +114,13 @@ public class Adjustment {
 				String bankdomainNameid = "1";
 				String clearingNumber = "65733";
 				String currencyid = "6357";
-				String email = "jau@yewu.com";
-				String msisdn = "08087280449";
+				String email = "jau@yewutj.com";
+				String msisdn = "08087980449";
 				int profileid = 1;
 				String securityQuest = "Hello";
 				String securityAns = "How r u";
 				String termscondition = "gdeyu";
-				String username = "kaykay";
+				String username = "kaykaygf";
 				int countryid = 165;
 				Date dateofBirth = new Date();
 				String employer = "Swifta";
@@ -162,9 +162,10 @@ public class Adjustment {
 							PrimaryMobilenumber, PrimaryPhonenumber,
 							SecondaryEmail, SecondaryMobilenumber,
 							SecondaryPhonenumber);
-
-					Label rep = new Label(ret);
+					Label rep;
+					rep = new Label(ret);
 					adjustPan.addComponent(rep, 0);
+					Notification.show(ret);
 
 				} catch (RemoteException e) {
 					// TODO Auto-generated catch block
