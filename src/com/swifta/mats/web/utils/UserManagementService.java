@@ -17,7 +17,7 @@ import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Security
 public class UserManagementService {
 	ProvisioningStub matsStub;
 
-	public String registerProfile(Accountholderdetails accountholderdetails,
+	public String registerUser(Accountholderdetails accountholderdetails,
 			String bankAccount, int bankCodeid, String bankdomainNameid,
 			String clearingNumber, String currencyid, String email,
 			String msisdn, int profileid, String securityQuest,
