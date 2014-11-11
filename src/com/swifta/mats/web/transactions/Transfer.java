@@ -1,14 +1,24 @@
 package com.swifta.mats.web.transactions;
 
+import java.rmi.RemoteException;
+
+import org.apache.axis2.AxisFault;
+
+import com.swifta.mats.web.utils.TransactionsService;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.Window;
 
 public class Transfer {
+	Window subwindow;
+
 	public FormLayout AddTransferPanel() {
-		FormLayout adjustPan = new FormLayout();
+		final FormLayout adjustPan = new FormLayout();
 		Label lab = new Label("Float Transfer from Dealer to Bank Account");
 		Button adjust = new Button("Transfer Float to Bank Account");
 		TextField text1 = new TextField("Originating Resource ID");
@@ -30,13 +40,55 @@ public class Transfer {
 		adjustPan.addComponent(mess);
 		adjustPan.addComponent(adjust);
 
+		adjust.addClickListener(new Button.ClickListener() {
+
+			/**
+			 * This cancel button is bulk upload
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				TransactionsService flow = new TransactionsService();
+
+				try {
+					String resp = flow.Floattransfer("1", "12", "tegy", "355",
+							"ghdgyu").getOrginatingpartnerbalanceafter();
+					String resp2 = flow.Floattransfer("1", "12", "tegy", "355",
+							"ghdgyu").getOrginatingpartnerfee();
+					String resp3 = flow.Floattransfer("1", "12", "tegy", "355",
+							"ghdgyu").getTransactionid();
+
+					Label rep = new Label(resp + resp2 + resp3);
+					adjustPan.addComponent(rep);
+				} catch (AxisFault e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					Notification.show("Can't connect to Server ");
+					adjustPan.addComponent(
+							new Label("Can't connect to Server"), 0);
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					Notification.show("Server is currently not available");
+					adjustPan.addComponent(new Label(
+							"Server is currently not available"), 0);
+				}
+
+				// TODO Auto-generated method stub
+
+			}
+
+		});
+
 		return adjustPan;
 
 	}
 
 	public FormLayout AddTransferPanel2() {
-		FormLayout adjustPan = new FormLayout();
-		Label lab = new Label("Float Transfer from Super Agent to Dealer");
+		final FormLayout adjustPan = new FormLayout();
+		Label lab = new Label("Float Transfer from Agent to Dealer");
 		Button adjust = new Button("Transfer Float");
 		TextField text1 = new TextField("Resource UserID");
 		TextArea mess = new TextArea("Message");
@@ -56,6 +108,48 @@ public class Transfer {
 		// adjustPan.addComponent(text5);
 		adjustPan.addComponent(mess);
 		adjustPan.addComponent(adjust);
+
+		adjust.addClickListener(new Button.ClickListener() {
+
+			/**
+			 * This cancel button is bulk upload
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				TransactionsService flow = new TransactionsService();
+
+				try {
+					String resp = flow.Floattransfer("1", "12", "tegy", "355",
+							"ghdgyu").getOrginatingpartnerbalanceafter();
+					String resp2 = flow.Floattransfer("1", "12", "tegy", "355",
+							"ghdgyu").getOrginatingpartnerfee();
+					String resp3 = flow.Floattransfer("1", "12", "tegy", "355",
+							"ghdgyu").getTransactionid();
+
+					Label rep = new Label(resp + resp2 + resp3);
+					adjustPan.addComponent(rep);
+				} catch (AxisFault e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					Notification.show("Can't connect to Server1 ");
+					adjustPan.addComponent(
+							new Label("Can't connect to Server"), 0);
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					Notification.show("Server is currently not available");
+					adjustPan.addComponent(new Label(
+							"Server is currently not available"), 0);
+				}
+
+				// TODO Auto-generated method stub
+
+			}
+
+		});
 
 		return adjustPan;
 

@@ -23,5 +23,8 @@
 	<classpathentry kind="lib" path="lib/axis2-kernel-1.6.0.jar"/>
 	<classpathentry kind="lib" path="lib/axis2-adb-1.6.0.jar"/>
 	<classpathentry kind="lib" path="lib/axiom-api-1.2.11.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-io-1.4.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/gson-2.2.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/vaadin-charts-1.1.7.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
