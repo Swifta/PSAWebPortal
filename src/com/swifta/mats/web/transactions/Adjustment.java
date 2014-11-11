@@ -1,10 +1,12 @@
 package com.swifta.mats.web.transactions;
 
 import java.rmi.RemoteException;
+import java.util.Date;
 
 import org.apache.axis2.AxisFault;
 
 import com.swifta.mats.web.utils.TransactionsService;
+import com.swifta.mats.web.utils.UserManagementService;
 import com.swifta.sub.mats.operation.financial.v1_0.FinancialsStub.AdjustmentType;
 import com.swifta.sub.mats.operation.financial.v1_0.FinancialsStub.StatusCode;
 import com.vaadin.ui.Button;
@@ -22,6 +24,7 @@ public class Adjustment {
 		final FormLayout adjustPan = new FormLayout();
 		Label lab = new Label("Adjustment");
 		Button adjust = new Button("Adjust");
+		Button Test = new Button("Test Registration");
 		TextField text1 = new TextField("Originating Resource ID");
 		TextArea mess = new TextArea("Originating Resource Description");
 		TextField text2 = new TextField("Destination Resource ID");
@@ -46,6 +49,7 @@ public class Adjustment {
 		adjustPan.addComponent(text5);
 		adjustPan.addComponent(mess);
 		adjustPan.addComponent(adjust);
+		adjustPan.addComponent(Test);
 
 		adjust.addClickListener(new Button.ClickListener() {
 
@@ -85,6 +89,87 @@ public class Adjustment {
 					Notification.show("Server is currently not available");
 					adjustPan.addComponent(new Label(
 							"Server is currently not available"), 0);
+				}
+
+				// TODO Auto-generated method stub
+
+			}
+
+		});
+
+		Test.addClickListener(new Button.ClickListener() {
+
+			/**
+			 * This cancel button is bulk upload
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				UserManagementService register = new UserManagementService();
+
+				String bankAccount = "4326829833";
+				int bankCodeid = 1;
+				String bankdomainNameid = "1";
+				String clearingNumber = "65733";
+				String currencyid = "6357";
+				String email = "jau@yewutj.com";
+				String msisdn = "08087980449";
+				int profileid = 1;
+				String securityQuest = "Hello";
+				String securityAns = "How r u";
+				String termscondition = "gdeyu";
+				String username = "kaykaygf";
+				int countryid = 165;
+				Date dateofBirth = new Date();
+				String employer = "Swifta";
+				String firstname = "Kay";
+				String province = "Kay";
+				Date Expirydate = new Date();
+				String idNumber = "65898856";
+				String idType = "Kay";
+				Date Issuedate = new Date();
+				String Issue = "Kay";
+				int genderid = 1;
+				int languageid = 1;
+				String lastname = "Kayo";
+				int Lgaid = 42;
+				String middlename = "Kay";
+				String PrimaryMobilenumber = "08087280449";
+				String PrimaryEmail = "Kay@gesg.com";
+				String PrimaryPhonenumber = "08087280449";
+				String occupation = "Kay";
+				String prefix = "K";
+				String SecondaryMobilenumber = "08087280449";
+				String SecondaryEmail = "Kayo@gfgy.com";
+				String suffix = "Kay";
+				int stateid = 53;
+				String city = "Kay";
+				String postalcode = "Kay";
+				String SecondaryPhonenumber = "08087280449";
+				String streetAddress = "Kaygafg7u";
+				try {
+					String ret = register.registerUser(bankAccount, bankCodeid,
+							bankdomainNameid, clearingNumber, currencyid,
+							email, msisdn, profileid, securityQuest,
+							securityAns, termscondition, username, countryid,
+							dateofBirth, employer, firstname, genderid,
+							languageid, lastname, Lgaid, middlename,
+							occupation, prefix, stateid, suffix, city,
+							postalcode, streetAddress, province, Expirydate,
+							idNumber, idType, Issuedate, Issue, PrimaryEmail,
+							PrimaryMobilenumber, PrimaryPhonenumber,
+							SecondaryEmail, SecondaryMobilenumber,
+							SecondaryPhonenumber);
+					Label rep;
+					rep = new Label(ret);
+					adjustPan.addComponent(rep, 0);
+					Notification.show(ret);
+
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 
 				// TODO Auto-generated method stub

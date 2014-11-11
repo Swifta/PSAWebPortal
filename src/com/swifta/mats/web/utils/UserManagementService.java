@@ -1,93 +1,173 @@
 package com.swifta.mats.web.utils;
 
 import java.rmi.RemoteException;
-import java.util.Calendar;
 import java.util.Date;
-
-import org.apache.axis2.AxisFault;
 
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Accountholderdetails;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Activation;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ActivationE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ActivationResponse;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ActivationResponseE;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Activationrequestresponse;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Address;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Credentials;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Identification;
-import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Operationresponse;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.IdentificationType;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.PrimaryContactInfo;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Registration;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.RegistrationE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.RegistrationResponse;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.RegistrationResponseE;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Registrationrequestresponse;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.SecondaryContactInfo;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Securityquestions;
 
 public class UserManagementService {
-	ProvisioningStub provision;
+	ProvisioningStub matsStub;
 
-	@SuppressWarnings("null")
-	public Operationresponse CreateProfile(Address address, int countryID,
-			Date DOB, String employer, String firstname,
-			Identification identification, int gender, int lang,
-			String lastname, int lga, String middlename, String occupation,
-			String prefix, SecondaryContactInfo Scontact,
-			PrimaryContactInfo Pcontact, int stateID, String suffix,
-			String bankdomainname, int bankcodeID, String bankAccount,
-			String clearingNumber, String currency, String email,
-			String msisdn, int profileID, Securityquestions[] secQuestion,
-			String TermsCondition, String username) throws RemoteException,
-			AxisFault {
-		provision = new ProvisioningStub();
+	public String registerUser(String bankAccount, int bankCodeid,
+			String bankdomainNameid, String clearingNumber, String currencyid,
+			String email, String msisdn, int profileid, String securityQuest,
+			String securityAns, String termscondition, String username,
+			int countryid, Date dateofBirth, String employer, String firstname,
+			int genderid, int languageid, String lastname, int Lgaid,
+			String middlename, String occupation, String prefix, int stateid,
+			String suffix, String city, String postalcode,
+			String streetAddress, String province, Date Expirydate,
+			String idNumber, String idType, Date Issuedate, String Issue,
+			String PrimaryEmail, String PrimaryMobilenumber,
+			String PrimaryPhonenumber, String SecondaryEmail,
+			String SecondaryMobilenumber, String SecondaryPhonenumber)
+			throws RemoteException {
+		matsStub = new ProvisioningStub();
 
-		Calendar cal = utils.DateToCalendar(DOB);
+		Accountholderdetails accountholderdetails = new Accountholderdetails();
+		Address address = new Address();
+		address.setCity(city);
+		address.setPostalCode(postalcode);
+		address.setProvince(province);
+		address.setStreetaddress(streetAddress);
 
-		RegistrationE registration36 = new RegistrationE();
-		Registration registrationDetails = null;
-		Accountholderdetails AccountHolderDetails = null;
-		AccountHolderDetails.setAddress(address);
-		AccountHolderDetails.setCountryid(countryID);
-		AccountHolderDetails.setDateofbirth(cal);
-		AccountHolderDetails.setEmployer(employer);
-		AccountHolderDetails.setFirstname(firstname);
-		AccountHolderDetails.setGenderid(gender);
-		AccountHolderDetails.setIdentification(identification);
-		AccountHolderDetails.setLanguageid(lang);
-		AccountHolderDetails.setLastname(lastname);
-		AccountHolderDetails.setLgaid(lga);
-		AccountHolderDetails.setMiddlename(middlename);
-		AccountHolderDetails.setOccupation(occupation);
-		AccountHolderDetails.setPrefix(prefix);
-		AccountHolderDetails.setPrimarycontact(Pcontact);
-		AccountHolderDetails.setSecondarycontact(Scontact);
-		AccountHolderDetails.setStateid(stateID);
-		AccountHolderDetails.setSuffix(suffix);
+		accountholderdetails.setAddress(address);
+		accountholderdetails.setCountryid(countryid);
+		accountholderdetails.setDateofbirth(utils.DateToCalendar(dateofBirth));
+		accountholderdetails.setEmployer(employer);
+		accountholderdetails.setFirstname(firstname);
+		accountholderdetails.setGenderid(genderid);
 
-		registrationDetails.setAccountholderdetails(AccountHolderDetails);
-		registrationDetails.setBankaccount(bankAccount);
-		registrationDetails.setBankcodeid(bankcodeID);
-		registrationDetails.setBankdomainnameid(bankdomainname);
-		registrationDetails.setCurrencyid(currency);
-		registrationDetails.setClearingnumber(clearingNumber);
-		registrationDetails.setEmail(email);
-		registrationDetails.setMsisdn(msisdn);
-		registrationDetails.setProfileid(profileID);
-		registrationDetails.setSecurityquestions(secQuestion);
-		registrationDetails.setTermscondition(TermsCondition);
-		registrationDetails.setUsername(username);
+		Identification identification = new Identification();
+		identification.setExpirydate(utils.DateToCalendar(Expirydate));
+		identification.setIdentificationNo(idNumber);
+		IdentificationType idType3 = null;
 
-		registration36.setRegistration(registrationDetails);
-		Registrationrequestresponse response = provision
-				.registration(registration36).getRegistrationResponse()
-				.get_return();
-		return response;
+		identification.setIdentificationType(idType3);
+		identification.setIssueDate(String.valueOf(Issuedate));
+		identification.setIssuer(Issue);
+
+		accountholderdetails.setIdentification(identification);
+		accountholderdetails.setLanguageid(languageid);
+		accountholderdetails.setLastname(lastname);
+		accountholderdetails.setLgaid(Lgaid);
+		accountholderdetails.setMiddlename(middlename);
+		accountholderdetails.setOccupation(occupation);
+		accountholderdetails.setPrefix(prefix);
+		accountholderdetails.setStateid(stateid);
+		accountholderdetails.setSuffix(suffix);
+
+		PrimaryContactInfo PrimaryContact = new PrimaryContactInfo();
+		PrimaryContact.setEmail(PrimaryEmail);
+		PrimaryContact.setMobilenumber(PrimaryMobilenumber);
+		PrimaryContact.setName(firstname);
+		PrimaryContact.setPhonenumber(PrimaryPhonenumber);
+		accountholderdetails.setPrimarycontact(PrimaryContact);
+
+		SecondaryContactInfo SecondaryContact = new SecondaryContactInfo();
+		SecondaryContact.setEmail(SecondaryEmail);
+		SecondaryContact.setMobilenumber(SecondaryMobilenumber);
+		SecondaryContact.setName(firstname);
+		SecondaryContact.setPhonenumber(SecondaryPhonenumber);
+		accountholderdetails.setSecondarycontact(SecondaryContact);
+
+		Registration registration = new Registration();
+
+		String statusMessage = "Hello";
+
+		registration.setAccountholderdetails(accountholderdetails);
+		registration.setBankaccount(bankAccount);
+		registration.setBankcodeid(bankCodeid);
+		registration.setBankdomainnameid(bankdomainNameid);
+		registration.setClearingnumber(clearingNumber);
+		registration.setCurrencyid(currencyid);
+		registration.setEmail(email);
+		registration.setMsisdn(msisdn);
+		registration.setProfileid(profileid);
+
+		Securityquestions[] sec = new Securityquestions[1];
+		Securityquestions securityQuestion = new Securityquestions();
+		securityQuestion.setAnswer(securityAns);
+		securityQuestion.setQuestion(securityQuest);
+		sec[0] = securityQuestion;
+
+		registration.setSecurityquestions(sec);
+		registration.setTermscondition(termscondition);
+		registration.setUsername(username);
+
+		RegistrationE registrationE = new RegistrationE();
+		registrationE.setRegistration(registration);
+		RegistrationResponseE response = matsStub.registration(registrationE);
+		if (response != null) {
+			RegistrationResponse response2 = response.getRegistrationResponse();
+			if (response2 != null) {
+				Registrationrequestresponse response3 = response2.get_return();
+				statusMessage = response3.getResponsemessage();
+
+			} else {
+				statusMessage = "Response is empty";
+			}
+		} else {
+			statusMessage = "Response is empty";
+		}
+
+		return statusMessage;
 
 	}
 
-	public Activationrequestresponse activateUser() throws RemoteException {
+	public String activateUser(String bankdomainid, String currency,
+			String IDnumber, String resourceid, String SecurityAns,
+			String firstPin, String confirmPin) throws RemoteException {
+		String statusMessage;
+		matsStub = new ProvisioningStub();
+		Credentials cre = new Credentials();
+		cre.setFirstpin(firstPin);
+		cre.setConfirmpin(confirmPin);
+
 		Activation act = new Activation();
+		act.setBankdomainid(bankdomainid);
+		act.setCredential(cre);
+		act.setCurrency(currency);
+		act.setIdentificationno(IDnumber);
+		act.setResourceid(resourceid);
+		act.setSecurityquestionanswer(SecurityAns);
+
 		ActivationE actE = new ActivationE();
 		actE.setActivation(act);
-		provision.activation(actE);
-		return provision.activation(actE).getActivationResponse().get_return();
+		ActivationResponseE response = matsStub.activation(actE);
+
+		if (response != null) {
+			ActivationResponse response2 = response.getActivationResponse();
+			if (response2 != null) {
+				Activationrequestresponse response3 = response2.get_return();
+				statusMessage = response3.getResponsemessage();
+
+			} else {
+				statusMessage = "Activation Response is empty";
+			}
+		} else {
+			statusMessage = "Activation Response is empty";
+		}
+
+		return statusMessage;
 	}
 
 }
