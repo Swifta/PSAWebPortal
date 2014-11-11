@@ -21,6 +21,7 @@ public class LoginService {
 		boolean status = false;
 
 		AuthenticateE authenticate = new AuthenticateE();
+
 		Authenticate authenticateParam = new Authenticate();
 		logger.info("---------------Instantiate authenticate class");
 		authenticateParam.setPassword(password);
