@@ -1,5 +1,7 @@
 package com.swifta.mats.web;
 
+import java.rmi.RemoteException;
+
 import com.swifta.mats.web.utils.LoginService;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Validator;
