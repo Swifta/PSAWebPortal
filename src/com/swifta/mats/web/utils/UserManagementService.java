@@ -1,8 +1,36 @@
 package com.swifta.mats.web.utils;
 
-import java.net.ConnectException;
 import java.rmi.RemoteException;
 import java.util.Date;
+
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Accountholderdetails;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Address;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Credentials;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Identification;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.IdentificationType;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Linkaccountrequest;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.LinkaccountrequestE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.LinkaccountrequestResponse;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.LinkaccountrequestResponseE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Linkaccountresponse;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.PrimaryContactInfo;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Registration;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.RegistrationE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.RegistrationResponse;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.RegistrationResponseE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Registrationrequestresponse;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.SecondaryContactInfo;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Securityquestions;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.SetDefaultaccountrequestresponse;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Setdefaultaccount;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.SetdefaultaccountE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.SetdefaultaccountResponse;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.SetdefaultaccountResponseE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Setparentaccount;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.SetparentaccountE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.SetparentaccountResponse;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.SetparentaccountResponseE;
 
 public class UserManagementService {
 	ProvisioningStub matsStub;
@@ -20,9 +48,10 @@ public class UserManagementService {
 			String PrimaryEmail, String PrimaryMobilenumber,
 			String PrimaryPhonenumber, String SecondaryEmail,
 			String SecondaryMobilenumber, String SecondaryPhonenumber)
-			throws ConnectException, RemoteException {
+			throws RemoteException {
 		matsStub = new ProvisioningStub();
-		matsStub.Accountholderdetails accountholderdetails = new Accountholderdetails();
+
+		Accountholderdetails accountholderdetails = new Accountholderdetails();
 		Address address = new Address();
 		address.setCity(city);
 		address.setPostalCode(postalcode);
