@@ -54,7 +54,8 @@ public class UserManagementService {
 			String PrimaryPhonenumber, String SecondaryEmail,
 			String SecondaryMobilenumber, String SecondaryPhonenumber)
 			throws RemoteException {
-		matsStub = new ProvisioningStub();
+		matsStub = new ProvisioningStub(
+				"http://54.164.96.105:8283/services/ProvisioningService/");
 
 		Accountholderdetails accountholderdetails = new Accountholderdetails();
 		Address address = new Address();
@@ -156,7 +157,8 @@ public class UserManagementService {
 			String IDnumber, String resourceid, String SecurityAns,
 			String firstPin, String confirmPin) throws RemoteException {
 		String statusMessage = "";
-		matsStub = new ProvisioningStub();
+		matsStub = new ProvisioningStub(
+				"http://54.164.96.105:8283/services/ProvisioningService/");
 		Credentials cre = new Credentials();
 		cre.setFirstpin(firstPin);
 		cre.setConfirmpin(confirmPin);
@@ -195,7 +197,8 @@ public class UserManagementService {
 	public String linkUser(String parentresourceid, String profileid,
 			String reason, String userresourceid) throws RemoteException {
 		String statusMessage = "";
-		matsStub = new ProvisioningStub();
+		matsStub = new ProvisioningStub(
+				"http://54.164.96.105:8283/services/ProvisioningService/");
 
 		LinkaccountrequestE linkaccountrequest = new LinkaccountrequestE();
 		Linkaccountrequest linkrequest = new Linkaccountrequest();
@@ -232,7 +235,8 @@ public class UserManagementService {
 	public String setParent(String parentid, String reason, String resourceid)
 			throws RemoteException {
 		String statusMessage = "";
-		matsStub = new ProvisioningStub();
+		matsStub = new ProvisioningStub(
+				"http://54.164.96.105:8283/services/ProvisioningService/");
 
 		SetparentaccountE setparentaccount = new SetparentaccountE();
 		Setparentaccount sparentaccount = new Setparentaccount();
@@ -270,7 +274,8 @@ public class UserManagementService {
 	public String setDefaultAccount(String parentid, String reason,
 			String userresourceid) throws RemoteException {
 		String statusMessage = "";
-		matsStub = new ProvisioningStub();
+		matsStub = new ProvisioningStub(
+				"http://54.164.96.105:8283/services/ProvisioningService/");
 
 		SetdefaultaccountE setdefaultaccounte = new SetdefaultaccountE();
 		Setdefaultaccount setdefaultaccount = new Setdefaultaccount();
