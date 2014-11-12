@@ -26,5 +26,7 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-io-1.4.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/gson-2.2.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/vaadin-charts-1.1.7.jar"/>
+	<classpathentry exported="true" kind="var" path="ECLIPSE_WORKSPACE/.metadata/.plugins/org.wso2.developerstudio.eclipse.libraries/lib/axis2_1.6.1.wso2v10.jar"/>
+	<classpathentry exported="true" kind="var" path="ECLIPSE_WORKSPACE/.metadata/.plugins/org.wso2.developerstudio.eclipse.libraries/lib/axiom_1.2.11.wso2v4.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
