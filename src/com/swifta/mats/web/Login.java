@@ -104,7 +104,7 @@ public class Login extends VerticalLayout implements View {
 
 		Label lbVersion = new Label("MATS Platform v.1.0");
 		Label lbCopyright = new Label(
-				"Copyright � 2014-2015 Swifta Systems & Services Ltd.");
+				"Copyright @ 2014-2015 Swifta Systems & Services Ltd.");
 		lbVersion.setStyleName("label_version");
 		lbCopyright.setStyleName("label_copyright");
 
