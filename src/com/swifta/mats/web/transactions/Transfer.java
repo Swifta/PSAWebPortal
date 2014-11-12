@@ -128,8 +128,8 @@ public class Transfer {
 					String currency = "6357";
 					String resourceid = "Kachiolay";
 					String SecurityAns = "How r u";
-					String firstPin = "578999";
-					String confirmPin = "578999";
+					String firstPin = "57899";
+					String confirmPin = "57899";
 					String IDnumber = "6589856456";
 					String ret = register.activateUser(bankdomainid, currency,
 							IDnumber, resourceid, SecurityAns, firstPin,
