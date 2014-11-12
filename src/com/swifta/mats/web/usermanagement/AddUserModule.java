@@ -426,6 +426,7 @@ public class AddUserModule {
 
 		combo = new ComboBox("Currency");
 		combo.addItem("US Dollars");
+		combo.addItem("1");
 		combo.select("US Dollars");
 		comboCur = combo;
 		cLBody.addComponent(combo);
