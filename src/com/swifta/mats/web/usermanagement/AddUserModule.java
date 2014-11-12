@@ -1,5 +1,6 @@
 package com.swifta.mats.web.usermanagement;
 
+import java.net.ConnectException;
 import java.rmi.RemoteException;
 import java.util.Date;
 
@@ -425,8 +426,9 @@ public class AddUserModule {
 		cLBody.addComponent(tF);
 
 		combo = new ComboBox("Currency");
-		combo.addItem("US Dollars");
-		combo.select("US Dollars");
+		combo.addItem(1);
+		combo.setItemCaption(1, "US Dollars");
+		combo.select(1);
 		comboCur = combo;
 		cLBody.addComponent(combo);
 
@@ -607,12 +609,6 @@ public class AddUserModule {
 			public void buttonClick(ClickEvent event) {
 				UserManagementService ums = new UserManagementService();
 				String strResponse = null;
-				Notification.show("Value: " + optSex.getValue().toString());
-				/*
-				 * "000112ddd",1,"09393942","1", "p@gmail.com","0707564323", 1,
-				 * "Are you fine?","Yes.","agree", "Paul", 1, new
-				 * Date("12/12/88"),null,
-				 */
 
 				try {
 					strResponse = ums.registerUser(tFBAcc.getValue(), Integer
@@ -646,8 +642,9 @@ public class AddUserModule {
 									.getValue()
 
 					);
+				} catch (ConnectException e) {
+					e.printStackTrace();
 				} catch (RemoteException e) {
-
 					e.printStackTrace();
 				}
 

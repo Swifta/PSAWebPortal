@@ -1,5 +1,6 @@
 package com.swifta.mats.web.transactions;
 
+import java.net.ConnectException;
 import java.rmi.RemoteException;
 import java.util.Date;
 
@@ -24,7 +25,7 @@ public class Adjustment {
 		final FormLayout adjustPan = new FormLayout();
 		Label lab = new Label("Adjustment");
 		Button adjust = new Button("Adjust");
-		Button Test = new Button("Test Registration");
+		Button Test = new Button("Register");
 		TextField text1 = new TextField("Originating Resource ID");
 		TextArea mess = new TextArea("Originating Resource Description");
 		TextField text2 = new TextField("Destination Resource ID");
@@ -166,7 +167,11 @@ public class Adjustment {
 					adjustPan.addComponent(rep, 0);
 					Notification.show(ret);
 
-				} catch (RemoteException e) { // TODO Auto-generated catch block
+				} catch (ConnectException | RemoteException e) { // TODO
+																	// Auto-generated
+																	// catch //
+																	// // //
+																	// block
 					e.printStackTrace();
 				}
 			}

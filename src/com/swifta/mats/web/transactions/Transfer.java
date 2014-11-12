@@ -5,6 +5,7 @@ import java.rmi.RemoteException;
 import org.apache.axis2.AxisFault;
 
 import com.swifta.mats.web.utils.TransactionsService;
+import com.swifta.mats.web.utils.UserManagementService;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.ComboBox;
@@ -23,6 +24,10 @@ public class Transfer {
 		final FormLayout adjustPan = new FormLayout();
 		Label lab = new Label("Float Transfer from Dealer to Bank Account");
 		Button adjust = new Button("Transfer Float to Bank Account");
+		Button adjust2 = new Button("Link");
+		Button adjust3 = new Button("SetParent");
+		Button adjust4 = new Button("Activate");
+		Button adjust5 = new Button("setDefaultAccount");
 		TextField text1 = new TextField("Originating Resource ID");
 		TextArea mess = new TextArea("Message");
 		TextField text2 = new TextField("Resource Account");
@@ -41,6 +46,143 @@ public class Transfer {
 		adjustPan.addComponent(text5);
 		adjustPan.addComponent(mess);
 		adjustPan.addComponent(adjust);
+		adjustPan.addComponent(adjust2);
+		adjustPan.addComponent(adjust3);
+		adjustPan.addComponent(adjust4);
+		adjustPan.addComponent(adjust5);
+
+		adjust5.addClickListener(new Button.ClickListener() {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				UserManagementService setDefault = new UserManagementService();
+
+				try {
+					String parentresourceid = "53282323";
+					String reason = "fhdgasu";
+					String userresourceid = "hvdfyas";
+					String ret = setDefault.setDefaultAccount(parentresourceid,
+							reason, userresourceid);
+
+					Label rep;
+					rep = new Label(ret);
+					adjustPan.addComponent(rep, 0);
+					Notification.show(ret);
+
+				} catch (RemoteException e) { // TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				// TODO Auto-generated method stub
+
+			}
+		});
+
+		adjust4.addClickListener(new Button.ClickListener() {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				UserManagementService activate = new UserManagementService();
+
+				try {
+
+					String userresourceid = "hvdfyas";
+					String bankdomainid = "6357788323";
+					String IDnumber = "549978675";
+					String SecurityAns = "HelloWorld";
+					String firstPin = "526";
+					String confirmPin = "526";
+					String currency = "gya";
+					String ret = activate.activateUser(bankdomainid, currency,
+							IDnumber, userresourceid, SecurityAns, firstPin,
+							confirmPin);
+
+					Label rep;
+					rep = new Label(ret);
+					adjustPan.addComponent(rep, 0);
+					Notification.show(ret);
+
+				} catch (RemoteException e) { // TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				// TODO Auto-generated method stub
+
+			}
+		});
+
+		adjust3.addClickListener(new Button.ClickListener() {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				UserManagementService setParent = new UserManagementService();
+
+				try {
+					String parentresourceid = "53282323";
+					String reason = "fhdgasu";
+					String userresourceid = "hvdfyas";
+					String ret = setParent.setParent(parentresourceid, reason,
+							userresourceid);
+
+					Label rep;
+					rep = new Label(ret);
+					adjustPan.addComponent(rep, 0);
+					Notification.show(ret);
+
+				} catch (RemoteException e) { // TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				// TODO Auto-generated method stub
+				// TODO Auto-generated method stub
+
+			}
+		});
+
+		adjust2.addClickListener(new Button.ClickListener() {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				UserManagementService linker = new UserManagementService();
+
+				try {
+					String parentresourceid = "53282323";
+					String profileid = "1";
+					String reason = "fhdgasu";
+					String userresourceid = "hvdfyas";
+					String ret = linker.linkUser(parentresourceid, profileid,
+							reason, userresourceid);
+
+					Label rep;
+					rep = new Label(ret);
+					adjustPan.addComponent(rep, 0);
+					Notification.show(ret);
+
+				} catch (RemoteException e) { // TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				// TODO Auto-generated method stub
+
+			}
+		});
 
 		adjust.addClickListener(new Button.ClickListener() {
 

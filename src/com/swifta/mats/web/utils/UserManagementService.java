@@ -1,5 +1,6 @@
 package com.swifta.mats.web.utils;
 
+import java.net.ConnectException;
 import java.rmi.RemoteException;
 import java.util.Date;
 
@@ -19,7 +20,7 @@ public class UserManagementService {
 			String PrimaryEmail, String PrimaryMobilenumber,
 			String PrimaryPhonenumber, String SecondaryEmail,
 			String SecondaryMobilenumber, String SecondaryPhonenumber)
-			throws RemoteException {
+			throws ConnectException, RemoteException {
 		matsStub = new ProvisioningStub();
 		matsStub.Accountholderdetails accountholderdetails = new Accountholderdetails();
 		Address address = new Address();
