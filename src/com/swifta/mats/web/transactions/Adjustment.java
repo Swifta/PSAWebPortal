@@ -1,6 +1,5 @@
 package com.swifta.mats.web.transactions;
 
-import java.net.ConnectException;
 import java.rmi.RemoteException;
 import java.util.Date;
 
@@ -167,11 +166,11 @@ public class Adjustment {
 					adjustPan.addComponent(rep, 0);
 					Notification.show(ret);
 
-				} catch (ConnectException | RemoteException e) { // TODO
-																	// Auto-generated
-																	// catch //
-																	// // //
-																	// block
+				} catch (RemoteException e) { // TODO
+												// Auto-generated
+												// catch //
+												// // //
+												// block
 					e.printStackTrace();
 				}
 			}
