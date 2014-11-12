@@ -1,6 +1,5 @@
 package com.swifta.mats.web.usermanagement;
 
-import java.net.ConnectException;
 import java.rmi.RemoteException;
 import java.util.Date;
 
@@ -425,7 +424,6 @@ public class AddUserModule {
 		tFBAcc = tF;
 		cLBody.addComponent(tF);
 
-		combo = new ComboBox("Currency");
 		combo.addItem(1);
 		combo.setItemCaption(1, "US Dollars");
 		combo.select(1);
@@ -642,8 +640,6 @@ public class AddUserModule {
 									.getValue()
 
 					);
-				} catch (ConnectException e) {
-					e.printStackTrace();
 				} catch (RemoteException e) {
 					e.printStackTrace();
 				}

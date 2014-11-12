@@ -32,6 +32,41 @@ import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Setparen
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.SetparentaccountResponse;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.SetparentaccountResponseE;
 
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Accountholderdetails;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Activationrequest;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ActivationrequestE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ActivationrequestResponse;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ActivationrequestResponseE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Activationresponse;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Address;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Credentials;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Identification;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.IdentificationType;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Linkaccountrequest;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.LinkaccountrequestE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.LinkaccountrequestResponse;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.LinkaccountrequestResponseE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Linkaccountresponse;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.PrimaryContactInfo;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Registration;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.RegistrationE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.RegistrationResponse;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.RegistrationResponseE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Registrationrequestresponse;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.SecondaryContactInfo;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Securityquestions;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.SetDefaultaccountrequestresponse;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Setdefaultaccount;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.SetdefaultaccountE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.SetdefaultaccountResponse;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.SetdefaultaccountResponseE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Setparentaccount;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.SetparentaccountE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.SetparentaccountResponse;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.SetparentaccountResponseE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Setparentrequestresponse;
+
 public class UserManagementService {
 	ProvisioningStub matsStub;
 
@@ -51,6 +86,9 @@ public class UserManagementService {
 			throws RemoteException {
 		matsStub = new ProvisioningStub();
 
+		Accountholderdetails accountholderdetails = new Accountholderdetails();
+		matsStub = new ProvisioningStub(
+				"http://54.164.96.105:8283/services/ProvisioningService/");
 		Accountholderdetails accountholderdetails = new Accountholderdetails();
 		Address address = new Address();
 		address.setCity(city);
@@ -151,27 +189,28 @@ public class UserManagementService {
 			String IDnumber, String resourceid, String SecurityAns,
 			String firstPin, String confirmPin) throws RemoteException {
 		String statusMessage = "";
-		matsStub = new ProvisioningStub();
+		matsStub = new ProvisioningStub(
+				"http://54.164.96.105:8283/services/ProvisioningService/");
 		Credentials cre = new Credentials();
 		cre.setFirstpin(firstPin);
 		cre.setConfirmpin(confirmPin);
 
-		Activation act = new Activation();
+		ActivationrequestE actE = new ActivationrequestE();
+		Activationrequest act = new Activationrequest();
+		actE.setActivationrequest(act);
 		act.setBankdomainid(bankdomainid);
 		act.setCredential(cre);
 		act.setCurrency(currency);
 		act.setIdentificationno(IDnumber);
 		act.setResourceid(resourceid);
 		act.setSecurityquestionanswer(SecurityAns);
-
-		ActivationE actE = new ActivationE();
-		actE.setActivation(act);
-		ActivationResponseE response = matsStub.activation(actE);
+		ActivationrequestResponseE response = matsStub.activationrequest(actE);
 
 		if (response != null) {
-			ActivationResponse response2 = response.getActivationResponse();
+			ActivationrequestResponse response2 = response
+					.getActivationrequestResponse();
 			if (response2 != null) {
-				Activationrequestresponse response3 = response2.get_return();
+				Activationresponse response3 = response2.get_return();
 				if (response3 != null) {
 					statusMessage = response3.getResponsemessage();
 				} else {
@@ -190,7 +229,8 @@ public class UserManagementService {
 	public String linkUser(String parentresourceid, String profileid,
 			String reason, String userresourceid) throws RemoteException {
 		String statusMessage = "";
-		matsStub = new ProvisioningStub();
+		matsStub = new ProvisioningStub(
+				"http://54.164.96.105:8283/services/ProvisioningService/");
 
 		LinkaccountrequestE linkaccountrequest = new LinkaccountrequestE();
 		Linkaccountrequest linkrequest = new Linkaccountrequest();
@@ -227,7 +267,8 @@ public class UserManagementService {
 	public String setParent(String parentid, String reason, String resourceid)
 			throws RemoteException {
 		String statusMessage = "";
-		matsStub = new ProvisioningStub();
+		matsStub = new ProvisioningStub(
+				"http://54.164.96.105:8283/services/ProvisioningService/");
 
 		SetparentaccountE setparentaccount = new SetparentaccountE();
 		Setparentaccount sparentaccount = new Setparentaccount();
@@ -245,8 +286,7 @@ public class UserManagementService {
 			SetparentaccountResponse response2 = response
 					.getSetparentaccountResponse();
 			if (response2 != null) {
-				SetDefaultaccountrequestresponse response3 = response2
-						.get_return();
+				Setparentrequestresponse response3 = response2.get_return();
 				if (response3 != null) {
 					statusMessage = response3.getResponsemessage();
 				} else {
@@ -265,7 +305,8 @@ public class UserManagementService {
 	public String setDefaultAccount(String parentid, String reason,
 			String userresourceid) throws RemoteException {
 		String statusMessage = "";
-		matsStub = new ProvisioningStub();
+		matsStub = new ProvisioningStub(
+				"http://54.164.96.105:8283/services/ProvisioningService/");
 
 		SetdefaultaccountE setdefaultaccounte = new SetdefaultaccountE();
 		Setdefaultaccount setdefaultaccount = new Setdefaultaccount();
