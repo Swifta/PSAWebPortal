@@ -99,19 +99,23 @@ public class AddUserModule {
 
 		TextField tF = new TextField("First Name");
 		tFFN = tF;
+		tF.setValue("Paul");
 		cBasic.addComponent(tF);
 
 		tF = new TextField("Middle Name");
+		tF.setValue("Pwndz");
 		tFMN = tF;
 		cBasic.addComponent(tF);
 
 		tF = new TextField("Last Name");
+		tF.setValue("Kigozi");
 		tFMN = tF;
 		cBasic.addComponent(tF);
 
 		OptionGroup opt = new OptionGroup("Gender");
 		opt.addItem("Female");
 		opt.addItem("Male");
+		opt.select("Male");
 		opt.addValueChangeListener(new ValueChangeListener() {
 
 			@Override
@@ -130,6 +134,7 @@ public class AddUserModule {
 		combo.addItem("Eng. ");
 		combo.addItem("Prof. ");
 		comboPref = combo;
+		comboPref.select("Eng. ");
 		cBasic.addComponent(combo);
 
 		combo = new ComboBox("Suffix");
@@ -137,6 +142,7 @@ public class AddUserModule {
 		combo.addItem("M.B.A");
 		combo.addItem("RA");
 		combo.addItem("CISA ");
+		combo.select("Ph.D");
 		comboSuff = combo;
 		cBasic.addComponent(combo);
 
@@ -144,33 +150,40 @@ public class AddUserModule {
 		combo.addItem("en-US");
 		combo.addItem("en-UK");
 		combo.addItem("fr");
+		combo.select("en-US");
 		comboLang = combo;
 		cBasic.addComponent(combo);
 
 		tF = new TextField("Occupation");
+		tF.setValue("Software Engineer");
 		tFOcc = tF;
 		cBasic.addComponent(tF);
 
 		tF = new TextField("Employer");
+		tF.setValue("Swifta");
 		tFEmp = tF;
 		cBasic.addComponent(tF);
 
 		PopupDateField dF = new PopupDateField("DoB");
+		dF.setValue(new Date("12/11/88"));
 		dFDoB = dF;
 		cBasic.addComponent(dF);
 
 		combo = new ComboBox("State");
 		combo.addItem("California");
+		combo.select("California");
 		comboState = combo;
 		cBasic.addComponent(combo);
 
 		combo = new ComboBox("Local Government");
-		combo.addItem("Cal LG");
+		combo.addItem("Ca. LG");
+		combo.select("Ca. LG");
 		comboLG = combo;
 		cBasic.addComponent(combo);
 
 		combo = new ComboBox("Country");
 		combo.addItem("USA");
+		combo.select("USA");
 		comboCountry = combo;
 		cBasic.addComponent(combo);
 
@@ -220,22 +233,27 @@ public class AddUserModule {
 				combo.addItem("Driving License");
 				combo.addItem("National ID");
 				combo.addItem("Residential ID");
+				combo.select("Passport");
 				comboIDType = combo;
 				cCompany.addComponent(combo);
 
 				tF = new TextField("ID No.");
+				tF.setValue("001");
 				tFIDNo = tF;
 				cCompany.addComponent(tF);
 
 				tF = new TextField("Issuer");
 				tFIssuer = tF;
+				tFIssuer.setValue("Republic of Uganda");
 				cCompany.addComponent(tF);
 
 				dF = new PopupDateField("Issue Date");
+				dF.setValue(new Date("12/12/12"));
 				dFDoI = dF;
 				cCompany.addComponent(dF);
 
 				dF = new PopupDateField("Expiry Date");
+				dF.setValue(new Date("12/12/14"));
 				dFDoE = dF;
 				cCompany.addComponent(dF);
 
@@ -253,14 +271,18 @@ public class AddUserModule {
 		pC.addComponent(cLbc);
 
 		tF = new TextField("Mobile Phone No.");
+		tF.setValue("+256704191152");
 		tFPMNo = tF;
+
 		pC.addComponent(tF);
 
 		tF = new TextField("Alt. Phone No.");
+		tF.setValue("+1704191152");
 		tFPANo = tF;
 		pC.addComponent(tF);
 
 		tF = new TextField("E-mail Address");
+		tF.setValue("pwndz172@gmail.com");
 		tFPEmail = tF;
 		pC.addComponent(tF);
 		cC.addComponent(pC);
@@ -274,14 +296,17 @@ public class AddUserModule {
 		sC.addComponent(cLbc);
 
 		tF = new TextField("Mobile Phone No.");
+		tF.setValue("+256804191152");
 		tFSMNo = tF;
 		sC.addComponent(tF);
 
 		tF = new TextField("Alt. Phone No.");
+		tF.setValue("+1804191152");
 		tFSANo = tF;
 		sC.addComponent(tF);
 
 		tF = new TextField("E-mail Address");
+		tF.setValue("pkigozi@swifta.com");
 		tFSEmail = tF;
 		sC.addComponent(tF);
 
@@ -296,18 +321,22 @@ public class AddUserModule {
 		physicalC.addComponent(cLbc);
 
 		tF = new TextField("Street");
+		tF.setValue("Yusuf Lule Rd.");
 		tFStreet = tF;
 		physicalC.addComponent(tF);
 
 		tF = new TextField("Postal Code");
+		tF.setValue("23");
 		tFPostalCode = tF;
 		physicalC.addComponent(tF);
 
 		tF = new TextField("City");
+		tF.setValue("Kampala");
 		tFCity = tF;
 		physicalC.addComponent(tF);
 
 		tF = new TextField("Province");
+		tF.setValue("Central");
 		tFProv = tF;
 		physicalC.addComponent(tF);
 
@@ -349,10 +378,12 @@ public class AddUserModule {
 		// cLBody.addComponent(tF);
 
 		tF = new TextField("Username");
+		tF.setValue("Livepwndz");
 		tFUN = tF;
 		cLBody.addComponent(tF);
 
 		tF = new TextField("MSISDN");
+		tF.setValue("+256774191152");
 		tFMSISDN = tF;
 		cLBody.addComponent(tF);
 
@@ -361,29 +392,34 @@ public class AddUserModule {
 
 		tF = new TextField("Email");
 		tFAccEmail = tF;
+		tFAccEmail.setValue("ppounds1@gmail.com");
 		cLBody.addComponent(tF);
 
 		combo = new ComboBox("Bank Domain");
 		combo.addItem("Stanbic Bank");
+		combo.select("Stanbic Bank");
 		comboBDomain = combo;
 		cLBody.addComponent(combo);
 
 		combo = new ComboBox("Bank Code ID");
 		combo.addItem("001");
-
+		combo.select("001");
 		comboBID = combo;
 		cLBody.addComponent(combo);
 
 		tF = new TextField("Bank Account");
+		tF.setValue("00232333452315");
 		tFBAcc = tF;
 		cLBody.addComponent(tF);
 
 		combo = new ComboBox("Currency");
 		combo.addItem("US Dollars");
+		tF.setValue("US Dollars");
 		comboCur = combo;
 		cLBody.addComponent(combo);
 
 		tF = new TextField("Clearing Number");
+		tF.setValue("00212");
 		tFClrNo = tF;
 		cLBody.addComponent(tF);
 
@@ -399,10 +435,12 @@ public class AddUserModule {
 		combo.addItem("What is your grandfather's last name?");
 		combo.addItem("What was your favorite teacher's name?");
 		combo.addItem("What was one of your nicknames in school?");
+		combo.select("What was your favorite teacher's name?");
 		comboSecQn = combo;
 		cLBody.addComponent(combo);
 
 		tF = new TextField("Answer");
+		tF.setValue("Mrs. X");
 		tFSecAns = tF;
 		cLBody.addComponent(tF);
 
@@ -561,31 +599,33 @@ public class AddUserModule {
 			public void buttonClick(ClickEvent event) {
 				UserManagementService ums = new UserManagementService();
 				String strResponse = null;
+				Notification.show(tFAccEmail.getValue());
+
 				try {
 					strResponse = ums.registerUser(tFBAcc.getValue(), Integer
 							.parseInt((String) comboBID.getValue()),
 							comboBDomain.getValue().toString(), tFClrNo
-									.getValue().toString(), comboCur.getValue()
-									.toString(), tFAccEmail.getValue()
+									.getValue(),
+							comboCur.getValue().toString(), tFAccEmail
+									.getValue(), tFMSISDN.getValue(),
+							Integer.parseInt((String) comboProfile.getValue()),
+							comboSecQn.getValue().toString(), tFSecAns
+									.getValue().toString(), chcTAndC.getValue()
+									.toString(), tFUN.getValue().toString(),
+							Integer.parseInt((String) comboCountry.getValue()),
+							(Date) dFDoB.getValue(), tFEmp.getValue()
+									.toString(), tFFN.getValue().toString(),
+							Integer.parseInt((String) optSex.getValue()),
+							Integer.parseInt((String) comboLang.getValue()),
+							tFLN.getValue().toString(), (Integer) comboLG
+									.getValue(), tFMN.getValue().toString(),
+							tFOcc.getValue().toString(), comboPref.getValue()
+									.toString(), Integer
+									.parseInt((String) comboState.getValue()),
+							comboSuff.getValue().toString(), tFCity.getValue()
+									.toString(), tFPostalCode.getValue()
 									.toString(),
-							tFMSISDN.getValue().toString(),
-							(Integer) comboProfile.getValue(), comboSecQn
-									.getValue().toString(), tFSecAns.getValue()
-									.toString(),
-							chcTAndC.getValue().toString(), tFUN.getValue()
-									.toString(), (Integer) comboCountry
-									.getValue(), (Date) dFDoB.getValue(), tFEmp
-									.getValue().toString(), tFFN.getValue()
-									.toString(), (Integer) optSex.getValue(),
-							(Integer) comboLang.getValue(), tFLN.getValue()
-									.toString(), (Integer) comboLG.getValue(),
-							tFMN.getValue().toString(), tFOcc.getValue()
-									.toString(), comboPref.getValue()
-									.toString(), (Integer) comboState
-									.getValue(), comboSuff.getValue()
-									.toString(), tFCity.getValue().toString(),
-							tFPostalCode.getValue().toString(), tFStreet
-									.getValue().toString(), tFProv.getValue()
+							tFStreet.getValue().toString(), tFProv.getValue()
 									.toString(), (Date) dFDoE.getValue(),
 							tFIDNo.getValue().toString(), comboIDType
 									.getValue().toString(), (Date) dFDoI
