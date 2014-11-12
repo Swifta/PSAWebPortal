@@ -4,7 +4,6 @@ import java.rmi.RemoteException;
 import java.util.Date;
 
 import com.swifta.mats.web.utils.UserManagementService;
-import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Address;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.server.FontAwesome;
@@ -109,13 +108,18 @@ public class AddUserModule {
 
 		tF = new TextField("Last Name");
 		tF.setValue("Kigozi");
-		tFMN = tF;
+		tFLN = tF;
 		cBasic.addComponent(tF);
 
 		OptionGroup opt = new OptionGroup("Gender");
-		opt.addItem("Female");
-		opt.addItem("Male");
-		opt.select("Male");
+
+		opt.addItem(1);
+		opt.setItemCaption(1, "Female");
+
+		opt.addItem(2);
+		opt.setItemCaption(2, "Male");
+		opt.select(2);
+		optSex = opt;
 		opt.addValueChangeListener(new ValueChangeListener() {
 
 			@Override
@@ -147,10 +151,13 @@ public class AddUserModule {
 		cBasic.addComponent(combo);
 
 		combo = new ComboBox("Language");
-		combo.addItem("en-US");
-		combo.addItem("en-UK");
-		combo.addItem("fr");
-		combo.select("en-US");
+		combo.addItem(1);
+		combo.select(1);
+		combo.setItemCaption(1, "en-US");
+		combo.addItem(2);
+		combo.setItemCaption(2, "en-UK");
+		combo.addItem(3);
+		combo.setItemCaption(3, "fr");
 		comboLang = combo;
 		cBasic.addComponent(combo);
 
@@ -170,20 +177,23 @@ public class AddUserModule {
 		cBasic.addComponent(dF);
 
 		combo = new ComboBox("State");
-		combo.addItem("California");
-		combo.select("California");
+		combo.addItem(1);
+		combo.setItemCaption(1, "California");
+		combo.select(1);
 		comboState = combo;
 		cBasic.addComponent(combo);
 
 		combo = new ComboBox("Local Government");
-		combo.addItem("Ca. LG");
-		combo.select("Ca. LG");
+		combo.addItem(1);
+		combo.setItemCaption(1, "Ca. LG");
+		combo.select(1);
 		comboLG = combo;
 		cBasic.addComponent(combo);
 
 		combo = new ComboBox("Country");
-		combo.addItem("USA");
-		combo.select("USA");
+		combo.addItem(1);
+		combo.setItemCaption(1, "USA");
+		combo.select(1);
 		comboCountry = combo;
 		cBasic.addComponent(combo);
 
@@ -363,9 +373,11 @@ public class AddUserModule {
 
 		if (!(strUserType.equals("CCO") || strUserType.equals("BA"))) {
 			comboHierarchy = new ComboBox("Hierarchy");
-			comboHierarchy.addItem("Super " + strUserType);
-			comboHierarchy.select("Super " + strUserType);
-			comboHierarchy.addItem("Sub " + strUserType);
+			comboHierarchy.addItem(1);
+			comboHierarchy.setItemCaption(1, "Super " + strUserType);
+			comboHierarchy.select(1);
+			comboHierarchy.addItem(2);
+			comboHierarchy.setItemCaption(2, "Sub " + strUserType);
 			comboProfile = comboHierarchy;
 			cAcc.addComponent(comboHierarchy);
 		}
@@ -414,7 +426,7 @@ public class AddUserModule {
 
 		combo = new ComboBox("Currency");
 		combo.addItem("US Dollars");
-		tF.setValue("US Dollars");
+		combo.select("US Dollars");
 		comboCur = combo;
 		cLBody.addComponent(combo);
 
@@ -497,21 +509,17 @@ public class AddUserModule {
 		cRBody.addComponent(tF);
 
 		if (!(strUserType.equals("CCO") || strUserType.equals("BA"))) {
-			tF = new TextField("MSISDN");
-			cRBody.addComponent(tF);
-
-			tF = new TextField("Email");
-			cRBody.addComponent(tF);
-
-			tF = new TextField("Bank Code ID");
-			cRBody.addComponent(tF);
-
-			tF = new TextField("Bank Account");
-			cRBody.addComponent(tF);
-
-			tF = new TextField("Clearing Number");
-			cRBody.addComponent(tF);
-
+			/*
+			 * tF = new TextField("MSISDN"); cRBody.addComponent(tF);
+			 * 
+			 * tF = new TextField("Email"); cRBody.addComponent(tF);
+			 * 
+			 * tF = new TextField("Bank Code ID"); cRBody.addComponent(tF);
+			 * 
+			 * tF = new TextField("Bank Account"); cRBody.addComponent(tF);
+			 * 
+			 * tF = new TextField("Clearing Number"); cRBody.addComponent(tF);
+			 */
 			// tF = new TextField("PIN");
 			// cRBody.addComponent(tF);
 
@@ -599,7 +607,12 @@ public class AddUserModule {
 			public void buttonClick(ClickEvent event) {
 				UserManagementService ums = new UserManagementService();
 				String strResponse = null;
-				Notification.show(tFAccEmail.getValue());
+				Notification.show("Value: " + optSex.getValue().toString());
+				/*
+				 * "000112ddd",1,"09393942","1", "p@gmail.com","0707564323", 1,
+				 * "Are you fine?","Yes.","agree", "Paul", 1, new
+				 * Date("12/12/88"),null,
+				 */
 
 				try {
 					strResponse = ums.registerUser(tFBAcc.getValue(), Integer
@@ -608,70 +621,37 @@ public class AddUserModule {
 									.getValue(),
 							comboCur.getValue().toString(), tFAccEmail
 									.getValue(), tFMSISDN.getValue(),
-							Integer.parseInt((String) comboProfile.getValue()),
-							comboSecQn.getValue().toString(), tFSecAns
-									.getValue().toString(), chcTAndC.getValue()
-									.toString(), tFUN.getValue().toString(),
-							Integer.parseInt((String) comboCountry.getValue()),
-							(Date) dFDoB.getValue(), tFEmp.getValue()
-									.toString(), tFFN.getValue().toString(),
-							Integer.parseInt((String) optSex.getValue()),
-							Integer.parseInt((String) comboLang.getValue()),
-							tFLN.getValue().toString(), (Integer) comboLG
-									.getValue(), tFMN.getValue().toString(),
-							tFOcc.getValue().toString(), comboPref.getValue()
-									.toString(), Integer
-									.parseInt((String) comboState.getValue()),
-							comboSuff.getValue().toString(), tFCity.getValue()
-									.toString(), tFPostalCode.getValue()
-									.toString(),
-							tFStreet.getValue().toString(), tFProv.getValue()
-									.toString(), (Date) dFDoE.getValue(),
-							tFIDNo.getValue().toString(), comboIDType
-									.getValue().toString(), (Date) dFDoI
+							(Integer) comboProfile.getValue(), comboSecQn
+									.getValue().toString(),
+							tFSecAns.getValue(),
+							chcTAndC.getValue().toString(), tFUN.getValue(),
+							(Integer) comboCountry.getValue(), (Date) dFDoB
+									.getValue(), tFEmp.getValue(), tFFN
 									.getValue(),
-							tFIssuer.getValue().toString(), tFPEmail.getValue()
-									.toString(), tFPMNo.getValue(), tFPANo
-									.getValue().toString(), tFSEmail.getValue()
-									.toString(), tFSMNo.getValue().toString(),
-							tFSANo.getValue().toString());
+
+							(Integer) optSex.getValue(), (Integer) comboLang
+									.getValue(), tFLN.getValue(),
+							(Integer) comboLG.getValue(), tFMN.getValue()
+									.toString(), tFOcc.getValue(), comboPref
+									.getValue().toString(),
+							(Integer) comboState.getValue(), comboSuff
+									.getValue().toString(), tFCity.getValue(),
+							tFPostalCode.getValue(), tFStreet.getValue(),
+							tFProv.getValue(), (Date) dFDoE.getValue(), tFIDNo
+									.getValue(), comboIDType.getValue()
+									.toString(), (Date) dFDoI.getValue(),
+							tFIssuer.getValue(), tFPEmail.getValue(), tFPMNo
+									.getValue(), tFPANo.getValue(), tFSEmail
+									.getValue(), tFSMNo.getValue(), tFSANo
+									.getValue()
+
+					);
 				} catch (RemoteException e) {
 
 					e.printStackTrace();
 				}
 
 				Notification.show("Response: " + strResponse);
-
-				/*
-				 * registerUser(String bankAccount, int bankCodeid, String
-				 * bankdomainNameid, String clearingNumber, String currencyid,
-				 * String email, String msisdn, int profileid, String
-				 * securityQuest, String securityAns, String termscondition,
-				 * String username, int countryid, Date dateofBirth, String
-				 * employer, String firstname, int genderid, int languageid,
-				 * String lastname, int Lgaid, String middlename, String
-				 * occupation, String prefix, int stateid, String suffix, String
-				 * city, String postalcode, String streetAddress, String
-				 * province, Date Expirydate, String idNumber, String idType,
-				 * Date Issuedate, String Issue, String PrimaryEmail, String
-				 * PrimaryMobilenumber, String PrimaryPhonenumber, String
-				 * SecondaryEmail, String SecondaryMobilenumber, String
-				 * SecondaryPhonenumber)
-				 */
-
-				/*
-				 * ums.CreateProfile(addr, comboCountry.getValue(),
-				 * dFDoB.getValue(), tFEmp.getValue(), tFFN.getValue(), idInfo,
-				 * optSex.getValue(), comboLang.getValue(), tFLN.getValue(),
-				 * comboLG.getValue(), tFMN.getValue(), tFOcc.getValue(),
-				 * comboPref.getValue(), sContactInfo, pContactInfo,
-				 * comboState.getValue(), comboSuff.getValue(),
-				 * comboBDomain.getValue(), comboBID.getValue(),
-				 * tFBAcc.getValue(), tFClrNo.getValue(), comboCur.getValue(),
-				 * tFAccEmail.getValue(), tFMSISDN.getValue(),
-				 * comboProfile.getValue(), comboSecQn.getValue(),
-				 * chcTAndC.getValue(), tFUN.getValue());
-				 */
 
 			}
 		});
@@ -688,17 +668,6 @@ public class AddUserModule {
 		contentC.setMargin(true);
 		contentC.setSizeFull();
 		return uf;
-	}
-
-	private void setAddressInfo(String strName, String strValue, Address addr) {
-		if (strName.equals("Street"))
-			addr.setStreetaddress(strValue);
-		if (strName.equals("City"))
-			addr.setCity(strValue);
-		if (strName.equals("Province"))
-			addr.setProvince(strValue);
-		if (strName.equals("Postal Code"))
-			addr.setPostalCode(strValue);
 	}
 
 }
