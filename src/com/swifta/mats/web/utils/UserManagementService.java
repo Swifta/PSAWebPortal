@@ -166,14 +166,17 @@ public class UserManagementService {
 		cre.setConfirmpin(confirmPin);
 
 		ActivationrequestE actE = new ActivationrequestE();
+
 		Activationrequest act = new Activationrequest();
-		actE.setActivationrequest(act);
+
 		act.setBankdomainid(bankdomainid);
 		act.setCredential(cre);
 		act.setCurrency(currency);
 		act.setIdentificationno(IDnumber);
 		act.setResourceid(resourceid);
 		act.setSecurityquestionanswer(SecurityAns);
+
+		actE.setActivationrequest(act);
 		ActivationrequestResponseE response = matsStub.activationrequest(actE);
 
 		if (response != null) {
