@@ -79,9 +79,9 @@ public class Adjustment {
 				} catch (AxisFault e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-					Notification.show("Can't connect to Server ");
-					adjustPan.addComponent(
-							new Label("Can't connect to Server"), 0);
+					Notification.show("Can't connect to Server " + e);
+					adjustPan.addComponent(new Label("Can't connect to Server"
+							+ e), 0);
 				} catch (RemoteException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
