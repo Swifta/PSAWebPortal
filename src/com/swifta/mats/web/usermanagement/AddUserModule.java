@@ -1,7 +1,5 @@
 package com.swifta.mats.web.usermanagement;
 
-import java.net.ConnectException;
-import java.net.ConnectException;
 import java.rmi.RemoteException;
 import java.util.Date;
 
@@ -642,8 +640,6 @@ public class AddUserModule {
 									.getValue()
 
 					);
-				} catch (ConnectException e) {
-					e.printStackTrace();
 				} catch (RemoteException e) {
 					e.printStackTrace();
 				}
