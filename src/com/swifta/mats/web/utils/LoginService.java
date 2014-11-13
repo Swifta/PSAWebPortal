@@ -5,11 +5,11 @@ import java.rmi.RemoteException;
 import org.apache.log4j.Logger;
 
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub;
-import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Activation;
-import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ActivationE;
-import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ActivationResponse;
-import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ActivationResponseE;
-import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Activationrequestresponse;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Activationrequest;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ActivationrequestE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ActivationrequestResponse;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ActivationrequestResponseE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Activationresponse;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Authenticate;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.AuthenticateE;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.AuthenticateResponse;
@@ -36,7 +36,8 @@ public class LoginService {
 		logger.info("---------------After setting authenticate parameters");
 		AuthenticateResponseE authenticateResponse = null;
 		try {
-			provisioningStub = new ProvisioningStub();
+			provisioningStub = new ProvisioningStub(
+					"http://54.164.96.105:8283/services/ProvisioningService/");
 			logger.info("---------------Calling the authenticate method in the provisioning class");
 			authenticateResponse = provisioningStub.authenticate(authenticate);
 		} catch (RemoteException e) {
@@ -82,27 +83,29 @@ public class LoginService {
 			String IDnumber, String resourceid, String SecurityAns,
 			String firstPin, String confirmPin) throws RemoteException {
 		String statusMessage;
-		provisioningStub = new ProvisioningStub();
+		provisioningStub = new ProvisioningStub(
+				"http://54.164.96.105:8283/services/ProvisioningService/");
 		Credentials cre = new Credentials();
 		cre.setFirstpin(firstPin);
 		cre.setConfirmpin(confirmPin);
 
-		Activation act = new Activation();
+		ActivationrequestE actE = new ActivationrequestE();
+		Activationrequest act = new Activationrequest();
+		actE.setActivationrequest(act);
 		act.setBankdomainid(bankdomainid);
 		act.setCredential(cre);
 		act.setCurrency(currency);
 		act.setIdentificationno(IDnumber);
 		act.setResourceid(resourceid);
 		act.setSecurityquestionanswer(SecurityAns);
-
-		ActivationE actE = new ActivationE();
-		actE.setActivation(act);
-		ActivationResponseE response = provisioningStub.activation(actE);
+		ActivationrequestResponseE response = provisioningStub
+				.activationrequest(actE);
 
 		if (response != null) {
-			ActivationResponse response2 = response.getActivationResponse();
+			ActivationrequestResponse response2 = response
+					.getActivationrequestResponse();
 			if (response2 != null) {
-				Activationrequestresponse response3 = response2.get_return();
+				Activationresponse response3 = response2.get_return();
 				statusMessage = response3.getResponsemessage();
 
 			} else {
