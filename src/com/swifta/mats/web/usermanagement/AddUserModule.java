@@ -556,7 +556,6 @@ public class AddUserModule {
 		Button btnReset = new Button("Reset");
 		btnReset.setIcon(FontAwesome.UNDO);
 		btnReset.setStyleName("btn_link");
-
 		HorizontalLayout cBtnSR = new HorizontalLayout();
 		cBtnSR.addComponent(btnSave);
 		cBtnSR.addComponent(btnReset);
