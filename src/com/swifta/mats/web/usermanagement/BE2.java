@@ -155,11 +155,12 @@ public class BE2 {
 		btnDelete.setId("user_account_" + strUID + "_" + strUname + "_delete");
 		btnMoreActions.setId("user_account_" + strUID + "_moreActions");
 
-		VerticalLayout cMore = new VerticalLayout();
-		cMore.setStyleName("c_more");
-		cMore.addComponent(new Button("Set Parent"));
-		cMore.addComponent(new Button("set Default Acc."));
-		actionsC.addComponent(cMore);
+		/*
+		 * VerticalLayout cMore = new VerticalLayout();
+		 * cMore.setStyleName("c_more"); cMore.addComponent(new
+		 * Button("Set Parent")); cMore.addComponent(new
+		 * Button("set Default Acc.")); actionsC.addComponent(cMore);
+		 */
 
 		actionsC.addComponent(btnActivate);
 		actionsC.addComponent(btnDetails);

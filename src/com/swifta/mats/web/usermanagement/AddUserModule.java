@@ -2,6 +2,8 @@ package com.swifta.mats.web.usermanagement;
 
 import java.rmi.RemoteException;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.swifta.mats.web.utils.UserManagementService;
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -66,10 +68,13 @@ public class AddUserModule {
 	private PopupDateField dFDoB;
 	private PopupDateField dFDoI;
 	private PopupDateField dFDoE;
-
+	Map<String, Integer> profToID;
 	private OptionGroup optSex;
 
 	public AddUserModule() {
+		profToID = new HashMap<>();
+		profToID.put(
+				WorkSpaceManageUser.SESSION_VAR_WORK_AREA_DEFAULT_USER_TYPE, 6);
 
 	}
 
@@ -87,8 +92,17 @@ public class AddUserModule {
 
 	private VerticalLayout getNewUserContainer() {
 
+		int userID = 0;
+		int subUserID = 0;
+
 		final String strUserType = (String) UI.getCurrent().getSession()
 				.getAttribute(WorkSpaceManageUser.SESSION_WORK_AREA_USER_TYPE);
+
+		if (strUserType
+				.equals(WorkSpaceManageUser.SESSION_VAR_WORK_AREA_DEFAULT_USER_TYPE)) {
+			userID = 6;
+			subUserID = 7;
+		}
 		VerticalLayout cAgentInfo = new VerticalLayout();
 
 		VerticalLayout cBasic = new VerticalLayout();
@@ -291,7 +305,7 @@ public class AddUserModule {
 		tFPANo = tF;
 		pC.addComponent(tF);
 
-		tF = new TextField("E-mail Address");
+		tF = new TextField("Email Address");
 		tF.setValue("pwndz172@gmail.com");
 		tFPEmail = tF;
 		pC.addComponent(tF);
@@ -368,16 +382,15 @@ public class AddUserModule {
 		Label lbAcc = new Label("Account");
 		lbAcc.setStyleName("lb_frm_add_user");
 		cAcc.addComponent(lbAcc);
-
 		ComboBox comboHierarchy = null;
 
 		if (!(strUserType.equals("CCO") || strUserType.equals("BA"))) {
 			comboHierarchy = new ComboBox("Hierarchy");
-			comboHierarchy.addItem(1);
-			comboHierarchy.setItemCaption(1, "Super " + strUserType);
-			comboHierarchy.select(1);
-			comboHierarchy.addItem(2);
-			comboHierarchy.setItemCaption(2, "Sub " + strUserType);
+			comboHierarchy.addItem(userID);
+			comboHierarchy.setItemCaption(userID, "Super " + strUserType);
+			comboHierarchy.select(userID);
+			comboHierarchy.addItem(subUserID);
+			comboHierarchy.setItemCaption(subUserID, "Sub " + strUserType);
 			comboProfile = comboHierarchy;
 			cAcc.addComponent(comboHierarchy);
 		}
@@ -444,10 +457,13 @@ public class AddUserModule {
 		cLBody.addComponent(cLbAccRec);
 
 		combo = new ComboBox("Security Question");
-		combo.addItem("What is your grandfather's last name?");
-		combo.addItem("What was your favorite teacher's name?");
-		combo.addItem("What was one of your nicknames in school?");
-		combo.select("What was your favorite teacher's name?");
+		combo.addItem(1);
+		combo.addItem(2);
+		combo.addItem(3);
+		combo.setItemCaption(1, "What is your grandfather's last name?");
+		combo.setItemCaption(2, "What was your favorite teacher's name?");
+		combo.setItemCaption(3, "What was one of your nicknames in school?");
+		combo.select(2);
 		comboSecQn = combo;
 		cLBody.addComponent(combo);
 
@@ -608,10 +624,9 @@ public class AddUserModule {
 				String strResponse = null;
 
 				try {
-					strResponse = ums.registerUser(tFBAcc.getValue(), Integer
-							.parseInt((String) comboBID.getValue()),
-							comboBDomain.getValue().toString(), tFClrNo
-									.getValue(),
+					strResponse = ums.registerUser(tFBAcc.getValue(),
+							(Integer) comboBID.getValue(), comboBDomain
+									.getValue().toString(), tFClrNo.getValue(),
 							comboCur.getValue().toString(), tFAccEmail
 									.getValue(), tFMSISDN.getValue(),
 							(Integer) comboProfile.getValue(), comboSecQn
