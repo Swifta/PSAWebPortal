@@ -63,9 +63,9 @@ public class Transfer {
 				UserManagementService setDefault = new UserManagementService();
 
 				try {
-					String parentresourceid = "53282323";
-					String reason = "fhdgasu";
-					String userresourceid = "hvdfyas";
+					String parentresourceid = "Ore";
+					String reason = "no reason for this";
+					String userresourceid = "Adetola";
 					String ret = setDefault.setDefaultAccount(parentresourceid,
 							reason, userresourceid);
 
@@ -96,13 +96,13 @@ public class Transfer {
 
 				try {
 
-					String userresourceid = "hvdfyas";
-					String bankdomainid = "6357788323";
-					String IDnumber = "549978675";
-					String SecurityAns = "HelloWorld";
-					String firstPin = "526";
-					String confirmPin = "526";
-					String currency = "gya";
+					String userresourceid = "Ore";
+					String bankdomainid = "080629444965";
+					String IDnumber = "419";
+					String SecurityAns = "Ore";
+					String firstPin = "5264";
+					String confirmPin = "5264";
+					String currency = "001";
 					String ret = activate.activateUser(bankdomainid, currency,
 							IDnumber, userresourceid, SecurityAns, firstPin,
 							confirmPin);
@@ -164,10 +164,10 @@ public class Transfer {
 				UserManagementService linker = new UserManagementService();
 
 				try {
-					String parentresourceid = "53282323";
-					String profileid = "1";
-					String reason = "fhdgasu";
-					String userresourceid = "hvdfyas";
+					String parentresourceid = "Ore";
+					String profileid = "419";
+					String reason = "no reason";
+					String userresourceid = "Adetola";
 					String ret = linker.linkUser(parentresourceid, profileid,
 							reason, userresourceid);
 

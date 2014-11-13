@@ -205,6 +205,8 @@ public class UserManagementService {
 		matsStub = new ProvisioningStub(
 				"http://54.164.96.105:8283/services/ProvisioningService/");
 
+		setParent(parentresourceid, reason, userresourceid);
+
 		LinkaccountrequestE linkaccountrequest = new LinkaccountrequestE();
 		Linkaccountrequest linkrequest = new Linkaccountrequest();
 		linkrequest.setParaentaccountresourceid(parentresourceid);
