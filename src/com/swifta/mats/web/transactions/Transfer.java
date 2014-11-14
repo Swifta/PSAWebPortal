@@ -4,6 +4,7 @@ import java.rmi.RemoteException;
 
 import org.apache.axis2.AxisFault;
 
+import com.swifta.mats.web.utils.LoginService;
 import com.swifta.mats.web.utils.TransactionsService;
 import com.swifta.mats.web.utils.UserManagementService;
 import com.vaadin.ui.Button;
@@ -93,28 +94,26 @@ public class Transfer {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				UserManagementService activate = new UserManagementService();
+				LoginService login = new LoginService();
 
-				try {
+				String give = login.authenticateUser("Adetolami", "modupe");
 
-					String userresourceid = "Ore";
-					String bankdomainid = "080629444965";
-					String IDnumber = "419";
-					String SecurityAns = "Ore";
-					String firstPin = "5264";
-					String confirmPin = "5264";
-					String currency = "001";
-					String ret = activate.activateUser(bankdomainid, currency,
-							IDnumber, userresourceid, SecurityAns, firstPin,
-							confirmPin);
+				Notification.show(give);
 
-					Label rep;
-					rep = new Label(ret);
-					adjustPan.addComponent(rep, 0);
-					Notification.show(ret);
+				String userresourceid = "Opeyemierg";
+				String bankdomainid = "0";
+				String IDnumber = "9010";
+				String SecurityAns = "Mrs.fd X";
+				String firstPin = "5264";
+				String confirmPin = "5264";
+				String currency = "0";
+				String ret = "Hello";
 
-				} catch (RemoteException e) { // TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				Label rep;
+				rep = new Label(ret);
+				adjustPan.addComponent(rep, 0);
+				// Notification.show(ret);
+
 				// TODO Auto-generated method stub
 
 			}
