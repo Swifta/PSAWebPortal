@@ -219,13 +219,12 @@ public class Login extends VerticalLayout implements View {
 					return;
 				}
 				// if(validCredentials()){
-				if (loginService.authenticateUser(tfUsername.getValue(),
-						tfPassword.getValue())) {
-					UI.getCurrent().getSession()
-							.setAttribute("user", tfUsername.getValue());
-					UI.getCurrent().getNavigator()
-							.navigateTo(WorkSpace.WORK_SPACE);
-				}
+				// if (loginService.authenticateUser(tfUsername.getValue(),
+				// tfPassword.getValue())) {
+				UI.getCurrent().getSession()
+						.setAttribute("user", tfUsername.getValue());
+				UI.getCurrent().getNavigator().navigateTo(WorkSpace.WORK_SPACE);
+				// }
 				// }
 
 			}
