@@ -48,17 +48,22 @@ public class LoginService {
 			status = false;
 		}
 		if (authenticateResponse != null) {
+			logger.info("---------------AuthenticationresponseE is not null");
 			AuthenticateResponse response = authenticateResponse
 					.getAuthenticateResponse();
 			if (response != null) {
+				logger.info("---------------Authenticationresponse is not null");
 				Authenticationresponse formattedResponse = response
 						.get_return();
 				if (formattedResponse != null) {
+					logger.info("---------------formatted Response is not null "
+							+ formattedResponse.getResponseMessage());
 
-					responseMessage = formattedResponse.getResponsemessage()
-							+ " Am I null?";
+					responseMessage = formattedResponse.getResponsemessage();
+					logger.info("---------------Response is..."
+							+ responseMessage);
 				} else {
-					logger.info("---------------Authenticationresponse is nul");
+					logger.info("---------------Authenticationresponse is null");
 				}
 			} else {
 				logger.info("---------------AuthenticateResponse is null");

@@ -11831,6 +11831,12 @@ div.v-layout.v-horizontal.v-widget {
 	min-height: 560px;
 }
 
+.mats_web_portal .tabref2 {
+	background: #CD0000;
+	min-height: 500px;
+	margin: 5px, 5px, 5px, 5px;
+}
+
 .mats_web_portal .butDisable {
 	background: #CD0000;
 	color: black;
@@ -12251,7 +12257,6 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .mats_web_portal .btn_link {
-	border: none;
 	margin-right: 2px;
 	margin-top: 4px;
 }
@@ -12393,5 +12398,22 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .mats_web_portal .w_delete_user {
-	padding: 5px 40px 40px 40px;
+	padding: 20px 20px 20px 20px;
+}
+
+.mats_web_portal .check_t_and_c label {
+	margin: 10px 0px 50px !important;
+	white-space: normal !important;
+	background: #F00;
+}
+
+.mats_web_portal .c_more {
+	margin: 100px;
+	display: none;
+}
+
+.mats_web_portal .btn_hide {
+	display: none;
+	background: #F0F;
+	width: 1000px;
 }
