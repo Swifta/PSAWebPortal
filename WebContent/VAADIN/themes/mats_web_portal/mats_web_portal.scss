@@ -28,11 +28,11 @@
 // Example variants can be copy/pasted from https://vaadin.com/wiki/-/wiki/Main/Valo+Examples
 @import "../valo/valo.scss";
 
-
-@mixin mats_web_portal {
+@mixin mats_web_portal{
   @include valo;
+  
+  
  
-
   .username_text_field{
   			//color:#F00;
   			//width: 200px;
@@ -134,9 +134,7 @@
 
 
 
-.borderless {
-	//border:none;
-}
+
 
 .layout_work_area_container{
 
@@ -713,7 +711,7 @@ ul.empty li{
 	//border: none;
 	//height: 10px;
 	
-	border: none;
+	//border: none;
 	margin-right: 2px;
 	margin-top: 4px;
 }
@@ -923,6 +921,13 @@ ul.empty li{
 	 margin: 100px;
 	 display: none;
 }
+
+.btn_hide{
+		display:none;
+		background: #F0F;
+		width: 1000px;
+	}
+  
 
 
 

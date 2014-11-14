@@ -225,6 +225,7 @@ public class Login extends VerticalLayout implements View {
 				logger.info("---------------Before validating the username and password"
 						+ tfUsername.getValue());
 				// if(validCredentials()){
+<<<<<<< HEAD
 				if (loginService.authenticateUser(tfUsername.getValue(),
 						tfPassword.getValue())) {
 					logger.info("---------------Validation successful");
@@ -237,6 +238,14 @@ public class Login extends VerticalLayout implements View {
 				} else {
 					logger.info("---------------The authentication FAILED!!!!!!!!!!!!!!");
 				}
+=======
+				// if (loginService.authenticateUser(tfUsername.getValue(),
+				// tfPassword.getValue())) {
+				UI.getCurrent().getSession()
+						.setAttribute("user", tfUsername.getValue());
+				UI.getCurrent().getNavigator().navigateTo(WorkSpace.WORK_SPACE);
+				// }
+>>>>>>> branch 'development' of https://github.com/Swifta/PSAWebPortal.git
 				// }
 
 			}
