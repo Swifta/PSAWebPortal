@@ -215,12 +215,12 @@ public class BE2 {
 		btnSetDefaultAcc.setId("user_account_" + strUID + "_" + strUname
 				+ "_default");
 
-		/*
-		 * VerticalLayout cMore = new VerticalLayout();
-		 * cMore.setStyleName("c_more"); cMore.addComponent(new
-		 * Button("Set Parent")); cMore.addComponent(new
-		 * Button("set Default Acc.")); actionsC.addComponent(cMore);
-		 */
+		VerticalLayout cMore = new VerticalLayout();
+		cMore.addComponent(new Button("Set Parent"));
+		cMore.addComponent(new Button("set Default Acc."));
+		cMore.setStyleName("c_more");
+
+		actionsC.addComponent(cMore);
 
 		btnSetDefaultAcc.setDescription("Set Default Account");
 		btnSetParent.setDescription("Set Parent Account");
