@@ -37,7 +37,7 @@ public class LoginService {
 		AuthenticateResponseE authenticateResponse = null;
 		try {
 			provisioningStub = new ProvisioningStub(
-					"http://54.164.96.105:8283/services/ProvisioningService/");
+					"http://54.164.96.105:8283/services/Provisionservice");
 			logger.info("---------------Calling the authenticate method in the provisioning class");
 			authenticateResponse = provisioningStub.authenticate(authenticate);
 		} catch (RemoteException e) {
