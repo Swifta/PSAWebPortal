@@ -70,6 +70,7 @@ public class AddUserModule {
 	private PopupDateField dFDoE;
 	Map<String, Integer> profToID;
 	private OptionGroup optSex;
+	private boolean isReset = false;
 
 	public AddUserModule() {
 		profToID = new HashMap<>();
@@ -367,7 +368,6 @@ public class AddUserModule {
 		cC.addComponent(physicalC);
 
 		/*
-		 * // String strAccTypeCaption = null; if (!(strUserType.equals("CCO")
 		 * || strUserType.equals("BA"))) { tF = new TextField("Fax");
 		 * cC.addComponent(tF); // strAccTypeCaption = Hierarch }
 		 */
@@ -385,7 +385,7 @@ public class AddUserModule {
 		ComboBox comboHierarchy = null;
 
 		if (!(strUserType.equals("CCO") || strUserType.equals("BA"))) {
-			comboHierarchy = new ComboBox("Hierarchy");
+			comboHierarchy = new ComboBox("Profile");
 			comboHierarchy.addItem(userID);
 			comboHierarchy.setItemCaption(userID, "Super " + strUserType);
 			comboHierarchy.select(userID);
@@ -659,6 +659,95 @@ public class AddUserModule {
 				}
 
 				Notification.show("Response: " + strResponse);
+
+			}
+		});
+
+		btnReset.addClickListener(new Button.ClickListener() {
+			private static final long serialVersionUID = 3212854064282339617L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+
+				if (isReset)
+					return;
+
+				Notification.show("Cleared.");
+
+				tFFN.setValue("");
+				tFMN.setValue("");
+				tFLN.setValue("");
+				tFOcc.setValue("");
+				tFEmp.setValue("");
+				tFUN.setValue("");
+				tFMSISDN.setValue("");
+				tFBAcc.setValue("");
+				tFAccEmail.setValue("");
+				tFClrNo.setValue("");
+				tFSecAns.setValue("");
+				tFPMNo.setValue("");
+				tFPANo.setValue("");
+				tFPEmail.setValue("");
+				tFPostalCode.setValue("");
+				tFStreet.setValue("");
+				tFCity.setValue("");
+				tFProv.setValue("");
+				tFSMNo.setValue("");
+				tFSANo.setValue("");
+				tFSEmail.setValue("");
+				tFIssuer.setValue("");
+				tFIDNo.setValue("");
+
+				chcTAndC.setValue(false);
+				comboPref.select(null);
+
+				comboSuff.select(null);
+				comboState.select(null);
+				comboLG.select(null);
+				comboCountry.select(null);
+				comboLang.select(null);
+				comboBDomain.select(null);
+				comboBID.select(null);
+				comboCur.select(null);
+				comboSecQn.select(null);
+				comboProfile.select(null);
+				comboIDType.select(null);
+
+				dFDoB.setValue(new Date(null));
+				dFDoB.setValue(new Date(null));
+				dFDoI.setValue(new Date(null));
+				dFDoE.setValue(new Date(null));
+				dFDoE.setValue(new Date(null));
+				optSex.select(null);
+				isReset = true;
+
+				/*
+				 * ArrayList<Object> arrLAllFields = new ArrayList<>();
+				 * arrLAllFields.add(false); arrLAllFields.add(tFFN);
+				 * arrLAllFields.add(tFMN); arrLAllFields.add(tFLN);
+				 * arrLAllFields.add(tFOcc); arrLAllFields.add(tFEmp);
+				 * arrLAllFields.add(tFUN); arrLAllFields.add(tFMSISDN);
+				 * arrLAllFields.add(tFBAcc); arrLAllFields.add(tFAccEmail);
+				 * arrLAllFields.add(tFClrNo); arrLAllFields.add(tFSecAns);
+				 * arrLAllFields.add(tFPMNo); arrLAllFields.add(tFPANo);
+				 * arrLAllFields.add(tFPEmail); arrLAllFields.add(tFPostalCode);
+				 * arrLAllFields.add(tFStreet); arrLAllFields.add(tFCity);
+				 * arrLAllFields.add(tFProv); arrLAllFields.add(tFSMNo);
+				 * arrLAllFields.add(tFSANo); arrLAllFields.add(tFSEmail);
+				 * arrLAllFields.add(tFIssuer); arrLAllFields.add(tFIDNo);
+				 * 
+				 * arrLAllFields.add(chcTAndC); arrLAllFields.add(comboPref);
+				 * arrLAllFields.add(comboSuff); arrLAllFields.add(comboState);
+				 * arrLAllFields.add(comboLG); arrLAllFields.add(comboCountry);
+				 * arrLAllFields.add(comboLang);
+				 * arrLAllFields.add(comboBDomain); arrLAllFields.add(comboBID);
+				 * arrLAllFields.add(comboCur); arrLAllFields.add(comboSecQn);
+				 * arrLAllFields.add(comboProfile);
+				 * arrLAllFields.add(comboIDType);
+				 * 
+				 * arrLAllFields.add(dFDoB); arrLAllFields.add(dFDoI);
+				 * arrLAllFields.add(dFDoE); arrLAllFields.add(optSex);
+				 */
 
 			}
 		});
