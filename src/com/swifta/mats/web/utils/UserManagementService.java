@@ -59,7 +59,7 @@ public class UserManagementService {
 
 		Accountholderdetails accountholderdetails = new Accountholderdetails();
 		matsStub = new ProvisioningStub(
-				"http://54.164.96.105:8283/services/ProvisioningService/");
+				"http://54.164.96.105:8283/services/Provisionservice");
 		Address address = new Address();
 		address.setCity(city);
 		address.setPostalCode(postalcode);
@@ -160,7 +160,7 @@ public class UserManagementService {
 			String firstPin, String confirmPin) throws RemoteException {
 		String statusMessage = "";
 		matsStub = new ProvisioningStub(
-				"http://54.164.96.105:8283/services/ProvisioningService/");
+				"http://54.164.96.105:8283/services/Provisionservice");
 		Credentials cre = new Credentials();
 		cre.setFirstpin(firstPin);
 		cre.setConfirmpin(confirmPin);
@@ -203,7 +203,7 @@ public class UserManagementService {
 			String reason, String userresourceid) throws RemoteException {
 		String statusMessage = "";
 		matsStub = new ProvisioningStub(
-				"http://54.164.96.105:8283/services/ProvisioningService/");
+				"http://54.164.96.105:8283/services/Provisionservice");
 
 		LinkaccountrequestE linkaccountrequest = new LinkaccountrequestE();
 		Linkaccountrequest linkrequest = new Linkaccountrequest();
@@ -241,7 +241,7 @@ public class UserManagementService {
 			throws RemoteException {
 		String statusMessage = "";
 		matsStub = new ProvisioningStub(
-				"http://54.164.96.105:8283/services/ProvisioningService/");
+				"http://54.164.96.105:8283/services/Provisionservice");
 
 		SetparentaccountE setparentaccount = new SetparentaccountE();
 		Setparentaccount sparentaccount = new Setparentaccount();
@@ -279,7 +279,7 @@ public class UserManagementService {
 			String userresourceid) throws RemoteException {
 		String statusMessage = "";
 		matsStub = new ProvisioningStub(
-				"http://54.164.96.105:8283/services/ProvisioningService/");
+				"http://54.164.96.105:8283/services/Provisionservice");
 
 		SetdefaultaccountE setdefaultaccounte = new SetdefaultaccountE();
 		Setdefaultaccount setdefaultaccount = new Setdefaultaccount();

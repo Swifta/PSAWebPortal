@@ -1,8 +1,7 @@
 package com.swifta.mats.web.utils;
 
 import java.rmi.RemoteException;
-
-import org.apache.log4j.Logger;
+import java.util.logging.Logger;
 
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Activationrequest;
@@ -19,9 +18,10 @@ import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Credenti
 
 public class LoginService {
 	private ProvisioningStub provisioningStub;
-	private static final Logger logger = Logger.getLogger(LoginService.class);
+	private static final Logger logger = Logger.getLogger(LoginService.class
+			.getName());
 
-	public String authenticateUser(String username, String password) {
+	public boolean authenticateUser(String username, String password) {
 		String statusCode = "", responseMessage = "";
 		boolean status = false;
 
@@ -35,10 +35,12 @@ public class LoginService {
 		logger.info("---------------After setting authenticate parameters");
 		AuthenticateResponseE authenticateResponse = null;
 		try {
+			logger.info("---------------After initiating the authenticate parameters");
 			provisioningStub = new ProvisioningStub(
 					"http://54.164.96.105:8283/services/Provisionservice/");
 			logger.info("---------------Calling the authenticate method in the provisioning class");
 			authenticateResponse = provisioningStub.authenticate(authenticate);
+			logger.info("---------------After Calling the authenticate method in the provisioning class");
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			logger.info("---------------Exception occured while authenticating");
@@ -64,8 +66,11 @@ public class LoginService {
 		} else {
 			logger.info("---------------AuthenticateResponseE is null");
 		}
+		if (responseMessage.equalsIgnoreCase("true")) {
+			status = true;
+		}
 
-		return responseMessage;
+		return status;
 	}
 
 	public boolean activateUser(String bankdomainid, String currency,
@@ -73,7 +78,7 @@ public class LoginService {
 			String firstPin, String confirmPin) throws RemoteException {
 		String statusMessage;
 		provisioningStub = new ProvisioningStub(
-				"http://54.164.96.105:8283/services/ProvisioningService/");
+				"http://54.164.96.105:8283/services/Provisionservice");
 		Credentials cre = new Credentials();
 		cre.setFirstpin(firstPin);
 		cre.setConfirmpin(confirmPin);

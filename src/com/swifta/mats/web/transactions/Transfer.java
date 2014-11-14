@@ -96,9 +96,9 @@ public class Transfer {
 				UserManagementService activate = new UserManagementService();
 				LoginService login = new LoginService();
 
-				String give = login.authenticateUser("Adetolami", "modupe");
+				// boolean give = login.authenticateUser("Adetolami", "modupe");
 
-				Notification.show(give);
+				// Notification.show(String.valueOf(give));
 
 				String userresourceid = "Opeyemierg";
 				String bankdomainid = "0";
@@ -107,7 +107,15 @@ public class Transfer {
 				String firstPin = "5264";
 				String confirmPin = "5264";
 				String currency = "0";
-				String ret = "Hello";
+				String ret = "No response";
+				try {
+					ret = activate.activateUser(bankdomainid, currency,
+							IDnumber, userresourceid, SecurityAns, firstPin,
+							confirmPin);
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 
 				Label rep;
 				rep = new Label(ret);

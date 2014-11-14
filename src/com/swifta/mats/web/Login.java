@@ -1,5 +1,7 @@
 package com.swifta.mats.web;
 
+import java.util.logging.Logger;
+
 import com.swifta.mats.web.utils.LoginService;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Validator;
@@ -32,6 +34,8 @@ public class Login extends VerticalLayout implements View {
 	 * 
 	 * 
 	 */
+	private static final Logger logger = Logger
+			.getLogger(Login.class.getName());
 	private static final long serialVersionUID = 4197831781197091062L;
 	public static final String LOGIN = "login";
 	private TextField tfUsername;
@@ -218,13 +222,20 @@ public class Login extends VerticalLayout implements View {
 					// Notification.show("Invalid value");
 					return;
 				}
+				logger.info("---------------Before validating the username and password"
+						+ tfUsername.getValue());
 				// if(validCredentials()){
 				if (loginService.authenticateUser(tfUsername.getValue(),
 						tfPassword.getValue())) {
+					logger.info("---------------Validation successful");
 					UI.getCurrent().getSession()
 							.setAttribute("user", tfUsername.getValue());
+					logger.info("---------------After getting session in Login");
 					UI.getCurrent().getNavigator()
 							.navigateTo(WorkSpace.WORK_SPACE);
+					logger.info("---------------after getting navigator to workspace:::Login");
+				} else {
+					logger.info("---------------The authentication FAILED!!!!!!!!!!!!!!");
 				}
 				// }
 

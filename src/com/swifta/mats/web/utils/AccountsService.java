@@ -1,6 +1,7 @@
 package com.swifta.mats.web.utils;
 
 import java.rmi.RemoteException;
+import java.util.logging.Logger;
 
 import org.apache.axis2.AxisFault;
 
@@ -10,7 +11,8 @@ import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Addaccou
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Addaccountrequestresponse;
 
 public class AccountsService {
-
+	private static final Logger logger = Logger.getLogger(AccountsService.class
+			.getName());
 	ProvisioningStub provision;
 
 	@SuppressWarnings("null")
