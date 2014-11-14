@@ -16,13 +16,12 @@ import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Authenti
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.AuthenticateResponseE;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Authenticationresponse;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Credentials;
-import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.StatusCode;
 
 public class LoginService {
 	private ProvisioningStub provisioningStub;
 	private static final Logger logger = Logger.getLogger(LoginService.class);
 
-	public boolean authenticateUser(String username, String password) {
+	public String authenticateUser(String username, String password) {
 		String statusCode = "", responseMessage = "";
 		boolean status = false;
 
@@ -37,7 +36,7 @@ public class LoginService {
 		AuthenticateResponseE authenticateResponse = null;
 		try {
 			provisioningStub = new ProvisioningStub(
-					"http://54.164.96.105:8283/services/Provisionservice");
+					"http://54.164.96.105:8283/services/Provisionservice/");
 			logger.info("---------------Calling the authenticate method in the provisioning class");
 			authenticateResponse = provisioningStub.authenticate(authenticate);
 		} catch (RemoteException e) {
@@ -53,14 +52,9 @@ public class LoginService {
 				Authenticationresponse formattedResponse = response
 						.get_return();
 				if (formattedResponse != null) {
-					StatusCode statusC = formattedResponse.getStatuscode();
-					if (statusC != null) {
-						statusCode = statusC.getValue();
-						logger.info("---------------Status code is not null");
-					} else {
-						logger.info("---------------Status code is null");
-					}
-					responseMessage = formattedResponse.getResponsemessage();
+
+					responseMessage = formattedResponse.getResponsemessage()
+							+ " Am I null?";
 				} else {
 					logger.info("---------------Authenticationresponse is nul");
 				}
@@ -70,13 +64,8 @@ public class LoginService {
 		} else {
 			logger.info("---------------AuthenticateResponseE is null");
 		}
-		if (statusCode.equalsIgnoreCase("true")
-				|| responseMessage.equalsIgnoreCase("true")) {
-			status = true;
-		} else {
-			status = false;
-		}
-		return status;
+
+		return responseMessage;
 	}
 
 	public boolean activateUser(String bankdomainid, String currency,
