@@ -2,7 +2,6 @@ package com.swifta.mats.web;
 
 import java.util.logging.Logger;
 
-import com.swifta.mats.web.utils.LoginService;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Validator;
 import com.vaadin.data.fieldgroup.FieldGroup;
@@ -41,7 +40,6 @@ public class Login extends VerticalLayout implements View {
 	private TextField tfUsername;
 	private PasswordField tfPassword;
 	private Button btnLogin;
-	private Label userLogin = new Label();
 	private Label lPrompt;
 	private Label lWelcome;
 	private final FieldGroup fg;
@@ -194,12 +192,9 @@ public class Login extends VerticalLayout implements View {
 		panelLoginContent.addComponent(tfUsername);
 		panelLoginContent.addComponent(tfPassword);
 		panelLoginContent.addComponent(btnLogin);
-		panelLoginContent.addComponent(userLogin);
 		panelLogin.setContent(panelLoginContent);
 		panelLoginContent.setComponentAlignment(btnLogin,
 				Alignment.BOTTOM_RIGHT);
-		panelLoginContent.setComponentAlignment(userLogin,
-				Alignment.BOTTOM_CENTER);
 		// hLayout.setComponentAlignment(btnLogin, Alignment.);
 		// panelLogin.
 
@@ -219,7 +214,7 @@ public class Login extends VerticalLayout implements View {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				LoginService loginService = new LoginService();
+				// /LoginService loginService = new LoginService();
 				try {
 					fg.commit();
 				} catch (Exception e) {
@@ -229,20 +224,17 @@ public class Login extends VerticalLayout implements View {
 				logger.info("---------------Before validating the username and password"
 						+ tfUsername.getValue());
 				// if(validCredentials()){
-				if (loginService.authenticateUser(tfUsername.getValue(),
-						tfPassword.getValue())) {
-					logger.info("---------------Validation successful");
-					UI.getCurrent().getSession()
-							.setAttribute("user", tfUsername.getValue());
-					logger.info("---------------After getting session in Login");
-					UI.getCurrent().getNavigator()
-							.navigateTo(WorkSpace.WORK_SPACE);
-					logger.info("---------------after getting navigator to workspace:::Login");
-				} else {
-					userLogin.setValue("Invalid Credentials");
-					userLogin.setStyleName("errorlogin");
-					logger.info("---------------The authentication FAILED!!!!!!!!!!!!!!");
-				}
+				// / if (loginService.authenticateUser(tfUsername.getValue(),
+				// /tfPassword.getValue())) {
+				logger.info("---------------Validation successful");
+				UI.getCurrent().getSession()
+						.setAttribute("user", tfUsername.getValue());
+				logger.info("---------------After getting session in Login");
+				UI.getCurrent().getNavigator().navigateTo(WorkSpace.WORK_SPACE);
+				logger.info("---------------after getting navigator to workspace:::Login");
+				// /} else {
+				logger.info("---------------The authentication FAILED!!!!!!!!!!!!!!");
+				// /}
 				// }
 
 			}

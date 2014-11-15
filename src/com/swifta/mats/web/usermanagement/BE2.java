@@ -7,13 +7,17 @@ import java.util.List;
 import com.swifta.mats.web.utils.UserManagementService;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.ThemeResource;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -38,133 +42,24 @@ public class BE2 {
 	private Button btnSetParent;
 	private Button btnSetDefaultAcc;
 
-	private List<Object> arrLPopupParentClasses;
+	private List<CheckBox> arrLChk;
+	private List<CheckBox> arrLChkBulk;
+	private List<ComboBox> arrLCombos;
 	HorizontalLayout actionsC;
 	private boolean isPopupShowing;
 	private boolean isSent = false;
 	UserManagementService ums;
+	private int rowCount;
+	private int chkCount;
+
+	ThemeResource icDelete;
 
 	BE2() {
-		ThemeResource icDelete = new ThemeResource("img/ic_delete_small.png");
+		icDelete = new ThemeResource("img/ic_delete_small.png");
 		isPopupShowing = false;
-		btnDetails = new BtnActions("Details");
-		btnDetails.setIcon(FontAwesome.ALIGN_JUSTIFY);
-		btnEdit = new BtnActions("Edit");
-		btnEdit.setIcon(FontAwesome.EDIT);
-		btnLink = new BtnActions("Link");
-		btnLink.setIcon(FontAwesome.LINK);
-		btnDelete = new BtnActions("Delete");
-		btnDelete.setIcon(icDelete);
-		btnActivate = new BtnActions("Activate");
-		btnActivate.setIcon(FontAwesome.KEY);
-		btnMoreActions = new BtnActions("More...");
-		btnMoreActions.setIcon(FontAwesome.ELLIPSIS_H);
-		btnSetParent = new Button("P");
-		btnSetDefaultAcc = new Button("D");
-		/*
-		 * btnMoreActions .addClickListener(new BtnActionsClickListener(false,
-		 * null));
-		 */
-
-		btnMoreActions.addClickListener(new Button.ClickListener() {
-
-			private static final long serialVersionUID = -3840990560267229588L;
-
-			@Override
-			public void buttonClick(ClickEvent event) {
-				Notification.show(String.valueOf(event.getClientX()));
-				// .setStyleName("btn_hide");
-				// actionsC.addComponent(btnSetParent);
-			}
-		});
-		arrLPopupParentClasses = new ArrayList<Object>();
-		arrLPopupParentClasses.add(this);
-
-		btnDetails.addClickListener(new BtnActionsClickListener(false, null));
-		btnEdit.addClickListener(new BtnActionsClickListener(false, null));
-
-		btnDelete.addClickListener(new Button.ClickListener() {
-
-			private static final long serialVersionUID = -3840990560267229588L;
-
-			@Override
-			public void buttonClick(ClickEvent event) {
-				// Notification.show(String.valueOf(isPopupShowing));
-				if (isPopupShowing)
-					return;
-				String[] arrID = event.getButton().getId().split("_");
-				showDeleteUserContainer(arrID);
-
-			}
-		});
-
-		btnActivate.addClickListener(new Button.ClickListener() {
-
-			private static final long serialVersionUID = -3840990560264229588L;
-
-			@Override
-			public void buttonClick(ClickEvent event) {
-				// Notification.show(String.valueOf(isPopupShowing));
-				if (isPopupShowing)
-					return;
-				String[] arrID = event.getButton().getId().split("_");
-				showActivateUserContainer(arrID);
-
-			}
-		});
-
-		btnSetParent.addClickListener(new Button.ClickListener() {
-
-			private static final long serialVersionUID = -3840990560264229588L;
-
-			@Override
-			public void buttonClick(ClickEvent event) {
-				// Notification.show(String.valueOf(isPopupShowing));
-				if (isPopupShowing)
-					return;
-				String[] arrID = event.getButton().getId().split("_");
-				showSetParentUserContainer(arrID);
-
-			}
-		});
-
-		btnSetDefaultAcc.addClickListener(new Button.ClickListener() {
-
-			private static final long serialVersionUID = -3840990560264229588L;
-
-			@Override
-			public void buttonClick(ClickEvent event) {
-				// Notification.show(String.valueOf(isPopupShowing));
-				if (isPopupShowing)
-					return;
-				String[] arrID = event.getButton().getId().split("_");
-				showSetDefaultUserContainer(arrID);
-
-			}
-		});
-
-		btnLink.addClickListener(new Button.ClickListener() {
-
-			private static final long serialVersionUID = -3840990560264229588L;
-
-			@Override
-			public void buttonClick(ClickEvent event) {
-				// Notification.show(String.valueOf(isPopupShowing));
-				if (isPopupShowing)
-					return;
-				String[] arrID = event.getButton().getId().split("_");
-				showLinkUserContainer(arrID);
-
-			}
-		});
-
-		actionsC = new HorizontalLayout();
-		actionsC.setSizeUndefined();
-		actionsC.setStyleName("c_actions");
 	}
 
-	@SuppressWarnings("unchecked")
-	public IndexedContainer queryBackEnd(String strSearchParams) {
+	public VerticalLayout queryBackEnd(String strSearchParams) {
 		IndexedContainer container = new IndexedContainer();
 
 		container.addContainerProperty(" ", CheckBox.class, null);
@@ -175,68 +70,115 @@ public class BE2 {
 		container.addContainerProperty("Account Type", String.class, "");
 		container.addContainerProperty("Actions", HorizontalLayout.class, null);
 
-		// tb.setColumnIcon(" ", FontAwesome.CHECK_SQUARE_O);
-
-		Item trItem;
-		container.addItem("row1");
-		trItem = container.getItem("row1");
-		Property<CheckBox> tdPropertyCheck = trItem.getItemProperty(" ");
-		Property<String> tdPropertyUID = trItem.getItemProperty("UID");
-		Property<String> tdPropertyUname = trItem.getItemProperty("Username");
-		Property<String> tdPropertyFname = trItem.getItemProperty("First Name");
-		Property<String> tdPropertyLname = trItem.getItemProperty("Last Name");
-		Property<String> tdPropertyACCType = trItem
-				.getItemProperty("Account Type");
-		Property<HorizontalLayout> tdPropertyActions = trItem
-				.getItemProperty("Actions");
-
-		tdPropertyCheck.setValue(new CheckBox());
-		tdPropertyUID.setValue("000012211");
-		tdPropertyUname.setValue("Sevo");
-		tdPropertyFname.setValue("Yoweri");
-		tdPropertyLname.setValue("Amama");
-		tdPropertyACCType.setValue("Administrator");
-		tdPropertyActions.setValue(actionsC);
-		String strUID = tdPropertyUID.getValue();
-		String strUname = tdPropertyUname.getValue();
-
-		btnDetails.setId("users_personal_" + strUID + "_" + strUname
-				+ "_details");
-		btnEdit.setId("user_personal_" + strUID + "_" + strUname + "_edit");
-		btnLink.setId("user_account_" + strUID + "_" + strUname + "_link");
-		btnActivate.setId("user_account_" + strUID + "_" + strUname
-				+ "_activate");
-		btnDelete.setId("user_account_" + strUID + "_" + strUname + "_delete");
-		btnMoreActions.setId("user_account_" + strUID + "_" + strUname
-				+ "_moreActions");
-
-		btnSetParent.setId("user_account_" + strUID + "_" + strUname
-				+ "_parent");
-		btnSetDefaultAcc.setId("user_account_" + strUID + "_" + strUname
-				+ "_default");
+		arrLChk = new ArrayList<>();
+		arrLChkBulk = new ArrayList<>();
+		arrLCombos = new ArrayList<>();
 
 		/*
-		 * VerticalLayout cMore = new VerticalLayout();
-		 * cMore.setStyleName("c_more"); cMore.addComponent(new
-		 * Button("Set Parent")); cMore.addComponent(new
-		 * Button("set Default Acc.")); actionsC.addComponent(cMore);
+		 * IndexedContainer container, String strUID, String strUname, String
+		 * strFname, String strLname, String strProf
 		 */
+		rowCount = 0;
+		addRow(container, "00494432493", "Live", "Paul", "Kig", "Admin");
+		addRow(container, "0049432338", "Kay", "Deny", "Sep", "Agent");
+		addRow(container, "00942333218", "Saneeddd", "Winssddo", "Mosssc",
+				"Agent");
+		addRow(container, "004934932233", "Liveede", "Paussxl", "Kig", "Admin");
+		addRow(container, "0049223438", "Kaddccy", "Denssssy", "Sep", "Agent");
+		addRow(container, "009422316678", "Sand", "Wino", "Moc", "Agent");
+		addRow(container, "00493442493", "Live", "Paul", "Kig", "Admin");
+		addRow(container, "00492234438", "Kayww", "Deny", "Sep", "Agent");
+		addRow(container, "00432943456218", "Sand", "Wino", "Moc", "Agent");
+		addRow(container, "0045549493", "Live", "Paul", "Kig", "Admin");
+		addRow(container, "032049445638", "Kaysss", "Deny", "Sep", "Agent");
+		addRow(container, "0094564218", "Sand", "Wino", "Moc", "Agent");
+		addRow(container, "667443453", "Live", "Paul", "Kig", "Admin");
+		addRow(container, "0043229438", "Kay", "Denysss", "Sep", "Agent");
+		addRow(container, "0096784218", "Sand", "Wino", "Moc", "Agent");
+		addRow(container, "0044329493", "Live", "Paul", "Kig", "Admin");
+		addRow(container, "0049457438", "Kay", "Deny", "Sep", "Agent");
+		addRow(container, "0094432218", "Sand", "Wino", "Moc", "Agent");
+		addRow(container, "004932493", "Live", "Paul", "Kig", "Admin");
+		addRow(container, "00424569438", "Kay", "Deny", "Sep", "Agent");
+		addRow(container, "00967894218", "Sand", "Wino", "Moc", "Agent");
 
-		btnSetDefaultAcc.setDescription("Set Default Account");
-		btnSetParent.setDescription("Set Parent Account");
-		btnSetDefaultAcc.setStyleName("btn_link");
-		btnSetParent.setStyleName("btn_link btn_hide");
+		// Notification.show(String.valueOf(rowCount));
 
-		actionsC.addComponent(btnActivate);
-		actionsC.addComponent(btnSetParent);
-		actionsC.addComponent(btnSetDefaultAcc);
-		actionsC.addComponent(btnLink);
-		actionsC.addComponent(btnDetails);
-		actionsC.addComponent(btnEdit);
-		actionsC.addComponent(btnDelete);
-		// actionsC.addComponent(btnMoreActions);
+		VerticalLayout searchResultsContainer = new VerticalLayout();
+		searchResultsContainer.setSizeUndefined();
+		searchResultsContainer.setSpacing(true);
+		searchResultsContainer
+				.setMargin(new MarginInfo(false, true, true, true));
 
-		return container;
+		String[] arrAllParams = strSearchParams.split("&");
+
+		StringBuilder strBuilder = new StringBuilder();
+
+		String[] arrP = null;
+		for (String strParam : arrAllParams) {
+			arrP = strParam.split("=");
+			if (arrP.length == 2) {
+				strBuilder.append(arrP[0]);
+				strBuilder.append(" of ");
+				strBuilder.append(arrP[1]);
+				strBuilder.append(", ");
+			}
+		}
+
+		int iLastIndexOfComma = strBuilder.lastIndexOf(",");
+		if (iLastIndexOfComma != -1) {
+			strBuilder.delete(iLastIndexOfComma, iLastIndexOfComma + 1);
+		}
+		String strSearchResultsParams = null;
+		iLastIndexOfComma = strBuilder.lastIndexOf(",");
+		if (iLastIndexOfComma != -1) {
+			strBuilder
+					.replace(iLastIndexOfComma, iLastIndexOfComma + 1, " and");
+			strSearchResultsParams = strBuilder.toString();
+		} else {
+			strSearchResultsParams = strBuilder.toString();
+		}
+		// Notification.show(Integer.toString(strSearchResultsParams.length()));
+		strSearchResultsParams = strBuilder.toString();
+		if (strSearchResultsParams.length() == 0) {
+			strSearchResultsParams = "Nothing.";
+		}
+
+		Label lbSearch = new Label("Match results for: "
+				+ strSearchResultsParams);
+		lbSearch.setSizeUndefined();
+		lbSearch.setStyleName("label_search_user");
+		lbSearch.setSizeUndefined();
+
+		VerticalLayout searchUserHeader = new VerticalLayout();
+		searchUserHeader.setHeightUndefined();
+		searchUserHeader.setWidthUndefined();
+		searchUserHeader.setMargin(false);
+		searchUserHeader.setSpacing(true);
+		// searchUserHeader.addComponent(emb);
+		searchUserHeader.addComponent(lbSearch);
+		searchUserHeader.setStyleName("search_results_header");
+		searchResultsContainer.addComponent(searchUserHeader);
+
+		if (!(rowCount < 10)) {
+			rowCount = 10;
+		}
+
+		PagedTableCustom tb = new PagedTableCustom("Results (Summary)");
+		tb.setPageLength(rowCount);
+		tb.setContainerDataSource(container);
+		tb.setColumnIcon(" ", FontAwesome.CHECK_SQUARE_O);
+		tb.setStyleName("tb_u_search_results");
+
+		// HorizontalLayout upperControls = getControls(tb);
+		// HorizontalLayout lowerControls = upperControls;
+		searchResultsContainer.addComponent(getBulkActionsC());
+		searchResultsContainer.addComponent(getControls(tb));
+		searchResultsContainer.addComponent(tb);
+		searchResultsContainer.addComponent(getControls(tb));
+		searchResultsContainer.addComponent(getBulkActionsC());
+
+		return searchResultsContainer;
 	}
 
 	private void showDeleteUserContainer(String[] arrID) {
@@ -752,7 +694,8 @@ public class BE2 {
 		cPopupBtns.setSpacing(true);
 
 		Button btnCancel = new Button("Cancel");
-		Button btnSet = new Button("Set");
+		Button btnSet = new Button("Link");
+
 		// btnActivate.setIcon(FontAwesome.Y);
 		cPopupBtns.addComponent(btnSet);
 		cPopupBtns.addComponent(btnCancel);
@@ -823,6 +766,263 @@ public class BE2 {
 			}
 
 		});
+	}
+
+	private HorizontalLayout getControls(final PagedTableCustom tb) {
+		HorizontalLayout pnUserSearchResults = tb.createControls();
+		pnUserSearchResults.setSizeFull();
+		pnUserSearchResults.setMargin(false);
+		pnUserSearchResults.setSpacing(false);
+		ComboBox combo = tb.getControlCombox();
+		arrLCombos.add(combo);
+		combo.addValueChangeListener(new ValueChangeListener() {
+
+			private static final long serialVersionUID = -905852552423055726L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				// tb.itemsPerPageSelect.select(tb.getPageLength());
+				// Notification.show("Hello");
+				for (ComboBox c : arrLCombos)
+					c.select(tb.getPageLength());
+
+			}
+
+		});
+		return pnUserSearchResults;
+	}
+
+	private VerticalLayout getBulkActionsC() {
+		VerticalLayout actionBulkC = new VerticalLayout();
+		actionBulkC.setWidth("100%");
+		actionBulkC.setStyleName("c_action_bulk");
+
+		final CheckBox chkAll = new CheckBox();
+		arrLChkBulk.add(chkAll);
+		chkAll.setCaption("Select All");
+
+		ComboBox cmbBulk = new ComboBox("Bulk Action");
+		cmbBulk.addItem("Delete");
+		cmbBulk.addItem("Link");
+
+		Button btnBulkOk = new Button("Apply");
+		btnBulkOk.setStyleName("btn_link");
+		HorizontalLayout cBulk = new HorizontalLayout();
+		cBulk.setSizeUndefined();
+		cBulk.addComponent(cmbBulk);
+		cBulk.addComponent(btnBulkOk);
+		cBulk.setComponentAlignment(btnBulkOk, Alignment.BOTTOM_RIGHT);
+
+		actionBulkC.addComponent(chkAll);
+		actionBulkC.addComponent(cBulk);
+
+		chkAll.addValueChangeListener(new ValueChangeListener() {
+
+			private static final long serialVersionUID = -461485923323812803L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				boolean isChecked = chkAll.getValue();
+
+				for (CheckBox chk : arrLChk)
+					chk.setValue(isChecked);
+				for (CheckBox chk : arrLChkBulk)
+					chk.setValue(isChecked);
+
+			}
+
+		});
+
+		return actionBulkC;
+	}
+
+	@SuppressWarnings("unchecked")
+	private void addRow(IndexedContainer container, String strUID,
+			String strUname, String strFname, String strLname, String strProf) {
+		rowCount++;
+		actionsC = new HorizontalLayout();
+		actionsC.setSizeUndefined();
+		actionsC.setStyleName("c_actions");
+
+		Item trItem;
+		container.addItem(strUID);
+		trItem = container.getItem(strUID);
+
+		Property<CheckBox> tdPropertyCheck = trItem.getItemProperty(" ");
+		Property<String> tdPropertyUID = trItem.getItemProperty("UID");
+		Property<String> tdPropertyUname = trItem.getItemProperty("Username");
+		Property<String> tdPropertyFname = trItem.getItemProperty("First Name");
+		Property<String> tdPropertyLname = trItem.getItemProperty("Last Name");
+		Property<String> tdPropertyACCType = trItem
+				.getItemProperty("Account Type");
+		Property<HorizontalLayout> tdPropertyActions = trItem
+				.getItemProperty("Actions");
+		final CheckBox chk = new CheckBox();
+		arrLChk.add(chk);
+		tdPropertyCheck.setValue(chk);
+		tdPropertyUID.setValue(strUID);
+		tdPropertyUname.setValue(strUname);
+		tdPropertyFname.setValue(strFname);
+		tdPropertyLname.setValue(strLname);
+		tdPropertyACCType.setValue(strProf);
+		tdPropertyActions.setValue(actionsC);
+
+		btnDetails = new BtnActions("Details");
+		btnDetails.setIcon(FontAwesome.ALIGN_JUSTIFY);
+
+		btnEdit = new BtnActions("Edit");
+		btnEdit.setIcon(FontAwesome.EDIT);
+
+		btnLink = new BtnActions("Link");
+		btnLink.setIcon(FontAwesome.LINK);
+
+		btnDelete = new BtnActions("Delete");
+		btnDelete.setIcon(icDelete);
+
+		btnActivate = new BtnActions("Activate");
+		btnActivate.setIcon(FontAwesome.KEY);
+
+		btnMoreActions = new BtnActions("More...");
+		btnMoreActions.setIcon(FontAwesome.ELLIPSIS_H);
+
+		btnSetParent = new Button("P");
+
+		btnSetDefaultAcc = new Button("D");
+
+		btnDetails.setId("users_personal_" + strUID + "_" + strUname
+				+ "_details");
+		btnEdit.setId("user_personal_" + strUID + "_" + strUname + "_edit");
+		btnLink.setId("user_account_" + strUID + "_" + strUname + "_link");
+		btnActivate.setId("user_account_" + strUID + "_" + strUname
+				+ "_activate");
+		btnDelete.setId("user_account_" + strUID + "_" + strUname + "_delete");
+		btnMoreActions.setId("user_account_" + strUID + "_" + strUname
+				+ "_moreActions");
+
+		btnSetParent.setId("user_account_" + strUID + "_" + strUname
+				+ "_parent");
+		btnSetDefaultAcc.setId("user_account_" + strUID + "_" + strUname
+				+ "_default");
+
+		btnSetDefaultAcc.setDescription("Set Default Account");
+		btnSetParent.setDescription("Set Parent Account");
+		btnSetDefaultAcc.setStyleName("btn_link");
+		btnSetParent.setStyleName("btn_link");
+
+		actionsC.addComponent(btnActivate);
+		actionsC.addComponent(btnSetParent);
+		actionsC.addComponent(btnSetDefaultAcc);
+		actionsC.addComponent(btnLink);
+		actionsC.addComponent(btnDetails);
+		actionsC.addComponent(btnEdit);
+		actionsC.addComponent(btnDelete);
+		// actionsC.addComponent(btnMoreActions);
+
+		btnDetails.addClickListener(new BtnActionsClickListener(false, null));
+		btnEdit.addClickListener(new BtnActionsClickListener(false, null));
+
+		btnDelete.addClickListener(new Button.ClickListener() {
+
+			private static final long serialVersionUID = -3840990560267229588L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				// Notification.show(String.valueOf(isPopupShowing));
+				if (isPopupShowing)
+					return;
+				String[] arrID = event.getButton().getId().split("_");
+				showDeleteUserContainer(arrID);
+
+			}
+		});
+
+		btnActivate.addClickListener(new Button.ClickListener() {
+
+			private static final long serialVersionUID = -3840990560264229588L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				// Notification.show(String.valueOf(isPopupShowing));
+				if (isPopupShowing)
+					return;
+				String[] arrID = event.getButton().getId().split("_");
+				showActivateUserContainer(arrID);
+
+			}
+		});
+
+		btnSetParent.addClickListener(new Button.ClickListener() {
+
+			private static final long serialVersionUID = -3840990560264229588L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				// Notification.show(String.valueOf(isPopupShowing));
+				if (isPopupShowing)
+					return;
+				String[] arrID = event.getButton().getId().split("_");
+				showSetParentUserContainer(arrID);
+
+			}
+		});
+
+		btnSetDefaultAcc.addClickListener(new Button.ClickListener() {
+
+			private static final long serialVersionUID = -3840990560264229588L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				// Notification.show(String.valueOf(isPopupShowing));
+				if (isPopupShowing)
+					return;
+				String[] arrID = event.getButton().getId().split("_");
+				showSetDefaultUserContainer(arrID);
+
+			}
+		});
+
+		btnLink.addClickListener(new Button.ClickListener() {
+
+			private static final long serialVersionUID = -3840990560264229588L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				// Notification.show(String.valueOf(isPopupShowing));
+				if (isPopupShowing)
+					return;
+				String[] arrID = event.getButton().getId().split("_");
+				showLinkUserContainer(arrID);
+
+			}
+		});
+
+		chk.addValueChangeListener(new ValueChangeListener() {
+
+			private static final long serialVersionUID = 2437293114933803756L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				if (chk.getValue()) {
+					chkCount++;
+				} else {
+					chkCount--;
+				}
+
+				if (chkCount == rowCount) {
+					for (CheckBox c : arrLChkBulk)
+						c.setValue(true);
+				} else if (chkCount == rowCount - 1) {
+					for (CheckBox c : arrLChkBulk)
+						c.setValue(false);
+				}
+
+				Notification.show(String.valueOf(arrLChk.size()));
+				// Notification.show(String.valueOf(chkCount));
+
+			}
+
+		});
+
 	}
 
 }
