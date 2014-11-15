@@ -1,11 +1,14 @@
 package com.swifta.mats.web.report;
 
 import com.swifta.mats.web.usermanagement.PagedTableCustom;
+import com.vaadin.addon.tableexport.ExcelExport;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
@@ -31,6 +34,8 @@ public class Reportform extends VerticalLayout {
 		container.addContainerProperty("Date", String.class, "");
 		container.addContainerProperty("Amount", String.class, "");
 		container.addContainerProperty("Agent", String.class, "");
+
+		// form.populateTable("Hi", "Hi", "Hi","Hi", "Hi", "Hi", container);
 
 		setMargin(true);
 		final ComboBox reportType = new ComboBox("Search by Report Type");
@@ -77,6 +82,26 @@ public class Reportform extends VerticalLayout {
 				}
 			}
 
+		});
+
+		export.addClickListener(new ClickListener() {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+			private ExcelExport excelExport;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+
+				excelExport = new ExcelExport(table);
+				excelExport.setReportTitle("PSA Report");
+				excelExport.setExportFileName("PSA.xls");
+				excelExport.setDisplayTotals(false);
+				excelExport.export();
+
+			}
 		});
 
 		setSpacing(true);

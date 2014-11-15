@@ -108,8 +108,8 @@ public class Reporttype {
 	}
 
 	public IndexedContainer populateTable(String serialnumber,
-			String transactionid, String date, String amount, String agentid,
-			IndexedContainer tabContainer) {
+			String transactionid, String transactiontype, String date,
+			String amount, String agentid, IndexedContainer tabContainer) {
 
 		Object itemId;
 		Item trItem;
@@ -121,6 +121,8 @@ public class Reporttype {
 		Property<String> tdPropertyserial = trItem.getItemProperty("S/N");
 		Property<String> tdPropertytransaction = trItem
 				.getItemProperty("Transaction ID");
+		Property<String> tdPropertytransactype = trItem
+				.getItemProperty("Transaction Type");
 		Property<String> tdPropertydate = trItem.getItemProperty("Date");
 		Property<String> tdPropertyamount = trItem.getItemProperty("Amount");
 		Property<String> tdPropertyagent = trItem.getItemProperty("Agent");
@@ -129,6 +131,7 @@ public class Reporttype {
 
 		tdPropertyserial.setValue(serialnumber);
 		tdPropertytransaction.setValue(transactionid);
+		tdPropertytransactype.setValue(transactiontype);
 		tdPropertydate.setValue(date);
 		tdPropertyamount.setValue(amount);
 		tdPropertyagent.setValue(agentid);
