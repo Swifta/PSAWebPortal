@@ -2,6 +2,7 @@ package com.swifta.mats.web.usermanagement;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import com.swifta.mats.web.utils.UserManagementService;
@@ -42,7 +43,6 @@ public class BE2 {
 	private Button btnSetParent;
 	private Button btnSetDefaultAcc;
 
-	private List<CheckBox> arrLChk;
 	private List<CheckBox> arrLChkBulk;
 	private List<ComboBox> arrLCombos;
 	HorizontalLayout actionsC;
@@ -51,6 +51,10 @@ public class BE2 {
 	UserManagementService ums;
 	private int rowCount;
 	private int chkCount;
+	private boolean isSingleChange = false;
+	PagedTableCustom tb;
+
+	ArrayList<String> arrLBulkIDs;
 
 	ThemeResource icDelete;
 
@@ -70,7 +74,6 @@ public class BE2 {
 		container.addContainerProperty("Account Type", String.class, "");
 		container.addContainerProperty("Actions", HorizontalLayout.class, null);
 
-		arrLChk = new ArrayList<>();
 		arrLChkBulk = new ArrayList<>();
 		arrLCombos = new ArrayList<>();
 
@@ -164,7 +167,7 @@ public class BE2 {
 			rowCount = 10;
 		}
 
-		PagedTableCustom tb = new PagedTableCustom("Results (Summary)");
+		tb = new PagedTableCustom("Results (Summary)");
 		tb.setPageLength(rowCount);
 		tb.setContainerDataSource(container);
 		tb.setColumnIcon(" ", FontAwesome.CHECK_SQUARE_O);
@@ -178,15 +181,86 @@ public class BE2 {
 		searchResultsContainer.addComponent(getControls(tb));
 		searchResultsContainer.addComponent(getBulkActionsC());
 
+		tb.getPrevPageBtn().addClickListener(new Button.ClickListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+
+			}
+		});
+
+		tb.getNextPageBtn().addClickListener(new Button.ClickListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				tb.setPageLength(tb.getVisibleItemIds().size());
+				chkCount = 0;
+				isSingleChange = true;
+				for (CheckBox c : arrLChkBulk)
+					c.setValue(false);
+				isSingleChange = false;
+			}
+		});
+
+		tb.getPrevPageBtn().addClickListener(new Button.ClickListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				tb.setPageLength(tb.getVisibleItemIds().size());
+				chkCount = 0;
+				isSingleChange = true;
+				for (CheckBox c : arrLChkBulk)
+					c.setValue(false);
+				isSingleChange = false;
+			}
+		});
+
+		tb.getFirstPageBtn().addClickListener(new Button.ClickListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				tb.setPageLength(tb.getVisibleItemIds().size());
+				chkCount = 0;
+				isSingleChange = true;
+				for (CheckBox c : arrLChkBulk)
+					c.setValue(false);
+				isSingleChange = false;
+			}
+		});
+
+		tb.getLastPageBtn().addClickListener(new Button.ClickListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				tb.setPageLength(tb.getVisibleItemIds().size());
+				chkCount = 0;
+				isSingleChange = true;
+				for (CheckBox c : arrLChkBulk)
+					c.setValue(false);
+				isSingleChange = false;
+			}
+		});
+
 		return searchResultsContainer;
 	}
 
-	private void showDeleteUserContainer(String[] arrID) {
+	private void showDeleteUserContainer(final ArrayList<String> arrLBulkIDs,
+			final String[] arrID) {
 
 		isPopupShowing = true;
 		isSent = false;
+		String username = null;
+		if (arrID != null) {
+			username = arrID[3] + "'s Account";
+		} else {
+			username = "Selected Accounts";
+		}
 
-		String username = arrID[3];
 		final Window popup = new Window("Delete " + username);
 		popup.setStyleName("w_delete_user");
 		ThemeResource r = new ThemeResource("img/ic_delete_small.png");
@@ -283,12 +357,24 @@ public class BE2 {
 
 	}
 
-	private void showActivateUserContainer(final String[] arrID) {
+	private void showActivateUserContainer(final ArrayList<String> arrLBulkIDs,
+			final String[] arrID) {
 
 		isPopupShowing = true;
 		isSent = false;
-		String username = arrID[3];
-		final Window popup = new Window("Activate " + username + "'s Account");
+
+		String username = null;
+		if (arrID != null) {
+			username = arrID[3] + "'s Account";
+		} else {
+			username = "Selected Accounts";
+		}
+		/*
+		 * StringBuilder builderDesc = null; if (arrLBulkIDs != null) for
+		 * (String id : arrLBulkIDs) builderDesc.append(id);
+		 */
+
+		final Window popup = new Window("Activate " + username);
 		popup.setStyleName("w_delete_user");
 		popup.setIcon(FontAwesome.KEY);
 
@@ -299,7 +385,7 @@ public class BE2 {
 		// cDeletePrompt.setMargin(true);
 
 		Label lbActivationPrompt = new Label(
-				"Please enter and confirm PIN for " + username + "?");
+				"Please enter and confirm PIN for " + username);
 		lbActivationPrompt.setWidth("200px");
 
 		VerticalLayout frmDeleteReason = new VerticalLayout();
@@ -368,9 +454,15 @@ public class BE2 {
 
 				String strResponse = null;
 				try {
-					strResponse = ums.activateUser("001", "001", "001",
-							arrID[2], "001", tFPIN.getValue(),
-							tFPINConf.getValue());
+					// StringBuilder builderDesc = null;
+					Notification.show(String.valueOf(arrLBulkIDs.get(0)));
+					if (arrLBulkIDs != null)
+						for (String id : arrLBulkIDs) {
+							Notification.show(id);
+							strResponse = ums.activateUser("001", "001", "001",
+									id, "001", tFPIN.getValue(),
+									tFPINConf.getValue());
+						}
 					isSent = true;
 				} catch (RemoteException e) {
 
@@ -407,7 +499,7 @@ public class BE2 {
 		final Window popup = new Window("Set Parent Account ID of " + username
 				+ "'s Account");
 		popup.setStyleName("w_delete_user");
-		popup.setIcon(FontAwesome.KEY);
+		// popup.setIcon(FontAwesome.KEY);
 
 		popup.center();
 
@@ -520,11 +612,20 @@ public class BE2 {
 
 		isPopupShowing = true;
 		isSent = false;
-		String username = arrID[3];
+
+		String username = null;
+		String uid = null;
+		if (arrID != null) {
+			username = arrID[3] + "'s Account";
+			uid = arrID[2];
+		} else {
+			username = "Selected Accounts";
+		}
+
 		final Window popup = new Window("Set Default Account for " + username
 				+ "'s Account");
 		popup.setStyleName("w_delete_user");
-		popup.setIcon(FontAwesome.KEY);
+		// popup.setIcon(FontAwesome.KEY);
 
 		popup.center();
 
@@ -533,7 +634,7 @@ public class BE2 {
 		// cDeletePrompt.setMargin(true);
 
 		Label lbActivationPrompt = new Label(
-				"Please enter Default Account ID of user " + username);
+				"Please enter Default Account ID of " + username);
 		lbActivationPrompt.setWidth("200px");
 
 		VerticalLayout frmDeleteReason = new VerticalLayout();
@@ -647,7 +748,7 @@ public class BE2 {
 		String userProfID = "7";
 		final Window popup = new Window("Link " + username + "'s Account");
 		popup.setStyleName("w_delete_user");
-		popup.setIcon(FontAwesome.KEY);
+		popup.setIcon(FontAwesome.LINK);
 
 		popup.center();
 
@@ -774,6 +875,7 @@ public class BE2 {
 		pnUserSearchResults.setMargin(false);
 		pnUserSearchResults.setSpacing(false);
 		ComboBox combo = tb.getControlCombox();
+
 		arrLCombos.add(combo);
 		combo.addValueChangeListener(new ValueChangeListener() {
 
@@ -781,8 +883,6 @@ public class BE2 {
 
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-				// tb.itemsPerPageSelect.select(tb.getPageLength());
-				// Notification.show("Hello");
 				for (ComboBox c : arrLCombos)
 					c.select(tb.getPageLength());
 
@@ -801,20 +901,69 @@ public class BE2 {
 		arrLChkBulk.add(chkAll);
 		chkAll.setCaption("Select All");
 
-		ComboBox cmbBulk = new ComboBox("Bulk Action");
-		cmbBulk.addItem("Delete");
-		cmbBulk.addItem("Link");
+		final ComboBox comboBulk = new ComboBox("Bulk Action");
+
+		comboBulk.addItem("Activate");
+		comboBulk.addItem("Delete");
 
 		Button btnBulkOk = new Button("Apply");
 		btnBulkOk.setStyleName("btn_link");
 		HorizontalLayout cBulk = new HorizontalLayout();
 		cBulk.setSizeUndefined();
-		cBulk.addComponent(cmbBulk);
+		cBulk.addComponent(comboBulk);
 		cBulk.addComponent(btnBulkOk);
 		cBulk.setComponentAlignment(btnBulkOk, Alignment.BOTTOM_RIGHT);
 
 		actionBulkC.addComponent(chkAll);
 		actionBulkC.addComponent(cBulk);
+
+		btnBulkOk.addClickListener(new Button.ClickListener() {
+
+			private static final long serialVersionUID = 7212247824070811111L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+
+				if (comboBulk.getValue() == null) {
+					Notification.show("Please select Bulk Action");
+					return;
+				}
+				arrLBulkIDs = new ArrayList<>();
+				Collection<?> arrLCurItemIDs = tb.getVisibleItemIds();
+				for (Object ids : arrLCurItemIDs) {
+					Item row = tb.getItem(ids);
+					Property<CheckBox> col = row.getItemProperty(" ");
+					CheckBox curChk = col.getValue();
+					boolean isChecked = curChk.getValue();
+					if (isChecked) {
+						arrLBulkIDs.add(curChk.getId());
+					}
+				}
+
+				if (arrLBulkIDs.size() <= 1) {
+					Notification.show("Please select Multiple users.");
+					return;
+				}
+
+				String strAction = (String) comboBulk.getValue();
+				if (strAction.equals("Activate")) {
+					showActivateUserContainer(arrLBulkIDs, null);
+					return;
+				} else if (strAction.equals("Delete")) {
+
+					showDeleteUserContainer(arrLBulkIDs, null);
+					return;
+				}/*
+				 * else if (strAction.equals("Link")) {
+				 * showActivateUserContainer(arrLBulkIDs, null); return; } else
+				 * if (strAction.equals("Set Parent")) {
+				 * showActivateUserContainer(arrLBulkIDs, null); return; } else
+				 * if (strAction.equals("Set Default")) {
+				 * showActivateUserContainer(arrLBulkIDs, null); return; }
+				 */
+
+			}
+		});
 
 		chkAll.addValueChangeListener(new ValueChangeListener() {
 
@@ -824,11 +973,15 @@ public class BE2 {
 			public void valueChange(ValueChangeEvent event) {
 				boolean isChecked = chkAll.getValue();
 
-				for (CheckBox chk : arrLChk)
-					chk.setValue(isChecked);
-				for (CheckBox chk : arrLChkBulk)
-					chk.setValue(isChecked);
-
+				if (!isSingleChange) {
+					Collection<?> arrLCurItemIDs = tb.getVisibleItemIds();
+					for (Object ids : arrLCurItemIDs) {
+						Item row = tb.getItem(ids);
+						Property<CheckBox> col = (row.getItemProperty(" "));
+						CheckBox curChk = col.getValue();
+						curChk.setValue(isChecked);
+					}
+				}
 			}
 
 		});
@@ -858,7 +1011,8 @@ public class BE2 {
 		Property<HorizontalLayout> tdPropertyActions = trItem
 				.getItemProperty("Actions");
 		final CheckBox chk = new CheckBox();
-		arrLChk.add(chk);
+		chk.setId(strUID);
+
 		tdPropertyCheck.setValue(chk);
 		tdPropertyUID.setValue(strUID);
 		tdPropertyUname.setValue(strUname);
@@ -931,7 +1085,9 @@ public class BE2 {
 				if (isPopupShowing)
 					return;
 				String[] arrID = event.getButton().getId().split("_");
-				showDeleteUserContainer(arrID);
+				arrLBulkIDs = new ArrayList<>();
+				arrLBulkIDs.add(arrID[2]);
+				showDeleteUserContainer(arrLBulkIDs, arrID);
 
 			}
 		});
@@ -946,7 +1102,9 @@ public class BE2 {
 				if (isPopupShowing)
 					return;
 				String[] arrID = event.getButton().getId().split("_");
-				showActivateUserContainer(arrID);
+				arrLBulkIDs = new ArrayList<>();
+				arrLBulkIDs.add(arrID[2]);
+				showActivateUserContainer(arrLBulkIDs, arrID);
 
 			}
 		});
@@ -957,7 +1115,6 @@ public class BE2 {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				// Notification.show(String.valueOf(isPopupShowing));
 				if (isPopupShowing)
 					return;
 				String[] arrID = event.getButton().getId().split("_");
@@ -987,10 +1144,10 @@ public class BE2 {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				// Notification.show(String.valueOf(isPopupShowing));
 				if (isPopupShowing)
 					return;
 				String[] arrID = event.getButton().getId().split("_");
+
 				showLinkUserContainer(arrID);
 
 			}
@@ -1002,27 +1159,30 @@ public class BE2 {
 
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-				if (chk.getValue()) {
+				boolean isChecked = chk.getValue();
+				if (isChecked) {
 					chkCount++;
 				} else {
 					chkCount--;
 				}
 
-				if (chkCount == rowCount) {
+				if (chkCount == tb.getVisibleItemIds().size()) {
+					isSingleChange = true;
 					for (CheckBox c : arrLChkBulk)
-						c.setValue(true);
-				} else if (chkCount == rowCount - 1) {
+						c.setValue(isChecked);
+					isSingleChange = false;
+
+				} else if (chkCount == (tb.getVisibleItemIds().size() - 1)) {
+					isSingleChange = true;
 					for (CheckBox c : arrLChkBulk)
 						c.setValue(false);
-				}
+					isSingleChange = false;
 
-				Notification.show(String.valueOf(arrLChk.size()));
-				// Notification.show(String.valueOf(chkCount));
+				}
 
 			}
 
 		});
 
 	}
-
 }

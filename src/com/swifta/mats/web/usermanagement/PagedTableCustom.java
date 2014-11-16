@@ -22,6 +22,10 @@ public class PagedTableCustom extends PagedTable {
 	private static final long serialVersionUID = 7906821925280944742L;
 	private PagedTableContainer container;
 	private ComboBox itemsPerPageSelect;
+	private Button previous;
+	private Button next;
+	private Button first;
+	private Button last;
 
 	public PagedTableCustom() {
 		super(null);
@@ -42,6 +46,22 @@ public class PagedTableCustom extends PagedTable {
 
 	public ComboBox getControlCombox() {
 		return itemsPerPageSelect;
+	}
+
+	public Button getPrevPageBtn() {
+		return previous;
+	}
+
+	public Button getNextPageBtn() {
+		return next;
+	}
+
+	public Button getLastPageBtn() {
+		return last;
+	}
+
+	public Button getFirstPageBtn() {
+		return first;
 	}
 
 	@Override
@@ -118,28 +138,28 @@ public class PagedTableCustom extends PagedTable {
 		HorizontalLayout controlBar = new HorizontalLayout();
 		HorizontalLayout pageSize = new HorizontalLayout();
 		HorizontalLayout pageManagement = new HorizontalLayout();
-		final Button first = new Button("<<", new ClickListener() {
+		first = new Button("<<", new ClickListener() {
 			private static final long serialVersionUID = -355520120491283992L;
 
 			public void buttonClick(ClickEvent event) {
 				setCurrentPage(0);
 			}
 		});
-		final Button previous = new Button("<", new ClickListener() {
+		previous = new Button("<", new ClickListener() {
 			private static final long serialVersionUID = -355520120491283992L;
 
 			public void buttonClick(ClickEvent event) {
 				previousPage();
 			}
 		});
-		final Button next = new Button(">", new ClickListener() {
+		next = new Button(">", new ClickListener() {
 			private static final long serialVersionUID = -1927138212640638452L;
 
 			public void buttonClick(ClickEvent event) {
 				nextPage();
 			}
 		});
-		final Button last = new Button(">>", new ClickListener() {
+		last = new Button(">>", new ClickListener() {
 			private static final long serialVersionUID = -355520120491283992L;
 
 			public void buttonClick(ClickEvent event) {
