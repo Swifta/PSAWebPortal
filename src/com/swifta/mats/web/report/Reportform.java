@@ -11,6 +11,7 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 
 public class Reportform extends VerticalLayout {
@@ -35,7 +36,7 @@ public class Reportform extends VerticalLayout {
 		container.addContainerProperty("Amount", String.class, "");
 		container.addContainerProperty("Agent", String.class, "");
 
-		// form.populateTable("Hi", "Hi", "Hi","Hi", "Hi", "Hi", container);
+		form.populateTable("Hi", "Hi", "Hi", "Hi", "Hi", "Hi", container);
 
 		setMargin(true);
 		final ComboBox reportType = new ComboBox("Search by Report Type");
@@ -90,16 +91,20 @@ public class Reportform extends VerticalLayout {
 			 * 
 			 */
 			private static final long serialVersionUID = 1L;
-			private ExcelExport excelExport;
 
 			@Override
 			public void buttonClick(ClickEvent event) {
+				if (table.getContainerDataSource().size() != 0) {
 
-				excelExport = new ExcelExport(table);
-				excelExport.setReportTitle("PSA Report");
-				excelExport.setExportFileName("PSA.xls");
-				excelExport.setDisplayTotals(false);
-				excelExport.export();
+					ExcelExport excelExport = new ExcelExport(table);
+					excelExport.setReportTitle("PSA Report");
+					excelExport.setExportFileName("PSA.xls");
+					excelExport.setDisplayTotals(false);
+					excelExport.export();
+
+				} else {
+					Notification.show("Table is empty");
+				}
 
 			}
 		});

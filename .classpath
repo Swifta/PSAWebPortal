@@ -22,7 +22,5 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/gson-2.2.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/vaadin-charts-1.1.7.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
-	<classpathentry kind="lib" path="lib/tableexport-for-vaadin-1.5.1.5.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/poi-3.8-beta3-20110606.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
