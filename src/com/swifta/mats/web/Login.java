@@ -227,6 +227,7 @@ public class Login extends VerticalLayout implements View {
 				}
 				logger.info("---------------Before validating the username and password"
 						+ tfUsername.getValue());
+				// can't commit
 				// if(validCredentials()){
 				if (loginService.authenticateUser(tfUsername.getValue(),
 						tfPassword.getValue())) {
@@ -241,7 +242,10 @@ public class Login extends VerticalLayout implements View {
 					cred.setValue("Invalid Credentials");
 					cred.setStyleName("errorlogin");
 					logger.info("---------------The authentication FAILED!!!!!!!!!!!!!!");
+					// this is another test line to confirm the situation of
+					// things...
 				}
+				// hello
 				// }
 
 			}
