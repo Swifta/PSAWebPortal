@@ -41,7 +41,7 @@
 		<dependency org="com.vaadin" name="vaadin-client-compiler"
 			rev="&vaadin.version;" conf="widgetset-compile->default" />
 			
-			<dependency org="org.vaadin.addon" name="tableexport-for-vaadin" rev="1.5.1.5" />
+			
 		<dependency org="com.vaadin.addon"
                 name="vaadin-charts"
                 conf="default->default"

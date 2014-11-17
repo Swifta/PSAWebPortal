@@ -64,9 +64,9 @@ public class Transfer {
 				UserManagementService setDefault = new UserManagementService();
 
 				try {
-					String parentresourceid = "Ore";
+					String parentresourceid = "mladejebi";
 					String reason = "no reason for this";
-					String userresourceid = "Adetola";
+					String userresourceid = "oadeyekun";
 					String ret = setDefault.setDefaultAccount(parentresourceid,
 							reason, userresourceid);
 
@@ -100,14 +100,14 @@ public class Transfer {
 
 				// Notification.show(String.valueOf(give));
 
-				String userresourceid = "Opeyemierg";
-				String bankdomainid = "0";
-				String IDnumber = "9010";
-				String SecurityAns = "Mrs.fd X";
-				String firstPin = "5264";
-				String confirmPin = "5264";
-				String currency = "0";
-				String ret = "No response";
+				String userresourceid = "Shola";
+				String bankdomainid = "1453";
+				String IDnumber = "6545232324";
+				String SecurityAns = "How r u";
+				String firstPin = "5264334";
+				String confirmPin = "5264334";
+				String currency = "5";
+				String ret = "Account Activated";
 				try {
 					ret = activate.activateUser(bankdomainid, currency,
 							IDnumber, userresourceid, SecurityAns, firstPin,
@@ -139,9 +139,9 @@ public class Transfer {
 				UserManagementService setParent = new UserManagementService();
 
 				try {
-					String parentresourceid = "53282323";
-					String reason = "fhdgasu";
-					String userresourceid = "hvdfyas";
+					String parentresourceid = "mladejebi";
+					String reason = "Nothing";
+					String userresourceid = "oadeyekun";
 					String ret = setParent.setParent(parentresourceid, reason,
 							userresourceid);
 
@@ -171,10 +171,10 @@ public class Transfer {
 				UserManagementService linker = new UserManagementService();
 
 				try {
-					String parentresourceid = "Ore";
-					String profileid = "419";
+					String parentresourceid = "mladejebi";
+					String profileid = "8";
 					String reason = "no reason";
-					String userresourceid = "Adetola";
+					String userresourceid = "oadeyekun";
 					String ret = linker.linkUser(parentresourceid, profileid,
 							reason, userresourceid);
 

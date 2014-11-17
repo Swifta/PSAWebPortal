@@ -109,7 +109,7 @@ public class UserManagementService {
 
 		Registration registration = new Registration();
 
-		String statusMessage = "";
+		String statusMessage = "User Account Activated";
 
 		registration.setAccountholderdetails(accountholderdetails);
 		registration.setBankaccount(bankAccount);
