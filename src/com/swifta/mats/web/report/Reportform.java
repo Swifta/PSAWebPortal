@@ -1,7 +1,6 @@
 package com.swifta.mats.web.report;
 
 import com.swifta.mats.web.usermanagement.PagedTableCustom;
-import com.vaadin.addon.tableexport.ExcelExport;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.IndexedContainer;
@@ -90,16 +89,18 @@ public class Reportform extends VerticalLayout {
 			 * 
 			 */
 			private static final long serialVersionUID = 1L;
-			private ExcelExport excelExport;
+
+			// private ExcelExport excelExport;
 
 			@Override
 			public void buttonClick(ClickEvent event) {
 
-				excelExport = new ExcelExport(table);
-				excelExport.setReportTitle("PSA Report");
-				excelExport.setExportFileName("PSA.xls");
-				excelExport.setDisplayTotals(false);
-				excelExport.export();
+				/*
+				 * excelExport = new ExcelExport(table);
+				 * excelExport.setReportTitle("PSA Report");
+				 * excelExport.setExportFileName("PSA.xls");
+				 * excelExport.setDisplayTotals(false); excelExport.export();
+				 */
 
 			}
 		});
