@@ -3,6 +3,11 @@
 >>>>>>>=branch 'development' of https\://github.com/Swifta/PSAWebPortal.git
 com.vaadin.integration.eclipse.previousCompileAction=both
 com.vaadin.integration.eclipse.useLatestNightly=false
+<<<<<<< HEAD
 com.vaadin.integration.eclipse.widgetsetCompilationEta=79601
 com.vaadin.integration.eclipse.widgetsetDirty=false
+=======
+com.vaadin.integration.eclipse.widgetsetCompilationEta=94375
+com.vaadin.integration.eclipse.widgetsetDirty=true
+>>>>>>> branch 'development' of https://github.com/Swifta/PSAWebPortal.git
 eclipse.preferences.version=1

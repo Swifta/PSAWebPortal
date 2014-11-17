@@ -41,7 +41,6 @@ public class Login extends VerticalLayout implements View {
 	private TextField tfUsername;
 	private PasswordField tfPassword;
 	private Button btnLogin;
-	private Label userLogin = new Label();
 	private Label lPrompt;
 	private Label lWelcome;
 	private final FieldGroup fg;
@@ -194,12 +193,9 @@ public class Login extends VerticalLayout implements View {
 		panelLoginContent.addComponent(tfUsername);
 		panelLoginContent.addComponent(tfPassword);
 		panelLoginContent.addComponent(btnLogin);
-		panelLoginContent.addComponent(userLogin);
 		panelLogin.setContent(panelLoginContent);
 		panelLoginContent.setComponentAlignment(btnLogin,
 				Alignment.BOTTOM_RIGHT);
-		panelLoginContent.setComponentAlignment(userLogin,
-				Alignment.BOTTOM_CENTER);
 		// hLayout.setComponentAlignment(btnLogin, Alignment.);
 		// panelLogin.
 
@@ -239,8 +235,6 @@ public class Login extends VerticalLayout implements View {
 							.navigateTo(WorkSpace.WORK_SPACE);
 					logger.info("---------------after getting navigator to workspace:::Login");
 				} else {
-					userLogin.setValue("Invalid Credentials");
-					userLogin.setStyleName("errorlogin");
 					logger.info("---------------The authentication FAILED!!!!!!!!!!!!!!");
 				}
 				// }
