@@ -47,6 +47,7 @@ public class Login extends VerticalLayout implements View {
 	private final PropertysetItem item;
 	private final ObjectProperty<String> pUsername;
 	private final ObjectProperty<String> pPassword;
+	Label cred;
 
 	private void loginPageContent() {
 
@@ -190,9 +191,11 @@ public class Login extends VerticalLayout implements View {
 		// tfPassword.addValidator(new);
 
 		btnLogin = new Button("Login");
+		cred = new Label("");
 		panelLoginContent.addComponent(tfUsername);
 		panelLoginContent.addComponent(tfPassword);
 		panelLoginContent.addComponent(btnLogin);
+		panelLoginContent.addComponent(cred);
 		panelLogin.setContent(panelLoginContent);
 		panelLoginContent.setComponentAlignment(btnLogin,
 				Alignment.BOTTOM_RIGHT);
@@ -235,6 +238,8 @@ public class Login extends VerticalLayout implements View {
 							.navigateTo(WorkSpace.WORK_SPACE);
 					logger.info("---------------after getting navigator to workspace:::Login");
 				} else {
+					cred.setValue("Invalid Credentials");
+					cred.setStyleName("errorlogin");
 					logger.info("---------------The authentication FAILED!!!!!!!!!!!!!!");
 				}
 				// }
