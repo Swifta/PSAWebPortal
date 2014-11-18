@@ -8,15 +8,15 @@ public class PagedTableContainerCustom extends PagedTableContainer {
 	 * 
 	 */
 	private static final long serialVersionUID = 7842521856250911581L;
-	private int pageLength = 1;
-	
+	private int pageLength = 3;
+
 	public PagedTableContainerCustom(Indexed container) {
 		super(container);
 	}
-	
+
 	@Override
 	public int getPageLength() {
-	        return pageLength;
-	   }
+		return pageLength;
+	}
 
 }

@@ -26,10 +26,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 
-// for BigDecimal and BigInteger support
-
 public class Reportform extends VerticalLayout {
-	int number = 0;
 
 	/**
 	 * 
@@ -56,6 +53,7 @@ public class Reportform extends VerticalLayout {
 
 		container.addContainerProperty("S/N", String.class, "");
 		container.addContainerProperty("Transaction ID", String.class, "");
+
 		container.addContainerProperty("Transaction Date", String.class, "");
 		container.addContainerProperty("Agent ID", String.class, "");
 		container.addContainerProperty("Dealer ID", String.class, "");
@@ -81,6 +79,7 @@ public class Reportform extends VerticalLayout {
 		setMargin(true);
 		final ComboBox reportType = new ComboBox("Search by Report Type");
 		Button export = new Button("Export result");
+
 		Button Add = new Button("Add");
 
 		reportType.addItem("Float Management Report");
@@ -105,13 +104,13 @@ public class Reportform extends VerticalLayout {
 				// TODO Auto-generated method stub
 				String selectedId = (String) reportType.getValue();
 				if (selectedId != null) {
+
 					if (selectedId == "Float Management Report") {
 
 						String Uname = "gomint";
 						String Pword = "gomint";
 						String drivers = "com.mysql.jdbc.Driver";
 						try {
-							// Class.forName("com.mysql.jdbc.driver");
 
 							Class driver_class = Class.forName(drivers);
 							Driver driver = (Driver) driver_class.newInstance();
@@ -148,7 +147,7 @@ public class Reportform extends VerticalLayout {
 								Property<String> tdPropertydealerid = trItem
 										.getItemProperty("Dealer ID");
 								Property<String> tdPropertyamount = trItem
-										.getItemProperty("Amount");
+										.getItemProperty("Deposit Float (Amount Payable)");
 
 								String transactionid = rs
 										.getString("transactionid");
@@ -168,14 +167,14 @@ public class Reportform extends VerticalLayout {
 
 							}
 							conn.close();
-							Notification.show("I got here");
+							Notification.show(x + " results found");
 
 							// container.setStartIndex(1);
 							table.setContainerDataSource(container);
 
-						} catch (SQLException | ClassNotFoundException
-								| InstantiationException
-								| IllegalAccessException e) {
+						} catch (SQLException | InstantiationException
+								| IllegalAccessException
+								| ClassNotFoundException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 							Notification
@@ -186,8 +185,10 @@ public class Reportform extends VerticalLayout {
 						// searchform.removeAllComponents();
 						// searchform.addComponent(FloatManagementForm());
 					} else if (selectedId == "Transaction Report") {
+
 						searchform.removeAllComponents();
 						searchform.addComponent(Transactions());
+						table.setContainerDataSource(container2);
 					} else if (selectedId == "Summary Report") {
 
 						String Uname = "gomint";
@@ -257,6 +258,7 @@ public class Reportform extends VerticalLayout {
 
 						// searchform.removeAllComponents();
 						// searchform.addComponent(SettlementForm());
+
 					}
 				}
 			}
@@ -311,20 +313,16 @@ public class Reportform extends VerticalLayout {
 			 * 
 			 */
 			private static final long serialVersionUID = 1L;
+			private ExcelExport excelExport;
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				if (table.getContainerDataSource().size() != 0) {
 
-					ExcelExport excelExport = new ExcelExport(table);
-					excelExport.setReportTitle("PSA Report");
-					excelExport.setExportFileName("PSA.xls");
-					excelExport.setDisplayTotals(false);
-					excelExport.export();
-
-				} else {
-					Notification.show("Table is empty");
-				}
+				excelExport = new ExcelExport(table);
+				excelExport.setReportTitle("PSA Report");
+				excelExport.setExportFileName("PSA.xls");
+				excelExport.setDisplayTotals(false);
+				excelExport.export();
 
 			}
 		});
@@ -343,8 +341,7 @@ public class Reportform extends VerticalLayout {
 		addComponent(pnUserSearchResults);
 		addComponent(table);
 		addComponent(pnUserSearchResults2);
-		// addComponent(Add);
-		// setComponentAlignment(Add, Alignment.BOTTOM_LEFT);
+
 		addComponent(export);
 		setComponentAlignment(export, Alignment.BOTTOM_RIGHT);
 
@@ -528,6 +525,7 @@ public class Reportform extends VerticalLayout {
 		tdPropertyamount.setValue(amount);
 
 		return tabContainer;
+
 	}
 
 }
