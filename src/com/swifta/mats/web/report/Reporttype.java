@@ -13,8 +13,8 @@ public class Reporttype {
 	int number = 0;
 
 	public FormLayout SettlementForm() {
-		DateField from = new DateField("Settlement Report From");
-		DateField to = new DateField("Settlement Report To");
+		final DateField from = new DateField("Settlement Report From");
+		final DateField to = new DateField("Settlement Report To");
 		FormLayout settlement = new FormLayout();
 		Button search = new Button("Search");
 		Label lab = new Label("Search for Settlement Report");
@@ -122,10 +122,11 @@ public class Reporttype {
 		Property<String> tdPropertytransaction = trItem
 				.getItemProperty("Transaction ID");
 		Property<String> tdPropertytransactype = trItem
-				.getItemProperty("Transaction Type");
-		Property<String> tdPropertydate = trItem.getItemProperty("Date");
-		Property<String> tdPropertyamount = trItem.getItemProperty("Amount");
-		Property<String> tdPropertyagent = trItem.getItemProperty("Agent");
+				.getItemProperty("Operator ID");
+		Property<String> tdPropertydate = trItem.getItemProperty("Amount");
+		Property<String> tdPropertyamount = trItem
+				.getItemProperty("Transaction date");
+		Property<String> tdPropertyagent = trItem.getItemProperty("Dealer ID");
 		// Property<String> tdPropertydesc =
 		// trItem.getItemProperty("Description");
 
