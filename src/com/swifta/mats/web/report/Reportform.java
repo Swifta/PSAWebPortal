@@ -126,9 +126,9 @@ public class Reportform extends VerticalLayout {
 							int x = 0;
 							Object itemId;
 							Item trItem;
-
+							container.removeAllItems();
 							rs = stmt
-									.executeQuery("SELECT transactionid,operatorid,amount,createdon,transactionstatusid,dealerid FROM cashtransactions");
+									.executeQuery("SELECT transactionid,operatorid,sum(amount),createdon,transactionstatusid,dealerid FROM cashtransactions group by operatorid");
 							while (rs.next()) {
 								x = x + 1;
 
@@ -147,12 +147,12 @@ public class Reportform extends VerticalLayout {
 								Property<String> tdPropertydealerid = trItem
 										.getItemProperty("Dealer ID");
 								Property<String> tdPropertyamount = trItem
-										.getItemProperty("Deposit Float (Amount Payable)");
+										.getItemProperty("Amount");
 
 								String transactionid = rs
 										.getString("transactionid");
 								String agentid = rs.getString("operatorid");
-								String amount = rs.getString("amount");
+								String amount = rs.getString("sum(amount)");
 								String createdon = rs.getString("createdon");
 								String transactionstatusid = rs
 										.getString("transactionstatusid");
@@ -167,9 +167,8 @@ public class Reportform extends VerticalLayout {
 
 							}
 							conn.close();
-							Notification.show(x + " results found");
+							Notification.show(x + " result(s) found");
 
-							// container.setStartIndex(1);
 							table.setContainerDataSource(container);
 
 						} catch (SQLException | InstantiationException
@@ -186,11 +185,96 @@ public class Reportform extends VerticalLayout {
 						// searchform.addComponent(FloatManagementForm());
 					} else if (selectedId == "Transaction Report") {
 
-						searchform.removeAllComponents();
-						searchform.addComponent(Transactions());
-						table.setContainerDataSource(container2);
+						// searchform.removeAllComponents();
+						// searchform.addComponent(Transactions());
+						container2.removeAllItems();
+						String Uname = "gomint";
+						String Pword = "gomint";
+						String drivers = "com.mysql.jdbc.Driver";
+						try {
+
+							Class driver_class = Class.forName(drivers);
+							Driver driver = (Driver) driver_class.newInstance();
+							DriverManager.registerDriver(driver);
+
+							Connection conn = DriverManager
+									.getConnection(
+											"jdbc:mysql://gomintdb.caabwbnfnavv.us-east-1.rds.amazonaws.com:3306/psadatasource",
+											Uname, Pword);
+
+							Statement stmt = conn.createStatement();
+							ResultSet rs;
+							int x = 0;
+							Object itemId;
+							Item trItem;
+
+							rs = stmt
+									.executeQuery("select ct.transactionid, ct.operatorid,  ct.amount, ct.createdon, tnst.name from cashtransactions ct join transactions tns on tns.transactionid = ct.transactionid join transactiontypes tnst on tnst.transactiontypeid = tns.transactiontypeid group by tns.transactiontypeid");
+							while (rs.next()) {
+								x = x + 1;
+
+								String transactiontype = rs
+										.getString("tnst.name");
+								String amount = rs.getString("ct.amount");
+								String createdon = rs.getString("ct.createdon");
+								String transactionID = rs
+										.getString("ct.transactionid");
+								String Sender = "N/A";
+								String Receiver = "N/A";
+								String Status = "N/A";
+								itemId = container2.addItem();
+
+								trItem = container2.getItem(itemId);
+
+								Property<String> tdPropertyserial = trItem
+										.getItemProperty("S/N");
+								Property<String> tdPropertytransactiondate = trItem
+										.getItemProperty("Transaction Date");
+								Property<String> tdPropertytransactionid = trItem
+										.getItemProperty("Transaction ID");
+								Property<String> tdPropertytransactiontype = trItem
+										.getItemProperty("Transaction Type");
+								Property<String> tdPropertyamount = trItem
+										.getItemProperty("Amount");
+								Property<String> tdPropertysender = trItem
+										.getItemProperty("Sender");
+								Property<String> tdPropertyreceiver = trItem
+										.getItemProperty("Receiver");
+								Property<String> tdPropertystatus = trItem
+										.getItemProperty("Status");
+
+								tdPropertyserial.setValue(String.valueOf(x));
+								tdPropertytransactionid.setValue(transactionID);
+								tdPropertytransactiondate.setValue(createdon);
+								tdPropertytransactiontype
+										.setValue(transactiontype);
+								tdPropertyamount.setValue(amount);
+								tdPropertysender.setValue(Sender);
+								tdPropertyreceiver.setValue(Receiver);
+								tdPropertystatus.setValue(Status);
+							}
+
+							conn.close();
+							Notification.show(x + " result(s) found");
+
+							table.setContainerDataSource(container2);
+
+						} catch (SQLException | ClassNotFoundException
+								| InstantiationException
+								| IllegalAccessException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+							Notification
+									.show("Error Establishing DBConnection = "
+											+ e);
+						}
+
+						// searchform.removeAllComponents();
+						// searchform.addComponent(SettlementForm());
+
 					} else if (selectedId == "Summary Report") {
 
+						container3.removeAllItems();
 						String Uname = "gomint";
 						String Pword = "gomint";
 						String drivers = "com.mysql.jdbc.Driver";
@@ -242,7 +326,7 @@ public class Reportform extends VerticalLayout {
 							}
 
 							conn.close();
-							Notification.show("I got here2");
+							Notification.show(x + "result(s) found");
 
 							table.setContainerDataSource(container3);
 
@@ -331,7 +415,7 @@ public class Reportform extends VerticalLayout {
 
 		table.setSizeFull();
 
-		table.setContainerDataSource(container);
+		// table.setContainerDataSource(container);
 
 		pnUserSearchResults = table.createControls();
 		pnUserSearchResults2 = table.createControls();
