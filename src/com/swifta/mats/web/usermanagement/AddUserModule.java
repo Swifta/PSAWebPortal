@@ -1,6 +1,7 @@
 package com.swifta.mats.web.usermanagement;
 
 import java.rmi.RemoteException;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -68,14 +69,26 @@ public class AddUserModule {
 	private PopupDateField dFDoB;
 	private PopupDateField dFDoI;
 	private PopupDateField dFDoE;
-	Map<String, Integer> profToID;
+	Map<Integer, String> profToID;
 	private OptionGroup optSex;
 	private boolean isReset = false;
 
 	public AddUserModule() {
 		profToID = new HashMap<>();
-		profToID.put(
-				WorkSpaceManageUser.SESSION_VAR_WORK_AREA_DEFAULT_USER_TYPE, 6);
+		profToID.put(1, "BACK OFFICE");
+		profToID.put(2, "SERVICE PROVIDER");
+		profToID.put(3, "FINANCIAL CONTROLLER");
+		profToID.put(4, "CUSTOMER CARE");
+		profToID.put(5, "MOBILE MONEY");
+		profToID.put(6, "SUPER AGENT");
+		profToID.put(7, "SUB AGENT");
+		profToID.put(8, "DEPOSIT ONLY");
+		profToID.put(9, "DEPOSIT & WITHDRAW");
+		profToID.put(10, "WITHDRAW ONLY");
+		profToID.put(11, "DEALER");
+		profToID.put(12, "CASH");
+		profToID.put(13, "MATS ACCOUNT");
+		profToID.put(14, "MATS USER");
 
 	}
 
@@ -135,15 +148,6 @@ public class AddUserModule {
 		opt.setItemCaption(2, "Male");
 		opt.select(2);
 		optSex = opt;
-		opt.addValueChangeListener(new ValueChangeListener() {
-
-			@Override
-			public void valueChange(ValueChangeEvent event) {
-				Notification.show(event.getProperty().getValue().toString());
-
-			}
-
-		});
 		cBasic.addComponent(opt);
 
 		ComboBox combo = new ComboBox("Prefix");
@@ -384,23 +388,18 @@ public class AddUserModule {
 		cAcc.addComponent(lbAcc);
 		ComboBox comboHierarchy = null;
 
-		if (!(strUserType.equals("CCO") || strUserType.equals("BA"))) {
-			comboHierarchy = new ComboBox("Profile");
-			comboHierarchy.addItem(userID);
-			comboHierarchy.setItemCaption(userID, "Super " + strUserType);
-			comboHierarchy.select(userID);
-			comboHierarchy.addItem(subUserID);
-			comboHierarchy.setItemCaption(subUserID, "Sub " + strUserType);
-			comboProfile = comboHierarchy;
-			cAcc.addComponent(comboHierarchy);
+		comboHierarchy = new ComboBox("Profile");
+
+		for (int i = 0; i < profToID.size(); i++) {
+			comboHierarchy.addItem(i + 1);
+			comboHierarchy.setItemCaption(i + 1, profToID.get(i + 1));
 		}
 
-		final VerticalLayout cLBody = new VerticalLayout();
-		// tF = new TextField("Account ID");
-		// cLBody.addComponent(tF);
+		comboHierarchy.select(1);
+		comboProfile = comboHierarchy;
+		cAcc.addComponent(comboHierarchy);
 
-		// tF = new TextField(strUserType + " ID");
-		// cLBody.addComponent(tF);
+		final VerticalLayout cLBody = new VerticalLayout();
 
 		tF = new TextField("Username");
 		tF.setValue("Livepwndz");
@@ -480,6 +479,8 @@ public class AddUserModule {
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				Notification.show(event.getProperty().getValue().toString());
+				if (chcTAndC.getValue())
+					isReset = false;
 
 			}
 
@@ -713,11 +714,13 @@ public class AddUserModule {
 				comboProfile.select(null);
 				comboIDType.select(null);
 
-				dFDoB.setValue(new Date(null));
-				dFDoB.setValue(new Date(null));
-				dFDoI.setValue(new Date(null));
-				dFDoE.setValue(new Date(null));
-				dFDoE.setValue(new Date(null));
+				Calendar cal = Calendar.getInstance();
+				Date date = cal.getTime();
+
+				dFDoB.setValue(date);
+				dFDoB.setValue(date);
+				dFDoI.setValue(date);
+				dFDoE.setValue(date);
 				optSex.select(null);
 				isReset = true;
 
