@@ -100,12 +100,12 @@ public class Transfer {
 
 				// Notification.show(String.valueOf(give));
 
-				String userresourceid = "Kachiolay";
-				String bankdomainid = "145";
-				String IDnumber = "6589856456";
-				String SecurityAns = "How r u";
-				String firstPin = "password12";
-				String confirmPin = "password12";
+				String userresourceid = "Opeyemierg";
+				String bankdomainid = "0";
+				String IDnumber = "9010";
+				String SecurityAns = "Mrs.fd X";
+				String firstPin = "5264";
+				String confirmPin = "5264";
 				String currency = "0";
 				String ret = "No response";
 				try {
