@@ -9,11 +9,13 @@ import java.sql.Statement;
 
 import com.swifta.mats.web.usermanagement.PagedTableCustom;
 import com.vaadin.addon.tableexport.ExcelExport;
+import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.IndexedContainer;
+import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -40,6 +42,7 @@ public class Reportform extends VerticalLayout {
 	IndexedContainer container = new IndexedContainer();
 	IndexedContainer container2 = new IndexedContainer();
 	IndexedContainer container3 = new IndexedContainer();
+	ComboBox agent;
 
 	// PagedTableContainerCustom container = new
 	// PagedTableContainerCustom(contain);
@@ -52,7 +55,7 @@ public class Reportform extends VerticalLayout {
 		// Float Management
 
 		container.addContainerProperty("S/N", String.class, "");
-		container.addContainerProperty("Transaction ID", String.class, "");
+		// container.addContainerProperty("Transaction ID", String.class, "");
 
 		container.addContainerProperty("Transaction Date", String.class, "");
 		container.addContainerProperty("Agent ID", String.class, "");
@@ -60,17 +63,19 @@ public class Reportform extends VerticalLayout {
 		container.addContainerProperty("Amount", String.class, "");
 
 		// Transaction
+
 		container2.addContainerProperty("S/N", String.class, "");
-		container2.addContainerProperty("Transaction ID", String.class, "");
+		container2.addContainerProperty("Name", String.class, "");
 		container2.addContainerProperty("Transaction Date", String.class, "");
 		container2.addContainerProperty("Amount", String.class, "");
-		container2.addContainerProperty("Sender", String.class, "");
-		container2.addContainerProperty("Receiver", String.class, "");
+		container2.addContainerProperty("Opening Balance", String.class, "");
+		container2.addContainerProperty("Closing Balance", String.class, "");
 		container2.addContainerProperty("Transaction Type", String.class, "");
-		container2.addContainerProperty("Status", String.class, "");
+		container2.addContainerProperty("Account Type", String.class, "");
 
 		// Summary
 		container3.addContainerProperty("S/N", String.class, "");
+		container3.addContainerProperty("Name", String.class, "");
 		container3.addContainerProperty("Transaction Date", String.class, "");
 		container3.addContainerProperty("Transaction Type", String.class, "");
 		container3.addContainerProperty("Sum of Transaction Amount",
@@ -102,6 +107,7 @@ public class Reportform extends VerticalLayout {
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				// TODO Auto-generated method stub
+				searchform.removeAllComponents();
 				String selectedId = (String) reportType.getValue();
 				if (selectedId != null) {
 
@@ -128,7 +134,7 @@ public class Reportform extends VerticalLayout {
 							Item trItem;
 							container.removeAllItems();
 							rs = stmt
-									.executeQuery("SELECT transactionid,operatorid,sum(amount),createdon,transactionstatusid,dealerid FROM cashtransactions group by operatorid");
+									.executeQuery("SELECT operatorid,sum(amount),createdon,transactionstatusid,dealerid FROM cashtransactions group by operatorid");
 							while (rs.next()) {
 								x = x + 1;
 
@@ -138,8 +144,7 @@ public class Reportform extends VerticalLayout {
 
 								Property<String> tdPropertyserial = trItem
 										.getItemProperty("S/N");
-								Property<String> tdPropertytransactionid = trItem
-										.getItemProperty("Transaction ID");
+
 								Property<String> tdPropertytransactiondate = trItem
 										.getItemProperty("Transaction Date");
 								Property<String> tdPropertyagentid = trItem
@@ -149,8 +154,6 @@ public class Reportform extends VerticalLayout {
 								Property<String> tdPropertyamount = trItem
 										.getItemProperty("Amount");
 
-								String transactionid = rs
-										.getString("transactionid");
 								String agentid = rs.getString("operatorid");
 								String amount = rs.getString("sum(amount)");
 								String createdon = rs.getString("createdon");
@@ -159,7 +162,7 @@ public class Reportform extends VerticalLayout {
 								String dealerid = rs.getString("dealerid");
 
 								tdPropertyserial.setValue(String.valueOf(x));
-								tdPropertytransactionid.setValue(transactionid);
+
 								tdPropertytransactiondate.setValue(createdon);
 								tdPropertyagentid.setValue(agentid);
 								tdPropertydealerid.setValue(dealerid);
@@ -185,8 +188,8 @@ public class Reportform extends VerticalLayout {
 						// searchform.addComponent(FloatManagementForm());
 					} else if (selectedId == "Transaction Report") {
 
-						// searchform.removeAllComponents();
-						// searchform.addComponent(Transactions());
+						searchform.removeAllComponents();
+						searchform.addComponent(Transactions());
 						container2.removeAllItems();
 						String Uname = "gomint";
 						String Pword = "gomint";
@@ -203,45 +206,62 @@ public class Reportform extends VerticalLayout {
 											Uname, Pword);
 
 							Statement stmt = conn.createStatement();
-							ResultSet rs;
+							Statement stmt2 = conn.createStatement();
+							ResultSet rs, rs2;
 							int x = 0;
 							Object itemId;
 							Item trItem;
+							rs2 = stmt2
+									.executeQuery("select txn.userresourceid as 'Username', txnt.name as 'Transaction Type', txn.lastupdate as 'Timestamp', acct.openingbalance as 'Opening Balance', acct.closingbalance as 'Closing Balance', acct.amount as 'Amount',accts.name as 'Account Type'  from transactions txn join accounttransactions acct on txn.transactionid = acct.transactionid join transactiontypes txnt on txnt.transactiontypeid = txn.transactiontypeid join accounttypes accts on accts.accounttypeid = acct.accounttypeid   join accountholders ah on ah.username = txn.userresourceid group by txn.userresourceid order by txn.lastupdate");
+							while (rs2.next()) {
+								agent.addItem(rs2.getString("Username"));
+								agent.setNullSelectionAllowed(false);
+								agent.setTextInputAllowed(false);
+								agent.setInputPrompt("Select");
 
+							}
 							rs = stmt
-									.executeQuery("select ct.transactionid, ct.operatorid,  ct.amount, ct.createdon, tnst.name from cashtransactions ct join transactions tns on tns.transactionid = ct.transactionid join transactiontypes tnst on tnst.transactiontypeid = tns.transactiontypeid group by tns.transactiontypeid");
+									.executeQuery("select txn.userresourceid as 'Username', txnt.name as 'Transaction Type', txn.lastupdate as 'Timestamp', acct.openingbalance as 'Opening Balance', acct.closingbalance as 'Closing Balance', acct.amount as 'Amount',accts.name as 'Account Type'  from transactions txn join accounttransactions acct on txn.transactionid = acct.transactionid join transactiontypes txnt on txnt.transactiontypeid = txn.transactiontypeid join accounttypes accts on accts.accounttypeid = acct.accounttypeid   join accountholders ah on ah.username = txn.userresourceid  order by ah.username, txn.lastupdate");
 							while (rs.next()) {
 								x = x + 1;
 
 								String transactiontype = rs
-										.getString("tnst.name");
-								String amount = rs.getString("ct.amount");
-								String createdon = rs.getString("ct.createdon");
-								String transactionID = rs
-										.getString("ct.transactionid");
-								String Sender = "N/A";
-								String Receiver = "N/A";
-								String Status = "N/A";
+										.getString("Transaction Type");
+								String amount = rs.getString("Amount");
+								String createdon = rs.getString("Timestamp");
+								String transactionID = rs.getString("Username");
+								String Sender = rs.getString("Opening Balance");
+								String Receiver = rs
+										.getString("Closing Balance");
+								String Status = rs.getString("Account Type");
 								itemId = container2.addItem();
 
 								trItem = container2.getItem(itemId);
 
+								@SuppressWarnings("unchecked")
 								Property<String> tdPropertyserial = trItem
 										.getItemProperty("S/N");
+								@SuppressWarnings("unchecked")
 								Property<String> tdPropertytransactiondate = trItem
 										.getItemProperty("Transaction Date");
+								@SuppressWarnings("unchecked")
 								Property<String> tdPropertytransactionid = trItem
-										.getItemProperty("Transaction ID");
+										.getItemProperty("Name");
+								@SuppressWarnings("unchecked")
 								Property<String> tdPropertytransactiontype = trItem
 										.getItemProperty("Transaction Type");
+								@SuppressWarnings("unchecked")
 								Property<String> tdPropertyamount = trItem
 										.getItemProperty("Amount");
+								@SuppressWarnings("unchecked")
 								Property<String> tdPropertysender = trItem
-										.getItemProperty("Sender");
+										.getItemProperty("Opening Balance");
+								@SuppressWarnings("unchecked")
 								Property<String> tdPropertyreceiver = trItem
-										.getItemProperty("Receiver");
+										.getItemProperty("Closing Balance");
+								@SuppressWarnings("unchecked")
 								Property<String> tdPropertystatus = trItem
-										.getItemProperty("Status");
+										.getItemProperty("Account Type");
 
 								tdPropertyserial.setValue(String.valueOf(x));
 								tdPropertytransactionid.setValue(transactionID);
@@ -296,14 +316,15 @@ public class Reportform extends VerticalLayout {
 							Item trItem;
 
 							rs = stmt
-									.executeQuery("select ct.transactionid, ct.operatorid,  sum(ct.amount), ct.createdon, tnst.name from cashtransactions ct join transactions tns on tns.transactionid = ct.transactionid join transactiontypes tnst on tnst.transactiontypeid = tns.transactiontypeid group by tns.transactiontypeid");
+									.executeQuery(" select acct.transactionid as 'Transaction ID', ah.username as 'Username',prf.profilename as 'Profile Name', sum(acct.amount) as 'Total Amount', acct.datecreated as 'Date Created', tnst.name as 'Transaction Name' from accounttransactions acct join transactions tns on tns.transactionid = acct.transactionid join accountholders ah on ah.accountholderid = acct.userresourceid join transactiontypes tnst on tnst.transactiontypeid = tns.transactiontypeid join profiles prf on prf.profileid = ah.profileid where prf.profileid = 11 or prf.profileid = 7 or prf.profileid = 6 group by acct.userresourceid, CAST(acct.datecreated AS DATE), tns.transactiontypeid order by acct.userresourceid,tns.transactiontypeid");
 							while (rs.next()) {
 								x = x + 1;
 
 								String transactiontype = rs
-										.getString("tnst.name");
-								String amount = rs.getString("sum(ct.amount)");
-								String createdon = rs.getString("ct.createdon");
+										.getString("Transaction Name");
+								String amount = rs.getString("Total Amount");
+								String createdon = rs.getString("Date Created");
+								String name = rs.getString("Username");
 
 								itemId = container3.addItem();
 
@@ -311,6 +332,8 @@ public class Reportform extends VerticalLayout {
 
 								Property<String> tdPropertyserial = trItem
 										.getItemProperty("S/N");
+								Property<String> tdPropertyname = trItem
+										.getItemProperty("Name");
 								Property<String> tdPropertytransactiondate = trItem
 										.getItemProperty("Transaction Date");
 								Property<String> tdPropertytransactiontype = trItem
@@ -318,6 +341,7 @@ public class Reportform extends VerticalLayout {
 								Property<String> tdPropertyamount = trItem
 										.getItemProperty("Sum of Transaction Amount");
 
+								tdPropertyname.setValue(name);
 								tdPropertyserial.setValue(String.valueOf(x));
 								tdPropertytransactiondate.setValue(createdon);
 								tdPropertytransactiontype
@@ -349,60 +373,17 @@ public class Reportform extends VerticalLayout {
 
 		});
 
-		/*
-		 * Add.addClickListener(new ClickListener() {
-		 * 
-		 * 
-		 * private static final long serialVersionUID = 1L;
-		 * 
-		 * @Override public void buttonClick(ClickEvent event) {
-		 * 
-		 * String Uname = "gomint"; String Pword = "gomint"; String drivers =
-		 * "com.mysql.jdbc.Driver"; try { //
-		 * Class.forName("com.mysql.jdbc.driver");
-		 * 
-		 * Class driver_class = Class.forName(drivers); Driver driver = (Driver)
-		 * driver_class.newInstance(); DriverManager.registerDriver(driver);
-		 * 
-		 * Connection conn = DriverManager .getConnection(
-		 * "jdbc:mysql://gomintdb.caabwbnfnavv.us-east-1.rds.amazonaws.com:3306/psadatasource"
-		 * , Uname, Pword);
-		 * 
-		 * Statement stmt = conn.createStatement(); ResultSet rs; int x = 0; rs
-		 * = stmt .executeQuery(
-		 * "SELECT transactionid,operatorid,amount,createdon,transactionstatusid,dealerid FROM cashtransactions"
-		 * ); while (rs.next()) { x = x + 1; String transactionid =
-		 * rs.getString("transactionid"); String operatorid =
-		 * rs.getString("operatorid"); String amount = rs.getString("amount");
-		 * String createdon = rs.getString("createdon"); String
-		 * transactionstatusid = rs .getString("transactionstatusid");
-		 * 
-		 * populateTable(String.valueOf(x), transactionid, "Hi", operatorid,
-		 * amount, createdon, transactionstatusid, container);
-		 * table.setContainerDataSource(container);
-		 * 
-		 * } conn.close(); Notification.show("I got here");
-		 * 
-		 * } catch (SQLException | ClassNotFoundException |
-		 * InstantiationException | IllegalAccessException e) { // TODO
-		 * Auto-generated catch block e.printStackTrace();
-		 * Notification.show("Error Establishing DBConnection = " + e); }
-		 * 
-		 * } });
-		 */
-
 		export.addClickListener(new ClickListener() {
 
 			/**
 			 * 
 			 */
 			private static final long serialVersionUID = 1L;
-			private ExcelExport excelExport;
 
 			@Override
 			public void buttonClick(ClickEvent event) {
 
-				excelExport = new ExcelExport(table);
+				ExcelExport excelExport = new ExcelExport(table);
 				excelExport.setReportTitle("PSA Report");
 				excelExport.setExportFileName("PSA.xls");
 				excelExport.setDisplayTotals(false);
@@ -464,76 +445,42 @@ public class Reportform extends VerticalLayout {
 	}
 
 	public FormLayout Transactions() {
-		DateField from = new DateField("Transaction Report From");
-		DateField to = new DateField("Transaction Report To");
+		// DateField from = new DateField("Transaction Report From");
+		// DateField to = new DateField("Transaction Report To");
 		FormLayout transactions = new FormLayout();
 		Button search = new Button("Search");
-		final ComboBox agent = new ComboBox("Agent ID");
+		agent = new ComboBox("Agent/Dealer");
+
 		agent.addItem("dolapo");
-		final ComboBox partner = new ComboBox("Partner ID");
-		partner.addItem("dealer2");
 		Label lab3 = new Label("Search for Transaction Report");
 
 		transactions.addComponent(lab3);
-		transactions.addComponent(from);
-		transactions.addComponent(to);
+		// transactions.addComponent(from);
+		// transactions.addComponent(to);
 		transactions.addComponent(agent);
-		transactions.addComponent(partner);
+		// transactions.addComponent(partner);
 		transactions.addComponent(search);
 
-		/*
-		 * search.addClickListener(new Button.ClickListener() {
-		 * 
-		 * 
-		 * private static final long serialVersionUID = 1L;
-		 * 
-		 * @Override public void buttonClick(ClickEvent event) { String Uname =
-		 * "gomint"; String Pword = "gomint"; String drivers =
-		 * "com.mysql.jdbc.Driver"; try { //
-		 * Class.forName("com.mysql.jdbc.driver");
-		 * 
-		 * Class driver_class = Class.forName(drivers); Driver driver = (Driver)
-		 * driver_class.newInstance(); DriverManager.registerDriver(driver);
-		 * 
-		 * Connection conn = DriverManager .getConnection(
-		 * "jdbc:mysql://gomintdb.caabwbnfnavv.us-east-1.rds.amazonaws.com:3306/psadatasource"
-		 * , Uname, Pword); // Notification.show(agent.getValue().toString());
-		 * Statement stmt = conn.createStatement(); Statement stmt2 =
-		 * conn.createStatement(); Statement stmt3 = conn.createStatement();
-		 * ResultSet rs; ResultSet rs2; ResultSet rs3; int x = 0; String s =
-		 * agent.getValue().toString(); String p =
-		 * partner.getValue().toString(); rs = stmt .executeQuery(
-		 * "SELECT transactionid,operatorid,amount,createdon,transactionstatusid,dealerid FROM cashtransactions WHERE (operatorid LIKE '"
-		 * + s + "') AND (dealerid LIKE '" + p + "')");
-		 * 
-		 * while (rs.next()) { x = x + 1;
-		 * 
-		 * String transactionid = rs.getString("transactionid"); String
-		 * operatorid = rs.getString("operatorid"); String amount =
-		 * rs.getString("amount"); String createdon = rs.getString("createdon");
-		 * String transactionstatusid = rs .getString("transactionstatusid");
-		 * rs2 = stmt2 .executeQuery(
-		 * "SELECT transactiontypeid FROM transactions WHERE transactionid = " +
-		 * transactionid); String u = ""; while (rs2.next()) { u =
-		 * rs2.getString("transactiontypeid"); } rs3 = stmt3 .executeQuery(
-		 * "SELECT name FROM transactiontypes WHERE transactiontypeid = " + u);
-		 * String transactiontype = ""; while (rs3.next()) { transactiontype =
-		 * rs3.getString("name"); } populateTable(String.valueOf(x),
-		 * transactionid, transactiontype, operatorid, amount, createdon,
-		 * transactionstatusid, container);
-		 * 
-		 * }
-		 * 
-		 * conn.close(); Notification.show("I got here");
-		 * 
-		 * } catch (SQLException | ClassNotFoundException |
-		 * InstantiationException | IllegalAccessException e) { // TODO
-		 * Auto-generated catch block e.printStackTrace();
-		 * Notification.show("Error Establishing DBConnection = " + e); } //
-		 * TODO Auto-generated method stub
-		 * 
-		 * } });
-		 */
+		search.addClickListener(new Button.ClickListener() {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				container2.removeAllContainerFilters();
+				Filter filter = new SimpleStringFilter("Name", agent.getValue()
+						.toString(), true, true);
+
+				container2.addContainerFilter(filter);
+				table.setContainerDataSource(container2);
+				// TODO Auto-generated method stub
+				agent.setInputPrompt("Select");
+
+			}
+		});
 
 		return transactions;
 	}
