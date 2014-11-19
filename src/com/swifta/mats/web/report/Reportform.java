@@ -60,25 +60,28 @@ public class Reportform extends VerticalLayout {
 		container.addContainerProperty("Transaction Date", String.class, "");
 		container.addContainerProperty("Agent ID", String.class, "");
 		container.addContainerProperty("Dealer ID", String.class, "");
-		container.addContainerProperty("Amount", String.class, "");
+		container.addContainerProperty("Dealer's Balance (\u20A6)",
+				String.class, "");
 
 		// Transaction
 
 		container2.addContainerProperty("S/N", String.class, "");
 		container2.addContainerProperty("Name", String.class, "");
 		container2.addContainerProperty("Transaction Date", String.class, "");
-		container2.addContainerProperty("Amount", String.class, "");
-		container2.addContainerProperty("Opening Balance", String.class, "");
-		container2.addContainerProperty("Closing Balance", String.class, "");
+		container2.addContainerProperty("Amount (\u20A6)", String.class, "");
+		container2.addContainerProperty("Opening Balance (\u20A6)",
+				String.class, "");
+		container2.addContainerProperty("Closing Balance (\u20A6)",
+				String.class, "");
 		container2.addContainerProperty("Transaction Type", String.class, "");
-		container2.addContainerProperty("Account Type", String.class, "");
+		// container2.addContainerProperty("Account Type", String.class, "");
 
 		// Summary
 		container3.addContainerProperty("S/N", String.class, "");
-		container3.addContainerProperty("Name", String.class, "");
+		// container3.addContainerProperty("Name", String.class, "");
 		container3.addContainerProperty("Transaction Date", String.class, "");
 		container3.addContainerProperty("Transaction Type", String.class, "");
-		container3.addContainerProperty("Sum of Transaction Amount",
+		container3.addContainerProperty("Sum of Transaction Amount (\u20A6)",
 				String.class, "");
 
 		setMargin(true);
@@ -134,7 +137,7 @@ public class Reportform extends VerticalLayout {
 							Item trItem;
 							container.removeAllItems();
 							rs = stmt
-									.executeQuery("SELECT operatorid,sum(amount),createdon,transactionstatusid,dealerid FROM cashtransactions group by operatorid");
+									.executeQuery("SELECT count(amount) as 'transactioncount',operatorid,format(sum(amount / 100),2) as 'amount',CAST(createdon as DATE) as 'created',dealerid FROM cashtransactions group by operatorid,CAST(createdon as DATE),dealerid order by created,operatorid");
 							while (rs.next()) {
 								x = x + 1;
 
@@ -152,13 +155,13 @@ public class Reportform extends VerticalLayout {
 								Property<String> tdPropertydealerid = trItem
 										.getItemProperty("Dealer ID");
 								Property<String> tdPropertyamount = trItem
-										.getItemProperty("Amount");
+										.getItemProperty("Dealer's Balance (\u20A6)");
 
 								String agentid = rs.getString("operatorid");
-								String amount = rs.getString("sum(amount)");
-								String createdon = rs.getString("createdon");
-								String transactionstatusid = rs
-										.getString("transactionstatusid");
+								String amount = rs.getString("amount");
+								String createdon = rs.getString("created");
+								// String transactionstatusid = rs
+								// .getString("transactionstatusid");
 								String dealerid = rs.getString("dealerid");
 
 								tdPropertyserial.setValue(String.valueOf(x));
@@ -221,7 +224,7 @@ public class Reportform extends VerticalLayout {
 
 							}
 							rs = stmt
-									.executeQuery("select txn.userresourceid as 'Username', txnt.name as 'Transaction Type', txn.lastupdate as 'Timestamp', acct.openingbalance as 'Opening Balance', acct.closingbalance as 'Closing Balance', acct.amount as 'Amount',accts.name as 'Account Type'  from transactions txn join accounttransactions acct on txn.transactionid = acct.transactionid join transactiontypes txnt on txnt.transactiontypeid = txn.transactiontypeid join accounttypes accts on accts.accounttypeid = acct.accounttypeid   join accountholders ah on ah.username = txn.userresourceid  order by ah.username, txn.lastupdate");
+									.executeQuery("select txn.userresourceid as 'Username', txnt.name as 'Transaction Type', CAST(txn.lastupdate AS DATE) as 'Timestamp', format(acct.openingbalance /100,2) as 'Opening Balance', format(acct.closingbalance / 100,2) as 'Closing Balance', format(acct.amount / 100 , 2) as 'Amount',accts.name as 'Account Type'  from transactions txn join accounttransactions acct on txn.transactionid = acct.transactionid join transactiontypes txnt on txnt.transactiontypeid = txn.transactiontypeid join accounttypes accts on accts.accounttypeid = acct.accounttypeid   join accountholders ah on ah.username = txn.userresourceid  order by ah.username, txn.lastupdate");
 							while (rs.next()) {
 								x = x + 1;
 
@@ -252,16 +255,16 @@ public class Reportform extends VerticalLayout {
 										.getItemProperty("Transaction Type");
 								@SuppressWarnings("unchecked")
 								Property<String> tdPropertyamount = trItem
-										.getItemProperty("Amount");
+										.getItemProperty("Amount (\u20A6)");
 								@SuppressWarnings("unchecked")
 								Property<String> tdPropertysender = trItem
-										.getItemProperty("Opening Balance");
+										.getItemProperty("Opening Balance (\u20A6)");
 								@SuppressWarnings("unchecked")
 								Property<String> tdPropertyreceiver = trItem
-										.getItemProperty("Closing Balance");
-								@SuppressWarnings("unchecked")
-								Property<String> tdPropertystatus = trItem
-										.getItemProperty("Account Type");
+										.getItemProperty("Closing Balance (\u20A6)");
+								// @SuppressWarnings("unchecked")
+								// Property<String> tdPropertystatus = trItem
+								// .getItemProperty("Account Type");
 
 								tdPropertyserial.setValue(String.valueOf(x));
 								tdPropertytransactionid.setValue(transactionID);
@@ -271,7 +274,7 @@ public class Reportform extends VerticalLayout {
 								tdPropertyamount.setValue(amount);
 								tdPropertysender.setValue(Sender);
 								tdPropertyreceiver.setValue(Receiver);
-								tdPropertystatus.setValue(Status);
+								// tdPropertystatus.setValue(Status);
 							}
 
 							conn.close();
@@ -316,7 +319,7 @@ public class Reportform extends VerticalLayout {
 							Item trItem;
 
 							rs = stmt
-									.executeQuery(" select acct.transactionid as 'Transaction ID', ah.username as 'Username',prf.profilename as 'Profile Name', sum(acct.amount) as 'Total Amount', acct.datecreated as 'Date Created', tnst.name as 'Transaction Name' from accounttransactions acct join transactions tns on tns.transactionid = acct.transactionid join accountholders ah on ah.accountholderid = acct.userresourceid join transactiontypes tnst on tnst.transactiontypeid = tns.transactiontypeid join profiles prf on prf.profileid = ah.profileid where prf.profileid = 11 or prf.profileid = 7 or prf.profileid = 6 group by acct.userresourceid, CAST(acct.datecreated AS DATE), tns.transactiontypeid order by acct.userresourceid,tns.transactiontypeid");
+									.executeQuery("select acct.transactionid as 'Transaction ID', ah.username as 'Username',prf.profilename as 'Profile Name', format(sum(acct.amount / 100),2) as 'Total Amount', CAST(acct.datecreated AS DATE) as 'Date Created', tnst.name as 'Transaction Name' from accounttransactions acct join transactions tns on tns.transactionid = acct.transactionid join accountholders ah on ah.accountholderid = acct.userresourceid join transactiontypes tnst on tnst.transactiontypeid = tns.transactiontypeid join profiles prf on prf.profileid = ah.profileid where prf.profileid = 11 or prf.profileid = 7 or prf.profileid = 6 group by tns.transactiontypeid, CAST(acct.datecreated AS DATE) order by acct.datecreated,tns.transactiontypeid");
 							while (rs.next()) {
 								x = x + 1;
 
@@ -332,16 +335,16 @@ public class Reportform extends VerticalLayout {
 
 								Property<String> tdPropertyserial = trItem
 										.getItemProperty("S/N");
-								Property<String> tdPropertyname = trItem
-										.getItemProperty("Name");
+								// Property<String> tdPropertyname = trItem
+								// .getItemProperty("Name");
 								Property<String> tdPropertytransactiondate = trItem
 										.getItemProperty("Transaction Date");
 								Property<String> tdPropertytransactiontype = trItem
 										.getItemProperty("Transaction Type");
 								Property<String> tdPropertyamount = trItem
-										.getItemProperty("Sum of Transaction Amount");
+										.getItemProperty("Sum of Transaction Amount (\u20A6)");
 
-								tdPropertyname.setValue(name);
+								// tdPropertyname.setValue(name);
 								tdPropertyserial.setValue(String.valueOf(x));
 								tdPropertytransactiondate.setValue(createdon);
 								tdPropertytransactiontype
