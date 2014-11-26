@@ -460,7 +460,8 @@ public class AddUserModule {
 		combo.addItem(2);
 		combo.addItem(3);
 		combo.setItemCaption(1, "What is your grandfather's last name?");
-		combo.setItemCaption(2, "What was your favorite teacher's name?");
+		combo.setItemCaption(2,
+				"What was your favorite junior school teacher's name?");
 		combo.setItemCaption(3, "What was one of your nicknames in school?");
 		combo.select(2);
 		comboSecQn = combo;
@@ -478,7 +479,7 @@ public class AddUserModule {
 
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-				Notification.show(event.getProperty().getValue().toString());
+				// Notification.show(event.getProperty().getValue().toString());
 				if (chcTAndC.getValue())
 					isReset = false;
 

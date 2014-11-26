@@ -1,6 +1,8 @@
 package com.swifta.mats.web.usermanagement;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.swifta.mats.web.WorkSpace;
 import com.vaadin.server.FontAwesome;
@@ -9,6 +11,7 @@ import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
@@ -32,6 +35,7 @@ public class SearchUserModule {
 	public static final String SESSION_SEARCH_USER = "search_user";
 	public static final String SESSION_VAR_SEARCH_USER_DEFAULT = "agent";
 	public static final String SESSION_SEARCH_USER_PARAM = "search_user_param";
+	ArrayList<Object> arrLTfs;
 	/*
 	 * public static final String SESSION_VAR_SEARCH_USER = "merchant"; public
 	 * static final String SESSION_VAR_SEARCH_USER = "agent"; public static
@@ -45,8 +49,26 @@ public class SearchUserModule {
 	private VerticalLayout searchResultsC;
 
 	Window popup;
+	private Map<Integer, String> profToID;
 
 	public SearchUserModule() {
+
+		profToID = new HashMap<>();
+		profToID.put(0, "ALL");
+		profToID.put(1, "BACK OFFICE");
+		profToID.put(2, "SERVICE PROVIDER");
+		profToID.put(3, "FINANCIAL CONTROLLER");
+		profToID.put(4, "CUSTOMER CARE");
+		profToID.put(5, "MOBILE MONEY");
+		profToID.put(6, "SUPER AGENT");
+		profToID.put(7, "SUB AGENT");
+		profToID.put(8, "DEPOSIT ONLY");
+		profToID.put(9, "DEPOSIT & WITHDRAW");
+		profToID.put(10, "WITHDRAW ONLY");
+		profToID.put(11, "DEALER");
+		profToID.put(12, "CASH");
+		profToID.put(13, "MATS ACCOUNT");
+		profToID.put(14, "MATS USER");
 
 	}
 
@@ -64,7 +86,9 @@ public class SearchUserModule {
 		emb.setStyleName("search_user_img");
 		emb.setSizeUndefined();
 
-		Label lbSearch = new Label("Search " + strUserType + " by: ");
+		Label lbSearch = new Label("Search " + "Users" + " by: ");
+
+		// Label lbSearch = new Label("Search " + strUserType + " by: ");
 		lbSearch.setSizeUndefined();
 		lbSearch.setStyleName("label_search_user");
 		lbSearch.setSizeUndefined();
@@ -78,7 +102,10 @@ public class SearchUserModule {
 		searchUserHeader.setStyleName("search_user_header");
 
 		ArrayList<String> arrLTfCaptions = new ArrayList<String>();
-		arrLTfCaptions.add(strUserType + " ID");
+
+		arrLTfCaptions.add("ID");
+		// arrLTfCaptions.add(strUserType + " ID");
+		// arrLTfCaptions.add("Type of User");
 		arrLTfCaptions.add("Username");
 		arrLTfCaptions.add("MSISDN");
 		arrLTfCaptions.add("Company");
@@ -87,7 +114,8 @@ public class SearchUserModule {
 		arrLTfCaptions.add("Others");
 
 		searchForm.addComponent(searchUserHeader);
-		final ArrayList<TextField> arrLTfs = addTfs(arrLTfCaptions, searchForm);
+		arrLTfs = addTfs(arrLTfCaptions, searchForm);
+
 		Button btnSearch = new Button("Search");
 		searchForm.addComponent(btnSearch);
 
@@ -99,12 +127,21 @@ public class SearchUserModule {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				StringBuilder strBuilder = new StringBuilder();
-				for (TextField tF : arrLTfs) {
+				for (Object tF : arrLTfs) {
+					if (tF instanceof TextField) {
 
-					strBuilder.append(tF.getCaption());
-					strBuilder.append("=");
-					strBuilder.append(tF.getValue());
-					strBuilder.append("&");
+						strBuilder.append(((TextField) tF).getCaption());
+						strBuilder.append("=");
+						strBuilder.append(((TextField) tF).getValue());
+						strBuilder.append("&");
+					} else {
+						ComboBox combo = (ComboBox) tF;
+						String strProf = profToID.get(combo.getValue());
+						strBuilder.append(combo.getCaption());
+						strBuilder.append("=");
+						strBuilder.append(strProf);
+						strBuilder.append("&");
+					}
 				}
 
 				String strParams = strBuilder.toString();
@@ -137,11 +174,24 @@ public class SearchUserModule {
 		return be.queryBackEnd(strSearchParams);
 	}
 
-	private ArrayList<TextField> addTfs(ArrayList<String> arrLTfCaptions,
+	private ArrayList<Object> addTfs(ArrayList<String> arrLTfCaptions,
 			FormLayout searchForm) {
 
+		ArrayList<Object> arrLTfs = new ArrayList<Object>();
 		TextField tF;
-		ArrayList<TextField> arrLTfs = new ArrayList<TextField>();
+
+		ComboBox comboProfile = new ComboBox("Profile Type");
+
+		for (int i = 0; i < profToID.size(); i++) {
+			comboProfile.addItem(i);
+			comboProfile.setItemCaption(i, profToID.get(i));
+		}
+
+		comboProfile.select(0);
+
+		arrLTfs.add(comboProfile);
+		searchForm.addComponent(comboProfile);
+
 		for (String tFCaption : arrLTfCaptions) {
 			tF = new TextField(tFCaption);
 			arrLTfs.add(tF);

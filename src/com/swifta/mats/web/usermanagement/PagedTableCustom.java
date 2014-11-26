@@ -86,11 +86,20 @@ public class PagedTableCustom extends PagedTable {
 		Label itemsPerPageLabel = new Label("Items per page:");
 		itemsPerPageSelect = new ComboBox();
 
-		int pl = getPageLength();
-
+		int pl;
+		if (container.size() > 10) {
+			pl = 10;
+		} else {
+			pl = container.size();
+			if (pl == 0) {
+				pl = 1;
+			}
+		}
 		itemsPerPageSelect.addItem(pl / 3);
 		itemsPerPageSelect.addItem(pl / 2);
 		itemsPerPageSelect.addItem(pl);
+
+		itemsPerPageSelect.select(pl);
 
 		itemsPerPageSelect.setImmediate(true);
 		itemsPerPageSelect.setNullSelectionAllowed(false);
