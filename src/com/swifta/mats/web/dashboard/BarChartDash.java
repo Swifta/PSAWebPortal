@@ -28,7 +28,7 @@ public class BarChartDash {
 		Configuration conf = chart.getConfiguration();
 		// conf.getChart().setMargin(50, 80, 100, 50);
 
-		conf.setTitle(new Title("Data Chart " + user));
+		conf.setTitle(new Title("Data Chart "));
 
 		XAxis xAxis = new XAxis();
 		xAxis.setCategories(new String[] { "Cash in", "Cash out", "Airtime" });

@@ -33,7 +33,7 @@ public class PiechartDash {
 		String user = "Agent 001";
 		Configuration conf = chart.getConfiguration();
 
-		conf.setTitle("Data Chart " + user);
+		conf.setTitle("Data Chart ");
 
 		Credits credits = new Credits(true);
 		credits.setPosition(new CreditPosition());
