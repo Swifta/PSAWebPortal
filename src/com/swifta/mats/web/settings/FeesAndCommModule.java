@@ -147,7 +147,7 @@ public class FeesAndCommModule {
 		tFOp.setValue("None: ");
 		tFOp.setStyleName(ValoTheme.TEXTFIELD_BORDERLESS);
 		tFOp.setReadOnly(true);
-		tFOp.setStyleName("tf_op");
+		// tFOp.setStyleName("tf_op");
 
 		addUserForm.addComponent(tFOp);
 
