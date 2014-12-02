@@ -42,6 +42,7 @@ import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.Upload;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.ValoTheme;
 
 public class Settings extends VerticalLayout {
 
@@ -50,7 +51,8 @@ public class Settings extends VerticalLayout {
 	Button adduser = new Button("+Add New");
 	Button filter = new Button("Filter");
 	Button BulkImport = new Button("Bulk Import");
-	Button back = new Button("Back");
+	Button back = new Button();
+
 	ComboBox selection = new ComboBox();
 	Button createAccount = new Button("Create");
 	Button cancelAccount = new Button("Cancel");
@@ -120,6 +122,9 @@ public class Settings extends VerticalLayout {
 		setMargin(true);
 		AddIcons icon1 = new AddIcons();
 
+		back.setStyleName(ValoTheme.BUTTON_ICON_ONLY + " btn_link btn_back");
+		back.setIcon(FontAwesome.BACKWARD);
+
 		final VerticalLayout het1 = icon1.ImagesClicking("Account Management",
 				"img/use.png");
 		final VerticalLayout het2 = icon1.ImagesClicking("Permissions",
@@ -133,14 +138,37 @@ public class Settings extends VerticalLayout {
 		final VerticalLayout het6 = icon1.ImagesClicking("Threshold",
 				"img/threshold.png");
 
+		final HorizontalLayout cIcon = new HorizontalLayout();
+		cIcon.addComponent(het1);
+		cIcon.addComponent(het2);
+		cIcon.addComponent(het3);
+		cIcon.addComponent(het4);
+		cIcon.addComponent(het5);
+		cIcon.addComponent(het6);
+
+		het4.addLayoutClickListener(new LayoutClickListener() {
+
+			private static final long serialVersionUID = -3403162468496827919L;
+
+			@Override
+			public void layoutClick(LayoutClickEvent event) {
+				WorkSpaceManageFeesAndComm wmfac = new WorkSpaceManageFeesAndComm();
+				VerticalLayout cmfac = wmfac.getWorkSpaceAccountProfile();
+
+				cmfac.addComponent(back);
+				cmfac.setComponentAlignment(back, Alignment.BOTTOM_LEFT);
+				laying.removeAllComponents();
+				laying.addComponent(cmfac);
+				laying.setComponentAlignment(cmfac, Alignment.TOP_CENTER);
+				laying.setSizeFull();
+
+			}
+
+		});
+
 		laying.setSizeUndefined();
 		// laying.setSizeFull();
-		laying.addComponent(het1);
-		laying.addComponent(het2);
-		laying.addComponent(het3);
-		laying.addComponent(het4);
-		laying.addComponent(het5);
-		laying.addComponent(het6);
+		laying.addComponent(cIcon);
 
 		type.addItem("Fees");
 		type.addItem("Commission");
@@ -392,12 +420,7 @@ public class Settings extends VerticalLayout {
 			public void buttonClick(ClickEvent event) {
 
 				laying.removeAllComponents();
-				laying.addComponent(het1);
-				laying.addComponent(het2);
-				laying.addComponent(het3);
-				laying.addComponent(het4);
-				laying.addComponent(het5);
-				laying.addComponent(het6);
+				laying.addComponent(cIcon);
 				// TODO Auto-generated method stub
 				BulkImport.setEnabled(true);
 				adduser.setEnabled(true);
