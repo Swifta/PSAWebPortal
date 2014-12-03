@@ -10,6 +10,9 @@ import com.vaadin.ui.VerticalLayout;
 
 public class ManageFeesAndCommModule {
 
+	public static BtnTabLike btnComm;
+	public static BtnTabLike btnFees;
+
 	public VerticalLayout getMenu(boolean boolAddHeaderStatus,
 			boolean boolEditStatus, boolean hasOp) {
 
@@ -20,9 +23,11 @@ public class ManageFeesAndCommModule {
 		HorizontalLayout cManageAndAddTab = new HorizontalLayout();
 
 		BtnTabLike btnPersonal = new BtnTabLike("Fees", null);
+		btnFees = btnPersonal;
 		btnPersonal.setStyleName("btn_tab_like btn_tab_like_active");
 
 		BtnTabLike btnAccount = new BtnTabLike("Commission", null);
+		btnComm = btnAccount;
 		// BtnTabLike btnAuth = new BtnTabLike("Authentication", null);
 		// BtnTabLike btnLog = new BtnTabLike("Log", null);
 		cManageAndAddTab.addComponent(btnPersonal);

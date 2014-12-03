@@ -40,7 +40,7 @@ public class WorkSpaceManageFeesAndComm {
 		cContent.setStyleName("c_content");
 
 		apm = new FeesAndCommModule();
-		HorizontalLayout pf = apm.getFeesContainer();
+		HorizontalLayout pf = apm.getFeesContainer("fees");
 		cContent.addComponent(pf);
 		cContent.setComponentAlignment(pf, Alignment.TOP_LEFT);
 
@@ -53,7 +53,7 @@ public class WorkSpaceManageFeesAndComm {
 		cC.addComponent(cContent);
 		cC.setExpandRatio(cContent, 1.0f);
 		cParent.addComponent(cC);
-		cParent.setComponentAlignment(cC, Alignment.TOP_CENTER);
+		cParent.setComponentAlignment(cC, Alignment.TOP_LEFT);
 
 	}
 

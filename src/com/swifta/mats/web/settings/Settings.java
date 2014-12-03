@@ -40,6 +40,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.Upload;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
@@ -152,15 +153,50 @@ public class Settings extends VerticalLayout {
 
 			@Override
 			public void layoutClick(LayoutClickEvent event) {
-				WorkSpaceManageFeesAndComm wmfac = new WorkSpaceManageFeesAndComm();
+				final WorkSpaceManageFeesAndComm wmfac = new WorkSpaceManageFeesAndComm();
 				VerticalLayout cmfac = wmfac.getWorkSpaceAccountProfile();
 
 				cmfac.addComponent(back);
 				cmfac.setComponentAlignment(back, Alignment.BOTTOM_LEFT);
 				laying.removeAllComponents();
 				laying.addComponent(cmfac);
-				laying.setComponentAlignment(cmfac, Alignment.TOP_CENTER);
+				laying.setComponentAlignment(cmfac, Alignment.TOP_LEFT);
 				laying.setSizeFull();
+
+				ManageFeesAndCommModule.btnComm
+						.addClickListener(new Button.ClickListener() {
+
+							/**
+					 * 
+					 */
+							private static final long serialVersionUID = -7254175574123940145L;
+
+							@Override
+							public void buttonClick(ClickEvent event) {
+								UI.getCurrent()
+										.getSession()
+										.setAttribute(
+												WorkSpaceManageFeesAndComm.SESSION_WSMP_CUR_ACTION,
+												"Commission");
+								wmfac.wsmpModifier();
+							}
+						});
+
+				ManageFeesAndCommModule.btnFees
+						.addClickListener(new Button.ClickListener() {
+
+							private static final long serialVersionUID = 3563106614667999001L;
+
+							@Override
+							public void buttonClick(ClickEvent event) {
+								UI.getCurrent()
+										.getSession()
+										.setAttribute(
+												WorkSpaceManageFeesAndComm.SESSION_WSMP_CUR_ACTION,
+												"fees");
+								wmfac.wsmpModifier();
+							}
+						});
 
 			}
 
