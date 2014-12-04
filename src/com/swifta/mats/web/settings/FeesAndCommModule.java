@@ -1,9 +1,14 @@
 package com.swifta.mats.web.settings;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 import com.swifta.mats.web.usermanagement.UserDetailsModule;
 import com.swifta.mats.web.utils.CommissionService;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ServiceCommission;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ServiceFeematrix;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ServiceFees;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ServiceFeesInterfaceChoice_type0;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -787,7 +792,57 @@ public class FeesAndCommModule {
 				try {
 					CommissionService cs = new CommissionService();
 					String opid = fg.getField("OPID").getValue().toString();
-					if (cs.setFeesAndCommission(opid)) {
+					int transId = Integer.valueOf(fg.getField("TXID")
+							.getValue().toString());
+					BigDecimal minAmount = new BigDecimal(0.0), maxAmount = new BigDecimal(
+							0.0), serviceFee = new BigDecimal(0.0), commissionFee = new BigDecimal(
+							0.0);
+					int commissionCount = 4, transactionTypeId = 5;
+					ServiceCommission[] serviceCommission = new ServiceCommission[commissionCount];
+					ServiceCommission newServiceCommission = new ServiceCommission();
+
+					for (int i = 0; i < commissionCount; i++) {
+						newServiceCommission.setCommissionfee(commissionFee);
+						newServiceCommission.setCommissionfeetype("PERCENT");
+						newServiceCommission.setMaximumamount(minAmount);
+						newServiceCommission.setMinimumamount(maxAmount);
+						newServiceCommission
+								.setServicecommissioncondition("FEE");
+						newServiceCommission
+								.setServicecommissionmodeltype("NOTAPPLICABLE");
+						// either cashin cashout ID
+						newServiceCommission
+								.setTransactiontypeid(transactionTypeId);
+						serviceCommission[i] = newServiceCommission;
+					}
+					int feeCount = 4;
+					ServiceFees[] serviceFeesArray = new ServiceFees[feeCount];
+					ServiceFees serviceFees = new ServiceFees();
+					for (int i = 0; i < feeCount; i++) {
+						ServiceFeesInterfaceChoice_type0 feeType = new ServiceFeesInterfaceChoice_type0();
+
+						String serviceFeeType = ServiceFeematrix.PERCENT
+								.toString();
+						feeType.setMaximumamount(maxAmount);
+						feeType.setMinimumamount(minAmount);
+						feeType.setServicefee(serviceFee);
+						feeType.setTransactiontypeid(transactionTypeId);
+						feeType.setServicefeetype(ServiceFeematrix.PERCENT);
+
+						ServiceFeesInterfaceChoice_type0[] feeTypeArray = new ServiceFeesInterfaceChoice_type0[1];
+						feeTypeArray[0] = feeType;
+						serviceFees.setMaximumamount(maxAmount);
+						serviceFees.setMinimumamount(minAmount);
+						// serviceFees.setServicefee();
+						serviceFees
+								.setServiceFeesInterfaceChoice_type0(feeTypeArray);
+						serviceFees.setServicefeetype(serviceFeeType);
+						serviceFees.setTransactiontypeid(transactionTypeId);
+
+						serviceFeesArray[i] = serviceFees;
+					}
+					if (cs.setFeesAndCommission(opid, transId,
+							serviceCommission, serviceFeesArray)) {
 						Notification
 								.show("Commission Tariff successfully saved.");
 					} else {
