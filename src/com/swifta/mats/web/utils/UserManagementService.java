@@ -13,7 +13,6 @@ import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Activati
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Address;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Credentials;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Identification;
-import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.IdentificationType;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Linkaccountrequest;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.LinkaccountrequestE;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.LinkaccountrequestResponse;
@@ -77,7 +76,7 @@ public class UserManagementService {
 		identification.setExpirydate(utils.DateToCalendar(Expirydate));
 		identification.setIdentificationNo(idNumber);
 
-		IdentificationType idType3 = null;
+		String idType3 = null;
 
 		identification.setIdentificationType(idType3);
 		identification.setIssueDate(String.valueOf(Issuedate));
