@@ -9,8 +9,12 @@ import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.Validator;
 import com.vaadin.data.fieldgroup.FieldGroup;
+import com.vaadin.data.fieldgroup.FieldGroup.CommitEvent;
+import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
+import com.vaadin.data.fieldgroup.FieldGroup.CommitHandler;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.util.PropertysetItem;
+import com.vaadin.event.ListenerMethod.MethodException;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
@@ -20,6 +24,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 //import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
@@ -28,60 +33,407 @@ public class FeesAndCommModule {
 	UserDetailsModule udm;
 	HorizontalLayout udc;
 	private ArrayList<VerticalLayout> cArrLItemContent;
+	private ArrayList<FieldGroup> arrLRangeFG;
+	private ArrayList<FieldGroup> arrLMatFG;
+	private ArrayList<FieldGroup> arrLOthersFG;
 
-	private Item row;
-	private Property<String> min;
-	private Property<String> max;
-	private FieldGroup fg;
-	private ArrayList<TextField> arrLMin;
-	private ArrayList<TextField> arrLMax;
-	private static int rowCount = -1;
+	private boolean isTiered;
 
 	public FeesAndCommModule() {
 		udm = new UserDetailsModule();
-		cArrLItemContent = new ArrayList<>(4);
-		arrLMin = new ArrayList<>();
-		arrLMax = new ArrayList<>();
 
 	}
 
-	private void add(ArrayList<VerticalLayout> cArrLItemContent, String attrName) {
-		rowCount++;
-		// Notification.show(String.valueOf(rowCount));
-		for (int i = 0; i < cArrLItemContent.size(); i++) {
-			VerticalLayout cItemContent = cArrLItemContent.get(i);
-			if (i == 2) {
-				ComboBox comboAttrVal = new ComboBox();
-				comboAttrVal.addItem(1);
-				comboAttrVal.setItemCaption(1, "%ge");
-				comboAttrVal.addItem(2);
-				comboAttrVal.setItemCaption(2, "Fixed");
-				comboAttrVal.select(2);
-				cItemContent.addComponent(comboAttrVal);
-				continue;
+	private void addMatrix() {
+		VerticalLayout cMat = cArrLItemContent.get(2);
+		VerticalLayout cAmt = cArrLItemContent.get(3);
+		final ComboBox comboMat = new ComboBox();
+		comboMat.addItem(1);
+		comboMat.setItemCaption(1, "%ge");
+		comboMat.addItem(2);
+		comboMat.setItemCaption(2, "Fixed");
+		comboMat.select(2);
+
+		final TextField tfAmt = new TextField();
+		cMat.addComponent(comboMat);
+		cAmt.addComponent(tfAmt);
+
+		// comboMat.setRequired(true);
+		// tfAmt.setRequired(true);
+
+		Property<Integer> pMat = new ObjectProperty<>(0);
+		Property<String> pAmt = new ObjectProperty<>("");
+
+		Item row = new PropertysetItem();
+		row.addItemProperty("Mat", pMat);
+		row.addItemProperty("Amt", pAmt);
+		FieldGroup fg = new FieldGroup(row);
+		fg.bind(comboMat, "Mat");
+		fg.bind(tfAmt, "Amt");
+		arrLMatFG.add(fg);
+
+		comboMat.addValidator(new MatrixHouseKeeper(comboMat, tfAmt));
+		tfAmt.addValidator(new MatrixHouseKeeper(comboMat, tfAmt));
+		comboMat.setValidationVisible(true);
+		tfAmt.setValidationVisible(true);
+		comboMat.setImmediate(true);
+		tfAmt.setImmediate(true);
+
+		fg.addCommitHandler(new CommitHandler() {
+			private static final long serialVersionUID = -4960371331680442909L;
+
+			@Override
+			public void preCommit(CommitEvent commitEvent)
+					throws CommitException {
+				tfAmt.setRequired(false);
+				comboMat.setRequired(false);
+				if ((int) comboMat.getValue() == 0) {
+					comboMat.setRequired(true);
+					Notification.show("Fields marked with (*) are required.");
+					throw new CommitException("Field required.");
+				} else if (tfAmt.getValue().trim().isEmpty()) {
+					tfAmt.setRequired(true);
+					Notification.show("Fields marked with (*) are required.");
+					throw new CommitException("Field required.");
+				} else {
+					tfAmt.setRequired(false);
+					comboMat.setRequired(false);
+					return;
+				}
+
 			}
 
-			TextField tFAttrVal = new TextField();
-			tFAttrVal.setId(String.valueOf(rowCount));
-			cItemContent.addComponent(tFAttrVal);
-			if (i == 0) {
-				arrLMin.add(tFAttrVal);
-			} else if (i == 1) {
-				arrLMax.add(tFAttrVal);
+			@Override
+			public void postCommit(CommitEvent commitEvent)
+					throws CommitException {
+
+			}
+
+		});
+
+		comboMat.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = -47504574989952155L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				try {
+					comboMat.setComponentError(null);
+					tfAmt.setComponentError(null);
+					comboMat.validate();
+				} catch (MethodException e) {
+
+				}
+			}
+
+		});
+
+		tfAmt.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = -4750457473552155L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				try {
+					tfAmt.setComponentError(null);
+					comboMat.setComponentError(null);
+					tfAmt.validate();
+
+				} catch (MethodException e) {
+
+				}
+
+			}
+
+		});
+
+	}
+
+	private void addRange() {
+		VerticalLayout cMin = cArrLItemContent.get(0);
+		VerticalLayout cMax = cArrLItemContent.get(1);
+		final TextField tfMin = new TextField();
+		final TextField tfMax = new TextField();
+		cMin.addComponent(tfMin);
+		cMax.addComponent(tfMax);
+		// tfMin.setRequired(true);
+		// tfMax.setRequired(true);
+
+		Property<String> pMin = new ObjectProperty<>("");
+		Property<String> pMax = new ObjectProperty<>("");
+
+		Item row = new PropertysetItem();
+		row.addItemProperty("Min", pMin);
+		row.addItemProperty("Max", pMax);
+		FieldGroup fg = new FieldGroup(row);
+		fg.bind(tfMin, "Min");
+		fg.bind(tfMax, "Max");
+		arrLRangeFG.add(fg);
+		int index = arrLRangeFG.size() - 1;
+		tfMin.addValidator(new RangeHouseKeeper(tfMin, tfMax, index));
+		tfMax.addValidator(new RangeHouseKeeper(tfMin, tfMax, index));
+		tfMin.setValidationVisible(true);
+		tfMax.setValidationVisible(true);
+		tfMin.setImmediate(true);
+		tfMax.setImmediate(true);
+
+		if (!isTiered) {
+			tfMin.setValue("0.0");
+			tfMin.setEnabled(false);
+			tfMax.setValue("0.0");
+			tfMax.setEnabled(false);
+		}
+
+		fg.addCommitHandler(new CommitHandler() {
+			private static final long serialVersionUID = -4960371331680442909L;
+
+			@Override
+			public void preCommit(CommitEvent commitEvent)
+					throws CommitException {
+				tfMin.setRequired(false);
+				tfMax.setRequired(false);
+				if (tfMin.getValue().trim().isEmpty()) {
+					tfMin.setRequired(true);
+					Notification.show("Fields marked with (*) are required.");
+					throw new CommitException("Field required.");
+				}
+				if (tfMax.getValue().trim().isEmpty()) {
+					tfMax.setRequired(true);
+					Notification.show("Fields marked with (*) are required.");
+					throw new CommitException("Field required.");
+				} else {
+					tfMin.setRequired(false);
+					tfMax.setRequired(false);
+					return;
+				}
+
+			}
+
+			@Override
+			public void postCommit(CommitEvent commitEvent)
+					throws CommitException {
+
+			}
+
+		});
+
+		tfMin.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = -47504574989952155L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				try {
+					tfMin.setComponentError(null);
+					tfMax.setComponentError(null);
+					tfMin.validate();
+				} catch (MethodException e) {
+
+				}
+			}
+
+		});
+
+		tfMax.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = -4750457473552155L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				try {
+					tfMax.setComponentError(null);
+					tfMin.setComponentError(null);
+					tfMax.validate();
+				} catch (MethodException e) {
+
+				}
+
+			}
+
+		});
+
+	}
+
+	private class RangeHouseKeeper implements Validator {
+
+		private static final long serialVersionUID = 8429528148551522733L;
+		private TextField tfMin;
+		private TextField tfMax;
+		private Float vMin;
+		private Float vMax;
+		private int fgIndex;
+
+		RangeHouseKeeper(TextField tfMin, TextField tfMax, int fgIndex) {
+			this.tfMin = tfMin;
+			this.tfMax = tfMax;
+			this.fgIndex = fgIndex;
+
+		}
+
+		@Override
+		public void validate(Object v) throws InvalidValueException,
+				NumberFormatException {
+
+			if (v.toString().trim().isEmpty())
+				return;
+
+			try {
+				Float.valueOf(v.toString());
+			} catch (NumberFormatException e) {
+				throw new InvalidValueException("Only Numbers.");
+			}
+
+			String sMin = tfMin.getValue().trim();
+			String sMax = tfMax.getValue().trim();
+
+			if (sMin.isEmpty() || sMax.isEmpty())
+				return;
+
+			try {
+				vMin = Float.parseFloat(sMin);
+
+			} catch (NumberFormatException e) {
+				throw new InvalidValueException("Only Numbers.");
+			}
+
+			try {
+				vMax = Float.parseFloat(sMax);
+
+			} catch (NumberFormatException e) {
+				throw new InvalidValueException("Only Numbers.");
+			}
+
+			if (vMin > vMax) {
+				throw new InvalidValueException("Invalid range.");
+
+			}
+
+			if (arrLRangeFG.size() > fgIndex + 1) {
+				FieldGroup nxtFG = arrLRangeFG.get(fgIndex + 1);
+				TextField nxtMin = (TextField) nxtFG.getField("Min");
+				Float nxt = Float.valueOf(tfMax.getValue()) + 1;
+				nxtMin.setValue(nxt.toString());
+				nxtMin.setEnabled(false);
+
+				return;
+
 			}
 		}
 	}
 
-	private void remove(ArrayList<VerticalLayout> cArrLItemContent,
-			String attrName) {
-		for (int i = 0; i < cArrLItemContent.size(); i++) {
-			VerticalLayout cItemContent = cArrLItemContent.get(i);
-			cItemContent.removeComponent(cItemContent.getComponent(cItemContent
-					.getComponentCount() - 1));
+	private class MatrixHouseKeeper implements Validator {
+
+		private static final long serialVersionUID = 8429528148551522733L;
+		private ComboBox comboMat;
+		private TextField tfAmt;
+		private Integer mat;
+		private Float vAmt;
+
+		MatrixHouseKeeper(ComboBox comboMat, TextField tfAmt) {
+			this.comboMat = comboMat;
+			this.tfAmt = tfAmt;
 		}
+
+		@Override
+		public void validate(Object v) throws InvalidValueException,
+				NumberFormatException {
+
+			if (v.toString().trim().isEmpty())
+				return;
+
+			if (tfAmt.getValue().trim().isEmpty())
+				return;
+
+			try {
+				Float.valueOf(tfAmt.getValue());
+			} catch (NumberFormatException e) {
+				throw new InvalidValueException("Only Numbers.");
+			}
+
+			mat = (Integer) comboMat.getValue();
+			String sAmt = tfAmt.getValue().trim();
+
+			try {
+				vAmt = Float.parseFloat(sAmt);
+
+			} catch (NumberFormatException e) {
+				throw new InvalidValueException("Only Numbers.");
+			}
+
+			if (mat == 1 && vAmt > 100) {
+				throw new InvalidValueException("Invalid Percentage.");
+			}
+
+		}
+	}
+
+	private void add() {
+		addRange();
+		addMatrix();
+	}
+
+	private void remove() {
+		removeRange();
+		removeMatrix();
+	}
+
+	private void removeAll() {
+		removeAllRange();
+		removeAllMatrix();
+	}
+
+	private void removeAllRange() {
+		if (removeRange() == -1) {
+			return;
+		}
+		removeAllRange();
+	}
+
+	private void removeAllMatrix() {
+		if (removeMatrix() == -1) {
+			return;
+		}
+		removeAllMatrix();
+	}
+
+	private int removeRange() {
+		if (arrLRangeFG.size() < 2)
+			return -1;
+
+		arrLRangeFG.remove(arrLRangeFG.size() - 1);
+		VerticalLayout cMin = cArrLItemContent.get(0);
+		VerticalLayout cMax = cArrLItemContent.get(1);
+		cMin.removeComponent(cMin.getComponent(cMin.getComponentCount() - 1));
+		cMax.removeComponent(cMax.getComponent(cMax.getComponentCount() - 1));
+		return 1;
+
+	}
+
+	private int removeMatrix() {
+		if (arrLMatFG.size() < 2)
+			return -1;
+
+		arrLMatFG.remove(arrLMatFG.size() - 1);
+		VerticalLayout cMat = cArrLItemContent.get(2);
+		VerticalLayout cAmt = cArrLItemContent.get(3);
+		cMat.removeComponent(cMat.getComponent(cMat.getComponentCount() - 1));
+		cAmt.removeComponent(cAmt.getComponent(cAmt.getComponentCount() - 1));
+		return 1;
+
 	}
 
 	public HorizontalLayout getFeesContainer(String type) {
+
+		cArrLItemContent = new ArrayList<>(4);
+		arrLRangeFG = new ArrayList<>();
+		arrLMatFG = new ArrayList<>();
+		arrLOthersFG = new ArrayList<>();
+		Item row = new PropertysetItem();
+		Property<Integer> pOpID = new ObjectProperty<Integer>(1);
+		Property<Integer> pconTypeID = new ObjectProperty<Integer>(1);
+		Property<Integer> pmodelTypeID = new ObjectProperty<Integer>(1);
+		Property<Integer> pTxTypeID = new ObjectProperty<Integer>(1);
+		row.addItemProperty("OPID", pOpID);
+		row.addItemProperty("CONID", pconTypeID);
+		row.addItemProperty("MODID", pmodelTypeID);
+		row.addItemProperty("TXID", pTxTypeID);
+		isTiered = true;
 
 		HorizontalLayout cManage = new HorizontalLayout();
 		cManage.setWidthUndefined();
@@ -110,6 +462,21 @@ public class FeesAndCommModule {
 		comboOp.setItemCaption(1, "Teasy");
 		comboOp.addItem(2);
 		comboOp.setItemCaption(2, "Pocket Money");
+		comboOp.select(1);
+
+		final ComboBox comboConditionType = new ComboBox("Condition Type");
+		comboConditionType.addItem(1);
+		comboConditionType.setItemCaption(1, "Amount");
+		comboConditionType.addItem(2);
+		comboConditionType.setItemCaption(2, "Fee");
+		comboConditionType.select(1);
+
+		final ComboBox comboModelType = new ComboBox("Model Type");
+		comboModelType.addItem(1);
+		comboModelType.setItemCaption(1, "Tiered");
+		comboModelType.addItem(2);
+		comboModelType.setItemCaption(2, "None");
+		comboModelType.select(1);
 
 		final ComboBox comboTxType = new ComboBox("Transaction Type");
 
@@ -136,15 +503,64 @@ public class FeesAndCommModule {
 
 		}
 
+		final FieldGroup fg = new FieldGroup(row);
+		fg.bind(comboTxType, "TXID");
+		fg.bind(comboModelType, "MODID");
+		fg.bind(comboConditionType, "CONID");
+		fg.bind(comboOp, "OPID");
+
+		fg.addCommitHandler(new CommitHandler() {
+			private static final long serialVersionUID = 6144936023943646696L;
+
+			@Override
+			public void preCommit(CommitEvent commitEvent)
+					throws CommitException {
+				comboOp.setRequired(false);
+				comboConditionType.setRequired(false);
+				comboModelType.setRequired(false);
+				comboTxType.setRequired(false);
+				if ((int) comboOp.getValue() == 0) {
+					comboOp.setRequired(true);
+					Notification.show("Field marked with (*) is required.");
+					throw new CommitException("Field is required.");
+				} else if ((int) comboConditionType.getValue() == 0) {
+					comboConditionType.setRequired(true);
+					Notification.show("Field marked with (*) is required.");
+					throw new CommitException("Field is required.");
+
+				} else if ((int) comboModelType.getValue() == 0) {
+					comboModelType.setRequired(true);
+					Notification.show("Field marked with (*) is required.");
+					throw new CommitException("Field is required.");
+
+				} else if ((int) comboTxType.getValue() == 0) {
+					comboTxType.setRequired(true);
+					Notification.show("Field marked with (*) is required.");
+					throw new CommitException("Field is required.");
+				} else {
+					comboOp.setRequired(false);
+					comboConditionType.setRequired(false);
+					comboModelType.setRequired(false);
+					comboTxType.setRequired(false);
+					return;
+				}
+			}
+
+			@Override
+			public void postCommit(CommitEvent commitEvent)
+					throws CommitException {
+
+			}
+
+		});
+
 		cChoose.addComponent(lbChoose);
 		cChoose.addComponent(comboOp);
 
+		cChoose.addComponent(comboConditionType);
+		cChoose.addComponent(comboModelType);
 		cChoose.addComponent(comboTxType);
 		cChoose.setStyleName("c_choose");
-
-		// Button btnSave = new Button("Save");
-		// btnSave.setWidth("100%");
-		// btnSave.setIcon(FontAwesome.SAVE);
 
 		VerticalLayout cAttr = new VerticalLayout();
 		cAttr.setSpacing(true);
@@ -153,7 +569,7 @@ public class FeesAndCommModule {
 
 		final Label tFOp = new Label();
 		tFOp.setCaption("Selected Operator: ");
-		tFOp.setValue("None");
+		tFOp.setValue(comboOp.getItemCaption(comboOp.getValue()));
 		tFOp.setStyleName("label_add_user");
 
 		FormLayout cOp = new FormLayout();
@@ -181,68 +597,49 @@ public class FeesAndCommModule {
 		cAttrItem.addComponent(cItemContent);
 		cAttr.addComponent(cAttrItem);
 
+		// MIN
+
 		VerticalLayout cItemContentMin = new VerticalLayout();
 		cArrLItemContent.add(cItemContentMin);
 		lbAttr = new Label("Min.");
 		lbAttr.setSizeFull();
 		lbAttr.setStyleName("label_add_user attr");
-		final TextField tFAttrValMin = new TextField();
-		tFAttrValMin.setValue("0.0");
-
 		cItemContentMin.addComponent(lbAttr);
-		cItemContentMin.addComponent(tFAttrValMin);
 		cAttrItem.addComponent(cItemContentMin);
 
-		cItemContent = new VerticalLayout();
-		cArrLItemContent.add(cItemContent);
+		// MAX
+
+		VerticalLayout cItemContentMax = new VerticalLayout();
+		cArrLItemContent.add(cItemContentMax);
 		lbAttr = new Label("Max.");
 		lbAttr.setSizeFull();
 		lbAttr.setStyleName("label_add_user attr");
-		TextField tFAttrVal = new TextField();
+		cItemContentMax.addComponent(lbAttr);
+		cAttrItem.addComponent(cItemContentMax);
 
-		cItemContent.addComponent(lbAttr);
-		cItemContent.addComponent(tFAttrVal);
-		cAttrItem.addComponent(cItemContent);
-
-		cItemContent = new VerticalLayout();
-		cArrLItemContent.add(cItemContent);
-		lbAttr = new Label("Charge Mode.");
+		// MATRIX
+		VerticalLayout cItemContentMat = new VerticalLayout();
+		cArrLItemContent.add(cItemContentMat);
+		lbAttr = new Label("Matrix");
 		lbAttr.setSizeFull();
 		lbAttr.setStyleName("label_add_user attr");
-		ComboBox comboAttrVal = new ComboBox();
-		comboAttrVal.addItem(1);
-		comboAttrVal.setItemCaption(1, "%ge");
-		comboAttrVal.addItem(2);
-		comboAttrVal.setItemCaption(2, "Fixed");
-		comboAttrVal.select(2);
+		cItemContentMat.addComponent(lbAttr);
+		cAttrItem.addComponent(cItemContentMat);
 
-		cItemContent.addComponent(lbAttr);
-		cItemContent.addComponent(comboAttrVal);
-		cAttrItem.addComponent(cItemContent);
+		// AMOUNT
 
-		cItemContent = new VerticalLayout();
-		cArrLItemContent.add(cItemContent);
+		VerticalLayout cItemContentAmt = new VerticalLayout();
+		cArrLItemContent.add(cItemContentAmt);
 		lbAttr = new Label("Amount (%/N)");
 		lbAttr.setSizeFull();
 		lbAttr.setStyleName("label_add_user attr");
-		tFAttrVal = new TextField();
-
-		cItemContent.addComponent(lbAttr);
-		cItemContent.addComponent(tFAttrVal);
-		cAttrItem.addComponent(cItemContent);
-
-		row = new PropertysetItem();
-		min = new ObjectProperty<String>("");
-		max = new ObjectProperty<String>("");
-		row.addItemProperty("Min", min);
-		row.addItemProperty("Max", max);
-		fg = new FieldGroup(row);
-		fg.bind(tFAttrValMin, "Min");
-		fg.bind(tFAttrValMin, "Max");
+		cItemContentAmt.addComponent(lbAttr);
+		cAttrItem.addComponent(cItemContentAmt);
+		add();
 
 		HorizontalLayout cControls = new HorizontalLayout();
 		Button btnAdd = new Button("+");
-		// btnAdd.setIcon(FontAwesome.PLUS);
+
 		btnAdd.setStyleName("btn_link");
 		Button btnRemove = new Button("-");
 		btnRemove.setStyleName("btn_link");
@@ -283,9 +680,49 @@ public class FeesAndCommModule {
 
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-				// tFOp.setReadOnly(false);
 				tFOp.setValue(comboOp.getItemCaption(comboOp.getValue()));
-				// tFOp.setReadOnly(true);
+			}
+
+		});
+
+		comboModelType.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = -6418325605387194047L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				if (Integer.valueOf(comboModelType.getValue().toString()) == 1) {
+
+					if (arrLRangeFG.size() == 0)
+						return;
+
+					removeAll();
+					FieldGroup fg = arrLRangeFG.get(0);
+					TextField min = (TextField) fg.getField("Min");
+					TextField max = (TextField) fg.getField("Max");
+					min.setValue("");
+					min.setEnabled(true);
+
+					max.setValue("");
+					max.setEnabled(true);
+					isTiered = true;
+					return;
+
+				} else {
+					if (arrLRangeFG.size() == 0)
+						return;
+					removeAll();
+					FieldGroup fg = arrLRangeFG.get(0);
+					TextField min = (TextField) fg.getField("Min");
+					TextField max = (TextField) fg.getField("Max");
+					min.setValue("0.0");
+					min.setEnabled(false);
+
+					max.setValue("0.0");
+					max.setEnabled(false);
+					isTiered = false;
+					return;
+				}
+
 			}
 
 		});
@@ -296,7 +733,7 @@ public class FeesAndCommModule {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				add(cArrLItemContent, "");
+				add();
 
 			}
 		});
@@ -306,7 +743,7 @@ public class FeesAndCommModule {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				remove(cArrLItemContent, "");
+				remove();
 
 			}
 		});
@@ -317,6 +754,38 @@ public class FeesAndCommModule {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
+				/*
+				 * Commit to server.
+				 */
+				try {
+					fg.commit();
+				} catch (CommitException e1) {
+					e1.printStackTrace();
+					return;
+				}
+
+				for (FieldGroup fg : arrLRangeFG) {
+					try {
+						fg.commit();
+					} catch (CommitException e) {
+						e.printStackTrace();
+						return;
+					}
+				}
+				for (FieldGroup fg : arrLMatFG) {
+					try {
+						fg.commit();
+					} catch (CommitException e) {
+						e.printStackTrace();
+						return;
+					}
+				}
+
+				/*
+				 * Ready to commit valid values to the server.
+				 */
+
+				Notification.show("Ready to commit.");
 
 			}
 		});
@@ -334,72 +803,6 @@ public class FeesAndCommModule {
 		cContent.removeAllComponents();
 		cContent.addComponent(getFeesContainer(strTbName));
 
-		/*
-		 * if (UI.getCurrent().getSession()
-		 * .getAttribute(WorkSpaceManageFeesAndComm.SESSION_UDM_IS_LOG) != null)
-		 * { strTbName = (String) UI .getCurrent() .getSession() .getAttribute(
-		 * WorkSpaceManageFeesAndComm.SESSION_UDM_TABLE_LOG); }
-		 * 
-		 * if (udc != null) cContent.removeComponent(udc); udc =
-		 * udm.getDetailsForm(strTbName, "001", false, false);
-		 * cContent.addComponent(udc); return;
-		 */
-
-	}
-
-	private void addValidator() {
-		for (int i = 0; i < arrLMin.size(); i++) {
-			TextField min = arrLMin.get(i);
-			TextField max = arrLMax.get(i);
-			min.addValidator(new RangeValidator(min));
-			max.addValidator(new RangeValidator(max));
-		}
-	}
-
-	private class RangeValidator implements Validator {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 4460365182369687080L;
-		private TextField tF;
-
-		RangeValidator(TextField f) {
-			this.tF = f;
-		}
-
-		@Override
-		public void validate(Object obj) throws InvalidValueException {
-			Integer id = Integer.valueOf(tF.getId());
-			TextField min = arrLMin.get(id);
-			TextField max = arrLMax.get(id);
-			if (min.getValue().trim() == null)
-				return;
-			if (max.getValue().trim() == null)
-				return;
-			Float minv = Float.parseFloat(min.getValue());
-			Float maxv = Float.parseFloat(max.getValue());
-			if (minv > maxv) {
-				throw new InvalidValueException("Invalid Range.");
-			}
-
-		}
-	}
-
-	private class RangeChangeListener implements TextField.ValueChangeListener {
-
-		private static final long serialVersionUID = -6571345512003629796L;
-
-		@Override
-		public void valueChange(ValueChangeEvent event) {
-			/*
-			 * Float mn = Float.parseFloat(arrLMin.get()); Float mx =
-			 * Float.parseFloat(max.getValue()); if (Float.compare(mn, mx) == 1
-			 * || Float.compare(mn, mx) == 0) {
-			 * Notification.show("Invalid range"); }
-			 */
-			// Notification.show("Hello.");
-
-		}
 	}
 
 }
