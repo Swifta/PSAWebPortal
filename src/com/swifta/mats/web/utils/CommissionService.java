@@ -5,11 +5,14 @@ import java.util.logging.Logger;
 
 import org.apache.axis2.AxisFault;
 
+import com.swifta.sub.mats.operation.financial.v1_0.FinancialsStub.StatusCode;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ServiceCommission;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ServiceFees;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Servicefeeandcomissionrequestresponse;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Setupservicefeesandcommission;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.SetupservicefeesandcommissionE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.SetupservicefeesandcommissionResponse;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.SetupservicefeesandcommissionResponseE;
 
 public class CommissionService {
@@ -83,7 +86,7 @@ public class CommissionService {
 		SetupservicefeesandcommissionResponseE feesAndCommissionResponseE = new SetupservicefeesandcommissionResponseE();
 		try {
 			provisioningStub = new ProvisioningStub();
-			provisioningStub
+			feesAndCommissionResponseE = provisioningStub
 					.setupservicefeesandcommission(setupservicefeesandcommissionE);
 		} catch (AxisFault e) {
 			// TODO Auto-generated catch block
@@ -91,6 +94,30 @@ public class CommissionService {
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+		if (feesAndCommissionResponseE != null) {
+			logger.info("--------------------------feesAndCommissionResponseE is not null");
+			SetupservicefeesandcommissionResponse setupservicefeesandcommissionResponse = feesAndCommissionResponseE
+					.getSetupservicefeesandcommissionResponse();
+			if (setupservicefeesandcommissionResponse != null) {
+				logger.info("--------------------------setupservicefeesandcommissionResponse is not null");
+				Servicefeeandcomissionrequestresponse response = setupservicefeesandcommissionResponse
+						.get_return();
+				if (response != null) {
+					logger.info("--------------------------response is not null");
+					if (response.getStatuscode().equals(StatusCode.COMPLETED)) {
+						status = true;
+					}
+				} else {
+					logger.info("--------------------------response is null");
+
+				}
+			} else {
+				logger.info("--------------------------setupservicefeesandcommissionResponse is null");
+			}
+
+		} else {
+			logger.info("--------------------------feesAndCommissionResponseE is null");
 		}
 
 		return status;
