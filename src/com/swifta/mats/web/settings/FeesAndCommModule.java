@@ -3,6 +3,7 @@ package com.swifta.mats.web.settings;
 import java.util.ArrayList;
 
 import com.swifta.mats.web.usermanagement.UserDetailsModule;
+import com.swifta.mats.web.utils.CommissionService;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -57,9 +58,6 @@ public class FeesAndCommModule {
 		final TextField tfAmt = new TextField();
 		cMat.addComponent(comboMat);
 		cAmt.addComponent(tfAmt);
-
-		// comboMat.setRequired(true);
-		// tfAmt.setRequired(true);
 
 		Property<Integer> pMat = new ObjectProperty<>(0);
 		Property<String> pAmt = new ObjectProperty<>("");
@@ -176,9 +174,9 @@ public class FeesAndCommModule {
 		tfMax.setImmediate(true);
 
 		if (!isTiered) {
-			tfMin.setValue("0.0");
+			tfMin.setValue("0.00");
 			tfMin.setEnabled(false);
-			tfMax.setValue("0.0");
+			tfMax.setValue("0.00");
 			tfMax.setEnabled(false);
 		}
 
@@ -307,7 +305,7 @@ public class FeesAndCommModule {
 			if (arrLRangeFG.size() > fgIndex + 1) {
 				FieldGroup nxtFG = arrLRangeFG.get(fgIndex + 1);
 				TextField nxtMin = (TextField) nxtFG.getField("Min");
-				Float nxt = Float.valueOf(tfMax.getValue()) + 1;
+				Double nxt = Double.valueOf(tfMax.getValue()) + 1;
 				nxtMin.setValue(nxt.toString());
 				nxtMin.setEnabled(false);
 
@@ -636,6 +634,7 @@ public class FeesAndCommModule {
 		cItemContentAmt.addComponent(lbAttr);
 		cAttrItem.addComponent(cItemContentAmt);
 		add();
+		add();
 
 		HorizontalLayout cControls = new HorizontalLayout();
 		Button btnAdd = new Button("+");
@@ -714,10 +713,10 @@ public class FeesAndCommModule {
 					FieldGroup fg = arrLRangeFG.get(0);
 					TextField min = (TextField) fg.getField("Min");
 					TextField max = (TextField) fg.getField("Max");
-					min.setValue("0.0");
+					min.setValue("0.00");
 					min.setEnabled(false);
 
-					max.setValue("0.0");
+					max.setValue("0.00");
 					max.setEnabled(false);
 					isTiered = false;
 					return;
@@ -785,7 +784,18 @@ public class FeesAndCommModule {
 				 * Ready to commit valid values to the server.
 				 */
 
-				Notification.show("Ready to commit.");
+				try {
+					CommissionService cs = new CommissionService();
+					String opid = fg.getField("OPID").getValue().toString();
+					if (cs.setFeesAndCommission(opid)) {
+						Notification
+								.show("Commission Tariff successfully saved.");
+					} else {
+						Notification.show("Commission Tariff Saving failed.");
+					}
+				} catch (Exception e) {
+					Notification.show("Could not connect.");
+				}
 
 			}
 		});
