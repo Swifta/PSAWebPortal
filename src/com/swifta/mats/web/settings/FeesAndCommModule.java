@@ -1,8 +1,13 @@
 package com.swifta.mats.web.settings;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.swifta.mats.web.usermanagement.UserDetailsModule;
+import com.swifta.mats.web.utils.CommissionService;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ServiceCommission;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ServiceFees;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -41,27 +46,35 @@ public class FeesAndCommModule {
 	private ComboBox comboOp;
 	private ComboBox comboTxType;
 	private int confCount = 0;
+	ArrayList<FieldGroup> arrLDFG;
+	private ArrayList<ArrayList<FieldGroup>> arrLAllFG;
+	private HashMap<String, ArrayList<ArrayList<FieldGroup>>> hmAllFG;
+	public final static String COMMISSION = "Commission";
+	public final static String FEES = "Fees";
+	private String tabType = null;
 
 	public FeesAndCommModule() {
 		udm = new UserDetailsModule();
 		comboOp = new ComboBox("Operator");
-		comboOp.addItem(1);
-		comboOp.setItemCaption(1, "Teasy");
-		comboOp.addItem(2);
-		comboOp.setItemCaption(2, "Pocket Money");
-		comboOp.select(1);
+		comboOp.addItem(7);
+		comboOp.setItemCaption(7, "TeasyMobile");
+		comboOp.addItem(4);
+		comboOp.setItemCaption(4, "PocketMoni");
+		comboOp.select(7);
+
 		comboTxType = new ComboBox("Transaction Type");
-		comboTxType.addItem(1);
-		comboTxType.setItemCaption(1, "Cash-in");
-		comboTxType.addItem(2);
-		comboTxType.setItemCaption(2, "Cash-out");
-		comboTxType.addItem(3);
-		comboTxType.setItemCaption(3, "Airtime topup");
 		comboTxType.addItem(4);
-		comboTxType.setItemCaption(4, "Money Transfer");
+		comboTxType.setItemCaption(4, "CASHIN");
 		comboTxType.addItem(5);
-		comboTxType.setItemCaption(5, "Bill Payment");
-		comboTxType.select(1);
+		comboTxType.setItemCaption(5, "CASHOUT");
+		comboTxType.addItem(6);
+		comboTxType.setItemCaption(6, "PAYMENT SEND");
+		comboTxType.addItem(7);
+		comboTxType.setItemCaption(7, "PAYMENT RECEIVE");
+		comboTxType.addItem(17);
+		comboTxType.setItemCaption(17, "3rd PARTY PAYMENT");
+		comboTxType.select(4);
+		hmAllFG = new HashMap<>();
 
 	}
 
@@ -436,12 +449,15 @@ public class FeesAndCommModule {
 
 	}
 
-	public HorizontalLayout getFeesContainer(final String type) {
+	public HorizontalLayout getFeesContainer(String type) {
 
 		cArrLItemContent = new ArrayList<>(4);
 		arrLRangeFG = new ArrayList<>();
 		arrLMatFG = new ArrayList<>();
+		arrLAllFG = new ArrayList<>();
+		arrLDFG = new ArrayList<>();
 		isTiered = true;
+		tabType = type;
 
 		HorizontalLayout cManage = new HorizontalLayout();
 		cManage.setWidthUndefined();
@@ -458,7 +474,7 @@ public class FeesAndCommModule {
 
 		cChoose.addComponent(addUserHeader);
 
-		Label lbAddUser = new Label("Manage " + type);
+		Label lbAddUser = new Label("Manage " + tabType);
 		lbAddUser.setStyleName("label_add_user");
 		lbAddUser.setSizeUndefined();
 
@@ -739,12 +755,9 @@ public class FeesAndCommModule {
 				/*
 				 * Commit to server.
 				 */
-				if (isReadyToCommit(type, fg)) {
-					/*
-					 * Ready to commit to server.
-					 */
+				if (isReadyToCommit(tabType, fg)) {
 
-					Notification.show("Goddamn ready to commit.");
+					commit();
 					return;
 				} else {
 					return;
@@ -756,7 +769,86 @@ public class FeesAndCommModule {
 		return cManage;
 	}
 
+	private void commit() {
+		String opID = comboOp.getValue().toString();
+		Integer txID = Integer.valueOf(comboTxType.getValue().toString());
+		ArrayList<ArrayList<FieldGroup>> allFeesFG = hmAllFG.get(FEES);
+		ArrayList<FieldGroup> allRange = allFeesFG.get(0);
+		ArrayList<FieldGroup> allMat = allFeesFG.get(1);
+
+		ServiceFees[] sf = new ServiceFees[allRange.size()];
+		for (int i = 0; i < allRange.size(); i++) {
+			FieldGroup rfg = allRange.get(i);
+			FieldGroup mfg = allMat.get(i);
+			sf[i] = new ServiceFees();
+			sf[i].setMinimumamount(BigDecimal.valueOf(Float.valueOf(rfg
+					.getField("Min").getValue().toString())));
+			sf[i].setMaximumamount(BigDecimal.valueOf(Float.valueOf(rfg
+					.getField("Max").getValue().toString())));
+
+			sf[i].setServicefeetype(mfg.getField("Mat").getValue().toString());
+			sf[i].setServicefee(BigDecimal.valueOf(Float.valueOf(mfg
+					.getField("Amt").getValue().toString())));
+			sf[i].setTransactiontypeid(txID);
+		}
+
+		ArrayList<ArrayList<FieldGroup>> allCommFG = hmAllFG.get(COMMISSION);
+		allRange = allCommFG.get(0);
+		allMat = allCommFG.get(1);
+		ArrayList<FieldGroup> arrLDFG = allCommFG.get(2);
+		FieldGroup dfg = arrLDFG.get(0);
+		String conType = dfg.getField("CONID").getValue().toString();
+		String modType = dfg.getField("MODID").getValue().toString();
+
+		ServiceCommission[] sc = new ServiceCommission[allRange.size()];
+		for (int i = 0; i < allRange.size(); i++) {
+			FieldGroup rfg = allRange.get(i);
+			FieldGroup mfg = allMat.get(i);
+			sc[i] = new ServiceCommission();
+			sc[i].setMinimumamount(BigDecimal.valueOf(Float.valueOf(rfg
+					.getField("Min").getValue().toString())));
+			sc[i].setMaximumamount(BigDecimal.valueOf(Float.valueOf(rfg
+					.getField("Max").getValue().toString())));
+			sc[i].setServicecommissioncondition(conType);
+			sc[i].setServicecommissionmodeltype(modType);
+
+			sc[i].setCommissionfeetype(mfg.getField("Mat").getValue()
+					.toString());
+			sc[i].setCommissionfee(BigDecimal.valueOf(Float.valueOf(mfg
+					.getField("Amt").getValue().toString())));
+			sc[i].setTransactiontypeid(txID);
+
+		}
+
+		CommissionService cs = new CommissionService();
+		try {
+			if (cs.setFeesAndCommission(opID, txID, sc, sf)) {
+				Notification.show("Tariff Information Saved Successfully!");
+			} else {
+				Notification.show("Tariff Information Saving failed.");
+			}
+		} catch (Exception ce) {
+			ce.printStackTrace();
+			return;
+		}
+
+	}
+
 	private boolean isReadyToCommit(String type, FieldGroup dfg) {
+		comboOp.setRequired(false);
+		if (comboOp.getValue().toString().trim().isEmpty()) {
+			comboOp.setRequired(true);
+			Notification.show("Field marked with (*) is required.");
+			return false;
+		}
+
+		comboTxType.setRequired(false);
+		if (comboTxType.getValue().toString().trim().isEmpty()) {
+			comboTxType.setRequired(true);
+			Notification.show("Field marked with (*) is required.");
+			return false;
+		}
+
 		try {
 			dfg.commit();
 		} catch (CommitException e1) {
@@ -786,25 +878,40 @@ public class FeesAndCommModule {
 		 */
 		lookedTab = type;
 		confCount++;
-		if (type.equals("fees") && confCount < 2) {
+
+		arrLDFG.add(dfg);
+		arrLAllFG.add(arrLRangeFG);
+		arrLAllFG.add(arrLMatFG);
+		arrLAllFG.add(arrLDFG);
+		hmAllFG.put(type, arrLAllFG);
+
+		if (type.equals(FEES) && confCount < 2) {
+			// Notification.show(String.valueOf(hmAllFG.size()));
+
+			//
+			// Notification.show(String.valueOf(hmAllFG.size()));
 			UI.getCurrent()
 					.getSession()
 					.setAttribute(
 							WorkSpaceManageFeesAndComm.SESSION_WSMP_CUR_ACTION,
-							"Commission");
+							COMMISSION);
 			Settings.wmfac.wsmpModifier();
 			ManageFeesAndCommModule.btnFees.setStyleName("btn_tab_like");
 			ManageFeesAndCommModule.btnFees.setEnabled(true);
 			ManageFeesAndCommModule.btnComm
 					.setStyleName("btn_tab_like btn_tab_like_active");
 			ManageFeesAndCommModule.btnComm.setEnabled(false);
-		} else if (type.equals("Commission") && confCount < 2) {
+
+		} else if (type.equals(COMMISSION) && confCount < 2) {
+			// Notification.show(String.valueOf(hmAllFG.size()));
+
+			// Notification.show(String.valueOf(hmAllFG.size()));
 
 			UI.getCurrent()
 					.getSession()
 					.setAttribute(
 							WorkSpaceManageFeesAndComm.SESSION_WSMP_CUR_ACTION,
-							"fees");
+							FEES);
 			Settings.wmfac.wsmpModifier();
 
 			ManageFeesAndCommModule.btnFees

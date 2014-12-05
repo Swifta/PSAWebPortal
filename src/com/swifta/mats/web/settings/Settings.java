@@ -179,7 +179,7 @@ public class Settings extends VerticalLayout {
 										.getSession()
 										.setAttribute(
 												WorkSpaceManageFeesAndComm.SESSION_WSMP_CUR_ACTION,
-												"Commission");
+												FeesAndCommModule.COMMISSION);
 								wmfac.wsmpModifier();
 							}
 						});
@@ -195,7 +195,7 @@ public class Settings extends VerticalLayout {
 										.getSession()
 										.setAttribute(
 												WorkSpaceManageFeesAndComm.SESSION_WSMP_CUR_ACTION,
-												"fees");
+												FeesAndCommModule.FEES);
 								wmfac.wsmpModifier();
 							}
 						});
