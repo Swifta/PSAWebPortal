@@ -38,19 +38,30 @@ public class FeesAndCommModule {
 	private ArrayList<FieldGroup> arrLMatFG;
 	private boolean isTiered;
 	private static String lookedTab = null;
-	private static Integer selOp = null;
 	private ComboBox comboOp;
+	private ComboBox comboTxType;
 	private int confCount = 0;
 
 	public FeesAndCommModule() {
 		udm = new UserDetailsModule();
-		comboOp = new ComboBox();
+		comboOp = new ComboBox("Operator");
 		comboOp.addItem(1);
 		comboOp.setItemCaption(1, "Teasy");
 		comboOp.addItem(2);
 		comboOp.setItemCaption(2, "Pocket Money");
 		comboOp.select(1);
-		selOp = 1;
+		comboTxType = new ComboBox("Transaction Type");
+		comboTxType.addItem(1);
+		comboTxType.setItemCaption(1, "Cash-in");
+		comboTxType.addItem(2);
+		comboTxType.setItemCaption(2, "Cash-out");
+		comboTxType.addItem(3);
+		comboTxType.setItemCaption(3, "Airtime topup");
+		comboTxType.addItem(4);
+		comboTxType.setItemCaption(4, "Money Transfer");
+		comboTxType.addItem(5);
+		comboTxType.setItemCaption(5, "Bill Payment");
+		comboTxType.select(1);
 
 	}
 
@@ -468,44 +479,16 @@ public class FeesAndCommModule {
 		comboModelType.setItemCaption(2, "None");
 		comboModelType.select(1);
 
-		final ComboBox comboTxType = new ComboBox("Transaction Type");
-
-		if (type.equals("fees")) {
-			comboTxType.addItem(1);
-			comboTxType.setItemCaption(1, "Send money to registered user");
-			comboTxType.addItem(2);
-			comboTxType.setItemCaption(2, "Send Modney to unregistered user");
-			comboTxType.addItem(3);
-			comboTxType.setItemCaption(3, "Withdraw Money from Agent");
-			comboTxType.select(1);
-		} else {
-			comboTxType.addItem(1);
-			comboTxType.setItemCaption(1, "Cash-in");
-			comboTxType.addItem(2);
-			comboTxType.setItemCaption(2, "Cash-out");
-			comboTxType.addItem(3);
-			comboTxType.setItemCaption(3, "Airtime topup");
-			comboTxType.addItem(4);
-			comboTxType.setItemCaption(4, "Money Transfer");
-			comboTxType.addItem(5);
-			comboTxType.setItemCaption(5, "Bill Payment");
-			comboTxType.select(1);
-
-		}
-
 		Item row = new PropertysetItem();
 
 		Property<Integer> pconTypeID = new ObjectProperty<Integer>(1);
 		Property<Integer> pmodelTypeID = new ObjectProperty<Integer>(1);
-		Property<Integer> pTxTypeID = new ObjectProperty<Integer>(1);
 		row.addItemProperty("CONID", pconTypeID);
 		row.addItemProperty("MODID", pmodelTypeID);
-		row.addItemProperty("TXID", pTxTypeID);
 
 		final FieldGroup fg = new FieldGroup(row);
-		fg.bind(comboTxType, "TXID");
-		fg.bind(comboModelType, "MODID");
 		fg.bind(comboConditionType, "CONID");
+		fg.bind(comboModelType, "MODID");
 
 		fg.addCommitHandler(new CommitHandler() {
 			private static final long serialVersionUID = 6144936023943646696L;
@@ -680,7 +663,6 @@ public class FeesAndCommModule {
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				tFOp.setValue(comboOp.getItemCaption(comboOp.getValue()));
-				selOp = Integer.valueOf(comboOp.getValue().toString());
 			}
 
 		});
@@ -846,8 +828,10 @@ public class FeesAndCommModule {
 		if (lookedTab != null) {
 			if (lookedTab.equals(strTbName)) {
 				comboOp.setEnabled(true);
+				comboTxType.setEnabled(true);
 			} else {
 				comboOp.setEnabled(false);
+				comboTxType.setEnabled(false);
 			}
 		}
 		cContent.removeAllComponents();
