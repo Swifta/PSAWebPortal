@@ -54,6 +54,8 @@ public class Settings extends VerticalLayout {
 	Button BulkImport = new Button("Bulk Import");
 	Button back = new Button();
 
+	public static WorkSpaceManageFeesAndComm wmfac;
+
 	ComboBox selection = new ComboBox();
 	Button createAccount = new Button("Create");
 	Button cancelAccount = new Button("Cancel");
@@ -153,7 +155,7 @@ public class Settings extends VerticalLayout {
 
 			@Override
 			public void layoutClick(LayoutClickEvent event) {
-				final WorkSpaceManageFeesAndComm wmfac = new WorkSpaceManageFeesAndComm();
+				wmfac = new WorkSpaceManageFeesAndComm();
 				VerticalLayout cmfac = wmfac.getWorkSpaceAccountProfile();
 
 				cmfac.addComponent(back);

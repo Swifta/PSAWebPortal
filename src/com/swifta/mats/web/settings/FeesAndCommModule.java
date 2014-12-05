@@ -1,14 +1,8 @@
 package com.swifta.mats.web.settings;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 
 import com.swifta.mats.web.usermanagement.UserDetailsModule;
-import com.swifta.mats.web.utils.CommissionService;
-import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ServiceCommission;
-import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ServiceFeematrix;
-import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ServiceFees;
-import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ServiceFeesInterfaceChoice_type0;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -33,6 +27,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 //import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 public class FeesAndCommModule {
@@ -41,12 +36,21 @@ public class FeesAndCommModule {
 	private ArrayList<VerticalLayout> cArrLItemContent;
 	private ArrayList<FieldGroup> arrLRangeFG;
 	private ArrayList<FieldGroup> arrLMatFG;
-	private ArrayList<FieldGroup> arrLOthersFG;
-
 	private boolean isTiered;
+	private static String lookedTab = null;
+	private static Integer selOp = null;
+	private ComboBox comboOp;
+	private int confCount = 0;
 
 	public FeesAndCommModule() {
 		udm = new UserDetailsModule();
+		comboOp = new ComboBox();
+		comboOp.addItem(1);
+		comboOp.setItemCaption(1, "Teasy");
+		comboOp.addItem(2);
+		comboOp.setItemCaption(2, "Pocket Money");
+		comboOp.select(1);
+		selOp = 1;
 
 	}
 
@@ -421,21 +425,11 @@ public class FeesAndCommModule {
 
 	}
 
-	public HorizontalLayout getFeesContainer(String type) {
+	public HorizontalLayout getFeesContainer(final String type) {
 
 		cArrLItemContent = new ArrayList<>(4);
 		arrLRangeFG = new ArrayList<>();
 		arrLMatFG = new ArrayList<>();
-		arrLOthersFG = new ArrayList<>();
-		Item row = new PropertysetItem();
-		Property<Integer> pOpID = new ObjectProperty<Integer>(1);
-		Property<Integer> pconTypeID = new ObjectProperty<Integer>(1);
-		Property<Integer> pmodelTypeID = new ObjectProperty<Integer>(1);
-		Property<Integer> pTxTypeID = new ObjectProperty<Integer>(1);
-		row.addItemProperty("OPID", pOpID);
-		row.addItemProperty("CONID", pconTypeID);
-		row.addItemProperty("MODID", pmodelTypeID);
-		row.addItemProperty("TXID", pTxTypeID);
 		isTiered = true;
 
 		HorizontalLayout cManage = new HorizontalLayout();
@@ -459,13 +453,6 @@ public class FeesAndCommModule {
 
 		cChoose.addComponent(lbAddUser);
 		Label lbChoose = new Label("Please choose...");
-
-		final ComboBox comboOp = new ComboBox("Operator");
-		comboOp.addItem(1);
-		comboOp.setItemCaption(1, "Teasy");
-		comboOp.addItem(2);
-		comboOp.setItemCaption(2, "Pocket Money");
-		comboOp.select(1);
 
 		final ComboBox comboConditionType = new ComboBox("Condition Type");
 		comboConditionType.addItem(1);
@@ -506,11 +493,19 @@ public class FeesAndCommModule {
 
 		}
 
+		Item row = new PropertysetItem();
+
+		Property<Integer> pconTypeID = new ObjectProperty<Integer>(1);
+		Property<Integer> pmodelTypeID = new ObjectProperty<Integer>(1);
+		Property<Integer> pTxTypeID = new ObjectProperty<Integer>(1);
+		row.addItemProperty("CONID", pconTypeID);
+		row.addItemProperty("MODID", pmodelTypeID);
+		row.addItemProperty("TXID", pTxTypeID);
+
 		final FieldGroup fg = new FieldGroup(row);
 		fg.bind(comboTxType, "TXID");
 		fg.bind(comboModelType, "MODID");
 		fg.bind(comboConditionType, "CONID");
-		fg.bind(comboOp, "OPID");
 
 		fg.addCommitHandler(new CommitHandler() {
 			private static final long serialVersionUID = 6144936023943646696L;
@@ -685,6 +680,7 @@ public class FeesAndCommModule {
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				tFOp.setValue(comboOp.getItemCaption(comboOp.getValue()));
+				selOp = Integer.valueOf(comboOp.getValue().toString());
 			}
 
 		});
@@ -761,95 +757,15 @@ public class FeesAndCommModule {
 				/*
 				 * Commit to server.
 				 */
-				try {
-					fg.commit();
-				} catch (CommitException e1) {
-					e1.printStackTrace();
+				if (isReadyToCommit(type, fg)) {
+					/*
+					 * Ready to commit to server.
+					 */
+
+					Notification.show("Goddamn ready to commit.");
 					return;
-				}
-
-				for (FieldGroup fg : arrLRangeFG) {
-					try {
-						fg.commit();
-					} catch (CommitException e) {
-						e.printStackTrace();
-						return;
-					}
-				}
-				for (FieldGroup fg : arrLMatFG) {
-					try {
-						fg.commit();
-					} catch (CommitException e) {
-						e.printStackTrace();
-						return;
-					}
-				}
-
-				/*
-				 * Ready to commit valid values to the server.
-				 */
-
-				try {
-					CommissionService cs = new CommissionService();
-					String opid = fg.getField("OPID").getValue().toString();
-					int transId = Integer.valueOf(fg.getField("TXID")
-							.getValue().toString());
-					BigDecimal minAmount = new BigDecimal(0.0), maxAmount = new BigDecimal(
-							0.0), serviceFee = new BigDecimal(0.0), commissionFee = new BigDecimal(
-							0.0);
-					int commissionCount = 4, transactionTypeId = 5;
-					ServiceCommission[] serviceCommission = new ServiceCommission[commissionCount];
-					ServiceCommission newServiceCommission = new ServiceCommission();
-
-					for (int i = 0; i < commissionCount; i++) {
-						newServiceCommission.setCommissionfee(commissionFee);
-						newServiceCommission.setCommissionfeetype("PERCENT");
-						newServiceCommission.setMaximumamount(minAmount);
-						newServiceCommission.setMinimumamount(maxAmount);
-						newServiceCommission
-								.setServicecommissioncondition("FEE");
-						newServiceCommission
-								.setServicecommissionmodeltype("NOTAPPLICABLE");
-						// either cashin cashout ID
-						newServiceCommission
-								.setTransactiontypeid(transactionTypeId);
-						serviceCommission[i] = newServiceCommission;
-					}
-					int feeCount = 4;
-					ServiceFees[] serviceFeesArray = new ServiceFees[feeCount];
-					ServiceFees serviceFees = new ServiceFees();
-					for (int i = 0; i < feeCount; i++) {
-						ServiceFeesInterfaceChoice_type0 feeType = new ServiceFeesInterfaceChoice_type0();
-
-						String serviceFeeType = ServiceFeematrix.PERCENT
-								.toString();
-						feeType.setMaximumamount(maxAmount);
-						feeType.setMinimumamount(minAmount);
-						feeType.setServicefee(serviceFee);
-						feeType.setTransactiontypeid(transactionTypeId);
-						feeType.setServicefeetype(ServiceFeematrix.PERCENT);
-
-						ServiceFeesInterfaceChoice_type0[] feeTypeArray = new ServiceFeesInterfaceChoice_type0[1];
-						feeTypeArray[0] = feeType;
-						serviceFees.setMaximumamount(maxAmount);
-						serviceFees.setMinimumamount(minAmount);
-						// serviceFees.setServicefee();
-						serviceFees
-								.setServiceFeesInterfaceChoice_type0(feeTypeArray);
-						serviceFees.setServicefeetype(serviceFeeType);
-						serviceFees.setTransactiontypeid(transactionTypeId);
-
-						serviceFeesArray[i] = serviceFees;
-					}
-					if (cs.setFeesAndCommission(opid, transId,
-							serviceCommission, serviceFeesArray)) {
-						Notification
-								.show("Commission Tariff successfully saved.");
-					} else {
-						Notification.show("Commission Tariff Saving failed.");
-					}
-				} catch (Exception e) {
-					Notification.show("Could not connect.");
+				} else {
+					return;
 				}
 
 			}
@@ -858,13 +774,82 @@ public class FeesAndCommModule {
 		return cManage;
 	}
 
+	private boolean isReadyToCommit(String type, FieldGroup dfg) {
+		try {
+			dfg.commit();
+		} catch (CommitException e1) {
+			e1.printStackTrace();
+			return false;
+		}
+
+		for (FieldGroup fg : arrLRangeFG) {
+			try {
+				fg.commit();
+			} catch (CommitException e) {
+				e.printStackTrace();
+				return false;
+			}
+		}
+		for (FieldGroup fg : arrLMatFG) {
+			try {
+				fg.commit();
+			} catch (CommitException e) {
+				e.printStackTrace();
+				return false;
+			}
+		}
+
+		/*
+		 * Ready to commit valid values to the server.
+		 */
+		lookedTab = type;
+		confCount++;
+		if (type.equals("fees") && confCount < 2) {
+			UI.getCurrent()
+					.getSession()
+					.setAttribute(
+							WorkSpaceManageFeesAndComm.SESSION_WSMP_CUR_ACTION,
+							"Commission");
+			Settings.wmfac.wsmpModifier();
+			ManageFeesAndCommModule.btnFees.setStyleName("btn_tab_like");
+			ManageFeesAndCommModule.btnFees.setEnabled(true);
+			ManageFeesAndCommModule.btnComm
+					.setStyleName("btn_tab_like btn_tab_like_active");
+			ManageFeesAndCommModule.btnComm.setEnabled(false);
+		} else if (type.equals("Commission") && confCount < 2) {
+
+			UI.getCurrent()
+					.getSession()
+					.setAttribute(
+							WorkSpaceManageFeesAndComm.SESSION_WSMP_CUR_ACTION,
+							"fees");
+			Settings.wmfac.wsmpModifier();
+
+			ManageFeesAndCommModule.btnFees
+					.setStyleName("btn_tab_like btn_tab_like_active");
+			ManageFeesAndCommModule.btnFees.setEnabled(false);
+			ManageFeesAndCommModule.btnComm.setStyleName("btn_tab_like");
+			ManageFeesAndCommModule.btnComm.setEnabled(true);
+
+		} else {
+			return true;
+		}
+		return false;
+	}
+
 	public HorizontalLayout getFeesForm(String strTbName, String strID,
 			boolean a, boolean b) {
 		return null;
 	}
 
 	public void apmModifier(String strTbName, HorizontalLayout cContent) {
-
+		if (lookedTab != null) {
+			if (lookedTab.equals(strTbName)) {
+				comboOp.setEnabled(true);
+			} else {
+				comboOp.setEnabled(false);
+			}
+		}
 		cContent.removeAllComponents();
 		cContent.addComponent(getFeesContainer(strTbName));
 
