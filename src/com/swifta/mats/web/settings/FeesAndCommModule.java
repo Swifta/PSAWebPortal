@@ -3,6 +3,7 @@ package com.swifta.mats.web.settings;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 import com.swifta.mats.web.usermanagement.UserDetailsModule;
 import com.swifta.mats.web.utils.CommissionService;
@@ -39,6 +40,8 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 public class FeesAndCommModule {
+	private static final Logger logger = Logger
+			.getLogger(FeesAndCommModule.class.getName());
 	UserDetailsModule udm;
 	HorizontalLayout udc;
 	private ArrayList<VerticalLayout> cArrLItemContent;
@@ -85,11 +88,11 @@ public class FeesAndCommModule {
 		VerticalLayout cMat = cArrLItemContent.get(2);
 		VerticalLayout cAmt = cArrLItemContent.get(3);
 		final ComboBox comboMat = new ComboBox();
-		comboMat.addItem(1);
-		comboMat.setItemCaption(1, "%ge");
-		comboMat.addItem(2);
-		comboMat.setItemCaption(2, "Fixed");
-		comboMat.select(2);
+		comboMat.addItem("PERCENT");
+		comboMat.setItemCaption("PERCENT", "PERCENT");
+		comboMat.addItem("FIXED");
+		comboMat.setItemCaption("FIXED", "FIXED");
+		comboMat.select("FIXED");
 
 		final TextField tfAmt = new TextField();
 		cMat.addComponent(comboMat);
@@ -121,7 +124,7 @@ public class FeesAndCommModule {
 					throws CommitException {
 				tfAmt.setRequired(false);
 				comboMat.setRequired(false);
-				if ((int) comboMat.getValue() == 0) {
+				if (comboMat.getValue().toString().equalsIgnoreCase("0")) {
 					comboMat.setRequired(true);
 					Notification.show("Fields marked with (*) are required.");
 					throw new CommitException("Field required.");
@@ -356,7 +359,7 @@ public class FeesAndCommModule {
 		private static final long serialVersionUID = 8429528148551522733L;
 		private ComboBox comboMat;
 		private TextField tfAmt;
-		private Integer mat;
+		private String mat;
 		private Float vAmt;
 
 		MatrixHouseKeeper(ComboBox comboMat, TextField tfAmt) {
@@ -380,7 +383,7 @@ public class FeesAndCommModule {
 				throw new InvalidValueException("Only Numbers.");
 			}
 
-			mat = (Integer) comboMat.getValue();
+			mat = (String) comboMat.getValue();
 			String sAmt = tfAmt.getValue().trim();
 
 			try {
@@ -390,7 +393,7 @@ public class FeesAndCommModule {
 				throw new InvalidValueException("Only Numbers.");
 			}
 
-			if (mat == 1 && vAmt > 100) {
+			if (mat.equalsIgnoreCase("PERCENT") && vAmt > 100) {
 				throw new InvalidValueException("Invalid Percentage.");
 			}
 
@@ -485,18 +488,18 @@ public class FeesAndCommModule {
 		Label lbChoose = new Label("Please choose...");
 
 		final ComboBox comboConditionType = new ComboBox("Condition Type");
-		comboConditionType.addItem(1);
-		comboConditionType.setItemCaption(1, "Amount");
-		comboConditionType.addItem(2);
-		comboConditionType.setItemCaption(2, "Fee");
-		comboConditionType.select(1);
+		comboConditionType.addItem("AMOUNT");
+		comboConditionType.setItemCaption("AMOUNT", "AMOUNT");
+		comboConditionType.addItem("FEE");
+		comboConditionType.setItemCaption("FEE", "FEE");
+		comboConditionType.select("AMOUNT");
 
 		final ComboBox comboModelType = new ComboBox("Model Type");
-		comboModelType.addItem(1);
-		comboModelType.setItemCaption(1, "Tiered");
-		comboModelType.addItem(2);
-		comboModelType.setItemCaption(2, "None");
-		comboModelType.select(1);
+		comboModelType.addItem("TIERED");
+		comboModelType.setItemCaption("TIERED", "TIERED");
+		comboModelType.addItem("NOTAPPLICABLE");
+		comboModelType.setItemCaption("NOTAPPLICABLE", "NOT APPLICABLE");
+		comboModelType.select("TIERED");
 
 		Item row = new PropertysetItem();
 
@@ -791,7 +794,8 @@ public class FeesAndCommModule {
 
 			sf[i].setServicefeetype(ServiceFeematrix.Factory.fromValue(mfg
 					.getField("Mat").getValue().toString()));
-
+			logger.info("Service Fee type caption--------------------------->>>>>>"
+					+ mfg.getField("Mat").getValue().toString());
 			// Enum.valueOf(enumType, name)
 			sf[i].setServicefee(BigDecimal.valueOf(Float.valueOf(mfg
 					.getField("Amt").getValue().toString())));
@@ -825,6 +829,8 @@ public class FeesAndCommModule {
 		FieldGroup dfg = arrLDFG.get(0);
 		String conType = dfg.getField("CONID").getValue().toString();
 		String modType = dfg.getField("MODID").getValue().toString();
+		logger.info(conType + "<<<<<--------------------------->>>>>>"
+				+ modType);
 
 		ServiceCommission[] sc = new ServiceCommission[allRange.size()];
 		for (int i = 0; i < allRange.size(); i++) {
