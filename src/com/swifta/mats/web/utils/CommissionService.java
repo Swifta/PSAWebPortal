@@ -9,6 +9,7 @@ import com.swifta.sub.mats.operation.financial.v1_0.FinancialsStub.StatusCode;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ServiceCommission;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ServiceFees;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ServiceFeesInterfaceChoice_type0;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Servicefeeandcomissionrequestresponse;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Setupservicefeesandcommission;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.SetupservicefeesandcommissionE;
@@ -31,57 +32,81 @@ public class CommissionService {
 		Setupservicefeesandcommission setupservicefeesandcommission = new Setupservicefeesandcommission();
 		setupservicefeesandcommissionE
 				.setSetupservicefeesandcommission(setupservicefeesandcommission);
+		logger.info("--------------------------After setting setup fees and commission"
+				+ setupservicefeesandcommission);
+		ServiceCommission newServiceCommission = new ServiceCommission();
 
-		/*
-		 * BigDecimal minAmount = new BigDecimal(0.0), maxAmount = new
-		 * BigDecimal( 0.0), serviceFee = new BigDecimal(0.0), commissionFee =
-		 * new BigDecimal( 0.0); int commissionCount = 4; ServiceCommission[]
-		 * serviceCommission = new ServiceCommission[commissionCount];
-		 * ServiceCommission newServiceCommission = new ServiceCommission();
-		 * 
-		 * for (int i = 0; i < commissionCount; i++) {
-		 * newServiceCommission.setCommissionfee(commissionFee);
-		 * newServiceCommission.setCommissionfeetype("PERCENT");
-		 * newServiceCommission.setMaximumamount(minAmount);
-		 * newServiceCommission.setMinimumamount(maxAmount);
-		 * newServiceCommission.setServicecommissioncondition("FEE");
-		 * newServiceCommission.setServicecommissionmodeltype("NOTAPPLICABLE");
-		 * // either cashin cashout ID
-		 * newServiceCommission.setTransactiontypeid(transactionTypeId);
-		 * serviceCommission[i] = newServiceCommission; }
-		 */
+		for (int i = 0; i < serviceCommissionArray.length; i++) {
+			logger.info("--------------------------Iterating commission:::"
+					+ serviceCommissionArray[i].getCommissionfee());
+			logger.info("--------------------------Iterating commission:::"
+					+ serviceCommissionArray[i].getCommissionfeetype());
+			logger.info("--------------------------Iterating commission:::"
+					+ serviceCommissionArray[i].getMaximumamount());
+			logger.info("--------------------------Iterating commission:::"
+					+ serviceCommissionArray[i].getMinimumamount());
+			logger.info("--------------------------Iterating commission:::"
+					+ serviceCommissionArray[i].getServicecommissioncondition());
+			logger.info("--------------------------Iterating commission:::"
+					+ serviceCommissionArray[i].getServicecommissionmodeltype());
+			// either cashin cashout ID
+			logger.info("--------------------------Iterating commission:::"
+					+ serviceCommissionArray[i].getTransactiontypeid());
+		}
+
 		setupservicefeesandcommission
 				.setServicecommissiondetails(serviceCommissionArray);
+		logger.info("--------------------------After setting commission array "
+				+ serviceCommissionArray);
+		logger.info("--------------------------After setting commission array size is"
+				+ serviceCommissionArray.length);
+		for (int i = 0; i < serviceFeesArray.length; i++) {
+			ServiceFeesInterfaceChoice_type0 feeType = new ServiceFeesInterfaceChoice_type0();
 
-		/*
-		 * int feeCount = 4; ServiceFees[] serviceFeesArra = new
-		 * ServiceFees[feeCount]; ServiceFees serviceFees = new ServiceFees();
-		 * for (int i = 0; i < feeCount; i++) { ServiceFeesInterfaceChoice_type0
-		 * feeType = new ServiceFeesInterfaceChoice_type0();
-		 * 
-		 * String serviceFeeType = ServiceFeematrix.PERCENT.toString();
-		 * feeType.setMaximumamount(maxAmount);
-		 * feeType.setMinimumamount(minAmount);
-		 * feeType.setServicefee(serviceFee);
-		 * feeType.setTransactiontypeid(transactionTypeId);
-		 * feeType.setServicefeetype(ServiceFeematrix.PERCENT);
-		 * 
-		 * ServiceFeesInterfaceChoice_type0[] feeTypeArray = new
-		 * ServiceFeesInterfaceChoice_type0[1]; feeTypeArray[0] = feeType;
-		 * serviceFees.setMaximumamount(maxAmount);
-		 * serviceFees.setMinimumamount(minAmount); //
-		 * serviceFees.setServicefee();
-		 * serviceFees.setServiceFeesInterfaceChoice_type0(feeTypeArray);
-		 * serviceFees.setServicefeetype(serviceFeeType);
-		 * serviceFees.setTransactiontypeid(transactionTypeId);
-		 * 
-		 * serviceFeesArra[i] = serviceFees; }
-		 */
+			ServiceFeesInterfaceChoice_type0[] feeTypeArray = new ServiceFeesInterfaceChoice_type0[1];
+			feeTypeArray[0] = feeType;
+			logger.info("--------------------------Iterating service fee:::"
+					+ serviceFeesArray[i].getMaximumamount());
+			logger.info("--------------------------Iterating commission:::"
+					+ serviceFeesArray[i].getMinimumamount()); //
+			logger.info("--------------------------Iterating service fee:::"
+					+ serviceFeesArray[i].getServicefee());
+			feeTypeArray = serviceFeesArray[i]
+					.getServiceFeesInterfaceChoice_type0();
+			for (int j = 0; j < feeTypeArray.length; j++) {
+				logger.info("--------------------------Iterating service fee type:::"
+						+ feeTypeArray[j].getMaximumamount());
+				logger.info("--------------------------Iterating service fee type:::"
+						+ feeTypeArray[j].getMinimumamount());
+				logger.info("--------------------------Iterating service fee type:::"
+						+ feeTypeArray[j].getServicefee());
+				logger.info("--------------------------Iterating service fee type:::"
+						+ feeTypeArray[j].getTransactiontypeid());
+				logger.info("--------------------------Iterating service fee type:::"
+						+ feeTypeArray[j].getServicefeetype());
+			}
+
+			logger.info("--------------------------Iterating service fee:::"
+					+ serviceFeesArray[i].getServicefeetype());
+			logger.info("--------------------------Iterating service fee:::"
+					+ serviceFeesArray[i].getTransactiontypeid());
+
+		}
+
 		setupservicefeesandcommission
 				.setServicefeecondition(serviceFeeCondition);
+		logger.info("--------------------------After setting service fee condition "
+				+ serviceFeeCondition);
 		setupservicefeesandcommission.setServicefeedetails(serviceFeesArray);
+		logger.info("--------------------------After setting service fees array "
+				+ serviceFeesArray);
+		logger.info("--------------------------After setting service fees array size "
+				+ serviceFeesArray.length);
 		setupservicefeesandcommission.setServicefeemodel(serviceFeeModel);
+		logger.info("--------------------------After service fee model "
+				+ serviceFeeModel);
 		setupservicefeesandcommission.setSpaccountholderid(mmoId);
+		logger.info("--------------------------After setting mmoId " + mmoId);
 
 		SetupservicefeesandcommissionResponseE feesAndCommissionResponseE = new SetupservicefeesandcommissionResponseE();
 		try {

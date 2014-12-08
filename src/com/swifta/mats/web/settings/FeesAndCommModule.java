@@ -7,7 +7,9 @@ import java.util.HashMap;
 import com.swifta.mats.web.usermanagement.UserDetailsModule;
 import com.swifta.mats.web.utils.CommissionService;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ServiceCommission;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ServiceFeematrix;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ServiceFees;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ServiceFeesInterfaceChoice_type0;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -790,6 +792,22 @@ public class FeesAndCommModule {
 			sf[i].setServicefee(BigDecimal.valueOf(Float.valueOf(mfg
 					.getField("Amt").getValue().toString())));
 			sf[i].setTransactiontypeid(txID);
+			// new codes from kachi starts here
+			ServiceFeesInterfaceChoice_type0 feeType = new ServiceFeesInterfaceChoice_type0();
+
+			String serviceFeeType = ServiceFeematrix.PERCENT.toString();
+			feeType.setMaximumamount(sf[i].getMaximumamount());
+			feeType.setMinimumamount(sf[i].getMinimumamount());
+			feeType.setServicefee(sf[i].getServicefee());
+			feeType.setTransactiontypeid(txID);
+			// feeType.setServicefeetype(ServiceFeematrix.valueOf(mfg.getField("Mat").getValue().toString()));
+			feeType.setServicefeetype(ServiceFeematrix.PERCENT);
+
+			ServiceFeesInterfaceChoice_type0[] feeTypeArray = new ServiceFeesInterfaceChoice_type0[1];
+			feeTypeArray[0] = feeType;
+
+			sf[i].setServiceFeesInterfaceChoice_type0(feeTypeArray);
+			// codes from kachi ended here
 		}
 
 		ArrayList<ArrayList<FieldGroup>> allCommFG = hmAllFG.get(COMMISSION);
