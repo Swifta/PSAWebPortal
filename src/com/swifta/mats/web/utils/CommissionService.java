@@ -8,8 +8,9 @@ import org.apache.axis2.AxisFault;
 import com.swifta.sub.mats.operation.financial.v1_0.FinancialsStub.StatusCode;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ServiceCommission;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ServiceFeeConditionTypes;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ServiceFeeModelTypes;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ServiceFees;
-import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ServiceFeesInterfaceChoice_type0;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Servicefeeandcomissionrequestresponse;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Setupservicefeesandcommission;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.SetupservicefeesandcommissionE;
@@ -25,8 +26,6 @@ public class CommissionService {
 			ServiceCommission[] serviceCommissionArray,
 			ServiceFees[] serviceFeesArray) {
 		boolean status = false;
-		String serviceFeeModel = "TIERED";
-		String serviceFeeCondition = "TRANSACTIONTYPE";
 		logger.info("--------------------------Inside Fees and Commission");
 		SetupservicefeesandcommissionE setupservicefeesandcommissionE = new SetupservicefeesandcommissionE();
 		Setupservicefeesandcommission setupservicefeesandcommission = new Setupservicefeesandcommission();
@@ -61,31 +60,33 @@ public class CommissionService {
 		logger.info("--------------------------After setting commission array size is"
 				+ serviceCommissionArray.length);
 		for (int i = 0; i < serviceFeesArray.length; i++) {
-			ServiceFeesInterfaceChoice_type0 feeType = new ServiceFeesInterfaceChoice_type0();
+			// ServiceFeesInterfaceChoice_type0 feeType = new
+			// ServiceFeesInterfaceChoice_type0();
 
-			ServiceFeesInterfaceChoice_type0[] feeTypeArray = new ServiceFeesInterfaceChoice_type0[1];
-			feeTypeArray[0] = feeType;
+			// ServiceFeesInterfaceChoice_type0[] feeTypeArray = new
+			// ServiceFeesInterfaceChoice_type0[1];
+			// feeTypeArray[0] = feeType;
 			logger.info("--------------------------Iterating service fee:::"
 					+ serviceFeesArray[i].getMaximumamount());
 			logger.info("--------------------------Iterating commission:::"
 					+ serviceFeesArray[i].getMinimumamount()); //
 			logger.info("--------------------------Iterating service fee:::"
 					+ serviceFeesArray[i].getServicefee());
-			feeTypeArray = serviceFeesArray[i]
-					.getServiceFeesInterfaceChoice_type0();
-			for (int j = 0; j < feeTypeArray.length; j++) {
-				logger.info("--------------------------Iterating service fee type:::"
-						+ feeTypeArray[j].getMaximumamount());
-				logger.info("--------------------------Iterating service fee type:::"
-						+ feeTypeArray[j].getMinimumamount());
-				logger.info("--------------------------Iterating service fee type:::"
-						+ feeTypeArray[j].getServicefee());
-				logger.info("--------------------------Iterating service fee type:::"
-						+ feeTypeArray[j].getTransactiontypeid());
-				logger.info("--------------------------Iterating service fee type:::"
-						+ feeTypeArray[j].getServicefeetype());
-			}
-
+			/*
+			 * feeTypeArray = serviceFeesArray[i]
+			 * .getServiceFeesInterfaceChoice_type0(); for (int j = 0; j <
+			 * feeTypeArray.length; j++) {
+			 * logger.info("--------------------------Iterating service fee type:::"
+			 * + feeTypeArray[j].getMaximumamount());
+			 * logger.info("--------------------------Iterating service fee type:::"
+			 * + feeTypeArray[j].getMinimumamount());
+			 * logger.info("--------------------------Iterating service fee type:::"
+			 * + feeTypeArray[j].getServicefee());
+			 * logger.info("--------------------------Iterating service fee type:::"
+			 * + feeTypeArray[j].getTransactiontypeid());
+			 * logger.info("--------------------------Iterating service fee type:::"
+			 * + feeTypeArray[j].getServicefeetype()); }
+			 */
 			logger.info("--------------------------Iterating service fee:::"
 					+ serviceFeesArray[i].getServicefeetype());
 			logger.info("--------------------------Iterating service fee:::"
@@ -94,17 +95,18 @@ public class CommissionService {
 		}
 
 		setupservicefeesandcommission
-				.setServicefeecondition(serviceFeeCondition);
+				.setServicefeecondition(ServiceFeeConditionTypes.TRANSACTIONTYPE);
 		logger.info("--------------------------After setting service fee condition "
-				+ serviceFeeCondition);
+				+ ServiceFeeConditionTypes.TRANSACTIONTYPE);
 		setupservicefeesandcommission.setServicefeedetails(serviceFeesArray);
 		logger.info("--------------------------After setting service fees array "
 				+ serviceFeesArray);
 		logger.info("--------------------------After setting service fees array size "
 				+ serviceFeesArray.length);
-		setupservicefeesandcommission.setServicefeemodel(serviceFeeModel);
+		setupservicefeesandcommission
+				.setServicefeemodel(ServiceFeeModelTypes.TIERED);
 		logger.info("--------------------------After service fee model "
-				+ serviceFeeModel);
+				+ ServiceFeeModelTypes.TIERED);
 		setupservicefeesandcommission.setSpaccountholderid(mmoId);
 		logger.info("--------------------------After setting mmoId " + mmoId);
 
