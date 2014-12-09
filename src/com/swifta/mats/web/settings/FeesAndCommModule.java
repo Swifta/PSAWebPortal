@@ -3,7 +3,6 @@ package com.swifta.mats.web.settings;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.logging.Logger;
 
 import com.swifta.mats.web.usermanagement.UserDetailsModule;
 import com.swifta.mats.web.utils.CommissionService;
@@ -40,8 +39,6 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 public class FeesAndCommModule {
-	private static final Logger logger = Logger
-			.getLogger(FeesAndCommModule.class.getName());
 	UserDetailsModule udm;
 	HorizontalLayout udc;
 	private ArrayList<VerticalLayout> cArrLItemContent;
@@ -58,6 +55,9 @@ public class FeesAndCommModule {
 	public final static String COMMISSION = "Commission";
 	public final static String FEES = "Fees";
 	private String tabType = null;
+	private String[] arrMatValues;
+	private String[] arrModelValues;
+	private String[] arrConValues;
 
 	public FeesAndCommModule() {
 		udm = new UserDetailsModule();
@@ -81,6 +81,9 @@ public class FeesAndCommModule {
 		comboTxType.setItemCaption(17, "3rd PARTY PAYMENT");
 		comboTxType.select(4);
 		hmAllFG = new HashMap<>();
+		arrMatValues = new String[] { "PERCENT", "FIXED" };
+		arrModelValues = new String[] { "TIERED", "NOTAPPLICABLE" };
+		arrConValues = new String[] { "FEE", "AMOUNT" };
 
 	}
 
@@ -88,17 +91,17 @@ public class FeesAndCommModule {
 		VerticalLayout cMat = cArrLItemContent.get(2);
 		VerticalLayout cAmt = cArrLItemContent.get(3);
 		final ComboBox comboMat = new ComboBox();
-		comboMat.addItem(1);
-		comboMat.setItemCaption(1, "PERCENT");
-		comboMat.addItem(2);
-		comboMat.setItemCaption(2, "FIXED");
-		comboMat.select(2);
+		comboMat.addItem(arrMatValues[0]);
+		comboMat.setItemCaption(arrMatValues[0], "%");
+		comboMat.addItem(arrMatValues[1]);
+		comboMat.setItemCaption(arrMatValues[1], "Fixed");
+		comboMat.select(arrMatValues[0]);
 
 		final TextField tfAmt = new TextField();
 		cMat.addComponent(comboMat);
 		cAmt.addComponent(tfAmt);
 
-		Property<Integer> pMat = new ObjectProperty<>(0);
+		Property<String> pMat = new ObjectProperty<>(arrMatValues[0]);
 		Property<String> pAmt = new ObjectProperty<>("");
 
 		Item row = new PropertysetItem();
@@ -124,7 +127,7 @@ public class FeesAndCommModule {
 					throws CommitException {
 				tfAmt.setRequired(false);
 				comboMat.setRequired(false);
-				if (comboMat.getValue().toString().equalsIgnoreCase("0")) {
+				if (comboMat.getValue() == null) {
 					comboMat.setRequired(true);
 					Notification.show("Fields marked with (*) are required.");
 					throw new CommitException("Field required.");
@@ -359,7 +362,7 @@ public class FeesAndCommModule {
 		private static final long serialVersionUID = 8429528148551522733L;
 		private ComboBox comboMat;
 		private TextField tfAmt;
-		private int mat;
+		private String mat;
 		private Float vAmt;
 
 		MatrixHouseKeeper(ComboBox comboMat, TextField tfAmt) {
@@ -383,7 +386,7 @@ public class FeesAndCommModule {
 				throw new InvalidValueException("Only Numbers.");
 			}
 
-			mat = (Integer) comboMat.getValue();
+			mat = comboMat.getValue().toString();
 			String sAmt = tfAmt.getValue().trim();
 
 			try {
@@ -393,7 +396,7 @@ public class FeesAndCommModule {
 				throw new InvalidValueException("Only Numbers.");
 			}
 
-			if (mat == 0 && vAmt > 100) {
+			if (mat.equals(arrMatValues[0]) && vAmt > 100) {
 				throw new InvalidValueException("Invalid Percentage.");
 			}
 
@@ -488,23 +491,23 @@ public class FeesAndCommModule {
 		Label lbChoose = new Label("Please choose...");
 
 		final ComboBox comboConditionType = new ComboBox("Condition Type");
-		comboConditionType.addItem(1);
-		comboConditionType.setItemCaption(1, "AMOUNT");
-		comboConditionType.addItem(2);
-		comboConditionType.setItemCaption(2, "FEE");
-		comboConditionType.select(1);
+		comboConditionType.addItem(arrConValues[0]);
+		comboConditionType.setItemCaption(arrConValues[0], "Amount");
+		comboConditionType.addItem(arrConValues[1]);
+		comboConditionType.setItemCaption(arrConValues[1], "Fee");
+		comboConditionType.select(arrConValues[0]);
 
 		final ComboBox comboModelType = new ComboBox("Model Type");
-		comboModelType.addItem(1);
-		comboModelType.setItemCaption(1, "TIERED");
-		comboModelType.addItem(2);
-		comboModelType.setItemCaption(2, "NOT APPLICABLE");
-		comboModelType.select(1);
+		comboModelType.addItem(arrModelValues[0]);
+		comboModelType.setItemCaption(arrModelValues[0], "Tiered");
+		comboModelType.addItem(arrModelValues[1]);
+		comboModelType.setItemCaption(arrModelValues[1], "None");
+		comboModelType.select(arrModelValues[0]);
 
 		Item row = new PropertysetItem();
 
-		Property<Integer> pconTypeID = new ObjectProperty<Integer>(1);
-		Property<Integer> pmodelTypeID = new ObjectProperty<Integer>(1);
+		Property<String> pconTypeID = new ObjectProperty<>(arrConValues[0]);
+		Property<String> pmodelTypeID = new ObjectProperty<>(arrModelValues[0]);
 		row.addItemProperty("CONID", pconTypeID);
 		row.addItemProperty("MODID", pmodelTypeID);
 
@@ -522,21 +525,21 @@ public class FeesAndCommModule {
 				comboConditionType.setRequired(false);
 				comboModelType.setRequired(false);
 				comboTxType.setRequired(false);
-				if ((int) comboOp.getValue() == 0) {
+				if (comboOp.getValue() == null) {
 					comboOp.setRequired(true);
 					Notification.show("Field marked with (*) is required.");
 					throw new CommitException("Field is required.");
-				} else if ((int) comboConditionType.getValue() == 0) {
+				} else if (comboConditionType.getValue() == null) {
 					comboConditionType.setRequired(true);
 					Notification.show("Field marked with (*) is required.");
 					throw new CommitException("Field is required.");
 
-				} else if ((int) comboModelType.getValue() == 0) {
+				} else if (comboModelType.getValue() == null) {
 					comboModelType.setRequired(true);
 					Notification.show("Field marked with (*) is required.");
 					throw new CommitException("Field is required.");
 
-				} else if ((int) comboTxType.getValue() == 0) {
+				} else if (comboTxType.getValue() == null) {
 					comboTxType.setRequired(true);
 					Notification.show("Field marked with (*) is required.");
 					throw new CommitException("Field is required.");
@@ -694,7 +697,8 @@ public class FeesAndCommModule {
 
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-				if (Integer.valueOf(comboModelType.getValue().toString()) == 1) {
+				if (comboModelType.getValue().toString()
+						.equals(arrModelValues[0])) {
 
 					if (arrLRangeFG.size() == 0)
 						return;
@@ -794,8 +798,7 @@ public class FeesAndCommModule {
 
 			sf[i].setServicefeetype(ServiceFeematrix.Factory.fromValue(mfg
 					.getField("Mat").getValue().toString()));
-			logger.info("Service Fee type caption--------------------------->>>>>>"
-					+ mfg.getField("Mat").getValue().toString());
+
 			// Enum.valueOf(enumType, name)
 			sf[i].setServicefee(BigDecimal.valueOf(Float.valueOf(mfg
 					.getField("Amt").getValue().toString())));
@@ -829,8 +832,6 @@ public class FeesAndCommModule {
 		FieldGroup dfg = arrLDFG.get(0);
 		String conType = dfg.getField("CONID").getValue().toString();
 		String modType = dfg.getField("MODID").getValue().toString();
-		logger.info(conType + "<<<<<--------------------------->>>>>>"
-				+ modType);
 
 		ServiceCommission[] sc = new ServiceCommission[allRange.size()];
 		for (int i = 0; i < allRange.size(); i++) {
@@ -870,14 +871,14 @@ public class FeesAndCommModule {
 
 	private boolean isReadyToCommit(String type, FieldGroup dfg) {
 		comboOp.setRequired(false);
-		if (comboOp.getValue().toString().trim().isEmpty()) {
+		if (comboOp.getValue() == null) {
 			comboOp.setRequired(true);
 			Notification.show("Field marked with (*) is required.");
 			return false;
 		}
 
 		comboTxType.setRequired(false);
-		if (comboTxType.getValue().toString().trim().isEmpty()) {
+		if (comboTxType.getValue() == null) {
 			comboTxType.setRequired(true);
 			Notification.show("Field marked with (*) is required.");
 			return false;
