@@ -88,11 +88,11 @@ public class FeesAndCommModule {
 		VerticalLayout cMat = cArrLItemContent.get(2);
 		VerticalLayout cAmt = cArrLItemContent.get(3);
 		final ComboBox comboMat = new ComboBox();
-		comboMat.addItem("PERCENT");
-		comboMat.setItemCaption("PERCENT", "PERCENT");
-		comboMat.addItem("FIXED");
-		comboMat.setItemCaption("FIXED", "FIXED");
-		comboMat.select("FIXED");
+		comboMat.addItem(1);
+		comboMat.setItemCaption(1, "PERCENT");
+		comboMat.addItem(2);
+		comboMat.setItemCaption(2, "FIXED");
+		comboMat.select(2);
 
 		final TextField tfAmt = new TextField();
 		cMat.addComponent(comboMat);
@@ -359,7 +359,7 @@ public class FeesAndCommModule {
 		private static final long serialVersionUID = 8429528148551522733L;
 		private ComboBox comboMat;
 		private TextField tfAmt;
-		private String mat;
+		private int mat;
 		private Float vAmt;
 
 		MatrixHouseKeeper(ComboBox comboMat, TextField tfAmt) {
@@ -383,7 +383,7 @@ public class FeesAndCommModule {
 				throw new InvalidValueException("Only Numbers.");
 			}
 
-			mat = (String) comboMat.getValue();
+			mat = (Integer) comboMat.getValue();
 			String sAmt = tfAmt.getValue().trim();
 
 			try {
@@ -393,7 +393,7 @@ public class FeesAndCommModule {
 				throw new InvalidValueException("Only Numbers.");
 			}
 
-			if (mat.equalsIgnoreCase("PERCENT") && vAmt > 100) {
+			if (mat == 0 && vAmt > 100) {
 				throw new InvalidValueException("Invalid Percentage.");
 			}
 
@@ -488,18 +488,18 @@ public class FeesAndCommModule {
 		Label lbChoose = new Label("Please choose...");
 
 		final ComboBox comboConditionType = new ComboBox("Condition Type");
-		comboConditionType.addItem("AMOUNT");
-		comboConditionType.setItemCaption("AMOUNT", "AMOUNT");
-		comboConditionType.addItem("FEE");
-		comboConditionType.setItemCaption("FEE", "FEE");
-		comboConditionType.select("AMOUNT");
+		comboConditionType.addItem(1);
+		comboConditionType.setItemCaption(1, "AMOUNT");
+		comboConditionType.addItem(2);
+		comboConditionType.setItemCaption(2, "FEE");
+		comboConditionType.select(1);
 
 		final ComboBox comboModelType = new ComboBox("Model Type");
-		comboModelType.addItem("TIERED");
-		comboModelType.setItemCaption("TIERED", "TIERED");
-		comboModelType.addItem("NOTAPPLICABLE");
-		comboModelType.setItemCaption("NOTAPPLICABLE", "NOT APPLICABLE");
-		comboModelType.select("TIERED");
+		comboModelType.addItem(1);
+		comboModelType.setItemCaption(1, "TIERED");
+		comboModelType.addItem(2);
+		comboModelType.setItemCaption(2, "NOT APPLICABLE");
+		comboModelType.select(1);
 
 		Item row = new PropertysetItem();
 
