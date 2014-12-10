@@ -134,7 +134,8 @@ public class CommissionService {
 				Servicefeeandcomissionrequestresponse response = setupservicefeesandcommissionResponse
 						.get_return();
 				if (response != null) {
-					logger.info("--------------------------response is not null"
+					logger.info(response.getResponsemessage()
+							+ "--------------------------response is not null"
 							+ response.getStatuscode());
 					if (response.getStatuscode().equals(StatusCode.COMPLETED)) {
 						status = true;
