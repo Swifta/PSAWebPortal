@@ -21,6 +21,7 @@ public class CommissionService {
 	private ProvisioningStub provisioningStub;
 	private static final Logger logger = Logger
 			.getLogger(CommissionService.class.getName());
+	private String statusMessage = "";
 
 	public boolean setFeesAndCommission(String mmoId, int transactionTypeId,
 			ServiceCommission[] serviceCommissionArray,
@@ -137,8 +138,10 @@ public class CommissionService {
 					logger.info(response.getResponsemessage()
 							+ "--------------------------response is not null"
 							+ response.getStatuscode());
-					if (response.getStatuscode().equals(StatusCode.COMPLETED)) {
+					if (response.getStatuscode().toString()
+							.equalsIgnoreCase(StatusCode.COMPLETED.toString())) {
 						status = true;
+						this.statusMessage = response.getResponsemessage();
 					}
 				} else {
 					logger.info("--------------------------response is null");
