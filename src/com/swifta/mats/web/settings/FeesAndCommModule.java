@@ -83,7 +83,7 @@ public class FeesAndCommModule {
 		hmAllFG = new HashMap<>();
 		arrMatValues = new String[] { "PERCENT", "FIXED" };
 		arrModelValues = new String[] { "TIERED", "NOTAPPLICABLE" };
-		arrConValues = new String[] { "FEE", "AMOUNT" };
+		arrConValues = new String[] { "AMOUNT", "FEE" };
 
 	}
 
@@ -692,6 +692,22 @@ public class FeesAndCommModule {
 
 		});
 
+		comboConditionType.addValueChangeListener(new ValueChangeListener() {
+
+			private static final long serialVersionUID = -5878577330071011374L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				if (event.getProperty().getValue().toString().trim()
+						.equals(arrConValues[0])) {
+					comboModelType.select(arrModelValues[0]);
+				} else {
+					comboModelType.select(arrModelValues[1]);
+				}
+			}
+
+		});
+
 		comboModelType.addValueChangeListener(new ValueChangeListener() {
 			private static final long serialVersionUID = -6418325605387194047L;
 
@@ -713,6 +729,7 @@ public class FeesAndCommModule {
 					max.setValue("");
 					max.setEnabled(true);
 					isTiered = true;
+					comboConditionType.select(arrConValues[0]);
 					return;
 
 				} else {
@@ -728,6 +745,7 @@ public class FeesAndCommModule {
 					max.setValue("0.00");
 					max.setEnabled(false);
 					isTiered = false;
+					comboConditionType.select(arrConValues[1]);
 					return;
 				}
 
@@ -782,7 +800,7 @@ public class FeesAndCommModule {
 
 	private void commit() {
 
-		String opID = comboOp.getValue().toString();
+		String opID = comboOp.getValue().toString().trim();
 		Integer txID = Integer.valueOf(comboTxType.getValue().toString());
 		ArrayList<ArrayList<FieldGroup>> allFeesFG = hmAllFG.get(FEES);
 		ArrayList<FieldGroup> allRange = allFeesFG.get(0);
@@ -794,15 +812,15 @@ public class FeesAndCommModule {
 			FieldGroup mfg = allMat.get(i);
 			sf[i] = new ServiceFees();
 			sf[i].setMinimumamount(BigDecimal.valueOf(Float.valueOf(rfg
-					.getField("Min").getValue().toString())));
+					.getField("Min").getValue().toString().trim())));
 			sf[i].setMaximumamount(BigDecimal.valueOf(Float.valueOf(rfg
-					.getField("Max").getValue().toString())));
+					.getField("Max").getValue().toString().trim())));
 
 			sf[i].setServicefeetype(ServiceFeematrix.Factory.fromValue(mfg
-					.getField("Mat").getValue().toString()));
+					.getField("Mat").getValue().toString().trim()));
 
 			sf[i].setServicefee(BigDecimal.valueOf(Float.valueOf(mfg
-					.getField("Amt").getValue().toString())));
+					.getField("Amt").getValue().toString().trim())));
 			sf[i].setTransactiontypeid(txID);
 
 		}
@@ -812,12 +830,8 @@ public class FeesAndCommModule {
 		allMat = allCommFG.get(1);
 		ArrayList<FieldGroup> arrLDFG = allCommFG.get(2);
 		FieldGroup dfg = arrLDFG.get(0);
-		String conType = dfg.getField("CONID").getValue().toString();
-		String modType = dfg.getField("MODID").getValue().toString();
-
-		StringBuilder comV = new StringBuilder();
-		comV.append("<xml>");
-		comV.append("<COMMISSION>");
+		String conType = dfg.getField("CONID").getValue().toString().trim();
+		String modType = dfg.getField("MODID").getValue().toString().trim();
 
 		ServiceCommission[] sc = new ServiceCommission[allRange.size()];
 		for (int i = 0; i < allRange.size(); i++) {
@@ -825,55 +839,28 @@ public class FeesAndCommModule {
 			FieldGroup mfg = allMat.get(i);
 			sc[i] = new ServiceCommission();
 			sc[i].setMinimumamount(BigDecimal.valueOf(Float.valueOf(rfg
-					.getField("Min").getValue().toString())));
+					.getField("Min").getValue().toString().trim())));
 			sc[i].setMaximumamount(BigDecimal.valueOf(Float.valueOf(rfg
-					.getField("Max").getValue().toString())));
+					.getField("Max").getValue().toString().trim())));
 			sc[i].setServicecommissioncondition(ServiceCommissionConditionTypes.Factory
 					.fromValue(conType));
 			sc[i].setServicecommissionmodeltype(ServiceCommissionModelTypes.Factory
 					.fromValue(modType));
 			sc[i].setCommissionfeetype(mfg.getField("Mat").getValue()
-					.toString());
+					.toString().trim());
 			sc[i].setCommissionfee(BigDecimal.valueOf(Float.valueOf(mfg
-					.getField("Amt").getValue().toString())));
+					.getField("Amt").getValue().toString().trim())));
 			sc[i].setTransactiontypeid(txID);
-
-			comV.append("<TxID>");
-			comV.append(sc[i].getTransactiontypeid());
-			comV.append("</TxID>");
-
-			comV.append("<COMMISSION CONDITION>");
-			comV.append(sc[i].getServicecommissioncondition());
-			comV.append("</COMMISSION CONDITION>");
-
-			comV.append("<COMMISSION MODEL TYPE>");
-			comV.append(sc[i].getServicecommissionmodeltype());
-			comV.append("</COMMISSION MODEL TYPE>");
-
-			comV.append("<MIN>");
-			comV.append(sc[i].getMinimumamount());
-			comV.append("</MIN>");
-
-			comV.append("<MAX>");
-			comV.append(sc[i].getMaximumamount());
-			comV.append("</MAX>");
-
-			comV.append("<MATRIX>");
-			comV.append(sc[i].getCommissionfeetype());
-			comV.append("</MATRIX>");
-
-			comV.append("<COMMISSION FEE>");
-			comV.append(sc[i].getCommissionfee());
-			comV.append("</COMMISSION FEE>");
 
 		}
 
-		comV.append("<COMMISSION>");
-
 		CommissionService cs = new CommissionService();
 		try {
-			if (cs.setFeesAndCommission(opID, txID, sc, sf)) {
+			if (!cs.setFeesAndCommission(opID, txID, sc, sf)) {
 				Notification.show("Tariff Information Saved Successfully!");
+				confCount = 0;
+				resetFields(lookedTab);
+
 			} else {
 				Notification.show("Tariff Information Saving failed.");
 			}
@@ -936,10 +923,6 @@ public class FeesAndCommModule {
 		hmAllFG.put(type, arrLAllFG);
 
 		if (type.equals(FEES) && confCount < 2) {
-			// Notification.show(String.valueOf(hmAllFG.size()));
-
-			//
-			// Notification.show(String.valueOf(hmAllFG.size()));
 			UI.getCurrent()
 					.getSession()
 					.setAttribute(
@@ -953,10 +936,6 @@ public class FeesAndCommModule {
 			ManageFeesAndCommModule.btnComm.setEnabled(false);
 
 		} else if (type.equals(COMMISSION) && confCount < 2) {
-			// Notification.show(String.valueOf(hmAllFG.size()));
-
-			// Notification.show(String.valueOf(hmAllFG.size()));
-
 			UI.getCurrent()
 					.getSession()
 					.setAttribute(
@@ -979,6 +958,40 @@ public class FeesAndCommModule {
 	public HorizontalLayout getFeesForm(String strTbName, String strID,
 			boolean a, boolean b) {
 		return null;
+	}
+
+	private void resetFields(String type) {
+		lookedTab = type;
+
+		if (type.equals(COMMISSION)) {
+
+			UI.getCurrent()
+					.getSession()
+					.setAttribute(
+							WorkSpaceManageFeesAndComm.SESSION_WSMP_CUR_ACTION,
+							type);
+			Settings.wmfac.wsmpModifier();
+			ManageFeesAndCommModule.btnFees.setStyleName("btn_tab_like");
+			ManageFeesAndCommModule.btnFees.setEnabled(true);
+			ManageFeesAndCommModule.btnComm
+					.setStyleName("btn_tab_like btn_tab_like_active");
+			ManageFeesAndCommModule.btnComm.setEnabled(false);
+
+		} else if (type.equals(FEES)) {
+			UI.getCurrent()
+					.getSession()
+					.setAttribute(
+							WorkSpaceManageFeesAndComm.SESSION_WSMP_CUR_ACTION,
+							type);
+			Settings.wmfac.wsmpModifier();
+
+			ManageFeesAndCommModule.btnFees
+					.setStyleName("btn_tab_like btn_tab_like_active");
+			ManageFeesAndCommModule.btnFees.setEnabled(false);
+			ManageFeesAndCommModule.btnComm.setStyleName("btn_tab_like");
+			ManageFeesAndCommModule.btnComm.setEnabled(true);
+
+		}
 	}
 
 	public void apmModifier(String strTbName, HorizontalLayout cContent) {
