@@ -21,7 +21,7 @@ public class CommissionService {
 	private ProvisioningStub provisioningStub;
 	private static final Logger logger = Logger
 			.getLogger(CommissionService.class.getName());
-	private String statusMessage = "";
+	public String statusMessage = "";
 
 	public boolean setFeesAndCommission(String mmoId, int transactionTypeId,
 			ServiceCommission[] serviceCommissionArray,
@@ -126,14 +126,15 @@ public class CommissionService {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
 		if (feesAndCommissionResponseE != null) {
 			logger.info("--------------------------feesAndCommissionResponseE is not null");
 			SetupservicefeesandcommissionResponse setupservicefeesandcommissionResponse = feesAndCommissionResponseE
 					.getSetupservicefeesandcommissionResponse();
+			Servicefeeandcomissionrequestresponse response = null;
 			if (setupservicefeesandcommissionResponse != null) {
 				logger.info("--------------------------setupservicefeesandcommissionResponse is not null");
-				Servicefeeandcomissionrequestresponse response = setupservicefeesandcommissionResponse
-						.get_return();
+				response = setupservicefeesandcommissionResponse.get_return();
 				if (response != null) {
 					logger.info(response.getResponsemessage()
 							+ "--------------------------response is not null"
@@ -141,7 +142,7 @@ public class CommissionService {
 					if (response.getStatuscode().toString()
 							.equalsIgnoreCase(StatusCode.COMPLETED.toString())) {
 						status = true;
-						this.statusMessage = response.getResponsemessage();
+
 					}
 				} else {
 					logger.info("--------------------------response is null");
@@ -150,6 +151,8 @@ public class CommissionService {
 			} else {
 				logger.info("--------------------------setupservicefeesandcommissionResponse is null");
 			}
+
+			this.statusMessage = response.getResponsemessage();
 
 		} else {
 			logger.info("--------------------------feesAndCommissionResponseE is null");

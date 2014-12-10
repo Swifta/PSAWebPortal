@@ -855,14 +855,20 @@ public class FeesAndCommModule {
 		}
 
 		CommissionService cs = new CommissionService();
+
 		try {
-			if (!cs.setFeesAndCommission(opID, txID, sc, sf)) {
-				Notification.show("Tariff Information Saved Successfully!");
-				confCount = 0;
-				resetFields(lookedTab);
+			if (cs.setFeesAndCommission(opID, txID, sc, sf)) {
+				if (cs.statusMessage == null) {
+					Notification.show("Tariff information saved successfully!");
+					confCount = 0;
+					resetFields(lookedTab);
+				} else {
+					Notification.show("Tariff saving FAILED: "
+							+ cs.statusMessage);
+				}
 
 			} else {
-				Notification.show("Tariff Information Saving failed.");
+				Notification.show("Tariff saving FAILED: " + cs.statusMessage);
 			}
 		} catch (Exception ce) {
 			ce.printStackTrace();
