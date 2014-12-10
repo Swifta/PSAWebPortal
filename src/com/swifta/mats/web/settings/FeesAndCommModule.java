@@ -58,6 +58,9 @@ public class FeesAndCommModule {
 	private String[] arrMatValues;
 	private String[] arrModelValues;
 	private String[] arrConValues;
+	FieldGroup otherfg;
+	ArrayList<FieldGroup> prfg;
+	ArrayList<FieldGroup> pmfg;
 
 	public FeesAndCommModule() {
 		udm = new UserDetailsModule();
@@ -81,6 +84,7 @@ public class FeesAndCommModule {
 		comboTxType.setItemCaption(17, "3rd PARTY PAYMENT");
 		comboTxType.select(4);
 		hmAllFG = new HashMap<>();
+		arrLDFG = new ArrayList<>();
 		arrMatValues = new String[] { "PERCENT", "FIXED" };
 		arrModelValues = new String[] { "TIERED", "NOTAPPLICABLE" };
 		arrConValues = new String[] { "AMOUNT", "FEE" };
@@ -194,8 +198,6 @@ public class FeesAndCommModule {
 		final TextField tfMax = new TextField();
 		cMin.addComponent(tfMin);
 		cMax.addComponent(tfMax);
-		// tfMin.setRequired(true);
-		// tfMax.setRequired(true);
 
 		Property<String> pMin = new ObjectProperty<>("");
 		Property<String> pMax = new ObjectProperty<>("");
@@ -464,7 +466,6 @@ public class FeesAndCommModule {
 		arrLRangeFG = new ArrayList<>();
 		arrLMatFG = new ArrayList<>();
 		arrLAllFG = new ArrayList<>();
-		arrLDFG = new ArrayList<>();
 		isTiered = true;
 		tabType = type;
 
@@ -511,11 +512,11 @@ public class FeesAndCommModule {
 		row.addItemProperty("CONID", pconTypeID);
 		row.addItemProperty("MODID", pmodelTypeID);
 
-		final FieldGroup fg = new FieldGroup(row);
-		fg.bind(comboConditionType, "CONID");
-		fg.bind(comboModelType, "MODID");
+		otherfg = new FieldGroup(row);
+		otherfg.bind(comboConditionType, "CONID");
+		otherfg.bind(comboModelType, "MODID");
 
-		fg.addCommitHandler(new CommitHandler() {
+		otherfg.addCommitHandler(new CommitHandler() {
 			private static final long serialVersionUID = 6144936023943646696L;
 
 			@Override
@@ -642,7 +643,7 @@ public class FeesAndCommModule {
 		cItemContentAmt.addComponent(lbAttr);
 		cAttrItem.addComponent(cItemContentAmt);
 		add();
-		add();
+		// add();
 
 		HorizontalLayout cControls = new HorizontalLayout();
 		Button btnAdd = new Button("+");
@@ -784,7 +785,7 @@ public class FeesAndCommModule {
 				 * Commit to server.
 				 */
 
-				if (isReadyToCommit(tabType, fg)) {
+				if (isReadyToCommit(tabType, otherfg)) {
 
 					commit();
 					return;
@@ -919,16 +920,17 @@ public class FeesAndCommModule {
 		/*
 		 * Ready to commit valid values to the server.
 		 */
-		lookedTab = type;
-		confCount++;
 
+		arrLDFG.clear();
 		arrLDFG.add(dfg);
 		arrLAllFG.add(arrLRangeFG);
 		arrLAllFG.add(arrLMatFG);
 		arrLAllFG.add(arrLDFG);
 		hmAllFG.put(type, arrLAllFG);
+		confCount++;
 
 		if (type.equals(FEES) && confCount < 2) {
+			lookedTab = type;
 			UI.getCurrent()
 					.getSession()
 					.setAttribute(
@@ -942,6 +944,7 @@ public class FeesAndCommModule {
 			ManageFeesAndCommModule.btnComm.setEnabled(false);
 
 		} else if (type.equals(COMMISSION) && confCount < 2) {
+			lookedTab = type;
 			UI.getCurrent()
 					.getSession()
 					.setAttribute(
@@ -1001,18 +1004,72 @@ public class FeesAndCommModule {
 	}
 
 	public void apmModifier(String strTbName, HorizontalLayout cContent) {
+
+		cContent.removeAllComponents();
+		cContent.addComponent(getFeesContainer(strTbName));
 		if (lookedTab != null) {
 			if (lookedTab.equals(strTbName)) {
+
 				comboOp.setEnabled(true);
 				comboTxType.setEnabled(true);
+
+				ArrayList<ArrayList<FieldGroup>> allFeesFG = hmAllFG
+						.get(strTbName);
+				if (allFeesFG != null) {
+					ArrayList<FieldGroup> allRange = allFeesFG.get(0);
+					ArrayList<FieldGroup> allMat = allFeesFG.get(1);
+
+					FieldGroup dfg = arrLDFG.get(0);
+					String conType = dfg.getField("CONID").getValue()
+							.toString().trim();
+					String modType = dfg.getField("MODID").getValue()
+							.toString().trim();
+					ComboBox comboConT = (ComboBox) otherfg.getField("CONID");
+					ComboBox comboModT = (ComboBox) otherfg.getField("MODID");
+
+					comboConT.setValue(conType);
+					comboModT.setValue(modType);
+
+					comboOp.setEnabled(true);
+					comboTxType.setEnabled(true);
+
+					for (int i = 0; i < allRange.size(); i++) {
+
+						FieldGroup rfg = allRange.get(i);
+						FieldGroup mfg = allMat.get(i);
+
+						FieldGroup nrfg = arrLRangeFG.get(i);
+						FieldGroup nmfg = arrLMatFG.get(i);
+
+						TextField tfRMin = (TextField) rfg.getField("Min");
+						TextField tfnRMin = (TextField) nrfg.getField("Min");
+
+						TextField tfRMax = (TextField) rfg.getField("Max");
+						TextField tfnRMax = (TextField) nrfg.getField("Max");
+
+						ComboBox comboMat = (ComboBox) mfg.getField("Mat");
+						ComboBox combonMat = (ComboBox) nmfg.getField("Mat");
+
+						TextField tfAmt = (TextField) mfg.getField("Amt");
+						TextField tfnAmt = (TextField) nmfg.getField("Amt");
+
+						tfnRMin.setValue(tfRMin.getValue());
+						tfnRMax.setValue(tfRMax.getValue());
+						combonMat.setValue(comboMat.getValue());
+						tfnAmt.setValue(tfAmt.getValue());
+						add();
+
+					}
+
+				}
+				return;
 			} else {
 				comboOp.setEnabled(false);
 				comboTxType.setEnabled(false);
+
 			}
+
 		}
-		cContent.removeAllComponents();
-		cContent.addComponent(getFeesContainer(strTbName));
 
 	}
-
 }
