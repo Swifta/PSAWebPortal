@@ -29,8 +29,7 @@ public class CommissionService {
 		logger.info("--------------------------Inside Fees and Commission");
 		SetupservicefeesandcommissionE setupservicefeesandcommissionE = new SetupservicefeesandcommissionE();
 		Setupservicefeesandcommission setupservicefeesandcommission = new Setupservicefeesandcommission();
-		setupservicefeesandcommissionE
-				.setSetupservicefeesandcommission(setupservicefeesandcommission);
+
 		logger.info("--------------------------After setting setup fees and commission"
 				+ setupservicefeesandcommission);
 		ServiceCommission newServiceCommission = new ServiceCommission();
@@ -109,10 +108,14 @@ public class CommissionService {
 				+ ServiceFeeModelTypes.TIERED);
 		setupservicefeesandcommission.setSpaccountholderid(mmoId);
 		logger.info("--------------------------After setting mmoId " + mmoId);
-
+		setupservicefeesandcommissionE
+				.setSetupservicefeesandcommission(setupservicefeesandcommission);
 		SetupservicefeesandcommissionResponseE feesAndCommissionResponseE = new SetupservicefeesandcommissionResponseE();
 		try {
 			provisioningStub = new ProvisioningStub();
+			long timeOutInMilliSeconds = (5 * 36 * 1000);
+			provisioningStub._getServiceClient().getOptions()
+					.setTimeOutInMilliSeconds(timeOutInMilliSeconds);
 			feesAndCommissionResponseE = provisioningStub
 					.setupservicefeesandcommission(setupservicefeesandcommissionE);
 		} catch (AxisFault e) {
@@ -131,7 +134,9 @@ public class CommissionService {
 				Servicefeeandcomissionrequestresponse response = setupservicefeesandcommissionResponse
 						.get_return();
 				if (response != null) {
-					logger.info("--------------------------response is not null");
+					logger.info(response.getResponsemessage()
+							+ "--------------------------response is not null"
+							+ response.getStatuscode());
 					if (response.getStatuscode().equals(StatusCode.COMPLETED)) {
 						status = true;
 					}
