@@ -137,7 +137,8 @@ public class CommissionService {
 					logger.info(response.getResponsemessage()
 							+ "--------------------------response is not null"
 							+ response.getStatuscode());
-					if (response.getStatuscode().equals(StatusCode.COMPLETED)) {
+					if (response.getStatuscode().toString()
+							.equalsIgnoreCase(StatusCode.COMPLETED.toString())) {
 						status = true;
 					}
 				} else {
