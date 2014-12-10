@@ -765,6 +765,7 @@ public class FeesAndCommModule {
 				/*
 				 * Commit to server.
 				 */
+
 				if (isReadyToCommit(tabType, fg)) {
 
 					commit();
@@ -780,6 +781,7 @@ public class FeesAndCommModule {
 	}
 
 	private void commit() {
+
 		String opID = comboOp.getValue().toString();
 		Integer txID = Integer.valueOf(comboTxType.getValue().toString());
 		ArrayList<ArrayList<FieldGroup>> allFeesFG = hmAllFG.get(FEES);
@@ -799,30 +801,10 @@ public class FeesAndCommModule {
 			sf[i].setServicefeetype(ServiceFeematrix.Factory.fromValue(mfg
 					.getField("Mat").getValue().toString()));
 
-			// Enum.valueOf(enumType, name)
 			sf[i].setServicefee(BigDecimal.valueOf(Float.valueOf(mfg
 					.getField("Amt").getValue().toString())));
 			sf[i].setTransactiontypeid(txID);
-			// new codes from kachi starts here
-			/*
-			 * ServiceFeesInterfaceChoice_type0 feeType = new
-			 * ServiceFeesInterfaceChoice_type0();
-			 * 
-			 * String serviceFeeType = ServiceFeematrix.PERCENT.toString();
-			 * feeType.setMaximumamount(sf[i].getMaximumamount());
-			 * feeType.setMinimumamount(sf[i].getMinimumamount());
-			 * feeType.setServicefee(sf[i].getServicefee());
-			 * feeType.setTransactiontypeid(txID); //
-			 * feeType.setServicefeetype(ServiceFeematrix
-			 * .valueOf(mfg.getField("Mat").getValue().toString()));
-			 * feeType.setServicefeetype(ServiceFeematrix.PERCENT);
-			 * 
-			 * ServiceFeesInterfaceChoice_type0[] feeTypeArray = new
-			 * ServiceFeesInterfaceChoice_type0[1]; feeTypeArray[0] = feeType;
-			 * 
-			 * sf[i].setServiceFeesInterfaceChoice_type0(feeTypeArray); // codes
-			 * from kachi ended here
-			 */
+
 		}
 
 		ArrayList<ArrayList<FieldGroup>> allCommFG = hmAllFG.get(COMMISSION);
@@ -832,6 +814,10 @@ public class FeesAndCommModule {
 		FieldGroup dfg = arrLDFG.get(0);
 		String conType = dfg.getField("CONID").getValue().toString();
 		String modType = dfg.getField("MODID").getValue().toString();
+
+		StringBuilder comV = new StringBuilder();
+		comV.append("<xml>");
+		comV.append("<COMMISSION>");
 
 		ServiceCommission[] sc = new ServiceCommission[allRange.size()];
 		for (int i = 0; i < allRange.size(); i++) {
@@ -846,14 +832,43 @@ public class FeesAndCommModule {
 					.fromValue(conType));
 			sc[i].setServicecommissionmodeltype(ServiceCommissionModelTypes.Factory
 					.fromValue(modType));
-
 			sc[i].setCommissionfeetype(mfg.getField("Mat").getValue()
 					.toString());
 			sc[i].setCommissionfee(BigDecimal.valueOf(Float.valueOf(mfg
 					.getField("Amt").getValue().toString())));
 			sc[i].setTransactiontypeid(txID);
 
+			comV.append("<TxID>");
+			comV.append(sc[i].getTransactiontypeid());
+			comV.append("</TxID>");
+
+			comV.append("<COMMISSION CONDITION>");
+			comV.append(sc[i].getServicecommissioncondition());
+			comV.append("</COMMISSION CONDITION>");
+
+			comV.append("<COMMISSION MODEL TYPE>");
+			comV.append(sc[i].getServicecommissionmodeltype());
+			comV.append("</COMMISSION MODEL TYPE>");
+
+			comV.append("<MIN>");
+			comV.append(sc[i].getMinimumamount());
+			comV.append("</MIN>");
+
+			comV.append("<MAX>");
+			comV.append(sc[i].getMaximumamount());
+			comV.append("</MAX>");
+
+			comV.append("<MATRIX>");
+			comV.append(sc[i].getCommissionfeetype());
+			comV.append("</MATRIX>");
+
+			comV.append("<COMMISSION FEE>");
+			comV.append(sc[i].getCommissionfee());
+			comV.append("</COMMISSION FEE>");
+
 		}
+
+		comV.append("<COMMISSION>");
 
 		CommissionService cs = new CommissionService();
 		try {
