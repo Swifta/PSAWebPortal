@@ -42,6 +42,7 @@ public class Reportform extends VerticalLayout {
 	IndexedContainer container = new IndexedContainer();
 	IndexedContainer container2 = new IndexedContainer();
 	IndexedContainer container3 = new IndexedContainer();
+	IndexedContainer feesCommissionContainer = new IndexedContainer();
 	ComboBox agent;
 
 	// PagedTableContainerCustom container = new
@@ -84,6 +85,26 @@ public class Reportform extends VerticalLayout {
 		container3.addContainerProperty("Sum of Transaction Amount (\u20A6)",
 				String.class, "");
 
+		// Commission
+
+		feesCommissionContainer.addContainerProperty("S/N", String.class, "");
+		feesCommissionContainer.addContainerProperty("Name", String.class, "");
+		feesCommissionContainer.addContainerProperty("Transaction Date",
+				String.class, "");
+		feesCommissionContainer.addContainerProperty("Amount (\u20A6)",
+				String.class, "");
+		feesCommissionContainer.addContainerProperty(
+				"Opening Balance (\u20A6)", String.class, "");
+		feesCommissionContainer.addContainerProperty(
+				"Closing Balance (\u20A6)", String.class, "");
+		feesCommissionContainer.addContainerProperty("Transaction Type",
+				String.class, "");
+		feesCommissionContainer.addContainerProperty("Fee (\u20A6)",
+				String.class, "");
+		feesCommissionContainer.addContainerProperty("Commission (\u20A6)",
+				String.class, "");
+		// container2.addContainerProperty("Account Type", String.class, "");
+
 		setMargin(true);
 		final ComboBox reportType = new ComboBox("Search by Report Type");
 		Button export = new Button("Export result");
@@ -93,6 +114,7 @@ public class Reportform extends VerticalLayout {
 		reportType.addItem("Float Management Report");
 		reportType.addItem("Transaction Report");
 		reportType.addItem("Summary Report");
+		reportType.addItem("Fees / Commission Report");
 
 		reportType.setNullSelectionAllowed(false);
 		reportType.setTextInputAllowed(false);
@@ -114,7 +136,7 @@ public class Reportform extends VerticalLayout {
 				String selectedId = (String) reportType.getValue();
 				if (selectedId != null) {
 
-					if (selectedId == "Float Management Report") {
+					if (selectedId.equalsIgnoreCase("Float Management Report")) {
 
 						String Uname = "gomint";
 						String Pword = "gomint";
@@ -189,7 +211,8 @@ public class Reportform extends VerticalLayout {
 
 						// searchform.removeAllComponents();
 						// searchform.addComponent(FloatManagementForm());
-					} else if (selectedId == "Transaction Report") {
+					} else if (selectedId
+							.equalsIgnoreCase("Transaction Report")) {
 
 						searchform.removeAllComponents();
 						searchform.addComponent(Transactions());
@@ -295,7 +318,7 @@ public class Reportform extends VerticalLayout {
 						// searchform.removeAllComponents();
 						// searchform.addComponent(SettlementForm());
 
-					} else if (selectedId == "Summary Report") {
+					} else if (selectedId.equalsIgnoreCase("Summary Report")) {
 
 						container3.removeAllItems();
 						String Uname = "gomint";
@@ -356,6 +379,114 @@ public class Reportform extends VerticalLayout {
 							Notification.show(x + "result(s) found");
 
 							table.setContainerDataSource(container3);
+
+						} catch (SQLException | ClassNotFoundException
+								| InstantiationException
+								| IllegalAccessException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+							Notification
+									.show("Error Establishing DBConnection = "
+											+ e);
+						}
+
+						// searchform.removeAllComponents();
+						// searchform.addComponent(SettlementForm());
+
+					} else if (selectedId
+							.equalsIgnoreCase("Fees / Commission Report")) {
+
+						searchform.removeAllComponents();
+						searchform.addComponent(Transactions());
+						feesCommissionContainer.removeAllItems();
+						String Uname = "gomint";
+						String Pword = "gomint";
+						String drivers = "com.mysql.jdbc.Driver";
+						try {
+
+							Class driver_class = Class.forName(drivers);
+							Driver driver = (Driver) driver_class.newInstance();
+							DriverManager.registerDriver(driver);
+
+							Connection conn = DriverManager
+									.getConnection(
+											"jdbc:mysql://gomintdb.caabwbnfnavv.us-east-1.rds.amazonaws.com:3306/psadatasource",
+											Uname, Pword);
+
+							Statement stmt = conn.createStatement();
+							Statement stmt2 = conn.createStatement();
+							ResultSet rs, rs2;
+							int x = 0;
+							Object itemId;
+							Item trItem;
+							rs2 = stmt2
+									.executeQuery("select txn.userresourceid as 'Username', txnt.name as 'Transaction Type', txn.lastupdate as 'Timestamp', acct.openingbalance as 'Opening Balance', acct.closingbalance as 'Closing Balance', acct.amount as 'Amount',accts.name as 'Account Type'  from transactions txn join accounttransactions acct on txn.transactionid = acct.transactionid join transactiontypes txnt on txnt.transactiontypeid = txn.transactiontypeid join accounttypes accts on accts.accounttypeid = acct.accounttypeid   join accountholders ah on ah.username = txn.userresourceid group by txn.userresourceid order by txn.lastupdate");
+							while (rs2.next()) {
+								agent.addItem(rs2.getString("Username"));
+								agent.setNullSelectionAllowed(false);
+								agent.setTextInputAllowed(false);
+								agent.setInputPrompt("Select");
+
+							}
+							rs = stmt
+									.executeQuery("select txn.userresourceid as 'Username', txnt.name as 'Transaction Type', CAST(txn.lastupdate AS DATE) as 'Timestamp', format(acct.openingbalance /100,2) as 'Opening Balance', format(acct.closingbalance / 100,2) as 'Closing Balance', format(acct.amount / 100 , 2) as 'Amount',accts.name as 'Account Type'  from transactions txn join accounttransactions acct on txn.transactionid = acct.transactionid join transactiontypes txnt on txnt.transactiontypeid = txn.transactiontypeid join accounttypes accts on accts.accounttypeid = acct.accounttypeid   join accountholders ah on ah.username = txn.userresourceid  order by ah.username, txn.lastupdate");
+							while (rs.next()) {
+								x = x + 1;
+
+								String transactiontype = rs
+										.getString("Transaction Type");
+								String amount = rs.getString("Amount");
+								String createdon = rs.getString("Timestamp");
+								String transactionID = rs.getString("Username");
+								String Sender = rs.getString("Opening Balance");
+								String Receiver = rs
+										.getString("Closing Balance");
+								String Status = rs.getString("Account Type");
+								itemId = feesCommissionContainer.addItem();
+
+								trItem = feesCommissionContainer
+										.getItem(itemId);
+
+								@SuppressWarnings("unchecked")
+								Property<String> tdPropertyserial = trItem
+										.getItemProperty("S/N");
+								@SuppressWarnings("unchecked")
+								Property<String> tdPropertytransactiondate = trItem
+										.getItemProperty("Transaction Date");
+								@SuppressWarnings("unchecked")
+								Property<String> tdPropertytransactionid = trItem
+										.getItemProperty("Name");
+								@SuppressWarnings("unchecked")
+								Property<String> tdPropertytransactiontype = trItem
+										.getItemProperty("Transaction Type");
+								@SuppressWarnings("unchecked")
+								Property<String> tdPropertyamount = trItem
+										.getItemProperty("Amount (\u20A6)");
+								@SuppressWarnings("unchecked")
+								Property<String> tdPropertysender = trItem
+										.getItemProperty("Opening Balance (\u20A6)");
+								@SuppressWarnings("unchecked")
+								Property<String> tdPropertyreceiver = trItem
+										.getItemProperty("Closing Balance (\u20A6)");
+								// @SuppressWarnings("unchecked")
+								// Property<String> tdPropertystatus = trItem
+								// .getItemProperty("Account Type");
+
+								tdPropertyserial.setValue(String.valueOf(x));
+								tdPropertytransactionid.setValue(transactionID);
+								tdPropertytransactiondate.setValue(createdon);
+								tdPropertytransactiontype
+										.setValue(transactiontype);
+								tdPropertyamount.setValue(amount);
+								tdPropertysender.setValue(Sender);
+								tdPropertyreceiver.setValue(Receiver);
+								// tdPropertystatus.setValue(Status);
+							}
+
+							conn.close();
+							Notification.show(x + " result(s) found");
+
+							table.setContainerDataSource(feesCommissionContainer);
 
 						} catch (SQLException | ClassNotFoundException
 								| InstantiationException
@@ -493,7 +624,7 @@ public class Reportform extends VerticalLayout {
 		DateField to = new DateField("Commission Report To");
 		FormLayout commission = new FormLayout();
 		Button search = new Button("Search");
-		ComboBox agent = new ComboBox("Agent ID");
+		agent = new ComboBox("Agent ID");
 		agent.addItem("All");
 		ComboBox partner = new ComboBox("Partner ID");
 		partner.addItem("All");
@@ -505,6 +636,27 @@ public class Reportform extends VerticalLayout {
 		commission.addComponent(agent);
 		commission.addComponent(partner);
 		commission.addComponent(search);
+
+		search.addClickListener(new Button.ClickListener() {
+
+			/**
+					 * 
+					 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				container2.removeAllContainerFilters();
+				Filter filter = new SimpleStringFilter("Name", agent.getValue()
+						.toString(), true, true);
+
+				container2.addContainerFilter(filter);
+				table.setContainerDataSource(container2);
+				// TODO Auto-generated method stub
+				agent.setInputPrompt("Select");
+
+			}
+		});
 
 		return commission;
 	}
