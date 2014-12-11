@@ -88,20 +88,25 @@ public class Reportform extends VerticalLayout {
 		// Commission
 
 		feesCommissionContainer.addContainerProperty("S/N", String.class, "");
-		feesCommissionContainer.addContainerProperty("Name", String.class, "");
-		feesCommissionContainer.addContainerProperty("Transaction Date",
+		feesCommissionContainer.addContainerProperty("Commission Account",
 				String.class, "");
-		feesCommissionContainer.addContainerProperty("Amount (\u20A6)",
+		feesCommissionContainer.addContainerProperty("Fees Account",
 				String.class, "");
-		feesCommissionContainer.addContainerProperty(
-				"Opening Balance (\u20A6)", String.class, "");
-		feesCommissionContainer.addContainerProperty(
-				"Closing Balance (\u20A6)", String.class, "");
+		// feesCommissionContainer.addContainerProperty("Transaction Date",
+		// String.class, "");
+
+		// feesCommissionContainer.addContainerProperty(
+		// "Opening Balance (\u20A6)", String.class, "");
+		// feesCommissionContainer.addContainerProperty(
+		// "Closing Balance (\u20A6)", String.class, "");
 		feesCommissionContainer.addContainerProperty("Transaction Type",
 				String.class, "");
-		feesCommissionContainer.addContainerProperty("Fee (\u20A6)",
+		feesCommissionContainer.addContainerProperty("Fees (\u20A6)",
 				String.class, "");
 		feesCommissionContainer.addContainerProperty("Commission (\u20A6)",
+				String.class, "");
+
+		feesCommissionContainer.addContainerProperty("Amount (\u20A6)",
 				String.class, "");
 		// container2.addContainerProperty("Account Type", String.class, "");
 
@@ -129,6 +134,7 @@ public class Reportform extends VerticalLayout {
 			 */
 			private static final long serialVersionUID = 1L;
 
+			@SuppressWarnings("unchecked")
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				// TODO Auto-generated method stub
@@ -149,7 +155,7 @@ public class Reportform extends VerticalLayout {
 
 							Connection conn = DriverManager
 									.getConnection(
-											"jdbc:mysql://gomintdb.caabwbnfnavv.us-east-1.rds.amazonaws.com:3306/psadatasource",
+											"jdbc:mysql://gomintdb.caabwbnfnavv.us-east-1.rds.amazonaws.com:3306/psadatasourcetest",
 											Uname, Pword);
 
 							Statement stmt = conn.createStatement();
@@ -228,7 +234,7 @@ public class Reportform extends VerticalLayout {
 
 							Connection conn = DriverManager
 									.getConnection(
-											"jdbc:mysql://gomintdb.caabwbnfnavv.us-east-1.rds.amazonaws.com:3306/psadatasource",
+											"jdbc:mysql://gomintdb.caabwbnfnavv.us-east-1.rds.amazonaws.com:3306/psadatasourcetest",
 											Uname, Pword);
 
 							Statement stmt = conn.createStatement();
@@ -332,7 +338,7 @@ public class Reportform extends VerticalLayout {
 
 							Connection conn = DriverManager
 									.getConnection(
-											"jdbc:mysql://gomintdb.caabwbnfnavv.us-east-1.rds.amazonaws.com:3306/psadatasource",
+											"jdbc:mysql://gomintdb.caabwbnfnavv.us-east-1.rds.amazonaws.com:3306/psadatasourcetest",
 											Uname, Pword);
 
 							Statement stmt = conn.createStatement();
@@ -410,7 +416,7 @@ public class Reportform extends VerticalLayout {
 
 							Connection conn = DriverManager
 									.getConnection(
-											"jdbc:mysql://gomintdb.caabwbnfnavv.us-east-1.rds.amazonaws.com:3306/psadatasource",
+											"jdbc:mysql://gomintdb.caabwbnfnavv.us-east-1.rds.amazonaws.com:3306/psadatasourcetest",
 											Uname, Pword);
 
 							Statement stmt = conn.createStatement();
@@ -429,64 +435,71 @@ public class Reportform extends VerticalLayout {
 
 							}
 							rs = stmt
-									.executeQuery("select txn.userresourceid as 'Username', txnt.name as 'Transaction Type', CAST(txn.lastupdate AS DATE) as 'Timestamp', format(acct.openingbalance /100,2) as 'Opening Balance', format(acct.closingbalance / 100,2) as 'Closing Balance', format(acct.amount / 100 , 2) as 'Amount',accts.name as 'Account Type'  from transactions txn join accounttransactions acct on txn.transactionid = acct.transactionid join transactiontypes txnt on txnt.transactiontypeid = txn.transactiontypeid join accounttypes accts on accts.accounttypeid = acct.accounttypeid   join accountholders ah on ah.username = txn.userresourceid  order by ah.username, txn.lastupdate");
+									.executeQuery("select trx1.transactionid,trxtyp.name as transactiontype,acth2.username as commissionaccount,acts1.amount as commission ,acth.username as feesaccount,acts2.amount as Fees,acts3.amount as amount from accounttransactions acts1,  transactions trx1,transactiontypes trxtyp, accounttransactions acts2, accounttransactions acts3, accountholders acth, accountholders acth2 where acts1.transactionid = trx1.transactionid and acts2.transactionid = trx1.transactionid and acts2.userresourceid = acth.accountholderid and acts3.userresourceid = acth2.accountholderid and acts3.transactionid = trx1.transactionid and trx1.transactiontypeid = trxtyp.transactiontypeid and acts1.accountresourceid = 12 and acts2.accountresourceid in (select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from accountholders where profileid = 15 and accounttypeid = 2)) and acts3.accountresourceid in (select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from accountholders where profileid = 11 and accounttypeid = 1))");
+							// Notification.show(rs.);
+							// rs = stmt
+							// .executeQuery("select txn.userresourceid as 'Username', txnt.name as 'Transaction Type', CAST(txn.lastupdate AS DATE) as 'Timestamp', format(acct.openingbalance /100,2) as 'Opening Balance', format(acct.closingbalance / 100,2) as 'Closing Balance', format(acct.amount / 100 , 2) as 'Amount',accts.name as 'Account Type'  from transactions txn join accounttransactions acct on txn.transactionid = acct.transactionid join transactiontypes txnt on txnt.transactiontypeid = txn.transactiontypeid join accounttypes accts on accts.accounttypeid = acct.accounttypeid   join accountholders ah on ah.username = txn.userresourceid  order by ah.username, txn.lastupdate");
 							while (rs.next()) {
 								x = x + 1;
-
 								String transactiontype = rs
-										.getString("Transaction Type");
-								String amount = rs.getString("Amount");
-								String createdon = rs.getString("Timestamp");
-								String transactionID = rs.getString("Username");
-								String Sender = rs.getString("Opening Balance");
-								String Receiver = rs
-										.getString("Closing Balance");
-								String Status = rs.getString("Account Type");
+										.getString("transactiontype");
+
+								String commission = rs.getString("commission");
+
+								String fees = rs.getString("Fees");
+
+								String feesAccount = rs
+										.getString("feesaccount");
+
+								String amount = rs.getString("amount");
+								String commissionAccount = rs
+										.getString("commissionaccount");
 								itemId = feesCommissionContainer.addItem();
 
 								trItem = feesCommissionContainer
 										.getItem(itemId);
 
-								@SuppressWarnings("unchecked")
 								Property<String> tdPropertyserial = trItem
 										.getItemProperty("S/N");
-								@SuppressWarnings("unchecked")
-								Property<String> tdPropertytransactiondate = trItem
-										.getItemProperty("Transaction Date");
-								@SuppressWarnings("unchecked")
-								Property<String> tdPropertytransactionid = trItem
-										.getItemProperty("Name");
-								@SuppressWarnings("unchecked")
+								Property<String> tdPropertyCommAcc = trItem
+										.getItemProperty("Commission Account");
+
+								Property<String> tdPropertyFeesAcc = trItem
+										.getItemProperty("Fees Account");
+
 								Property<String> tdPropertytransactiontype = trItem
 										.getItemProperty("Transaction Type");
-								@SuppressWarnings("unchecked")
+
+								Property<String> tdPropertyFees = trItem
+										.getItemProperty("Fees (\u20A6)");
+								Property<String> tdPropertyCommission = trItem
+										.getItemProperty("Commission (\u20A6)");
+
 								Property<String> tdPropertyamount = trItem
 										.getItemProperty("Amount (\u20A6)");
-								@SuppressWarnings("unchecked")
-								Property<String> tdPropertysender = trItem
-										.getItemProperty("Opening Balance (\u20A6)");
-								@SuppressWarnings("unchecked")
-								Property<String> tdPropertyreceiver = trItem
-										.getItemProperty("Closing Balance (\u20A6)");
-								// @SuppressWarnings("unchecked")
-								// Property<String> tdPropertystatus = trItem
-								// .getItemProperty("Account Type");
 
 								tdPropertyserial.setValue(String.valueOf(x));
-								tdPropertytransactionid.setValue(transactionID);
-								tdPropertytransactiondate.setValue(createdon);
+
+								tdPropertyCommAcc.setValue(commissionAccount);
+								tdPropertyFeesAcc.setValue(feesAccount);
+								tdPropertyFees.setValue(fees);
+								tdPropertyCommission.setValue(commission);
+
 								tdPropertytransactiontype
 										.setValue(transactiontype);
+
 								tdPropertyamount.setValue(amount);
-								tdPropertysender.setValue(Sender);
-								tdPropertyreceiver.setValue(Receiver);
-								// tdPropertystatus.setValue(Status);
+
 							}
 
 							conn.close();
 							Notification.show(x + " result(s) found");
 
 							table.setContainerDataSource(feesCommissionContainer);
+							if (x < 10)
+								table.setPageLength(x);
+							else
+								table.setPageLength(10);
 
 						} catch (SQLException | ClassNotFoundException
 								| InstantiationException
@@ -494,7 +507,7 @@ public class Reportform extends VerticalLayout {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 							Notification
-									.show("Error Establishing DBConnection = "
+									.show("Error Establishing DBConnection:  "
 											+ e);
 						}
 
@@ -528,7 +541,8 @@ public class Reportform extends VerticalLayout {
 
 		setSpacing(true);
 
-		table.setSizeFull();
+		table.setWidth("100%");
+		table.setHeightUndefined();
 
 		// table.setContainerDataSource(container);
 
