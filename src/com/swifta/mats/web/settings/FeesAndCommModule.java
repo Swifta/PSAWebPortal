@@ -1303,24 +1303,39 @@ public class FeesAndCommModule {
 
 		HorizontalLayout cAttrItem = new HorizontalLayout();
 		VerticalLayout cItemContent = new VerticalLayout();
+
 		Label lbAttr = new Label(comboTxType.getCaption());
 		lbAttr.setSizeUndefined();
 		cItemContent.setSizeFull();
 
 		lbAttr.setStyleName("label_add_user attr");
-		final Label lbAttrVal = new Label(
-				comboTxType.getItemCaption(comboTxType.getValue()));
+		String txtype = comboTxType.getItemCaption(comboTxType.getValue());
 
+		final Label lbAttrVal = new Label(txtype);
 		HorizontalLayout cAttrVal = new HorizontalLayout();
 		cAttrVal.addComponent(lbAttrVal);
-		lbAttrVal.setStyleName("attr_val");
-		cAttrVal.setStyleName("c_attr_val");
+		// lbAttrVal.setStyleName("attr_val");
+
 		cItemContent.addComponent(lbAttr);
 		cItemContent.addComponent(cAttrVal);
+
 		cItemContent.setComponentAlignment(cAttrVal, Alignment.MIDDLE_CENTER);
 		cItemContent.setComponentAlignment(lbAttr, Alignment.TOP_LEFT);
 		cAttrItem.addComponent(cItemContent);
 		cAttr.addComponent(cAttrItem);
+
+		VerticalLayout cItemContentTxType = new VerticalLayout();
+		cArrLItemContent.add(cItemContentTxType);
+		lbAttr = new Label("Transaction Type");
+		lbAttr.setSizeFull();
+		lbAttr.setStyleName("label_add_user attr");
+		Label lbTxType = new Label(txtype);
+		cItemContentTxType.addComponent(lbAttr);
+		cItemContentTxType.addComponent(lbTxType);
+		cItemContentTxType.setComponentAlignment(lbTxType,
+				Alignment.MIDDLE_CENTER);
+		cItemContentTxType.setComponentAlignment(lbAttr, Alignment.TOP_LEFT);
+		cAttrItem.addComponent(cItemContentTxType);
 
 		// MIN
 
@@ -1371,7 +1386,7 @@ public class FeesAndCommModule {
 		lbAttr.setStyleName("label_add_user attr");
 		cItemContentAmt.addComponent(lbAttr);
 		// cAttrItem.addComponent(cItemContentAmt);
-		add();
+		// add();
 		// add();
 
 		HorizontalLayout cControls = new HorizontalLayout();
@@ -1393,7 +1408,7 @@ public class FeesAndCommModule {
 		// cControls.addComponent(btn);
 
 		cAttr.addComponent(cAttrItem);
-		cAttr.addComponent(cControls);
+		// cAttr.addComponent(cControls);
 		cAttr.setWidth("100%");
 		cAttr.setHeightUndefined();
 
@@ -1492,7 +1507,7 @@ public class FeesAndCommModule {
 		Property<String> cID = rowID.getItemProperty("Transaction Type");
 		cID.setValue("CASH_OUT");
 
-		Table tb = new Table("Fees");
+		Table tb = new Table();
 		Property<HorizontalLayout> pt = rowID.getItemProperty("Tier");
 		pt.setValue(cttb);
 		tb.setWidth("100%");
