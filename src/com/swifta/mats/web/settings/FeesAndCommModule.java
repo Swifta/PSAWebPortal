@@ -1326,11 +1326,22 @@ public class FeesAndCommModule {
 
 		VerticalLayout cItemContentMin = new VerticalLayout();
 		cArrLItemContent.add(cItemContentMin);
-		lbAttr = new Label("Min.");
+		lbAttr = new Label("Tier");
 		lbAttr.setSizeFull();
 		lbAttr.setStyleName("label_add_user attr");
 		cItemContentMin.addComponent(lbAttr);
+		cItemContentMin.addComponent(getPseudoTable());
 		cAttrItem.addComponent(cItemContentMin);
+
+		// MIN
+
+		/*
+		 * VerticalLayout cItemContentMin = new VerticalLayout();
+		 * cArrLItemContent.add(cItemContentMin); lbAttr = new Label("Min.");
+		 * lbAttr.setSizeFull(); lbAttr.setStyleName("label_add_user attr");
+		 * cItemContentMin.addComponent(lbAttr); //
+		 * cAttrItem.addComponent(cItemContentMin);
+		 */
 
 		// MAX
 
@@ -1340,7 +1351,7 @@ public class FeesAndCommModule {
 		lbAttr.setSizeFull();
 		lbAttr.setStyleName("label_add_user attr");
 		cItemContentMax.addComponent(lbAttr);
-		cAttrItem.addComponent(cItemContentMax);
+		// cAttrItem.addComponent(cItemContentMax);
 
 		// MATRIX
 		VerticalLayout cItemContentMat = new VerticalLayout();
@@ -1349,7 +1360,7 @@ public class FeesAndCommModule {
 		lbAttr.setSizeFull();
 		lbAttr.setStyleName("label_add_user attr");
 		cItemContentMat.addComponent(lbAttr);
-		cAttrItem.addComponent(cItemContentMat);
+		// cAttrItem.addComponent(cItemContentMat);
 
 		// AMOUNT
 
@@ -1359,7 +1370,7 @@ public class FeesAndCommModule {
 		lbAttr.setSizeFull();
 		lbAttr.setStyleName("label_add_user attr");
 		cItemContentAmt.addComponent(lbAttr);
-		cAttrItem.addComponent(cItemContentAmt);
+		// cAttrItem.addComponent(cItemContentAmt);
 		add();
 		// add();
 
@@ -1385,8 +1396,13 @@ public class FeesAndCommModule {
 		cAttr.addComponent(cControls);
 		cAttr.setWidth("100%");
 		cAttr.setHeightUndefined();
-		cAttr.addComponent(getPseudoTable());
-		cAttr.setComponentAlignment(cControls, Alignment.BOTTOM_RIGHT);
+
+		// cAttr.setComponentAlignment(cControls, Alignment.BOTTOM_RIGHT);
+		// VerticalLayout cT = new VerticalLayout();
+		// cT.setHeightUndefined();
+		// cT.setWidth("100%");
+		// cT.addComponent(getPseudoTable());
+		// cAttr.addComponent(cT);
 
 		cManage.addComponent(cAttr);
 
@@ -1439,6 +1455,11 @@ public class FeesAndCommModule {
 		IndexedContainer ct = new IndexedContainer();
 		Table ttb = new Table();
 
+		HorizontalLayout cttb = new HorizontalLayout();
+		cttb.setWidth("100%");
+		cttb.setHeightUndefined();
+		cttb.addComponent(ttb);
+
 		ct.addContainerProperty("Min.", String.class, "");
 		ct.addContainerProperty("Max.", String.class, "");
 		ct.addContainerProperty("Matrix", String.class, "");
@@ -1464,7 +1485,7 @@ public class FeesAndCommModule {
 		IndexedContainer container = new IndexedContainer();
 		container
 				.addContainerProperty("Transaction Type", String.class, "None");
-		container.addContainerProperty("Tier", Table.class, null);
+		container.addContainerProperty("Tier", HorizontalLayout.class, null);
 
 		Object objr = container.addItem();
 		Item rowID = container.getItem(objr);
@@ -1472,11 +1493,14 @@ public class FeesAndCommModule {
 		cID.setValue("CASH_OUT");
 
 		Table tb = new Table("Fees");
-		tb.setContainerDataSource(container);
-		Property<Table> pt = rowID.getItemProperty("Tier");
-		pt.setValue(ttb);
+		Property<HorizontalLayout> pt = rowID.getItemProperty("Tier");
+		pt.setValue(cttb);
 		tb.setWidth("100%");
 		tb.setHeightUndefined();
+		// tb.setContainerDataSource(container);
+		tb.setContainerDataSource(ct);
+		tb.setPageLength(0);
+		// tb.setPageLength(5);
 
 		return tb;
 	}
