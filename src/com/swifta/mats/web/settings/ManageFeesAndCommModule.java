@@ -12,6 +12,7 @@ public class ManageFeesAndCommModule {
 
 	public static BtnTabLike btnComm;
 	public static BtnTabLike btnFees;
+	public static BtnTabLike btnExisting;
 
 	public VerticalLayout getMenu(boolean boolAddHeaderStatus,
 			boolean boolEditStatus, boolean hasOp) {
@@ -28,16 +29,21 @@ public class ManageFeesAndCommModule {
 
 		BtnTabLike btnAccount = new BtnTabLike("Commission", null);
 		btnComm = btnAccount;
+
+		BtnTabLike btnExistingFAndComm = new BtnTabLike("Existing", null);
+		btnExisting = btnExistingFAndComm;
 		// BtnTabLike btnAuth = new BtnTabLike("Authentication", null);
 		// BtnTabLike btnLog = new BtnTabLike("Log", null);
 		cManageAndAddTab.addComponent(btnPersonal);
 		cManageAndAddTab.addComponent(btnAccount);
+		cManageAndAddTab.addComponent(btnExistingFAndComm);
 		// cManageAndAddTab.addComponent(btnAuth);
 		// cManageAndAddTab.addComponent(btnLog);
 
 		final ArrayList<BtnTabLike> arrLTabBtns = new ArrayList<BtnTabLike>();
 		arrLTabBtns.add(btnPersonal);
 		arrLTabBtns.add(btnAccount);
+		arrLTabBtns.add(btnExistingFAndComm);
 		// arrLTabBtns.add(btnAuth);
 		// arrLTabBtns.add(btnLog);
 
@@ -78,6 +84,23 @@ public class ManageFeesAndCommModule {
 						null }));
 
 		btnAccount
+				.addClickListener(new BtnTabLikeClickListener(
+						false,
+						false,
+						arrLSubTabs,
+						arrLTabBtns,
+						null,
+						null,
+						"account_change_log",
+						"001",
+						hasOp,
+						boolEditStatus,
+						arrSessions,
+						new String[] {
+								WorkSpaceManageFeesAndComm.SESSION_VAR_WSMP_AUTH,
+								null }));
+
+		btnExistingFAndComm
 				.addClickListener(new BtnTabLikeClickListener(
 						false,
 						false,

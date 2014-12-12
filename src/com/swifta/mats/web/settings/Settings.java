@@ -199,6 +199,21 @@ public class Settings extends VerticalLayout {
 								wmfac.wsmpModifier();
 							}
 						});
+				ManageFeesAndCommModule.btnExisting
+						.addClickListener(new Button.ClickListener() {
+
+							private static final long serialVersionUID = 3563106614667999001L;
+
+							@Override
+							public void buttonClick(ClickEvent event) {
+								UI.getCurrent()
+										.getSession()
+										.setAttribute(
+												WorkSpaceManageFeesAndComm.SESSION_WSMP_CUR_ACTION,
+												FeesAndCommModule.EXISTING);
+								wmfac.wsmpModifier();
+							}
+						});
 
 			}
 

@@ -97,8 +97,8 @@ public class Reportform extends VerticalLayout {
 
 		// feesCommissionContainer.addContainerProperty(
 		// "Opening Balance (\u20A6)", String.class, "");
-		// feesCommissionContainer.addContainerProperty(
-		// "Closing Balance (\u20A6)", String.class, "");
+		feesCommissionContainer.addContainerProperty("Trans. ID", String.class,
+				"");
 		feesCommissionContainer.addContainerProperty("Transaction Type",
 				String.class, "");
 		feesCommissionContainer.addContainerProperty("Fees (\u20A6)",
@@ -435,7 +435,7 @@ public class Reportform extends VerticalLayout {
 
 							}
 							rs = stmt
-									.executeQuery("select trx1.transactionid,trxtyp.name as transactiontype,acth2.username as commissionaccount,acts1.amount as commission ,acth.username as feesaccount,acts2.amount as Fees,acts3.amount as amount from accounttransactions acts1,  transactions trx1,transactiontypes trxtyp, accounttransactions acts2, accounttransactions acts3, accountholders acth, accountholders acth2 where acts1.transactionid = trx1.transactionid and acts2.transactionid = trx1.transactionid and acts2.userresourceid = acth.accountholderid and acts3.userresourceid = acth2.accountholderid and acts3.transactionid = trx1.transactionid and trx1.transactiontypeid = trxtyp.transactiontypeid and acts1.accountresourceid = 12 and acts2.accountresourceid in (select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from accountholders where profileid = 15 and accounttypeid = 2)) and acts3.accountresourceid in (select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from accountholders where profileid = 11 and accounttypeid = 1))");
+									.executeQuery("select trx1.transactionid as txid,trxtyp.name as transactiontype,acth2.username as commissionaccount,acts1.amount as commission ,acth.username as feesaccount,acts2.amount as Fees,acts3.amount as amount from accounttransactions acts1,  transactions trx1,transactiontypes trxtyp, accounttransactions acts2, accounttransactions acts3, accountholders acth, accountholders acth2 where acts1.transactionid = trx1.transactionid and acts2.transactionid = trx1.transactionid and acts2.userresourceid = acth.accountholderid and acts3.userresourceid = acth2.accountholderid and acts3.transactionid = trx1.transactionid and trx1.transactiontypeid = trxtyp.transactiontypeid and acts1.accountresourceid = 12 and acts2.accountresourceid in (select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from accountholders where profileid = 15 and accounttypeid = 2)) and acts3.accountresourceid in (select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from accountholders where profileid = 11 and accounttypeid = 1))");
 							// Notification.show(rs.);
 							// rs = stmt
 							// .executeQuery("select txn.userresourceid as 'Username', txnt.name as 'Transaction Type', CAST(txn.lastupdate AS DATE) as 'Timestamp', format(acct.openingbalance /100,2) as 'Opening Balance', format(acct.closingbalance / 100,2) as 'Closing Balance', format(acct.amount / 100 , 2) as 'Amount',accts.name as 'Account Type'  from transactions txn join accounttransactions acct on txn.transactionid = acct.transactionid join transactiontypes txnt on txnt.transactiontypeid = txn.transactiontypeid join accounttypes accts on accts.accounttypeid = acct.accounttypeid   join accountholders ah on ah.username = txn.userresourceid  order by ah.username, txn.lastupdate");
@@ -443,6 +443,8 @@ public class Reportform extends VerticalLayout {
 								x = x + 1;
 								String transactiontype = rs
 										.getString("transactiontype");
+
+								String transID = rs.getString("txid");
 
 								String commission = rs.getString("commission");
 
@@ -478,12 +480,16 @@ public class Reportform extends VerticalLayout {
 								Property<String> tdPropertyamount = trItem
 										.getItemProperty("Amount (\u20A6)");
 
+								Property<String> tdPropertytxid = trItem
+										.getItemProperty("Trans. ID");
+
 								tdPropertyserial.setValue(String.valueOf(x));
 
 								tdPropertyCommAcc.setValue(commissionAccount);
 								tdPropertyFeesAcc.setValue(feesAccount);
 								tdPropertyFees.setValue(fees);
 								tdPropertyCommission.setValue(commission);
+								tdPropertytxid.setValue(transID);
 
 								tdPropertytransactiontype
 										.setValue(transactiontype);
@@ -500,6 +506,9 @@ public class Reportform extends VerticalLayout {
 								table.setPageLength(x);
 							else
 								table.setPageLength(10);
+
+							table.setSelectable(true);
+							// table.setEditable(true);
 
 						} catch (SQLException | ClassNotFoundException
 								| InstantiationException
@@ -543,6 +552,9 @@ public class Reportform extends VerticalLayout {
 
 		table.setWidth("100%");
 		table.setHeightUndefined();
+		table.setPageLength(1);
+		// table.setEditable(true);
+		// table.setSelectable(true);
 
 		// table.setContainerDataSource(container);
 

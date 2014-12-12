@@ -20,6 +20,7 @@ import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.fieldgroup.FieldGroup.CommitEvent;
 import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
 import com.vaadin.data.fieldgroup.FieldGroup.CommitHandler;
+import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.util.PropertysetItem;
 import com.vaadin.event.ListenerMethod.MethodException;
@@ -33,6 +34,7 @@ import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.Table;
 //import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
@@ -54,6 +56,7 @@ public class FeesAndCommModule {
 	private HashMap<String, ArrayList<ArrayList<FieldGroup>>> hmAllFG;
 	public final static String COMMISSION = "Commission";
 	public final static String FEES = "Fees";
+	public final static String EXISTING = "existing";
 	private String tabType = null;
 	private String[] arrMatValues;
 	private String[] arrModelValues;
@@ -786,7 +789,6 @@ public class FeesAndCommModule {
 				 */
 
 				if (isReadyToCommit(tabType, otherfg)) {
-
 					commit();
 					return;
 				} else {
@@ -864,6 +866,10 @@ public class FeesAndCommModule {
 					confCount = 0;
 					resetFields(lookedTab);
 				} else {
+					confCount = 0;
+					comboOp.setEnabled(true);
+					comboTxType.setEnabled(true);
+					lookedTab = null;
 					Notification.show("Tariff saving FAILED: "
 							+ cs.statusMessage);
 				}
@@ -1006,12 +1012,17 @@ public class FeesAndCommModule {
 	public void apmModifier(String strTbName, HorizontalLayout cContent) {
 
 		cContent.removeAllComponents();
+		if (strTbName.equals(EXISTING)) {
+			cContent.addComponent(getExistingFeesContainer(strTbName));
+			return;
+		}
 		cContent.addComponent(getFeesContainer(strTbName));
 		if (lookedTab != null) {
 			if (lookedTab.equals(strTbName)) {
 
 				comboOp.setEnabled(true);
 				comboTxType.setEnabled(true);
+				confCount = 0;
 
 				ArrayList<ArrayList<FieldGroup>> allFeesFG = hmAllFG
 						.get(strTbName);
@@ -1071,5 +1082,402 @@ public class FeesAndCommModule {
 
 		}
 
+	}
+
+	public HorizontalLayout getExistingFeesContainer(String type) {
+
+		cArrLItemContent = new ArrayList<>(4);
+		arrLRangeFG = new ArrayList<>();
+		arrLMatFG = new ArrayList<>();
+		arrLAllFG = new ArrayList<>();
+		isTiered = true;
+		tabType = type;
+
+		final HorizontalLayout cManage = new HorizontalLayout();
+		cManage.setWidthUndefined();
+		cManage.setHeightUndefined();
+
+		VerticalLayout cChoose = new VerticalLayout();
+		cChoose.setSizeUndefined();
+		cChoose.setStyleName("frm_add_user frm_manage_commission");
+
+		VerticalLayout addUserHeader = new VerticalLayout();
+		addUserHeader.setWidthUndefined();
+		addUserHeader.setHeightUndefined();
+		addUserHeader.setSpacing(true);
+
+		cChoose.addComponent(addUserHeader);
+
+		Label lbAddUser = new Label("Manage " + tabType);
+		lbAddUser.setStyleName("label_add_user");
+		lbAddUser.setSizeUndefined();
+
+		cChoose.addComponent(lbAddUser);
+		Label lbChoose = new Label("Please choose...");
+
+		final ComboBox comboConditionType = new ComboBox("Condition Type");
+		comboConditionType.addItem(arrConValues[0]);
+		comboConditionType.setItemCaption(arrConValues[0], "Amount");
+		comboConditionType.addItem(arrConValues[1]);
+		comboConditionType.setItemCaption(arrConValues[1], "Fee");
+		comboConditionType.select(arrConValues[0]);
+
+		final ComboBox comboModelType = new ComboBox("Model Type");
+		comboModelType.addItem(arrModelValues[0]);
+		comboModelType.setItemCaption(arrModelValues[0], "Tiered");
+		comboModelType.addItem(arrModelValues[1]);
+		comboModelType.setItemCaption(arrModelValues[1], "None");
+		comboModelType.select(arrModelValues[0]);
+
+		Item row = new PropertysetItem();
+
+		Property<String> pconTypeID = new ObjectProperty<>(arrConValues[0]);
+		Property<String> pmodelTypeID = new ObjectProperty<>(arrModelValues[0]);
+		row.addItemProperty("CONID", pconTypeID);
+		row.addItemProperty("MODID", pmodelTypeID);
+
+		otherfg = new FieldGroup(row);
+		otherfg.bind(comboConditionType, "CONID");
+		otherfg.bind(comboModelType, "MODID");
+
+		otherfg.addCommitHandler(new CommitHandler() {
+			private static final long serialVersionUID = 6144936023943646696L;
+
+			@Override
+			public void preCommit(CommitEvent commitEvent)
+					throws CommitException {
+				comboOp.setRequired(false);
+				comboConditionType.setRequired(false);
+				comboModelType.setRequired(false);
+				comboTxType.setRequired(false);
+				if (comboOp.getValue() == null) {
+					comboOp.setRequired(true);
+					Notification.show("Field marked with (*) is required.");
+					throw new CommitException("Field is required.");
+				} else if (comboConditionType.getValue() == null) {
+					comboConditionType.setRequired(true);
+					Notification.show("Field marked with (*) is required.");
+					throw new CommitException("Field is required.");
+
+				} else if (comboModelType.getValue() == null) {
+					comboModelType.setRequired(true);
+					Notification.show("Field marked with (*) is required.");
+					throw new CommitException("Field is required.");
+
+				} else if (comboTxType.getValue() == null) {
+					comboTxType.setRequired(true);
+					Notification.show("Field marked with (*) is required.");
+					throw new CommitException("Field is required.");
+				} else {
+					comboOp.setRequired(false);
+					comboConditionType.setRequired(false);
+					comboModelType.setRequired(false);
+					comboTxType.setRequired(false);
+					return;
+				}
+			}
+
+			@Override
+			public void postCommit(CommitEvent commitEvent)
+					throws CommitException {
+
+			}
+
+		});
+
+		Button btnRetrieve = new Button("Retrive");
+		btnRetrieve.setStyleName("btn_f_c_retrieve");
+
+		cChoose.addComponent(lbChoose);
+		cChoose.addComponent(comboOp);
+		cChoose.addComponent(btnRetrieve);
+		// cChoose.addComponent(comboConditionType);
+		// cChoose.addComponent(comboModelType);
+		// cChoose.addComponent(comboTxType);
+		cChoose.setStyleName("c_choose");
+
+		// cControls.addComponent(btn);
+
+		cManage.addComponent(cChoose);
+
+		comboTxType.addValueChangeListener(new ValueChangeListener() {
+
+			private static final long serialVersionUID = -4750457498573552155L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+
+			}
+
+		});
+
+		btnRetrieve.addClickListener(new Button.ClickListener() {
+			private static final long serialVersionUID = 5059266488185150011L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				// TODO Retrive OP Tariffs.
+				getSearchResults(cManage);
+
+			}
+		});
+
+		comboConditionType.addValueChangeListener(new ValueChangeListener() {
+
+			private static final long serialVersionUID = -5878577330071011374L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				if (event.getProperty().getValue().toString().trim()
+						.equals(arrConValues[0])) {
+					comboModelType.select(arrModelValues[0]);
+				} else {
+					comboModelType.select(arrModelValues[1]);
+				}
+			}
+
+		});
+
+		comboModelType.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = -6418325605387194047L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				if (comboModelType.getValue().toString()
+						.equals(arrModelValues[0])) {
+
+					if (arrLRangeFG.size() == 0)
+						return;
+
+					removeAll();
+					FieldGroup fg = arrLRangeFG.get(0);
+					TextField min = (TextField) fg.getField("Min");
+					TextField max = (TextField) fg.getField("Max");
+					min.setValue("");
+					min.setEnabled(true);
+
+					max.setValue("");
+					max.setEnabled(true);
+					isTiered = true;
+					comboConditionType.select(arrConValues[0]);
+					return;
+
+				} else {
+					if (arrLRangeFG.size() == 0)
+						return;
+					removeAll();
+					FieldGroup fg = arrLRangeFG.get(0);
+					TextField min = (TextField) fg.getField("Min");
+					TextField max = (TextField) fg.getField("Max");
+					min.setValue("0.00");
+					min.setEnabled(false);
+
+					max.setValue("0.00");
+					max.setEnabled(false);
+					isTiered = false;
+					comboConditionType.select(arrConValues[1]);
+					return;
+				}
+
+			}
+
+		});
+
+		return cManage;
+	}
+
+	private void getSearchResults(HorizontalLayout cManage) {
+		VerticalLayout cAttr = new VerticalLayout();
+		cAttr.setSpacing(true);
+		cAttr.setMargin(new MarginInfo(false, false, true, false));
+		cAttr.setStyleName("c_attr");
+
+		final Label tFOp = new Label();
+		tFOp.setCaption("Selected Operator: ");
+		tFOp.setValue(comboOp.getItemCaption(comboOp.getValue()));
+		tFOp.setStyleName("label_add_user");
+
+		FormLayout cOp = new FormLayout();
+		cOp.addComponent(tFOp);
+		cAttr.addComponent(cOp);
+
+		HorizontalLayout cAttrItem = new HorizontalLayout();
+		VerticalLayout cItemContent = new VerticalLayout();
+		Label lbAttr = new Label(comboTxType.getCaption());
+		lbAttr.setSizeUndefined();
+		cItemContent.setSizeFull();
+
+		lbAttr.setStyleName("label_add_user attr");
+		final Label lbAttrVal = new Label(
+				comboTxType.getItemCaption(comboTxType.getValue()));
+
+		HorizontalLayout cAttrVal = new HorizontalLayout();
+		cAttrVal.addComponent(lbAttrVal);
+		lbAttrVal.setStyleName("attr_val");
+		cAttrVal.setStyleName("c_attr_val");
+		cItemContent.addComponent(lbAttr);
+		cItemContent.addComponent(cAttrVal);
+		cItemContent.setComponentAlignment(cAttrVal, Alignment.MIDDLE_CENTER);
+		cItemContent.setComponentAlignment(lbAttr, Alignment.TOP_LEFT);
+		cAttrItem.addComponent(cItemContent);
+		cAttr.addComponent(cAttrItem);
+
+		// MIN
+
+		VerticalLayout cItemContentMin = new VerticalLayout();
+		cArrLItemContent.add(cItemContentMin);
+		lbAttr = new Label("Min.");
+		lbAttr.setSizeFull();
+		lbAttr.setStyleName("label_add_user attr");
+		cItemContentMin.addComponent(lbAttr);
+		cAttrItem.addComponent(cItemContentMin);
+
+		// MAX
+
+		VerticalLayout cItemContentMax = new VerticalLayout();
+		cArrLItemContent.add(cItemContentMax);
+		lbAttr = new Label("Max.");
+		lbAttr.setSizeFull();
+		lbAttr.setStyleName("label_add_user attr");
+		cItemContentMax.addComponent(lbAttr);
+		cAttrItem.addComponent(cItemContentMax);
+
+		// MATRIX
+		VerticalLayout cItemContentMat = new VerticalLayout();
+		cArrLItemContent.add(cItemContentMat);
+		lbAttr = new Label("Matrix");
+		lbAttr.setSizeFull();
+		lbAttr.setStyleName("label_add_user attr");
+		cItemContentMat.addComponent(lbAttr);
+		cAttrItem.addComponent(cItemContentMat);
+
+		// AMOUNT
+
+		VerticalLayout cItemContentAmt = new VerticalLayout();
+		cArrLItemContent.add(cItemContentAmt);
+		lbAttr = new Label("Amount (%/N)");
+		lbAttr.setSizeFull();
+		lbAttr.setStyleName("label_add_user attr");
+		cItemContentAmt.addComponent(lbAttr);
+		cAttrItem.addComponent(cItemContentAmt);
+		add();
+		// add();
+
+		HorizontalLayout cControls = new HorizontalLayout();
+		Button btnAdd = new Button("+");
+
+		btnAdd.setStyleName("btn_link");
+		Button btnRemove = new Button("-");
+		btnRemove.setStyleName("btn_link");
+
+		Button btnSave = new Button(FontAwesome.SAVE);
+		btnSave.setStyleName("btn_link");
+
+		Button btnCancel = new Button(FontAwesome.UNDO);
+		btnCancel.setStyleName("btn_link");
+
+		cControls.addComponent(btnAdd);
+		cControls.addComponent(btnRemove);
+		cControls.addComponent(btnSave);
+		// cControls.addComponent(btn);
+
+		cAttr.addComponent(cAttrItem);
+		cAttr.addComponent(cControls);
+		cAttr.setWidth("100%");
+		cAttr.setHeightUndefined();
+		cAttr.addComponent(getPseudoTable());
+		cAttr.setComponentAlignment(cControls, Alignment.BOTTOM_RIGHT);
+
+		cManage.addComponent(cAttr);
+
+		btnAdd.addClickListener(new Button.ClickListener() {
+
+			private static final long serialVersionUID = 8105347974986024315L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				add();
+
+			}
+		});
+
+		btnRemove.addClickListener(new Button.ClickListener() {
+			private static final long serialVersionUID = -3921995443687711235L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				remove();
+
+			}
+		});
+
+		btnSave.addClickListener(new Button.ClickListener() {
+
+			private static final long serialVersionUID = -7900935606088856031L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				/*
+				 * Commit to server.
+				 */
+
+				if (isReadyToCommit(tabType, otherfg)) {
+					commit();
+					return;
+				} else {
+					return;
+				}
+
+			}
+		});
+
+	}
+
+	@SuppressWarnings("unchecked")
+	private Table getPseudoTable() {
+
+		IndexedContainer ct = new IndexedContainer();
+		Table ttb = new Table();
+
+		ct.addContainerProperty("Min.", String.class, "");
+		ct.addContainerProperty("Max.", String.class, "");
+		ct.addContainerProperty("Matrix", String.class, "");
+		ct.addContainerProperty("Amount", String.class, "");
+
+		Object ctobjr = ct.addItem();
+		Item rct = ct.getItem(ctobjr);
+		Property<String> pct = rct.getItemProperty("Min.");
+		pct.setValue("100.00");
+
+		pct = rct.getItemProperty("Max.");
+		pct.setValue("1000.00");
+
+		pct = rct.getItemProperty("Matrix");
+		pct.setValue("%");
+
+		pct = rct.getItemProperty("Amount");
+		pct.setValue("2");
+		ttb.setContainerDataSource(ct);
+		ttb.setWidth("100%");
+		ttb.setHeightUndefined();
+
+		IndexedContainer container = new IndexedContainer();
+		container
+				.addContainerProperty("Transaction Type", String.class, "None");
+		container.addContainerProperty("Tier", Table.class, null);
+
+		Object objr = container.addItem();
+		Item rowID = container.getItem(objr);
+		Property<String> cID = rowID.getItemProperty("Transaction Type");
+		cID.setValue("CASH_OUT");
+
+		Table tb = new Table("Fees");
+		tb.setContainerDataSource(container);
+		Property<Table> pt = rowID.getItemProperty("Tier");
+		pt.setValue(ttb);
+		tb.setWidth("100%");
+		tb.setHeightUndefined();
+
+		return tb;
 	}
 }
