@@ -849,8 +849,10 @@ public class FeesAndCommModule {
 					.fromValue(conType));
 			sc[i].setServicecommissionmodeltype(ServiceCommissionModelTypes.Factory
 					.fromValue(modType));
-			sc[i].setCommissionfeetype(mfg.getField("Mat").getValue()
-					.toString().trim());
+			sc[i].setCommissionfeetype(ServiceFeematrix.Factory.fromValue(mfg
+					.getField("Mat").getValue().toString().trim()));
+			// sc[i].setCommissionfeetype(mfg.getField("Mat").getValue()
+			// .toString().trim());
 			sc[i].setCommissionfee(BigDecimal.valueOf(Float.valueOf(mfg
 					.getField("Amt").getValue().toString().trim())));
 			sc[i].setTransactiontypeid(txID);

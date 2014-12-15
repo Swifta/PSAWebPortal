@@ -1,12 +1,10 @@
 package com.swifta.mats.web.usermanagement;
 
-import java.rmi.RemoteException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.swifta.mats.web.utils.UserManagementService;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.server.FontAwesome;
@@ -616,54 +614,53 @@ public class AddUserModule {
 			cRBody.setStyleName("c_body_visible");
 		}
 
-		btnSave.addClickListener(new Button.ClickListener() {
-
-			private static final long serialVersionUID = -935880570210949227L;
-
-			@Override
-			public void buttonClick(ClickEvent event) {
-				UserManagementService ums = new UserManagementService();
-				String strResponse = null;
-
-				try {
-					strResponse = ums.registerUser(tFBAcc.getValue(),
-							(Integer) comboBID.getValue(), comboBDomain
-									.getValue().toString(), tFClrNo.getValue(),
-							comboCur.getValue().toString(), tFAccEmail
-									.getValue(), tFMSISDN.getValue(),
-							(Integer) comboProfile.getValue(), comboSecQn
-									.getValue().toString(),
-							tFSecAns.getValue(),
-							chcTAndC.getValue().toString(), tFUN.getValue(),
-							(Integer) comboCountry.getValue(), (Date) dFDoB
-									.getValue(), tFEmp.getValue(), tFFN
-									.getValue(),
-
-							(Integer) optSex.getValue(), (Integer) comboLang
-									.getValue(), tFLN.getValue(),
-							(Integer) comboLG.getValue(), tFMN.getValue()
-									.toString(), tFOcc.getValue(), comboPref
-									.getValue().toString(),
-							(Integer) comboState.getValue(), comboSuff
-									.getValue().toString(), tFCity.getValue(),
-							tFPostalCode.getValue(), tFStreet.getValue(),
-							tFProv.getValue(), (Date) dFDoE.getValue(), tFIDNo
-									.getValue(), comboIDType.getValue()
-									.toString(), (Date) dFDoI.getValue(),
-							tFIssuer.getValue(), tFPEmail.getValue(), tFPMNo
-									.getValue(), tFPANo.getValue(), tFSEmail
-									.getValue(), tFSMNo.getValue(), tFSANo
-									.getValue()
-
-					);
-				} catch (RemoteException e) {
-					e.printStackTrace();
-				}
-
-				Notification.show("Response: " + strResponse);
-
-			}
-		});
+		// btnSave.addClickListener(new Button.ClickListener() {
+		//
+		// private static final long serialVersionUID = -935880570210949227L;
+		//
+		// @Override
+		//
+		// public void buttonClick(ClickEvent event) {
+		// UserManagementService ums = new UserManagementService();
+		// String strResponse = null;
+		//
+		//
+		// try {
+		// strResponse =
+		//
+		// ums.registerUser(
+		// tFBAcc.getValue(),
+		// (Integer) comboBID.getValue(),
+		// comboBDomain.getValue().toString(),
+		// tFClrNo.getValue(),comboCur.getValue().toString(),
+		// tFAccEmail.getValue(), tFMSISDN.getValue(),
+		// (Integer) comboProfile.getValue(), comboSecQn.getValue().toString(),
+		// tFSecAns.getValue(),chcTAndC.getValue().toString(),
+		// tFUN.getValue(),(Integer) comboCountry.getValue(),
+		// (Date) dFDoB.getValue(), tFEmp.getValue(),
+		// tFFN.getValue(),optSex.getItemCaption(optSex.getValue()),
+		// (Integer) comboLang.getValue(), tFLN.getValue(),
+		// (Integer) comboLG.getValue(), tFMN.getValue().toString(),
+		// tFOcc.getValue(), comboPref.getValue().toString(),
+		// (Integer) comboState.getValue(),(Integer) comboLG.getValue(),
+		// (Integer) comboState.getValue(), comboSuff.getValue().toString(),
+		// tFCity.getValue(),tFPostalCode.getValue(),
+		// tFStreet.getValue(),tFProv.getValue(),
+		// (Date) dFDoE.getValue(), tFIDNo.getValue(),
+		// comboIDType.getValue().toString(), (Date) dFDoI.getValue(),
+		// tFIssuer.getValue(), tFPEmail.getValue(),
+		// tFPMNo.getValue(), tFPANo.getValue(),
+		// tFSEmail.getValue(), tFSMNo.getValue(), tFSANo.getValue()
+		//
+		// );
+		// } catch (RemoteException e) {
+		// e.printStackTrace();
+		// }
+		//
+		// Notification.show("Response: " + strResponse);
+		//
+		// }
+		// });
 
 		btnReset.addClickListener(new Button.ClickListener() {
 			private static final long serialVersionUID = 3212854064282339617L;

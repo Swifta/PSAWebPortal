@@ -39,6 +39,12 @@ import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Setparen
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Setparentrequestresponse;
 
 public class UserManagementService {
+
+	// String endpoint =
+	// "http://127.0.0.1:9760/Provisioning-1.0.0/services/provisioning";
+
+	String esbendpoint = "http://127.0.0.1:8280/services/Provisionservice";
+
 	ProvisioningStub matsStub;
 
 	public String registerUser(String bankAccount, int bankCodeid,
@@ -46,7 +52,7 @@ public class UserManagementService {
 			String email, String msisdn, int profileid, String securityQuest,
 			String securityAns, String termscondition, String username,
 			int countryid, Date dateofBirth, String employer, String firstname,
-			int genderid, int languageid, String lastname, int Lgaid,
+			String gender, int languageid, String lastname, int Lgaid,
 			String middlename, String occupation, String prefix, int stateid,
 			String suffix, String city, String postalcode,
 			String streetAddress, String province, Date Expirydate,
@@ -55,11 +61,10 @@ public class UserManagementService {
 			String PrimaryPhonenumber, String SecondaryEmail,
 			String SecondaryMobilenumber, String SecondaryPhonenumber)
 			throws RemoteException {
-		matsStub = new ProvisioningStub();
+		// matsStub = new ProvisioningStub();
 
 		Accountholderdetails accountholderdetails = new Accountholderdetails();
-		matsStub = new ProvisioningStub(
-				"http://54.164.96.105:8283/services/Provisionservice");
+		// matsStub = new ProvisioningStub(endpoint);
 		Address address = new Address();
 		address.setCity(city);
 		address.setPostalCode(postalcode);
@@ -68,16 +73,18 @@ public class UserManagementService {
 
 		accountholderdetails.setAddress(address);
 		accountholderdetails.setCountryid(countryid);
+
 		accountholderdetails.setDateofbirth(utils.DateToCalendar(dateofBirth));
 		accountholderdetails.setEmployer(employer);
 		accountholderdetails.setFirstname(firstname);
-		accountholderdetails.setGenderid(genderid);
+		accountholderdetails.setGender(ProvisioningStub.Gender.Factory
+				.fromValue(gender));
 
 		Identification identification = new Identification();
 		identification.setExpirydate(utils.DateToCalendar(Expirydate));
 		identification.setIdentificationNo(idNumber);
 
-		IdentificationType idType3 = null;
+		IdentificationType idType3 = IdentificationType.IDCD;
 
 		identification.setIdentificationType(idType3);
 		identification.setIssueDate(String.valueOf(Issuedate));
@@ -159,8 +166,7 @@ public class UserManagementService {
 			String IDnumber, String resourceid, String SecurityAns,
 			String firstPin, String confirmPin) throws RemoteException {
 		String statusMessage = "";
-		matsStub = new ProvisioningStub(
-				"http://54.164.96.105:8283/services/Provisionservice");
+		matsStub = new ProvisioningStub(esbendpoint);
 		Credentials cre = new Credentials();
 		cre.setFirstpin(firstPin);
 		cre.setConfirmpin(confirmPin);
