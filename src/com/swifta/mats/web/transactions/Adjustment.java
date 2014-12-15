@@ -119,7 +119,9 @@ public class Adjustment {
 				String securityAns = "How r u";
 				String termscondition = "gdeyu";
 				String username = "166735";
-				int countryid = 165;
+				int countryid = 162;
+				// int countrystate = 10;
+				// int statelga = 20;
 				Date dateofBirth = new Date();
 				String employer = "Swifta";
 				String firstname = "ALAPERE 2";
@@ -129,7 +131,7 @@ public class Adjustment {
 				String idType = "Kay";
 				Date Issuedate = new Date();
 				String Issue = "Kay";
-				int genderid = 2;
+				String gender = "MALE";
 				int languageid = 2;
 				String lastname = "STATION";
 				int Lgaid = 42;
@@ -142,7 +144,7 @@ public class Adjustment {
 				String SecondaryMobilenumber = "08062944496";
 				String SecondaryEmail = "Kayo@gfgy.com";
 				String suffix = "Kay";
-				int stateid = 503;
+				int stateid = 20;
 				String city = "Kaytyu";
 				String postalcode = "234";
 				String SecondaryPhonenumber = "08087280449";
@@ -153,7 +155,7 @@ public class Adjustment {
 							bankdomainNameid, clearingNumber, currencyid,
 							email, msisdn, profileid, securityQuest,
 							securityAns, termscondition, username, countryid,
-							dateofBirth, employer, firstname, genderid,
+							dateofBirth, employer, firstname, gender,
 							languageid, lastname, Lgaid, middlename,
 							occupation, prefix, stateid, suffix, city,
 							postalcode, streetAddress, province, Expirydate,

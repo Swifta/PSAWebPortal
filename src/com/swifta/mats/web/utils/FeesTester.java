@@ -26,7 +26,7 @@ public class FeesTester {
 		for (int i = 0; i < commissionCount; i++) {
 			newServiceCommission = new ServiceCommission();
 			newServiceCommission.setCommissionfee(commissionFeeArray[i]);
-			newServiceCommission.setCommissionfeetype("FIXED");
+			newServiceCommission.setCommissionfeetype(ServiceFeematrix.FIXED);
 			newServiceCommission.setMaximumamount(maxAmtArray[i]);
 			newServiceCommission.setMinimumamount(minAmtArray[i]);
 			newServiceCommission
