@@ -1287,6 +1287,12 @@ public class FeesAndCommModule {
 	}
 
 	private void getSearchResults(HorizontalLayout cManage) {
+		VerticalLayout cC = new VerticalLayout();
+		cManage.addComponent(cC);
+		addFees(cC);
+	}
+
+	private void addFees(VerticalLayout cC) {
 		VerticalLayout cAttr = new VerticalLayout();
 		cAttr.setSpacing(true);
 		cAttr.setMargin(new MarginInfo(false, false, true, false));
@@ -1303,89 +1309,37 @@ public class FeesAndCommModule {
 
 		HorizontalLayout cAttrItem = new HorizontalLayout();
 		VerticalLayout cItemContent = new VerticalLayout();
-
-		Label lbAttr = new Label(comboTxType.getCaption());
-		lbAttr.setSizeUndefined();
 		cItemContent.setSizeFull();
 
-		lbAttr.setStyleName("label_add_user attr");
-		String txtype = comboTxType.getItemCaption(comboTxType.getValue());
+		// Transaction Type
 
+		Label lbAttr = new Label(comboTxType.getCaption());
+		lbAttr.setStyleName("label_add_user attr");
+		cItemContent.addComponent(lbAttr);
+		cItemContent.setComponentAlignment(lbAttr, Alignment.TOP_LEFT);
+
+		String txtype = comboTxType.getItemCaption(comboTxType.getValue());
 		final Label lbAttrVal = new Label(txtype);
 		HorizontalLayout cAttrVal = new HorizontalLayout();
 		cAttrVal.addComponent(lbAttrVal);
-		// lbAttrVal.setStyleName("attr_val");
-
-		cItemContent.addComponent(lbAttr);
 		cItemContent.addComponent(cAttrVal);
-
 		cItemContent.setComponentAlignment(cAttrVal, Alignment.MIDDLE_CENTER);
-		cItemContent.setComponentAlignment(lbAttr, Alignment.TOP_LEFT);
+
+		cArrLItemContent.add(cItemContent);
 		cAttrItem.addComponent(cItemContent);
 		cAttr.addComponent(cAttrItem);
 
-		VerticalLayout cItemContentTxType = new VerticalLayout();
-		cArrLItemContent.add(cItemContentTxType);
-		lbAttr = new Label("Transaction Type");
+		// Tier
+
+		VerticalLayout cItemContentTier = new VerticalLayout();
+		cArrLItemContent.add(cItemContentTier);
+		lbAttr = new Label("Tier(Fees)");
 		lbAttr.setSizeFull();
 		lbAttr.setStyleName("label_add_user attr");
-		Label lbTxType = new Label(txtype);
-		cItemContentTxType.addComponent(lbAttr);
-		cItemContentTxType.addComponent(lbTxType);
-		cItemContentTxType.setComponentAlignment(lbTxType,
-				Alignment.MIDDLE_CENTER);
-		cItemContentTxType.setComponentAlignment(lbAttr, Alignment.TOP_LEFT);
-		cAttrItem.addComponent(cItemContentTxType);
+		cItemContentTier.addComponent(lbAttr);
+		cItemContentTier.addComponent(getPseudoTable());
+		cAttrItem.addComponent(cItemContentTier);
 
-		// MIN
-
-		VerticalLayout cItemContentMin = new VerticalLayout();
-		cArrLItemContent.add(cItemContentMin);
-		lbAttr = new Label("Tier");
-		lbAttr.setSizeFull();
-		lbAttr.setStyleName("label_add_user attr");
-		cItemContentMin.addComponent(lbAttr);
-		cItemContentMin.addComponent(getPseudoTable());
-		cAttrItem.addComponent(cItemContentMin);
-
-		// MIN
-
-		/*
-		 * VerticalLayout cItemContentMin = new VerticalLayout();
-		 * cArrLItemContent.add(cItemContentMin); lbAttr = new Label("Min.");
-		 * lbAttr.setSizeFull(); lbAttr.setStyleName("label_add_user attr");
-		 * cItemContentMin.addComponent(lbAttr); //
-		 * cAttrItem.addComponent(cItemContentMin);
-		 */
-
-		// MAX
-
-		VerticalLayout cItemContentMax = new VerticalLayout();
-		cArrLItemContent.add(cItemContentMax);
-		lbAttr = new Label("Max.");
-		lbAttr.setSizeFull();
-		lbAttr.setStyleName("label_add_user attr");
-		cItemContentMax.addComponent(lbAttr);
-		// cAttrItem.addComponent(cItemContentMax);
-
-		// MATRIX
-		VerticalLayout cItemContentMat = new VerticalLayout();
-		cArrLItemContent.add(cItemContentMat);
-		lbAttr = new Label("Matrix");
-		lbAttr.setSizeFull();
-		lbAttr.setStyleName("label_add_user attr");
-		cItemContentMat.addComponent(lbAttr);
-		// cAttrItem.addComponent(cItemContentMat);
-
-		// AMOUNT
-
-		VerticalLayout cItemContentAmt = new VerticalLayout();
-		cArrLItemContent.add(cItemContentAmt);
-		lbAttr = new Label("Amount (%/N)");
-		lbAttr.setSizeFull();
-		lbAttr.setStyleName("label_add_user attr");
-		cItemContentAmt.addComponent(lbAttr);
-		// cAttrItem.addComponent(cItemContentAmt);
 		// add();
 		// add();
 
@@ -1419,7 +1373,7 @@ public class FeesAndCommModule {
 		// cT.addComponent(getPseudoTable());
 		// cAttr.addComponent(cT);
 
-		cManage.addComponent(cAttr);
+		cC.addComponent(cAttr);
 
 		btnAdd.addClickListener(new Button.ClickListener() {
 
@@ -1461,7 +1415,131 @@ public class FeesAndCommModule {
 
 			}
 		});
+	}
 
+	private void addCommission(VerticalLayout cC) {
+		VerticalLayout cAttr = new VerticalLayout();
+		cAttr.setSpacing(true);
+		cAttr.setMargin(new MarginInfo(false, false, true, false));
+		cAttr.setStyleName("c_attr");
+
+		final Label tFOp = new Label();
+		tFOp.setCaption("Selected Operator: ");
+		tFOp.setValue(comboOp.getItemCaption(comboOp.getValue()));
+		tFOp.setStyleName("label_add_user");
+
+		FormLayout cOp = new FormLayout();
+		cOp.addComponent(tFOp);
+		cAttr.addComponent(cOp);
+
+		HorizontalLayout cAttrItem = new HorizontalLayout();
+		VerticalLayout cItemContent = new VerticalLayout();
+		cItemContent.setSizeFull();
+
+		// Transaction Type
+
+		Label lbAttr = new Label(comboTxType.getCaption());
+		lbAttr.setStyleName("label_add_user attr");
+		cItemContent.addComponent(lbAttr);
+		cItemContent.setComponentAlignment(lbAttr, Alignment.TOP_LEFT);
+
+		String txtype = comboTxType.getItemCaption(comboTxType.getValue());
+		final Label lbAttrVal = new Label(txtype);
+		HorizontalLayout cAttrVal = new HorizontalLayout();
+		cAttrVal.addComponent(lbAttrVal);
+		cItemContent.addComponent(cAttrVal);
+		cItemContent.setComponentAlignment(cAttrVal, Alignment.MIDDLE_CENTER);
+
+		cArrLItemContent.add(cItemContent);
+		cAttrItem.addComponent(cItemContent);
+		cAttr.addComponent(cAttrItem);
+
+		// Tier
+
+		VerticalLayout cItemContentTier = new VerticalLayout();
+		cArrLItemContent.add(cItemContentTier);
+		lbAttr = new Label("Tier(Commission)");
+		lbAttr.setSizeFull();
+		lbAttr.setStyleName("label_add_user attr");
+		cItemContentTier.addComponent(lbAttr);
+		cItemContentTier.addComponent(getPseudoTable());
+		cAttrItem.addComponent(cItemContentTier);
+
+		// add();
+		// add();
+
+		HorizontalLayout cControls = new HorizontalLayout();
+		Button btnAdd = new Button("+");
+
+		btnAdd.setStyleName("btn_link");
+		Button btnRemove = new Button("-");
+		btnRemove.setStyleName("btn_link");
+
+		Button btnSave = new Button(FontAwesome.SAVE);
+		btnSave.setStyleName("btn_link");
+
+		Button btnCancel = new Button(FontAwesome.UNDO);
+		btnCancel.setStyleName("btn_link");
+
+		cControls.addComponent(btnAdd);
+		cControls.addComponent(btnRemove);
+		cControls.addComponent(btnSave);
+		// cControls.addComponent(btn);
+
+		cAttr.addComponent(cAttrItem);
+		// cAttr.addComponent(cControls);
+		cAttr.setWidth("100%");
+		cAttr.setHeightUndefined();
+
+		// cAttr.setComponentAlignment(cControls, Alignment.BOTTOM_RIGHT);
+		// VerticalLayout cT = new VerticalLayout();
+		// cT.setHeightUndefined();
+		// cT.setWidth("100%");
+		// cT.addComponent(getPseudoTable());
+		// cAttr.addComponent(cT);
+
+		cC.addComponent(cAttr);
+
+		btnAdd.addClickListener(new Button.ClickListener() {
+
+			private static final long serialVersionUID = 8105347974986024315L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				add();
+
+			}
+		});
+
+		btnRemove.addClickListener(new Button.ClickListener() {
+			private static final long serialVersionUID = -3921995443687711235L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				remove();
+
+			}
+		});
+
+		btnSave.addClickListener(new Button.ClickListener() {
+
+			private static final long serialVersionUID = -7900935606088856031L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				/*
+				 * Commit to server.
+				 */
+
+				if (isReadyToCommit(tabType, otherfg)) {
+					commit();
+					return;
+				} else {
+					return;
+				}
+
+			}
+		});
 	}
 
 	@SuppressWarnings("unchecked")
@@ -1515,6 +1593,7 @@ public class FeesAndCommModule {
 		// tb.setContainerDataSource(container);
 		tb.setContainerDataSource(ct);
 		tb.setPageLength(0);
+		tb.setSelectable(true);
 		// tb.setPageLength(5);
 
 		return tb;
