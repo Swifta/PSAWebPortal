@@ -6,6 +6,8 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
+import java.util.HashSet;
 
 import com.swifta.mats.web.usermanagement.PagedTableCustom;
 import com.vaadin.addon.tableexport.ExcelExport;
@@ -15,6 +17,8 @@ import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.IndexedContainer;
+import com.vaadin.data.util.filter.And;
+import com.vaadin.data.util.filter.Compare;
 import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -44,6 +48,7 @@ public class Reportform extends VerticalLayout {
 	IndexedContainer container3 = new IndexedContainer();
 	IndexedContainer feesCommissionContainer = new IndexedContainer();
 	ComboBox agent;
+	HashMap<String, HashSet<String>> ht = new HashMap<>();
 
 	// PagedTableContainerCustom container = new
 	// PagedTableContainerCustom(contain);
@@ -125,7 +130,74 @@ public class Reportform extends VerticalLayout {
 		reportType.setTextInputAllowed(false);
 		reportType.setInputPrompt("Select Report Type");
 
+		VerticalLayout cF = new VerticalLayout();
+		final HorizontalLayout cByAndVal = new HorizontalLayout();
+		cF.addComponent(cByAndVal);
+
+		final ComboBox comboF = new ComboBox("Filter by: ");
+		comboF.addItem("Transaction Type");
+		comboF.addItem("Fees Account");
+		comboF.addItem("Commission Account");
+		comboF.select(null);
+
+		cByAndVal.addComponent(comboF);
+		cByAndVal.setSpacing(true);
+
 		addComponent(reportType);
+		addComponent(cF);
+
+		final ComboBox comboVal = new ComboBox("Select " + comboF.getValue());
+		cByAndVal.addComponent(comboVal);
+		comboVal.setVisible(false);
+
+		comboVal.addValueChangeListener(new ValueChangeListener() {
+
+			private static final long serialVersionUID = -2214024761998185485L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				if (feesCommissionContainer.size() == 0) {
+					return;
+				}
+				if (comboVal.getValue() == null) {
+					return;
+				}
+
+				Filter filter = new And(new Compare.Equal(comboF.getValue()
+						.toString(), comboVal.getValue()));
+				feesCommissionContainer.addContainerFilter(filter);
+				table.setContainerDataSource(feesCommissionContainer);
+
+			}
+
+		});
+
+		comboF.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = 4792221698725213906L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				if (event.getProperty().getValue() == null) {
+					comboVal.setVisible(false);
+					return;
+				}
+				String creteria = event.getProperty().getValue().toString();
+				HashSet<String> arrL = ht.get(creteria);
+				if (arrL == null)
+					return;
+
+				comboVal.removeAllItems();
+				for (String s : arrL) {
+					comboVal.addItem(s);
+				}
+
+				comboVal.setCaption("Select " + creteria);
+				comboVal.setVisible(true);
+				feesCommissionContainer.removeAllContainerFilters();
+
+			}
+
+		});
 
 		reportType.addValueChangeListener(new ValueChangeListener() {
 
@@ -436,14 +508,21 @@ public class Reportform extends VerticalLayout {
 							}
 
 							rs = stmt
-									.executeQuery("select trx1.transactionid as txid,trxtyp.name as transactiontype,acth2.username as commissionaccount,acts1.amount as commission ,acth.username as feesaccount,acts2.amount as Fees,acts3.amount as amount from accounttransactions acts1,  transactions trx1,transactiontypes trxtyp, accounttransactions acts2, accounttransactions acts3, accountholders acth, accountholders acth2 where acts1.transactionid = trx1.transactionid and acts2.transactionid = trx1.transactionid and acts2.userresourceid = acth.accountholderid and acts3.userresourceid = acth2.accountholderid and acts3.transactionid = trx1.transactionid and trx1.transactiontypeid = trxtyp.transactiontypeid and acts1.accountresourceid = 12 and acts2.accountresourceid in (select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from accountholders where profileid = 15 and accounttypeid = 2)) and acts3.accountresourceid in (select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from accountholders where (profileid = 11 or profileid = 6) and accounttypeid = 1))");
+									.executeQuery("select trx1.transactionid as txid,trxtyp.name as 'Transaction Type',acth2.username as 'Agent/Dealer',acts1.amount as commission ,acth.username as 'MM Operator',acts2.amount as Fees,acts3.amount as amount from accounttransactions acts1,  transactions trx1,transactiontypes trxtyp, accounttransactions acts2, accounttransactions acts3, accountholders acth, accountholders acth2 where acts1.transactionid = trx1.transactionid and acts2.transactionid = trx1.transactionid and acts2.userresourceid = acth.accountholderid and acts3.userresourceid = acth2.accountholderid and acts3.transactionid = trx1.transactionid and trx1.transactiontypeid = trxtyp.transactiontypeid and acts1.accountresourceid = 12 and acts2.accountresourceid in (select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from accountholders where profileid = 15 and accounttypeid = 2)) and acts3.accountresourceid in (select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from accountholders where (profileid = 11 or profileid = 6) and accounttypeid = 1))");
 							// Notification.show(rs.);
 							// rs = stmt
 							// .executeQuery("select txn.userresourceid as 'Username', txnt.name as 'Transaction Type', CAST(txn.lastupdate AS DATE) as 'Timestamp', format(acct.openingbalance /100,2) as 'Opening Balance', format(acct.closingbalance / 100,2) as 'Closing Balance', format(acct.amount / 100 , 2) as 'Amount',accts.name as 'Account Type'  from transactions txn join accounttransactions acct on txn.transactionid = acct.transactionid join transactiontypes txnt on txnt.transactiontypeid = txn.transactiontypeid join accounttypes accts on accts.accounttypeid = acct.accounttypeid   join accountholders ah on ah.username = txn.userresourceid  order by ah.username, txn.lastupdate");
 							while (rs.next()) {
 								x = x + 1;
+								String fidTxtype = "Transaction Type";
+								String fidAgent = "Agent/Dealer";
+								String fidMMO = "MM Operator";
+
 								String transactiontype = rs
-										.getString("transactiontype");
+										.getString(fidTxtype);
+								String feesAccount = rs.getString(fidMMO);
+								String commissionAccount = rs
+										.getString(fidAgent);
 
 								String transID = rs.getString("txid");
 
@@ -451,12 +530,35 @@ public class Reportform extends VerticalLayout {
 
 								String fees = rs.getString("Fees");
 
-								String feesAccount = rs
-										.getString("feesaccount");
-
 								String amount = rs.getString("amount");
-								String commissionAccount = rs
-										.getString("commissionaccount");
+
+								String fida = "Commission Account";
+								String fido = "Fees Account";
+
+								if (!ht.containsKey(fidTxtype)) {
+									HashSet<String> arrL = new HashSet<>();
+									arrL.add(transactiontype);
+									ht.put(fidTxtype, arrL);
+								} else {
+									ht.get(fidTxtype).add(transactiontype);
+								}
+
+								if (!ht.containsKey(fido)) {
+									HashSet<String> arrL = new HashSet<>();
+									arrL.add(feesAccount);
+									ht.put(fido, arrL);
+								} else {
+									ht.get(fido).add(feesAccount);
+								}
+
+								if (!ht.containsKey(fida)) {
+									HashSet<String> arrL = new HashSet<>();
+									arrL.add(commissionAccount);
+									ht.put(fida, arrL);
+								} else {
+									ht.get(fida).add(commissionAccount);
+								}
+
 								itemId = feesCommissionContainer.addItem();
 
 								trItem = feesCommissionContainer
@@ -605,22 +707,22 @@ public class Reportform extends VerticalLayout {
 		return floatmanagement;
 	}
 
-	public FormLayout Transactions() {
+	public VerticalLayout Transactions() {
 		// DateField from = new DateField("Transaction Report From");
 		// DateField to = new DateField("Transaction Report To");
-		FormLayout transactions = new FormLayout();
+		VerticalLayout transactions = new VerticalLayout();
 		Button search = new Button("Search");
 		agent = new ComboBox("Agent/Dealer");
 
 		agent.addItem("dolapo");
 		Label lab3 = new Label("Search for Transaction Report");
 
-		transactions.addComponent(lab3);
+		// transactions.addComponent(lab3);
 		// transactions.addComponent(from);
 		// transactions.addComponent(to);
-		transactions.addComponent(agent);
+		// transactions.addComponent(agent);
 		// transactions.addComponent(partner);
-		transactions.addComponent(search);
+		// transactions.addComponent(search);
 
 		search.addClickListener(new Button.ClickListener() {
 
@@ -646,10 +748,10 @@ public class Reportform extends VerticalLayout {
 		return transactions;
 	}
 
-	public FormLayout Commission() {
+	public VerticalLayout Commission() {
 		DateField from = new DateField("Commission Report From");
 		DateField to = new DateField("Commission Report To");
-		FormLayout commission = new FormLayout();
+		VerticalLayout commission = new VerticalLayout();
 		Button search = new Button("Search");
 		agent = new ComboBox("Agent ID");
 		agent.addItem("All");
