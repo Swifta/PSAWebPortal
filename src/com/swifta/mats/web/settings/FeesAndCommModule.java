@@ -1292,6 +1292,7 @@ public class FeesAndCommModule {
 		VerticalLayout cC = new VerticalLayout();
 		cManage.addComponent(cC);
 		addFees(cC);
+		addCommission(cC);
 	}
 
 	private void addFees(VerticalLayout cC) {
@@ -1432,7 +1433,32 @@ public class FeesAndCommModule {
 
 		FormLayout cOp = new FormLayout();
 		cOp.addComponent(tFOp);
-		cAttr.addComponent(cOp);
+		// cAttr.addComponent(cOp);
+
+		HorizontalLayout crow = new HorizontalLayout();
+		VerticalLayout cTType = new VerticalLayout();
+		cTType.setHeight("100%");
+		cTType.setWidth("100%");
+		cTType.setSpacing(true);
+
+		Label lbTType = new Label("Transaction Type");
+		cTType.addComponent(lbTType);
+		cTType.setComponentAlignment(lbTType, Alignment.MIDDLE_CENTER);
+
+		crow.addComponent(cTType);
+
+		VerticalLayout cTTier = new VerticalLayout();
+
+		Label lbTTier = new Label("Tier(Commission)");
+		cTTier.addComponent(lbTTier);
+
+		lbTType.setStyleName("label_add_user attr");
+		lbTTier.setStyleName("label_add_user attr");
+
+		cTTier.setComponentAlignment(lbTTier, Alignment.MIDDLE_CENTER);
+		crow.addComponent(cTTier);
+
+		// cAttr.addComponent(crow);
 
 		HorizontalLayout cAttrItem = new HorizontalLayout();
 		VerticalLayout cItemContent = new VerticalLayout();
@@ -1600,4 +1626,114 @@ public class FeesAndCommModule {
 
 		return tb;
 	}
+
+	@SuppressWarnings("unchecked")
+	private Table getModPseudoTable() {
+
+		IndexedContainer ct = new IndexedContainer();
+		Table ttb = new Table();
+
+		HorizontalLayout cttb = new HorizontalLayout();
+		cttb.setWidth("100%");
+		cttb.setHeightUndefined();
+		cttb.addComponent(ttb);
+
+		ct.addContainerProperty("Min.", String.class, "");
+		ct.addContainerProperty("Max.", String.class, "");
+		ct.addContainerProperty("Matrix", String.class, "");
+		ct.addContainerProperty("Amount", String.class, "");
+
+		Object ctobjr = ct.addItem();
+		Item rct = ct.getItem(ctobjr);
+		Property<String> pct = rct.getItemProperty("Min.");
+		pct.setValue("100.00");
+
+		pct = rct.getItemProperty("Max.");
+		pct.setValue("1000.00");
+
+		pct = rct.getItemProperty("Matrix");
+		pct.setValue("%");
+
+		pct = rct.getItemProperty("Amount");
+		pct.setValue("2");
+
+		ctobjr = ct.addItem();
+		rct = ct.getItem(ctobjr);
+		pct = rct.getItemProperty("Min.");
+		pct.setValue("100.00");
+
+		pct = rct.getItemProperty("Max.");
+		pct.setValue("1000.00");
+
+		pct = rct.getItemProperty("Matrix");
+		pct.setValue("%");
+
+		pct = rct.getItemProperty("Amount");
+		pct.setValue("2");
+
+		ttb.setContainerDataSource(ct);
+		ttb.setWidth("100%");
+		ttb.setHeightUndefined();
+
+		IndexedContainer container = new IndexedContainer();
+		container
+				.addContainerProperty("Transaction Type", String.class, "None");
+		container.addContainerProperty("Tier", HorizontalLayout.class, null);
+
+		Object objr = container.addItem();
+		Item rowID = container.getItem(objr);
+		Property<String> cID = rowID.getItemProperty("Transaction Type");
+		cID.setValue("CASH_OUT");
+
+		Table tb = new Table();
+		Property<HorizontalLayout> pt = rowID.getItemProperty("Tier");
+		pt.setValue(cttb);
+		tb.setWidth("100%");
+		tb.setHeightUndefined();
+		// tb.setContainerDataSource(container);
+		tb.setContainerDataSource(ct);
+		tb.setPageLength(0);
+		tb.setSelectable(true);
+		// tb.setPageLength(5);
+
+		return tb;
+	}
+
+	private void addTransactionType(String txType) {
+
+		final Label lbAttrVal = new Label(txType);
+		VerticalLayout cTType = cArrLItemContent.get(0);
+		VerticalLayout cTTier = cArrLItemContent.get(1);
+		Table tb = getModPseudoTable();
+
+		HorizontalLayout cAttrVal = new HorizontalLayout();
+		cAttrVal.setWidth(tb.getHeight() + "%");
+		Notification.show(tb.getHeight() + "");
+
+		cAttrVal.addComponent(lbAttrVal);
+		cTType.addComponent(cAttrVal);
+		cTType.setComponentAlignment(cAttrVal, Alignment.MIDDLE_CENTER);
+
+		cTTier.addComponent(tb);
+		Notification.show(cTTier.getHeight() + "");
+
+		/*
+		 * HorizontalLayout crow = new HorizontalLayout(); VerticalLayout cTType
+		 * = new VerticalLayout(); cTType.setHeight("100%");
+		 * cTType.setWidth("100%"); cTType.setSpacing(true);
+		 * 
+		 * Label lbTType = new Label(txType); lbTType.setWidth("100%");
+		 * cTType.addComponent(lbTType); cTType.setComponentAlignment(lbTType,
+		 * Alignment.MIDDLE_CENTER);
+		 * 
+		 * crow.addComponent(cTType);
+		 * 
+		 * VerticalLayout cTTier = new VerticalLayout();
+		 * 
+		 * cTTier.addComponent(getModPseudoTable()); crow.addComponent(cTTier);
+		 * crow.setWidth("100%"); cAttr.addComponent(crow);
+		 */
+
+	}
+
 }
