@@ -1,5 +1,9 @@
 package com.swifta.mats.web.dashboard;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Set;
+
 import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.charts.model.ChartType;
 import com.vaadin.addon.charts.model.Configuration;
@@ -17,9 +21,14 @@ import com.vaadin.addon.charts.model.style.Style;
 import com.vaadin.ui.Component;
 
 public class BarChartDash {
+	public static HashMap<String, Double> hm;
 
 	public String getDescription() {
 		return "Column with rotated labels";
+	}
+
+	public BarChartDash() {
+		hm = Dashboard.getChartData();
 	}
 
 	public Component getChart() {
@@ -31,7 +40,11 @@ public class BarChartDash {
 		conf.setTitle(new Title("Data Chart "));
 
 		XAxis xAxis = new XAxis();
-		xAxis.setCategories(new String[] { "Cash in", "Cash out", "Airtime" });
+		Set<String> stxns = hm.keySet();
+		String[] txns = new String[stxns.size()];
+		stxns.toArray(txns);
+
+		xAxis.setCategories(txns);
 
 		Labels labels = new Labels();
 		labels.setRotation(-45);
@@ -57,8 +70,11 @@ public class BarChartDash {
 				+ "+ Highcharts.numberFormat(this.y, 1) +' percent'");
 		conf.setTooltip(tooltip);
 
-		ListSeries serie = new ListSeries("Percentage", new Number[] { 50, 32,
-				18 });
+		Collection<Double> sper = hm.values();
+		Double[] tper = new Double[stxns.size()];
+		sper.toArray(tper);
+
+		ListSeries serie = new ListSeries("Percentage", tper);
 		Labels dataLabels = new Labels();
 		dataLabels.setEnabled(true);
 		dataLabels.setRotation(-90);
@@ -83,5 +99,4 @@ public class BarChartDash {
 
 		return chart;
 	}
-
 }

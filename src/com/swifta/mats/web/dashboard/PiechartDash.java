@@ -1,5 +1,8 @@
 package com.swifta.mats.web.dashboard;
 
+import java.util.Iterator;
+import java.util.Map.Entry;
+
 import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.charts.model.ChartType;
 import com.vaadin.addon.charts.model.Configuration;
@@ -56,12 +59,19 @@ public class PiechartDash {
 		conf.setPlotOptions(plotOptions);
 
 		DataSeries series = new DataSeries();
-		series.add(new DataSeriesItem("Cash in", 50));
-		series.add(new DataSeriesItem("Cash out", 32));
-		DataSeriesItem chrome = new DataSeriesItem("Airtime", 18);
-		chrome.setSliced(true);
-		chrome.setSelected(true);
-		series.add(chrome);
+
+		Iterator<Entry<String, Double>> itr = BarChartDash.hm.entrySet()
+				.iterator();
+
+		while (itr.hasNext()) {
+			Entry<String, Double> e = itr.next();
+			series.add(new DataSeriesItem(e.getKey(), e.getValue()));
+		}
+		// series.add(new DataSeriesItem("Cash out", 32));
+		// DataSeriesItem chrome = new DataSeriesItem("Airtime", 18);
+		// chrome.setSliced(true);
+		// chrome.setSelected(true);
+		// series.add(chrome);
 
 		conf.setSeries(series);
 
