@@ -8,16 +8,22 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map.Entry;
 
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Flash;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 
 public class Dashboard {
 
 	public static HashMap<String, Double> hm = null;
+	public static IndexedContainer otb = null;
+
+	// public static HashMap<String, Double> hm
 
 	public VerticalLayout Addlabel() {
 
@@ -47,7 +53,11 @@ public class Dashboard {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	public static HashMap<String, Double> getChartData() {
+		IndexedContainer originalTb = new IndexedContainer();
+		originalTb.addContainerProperty("Transaction Type", String.class, null);
+		originalTb.addContainerProperty("Fees Account", String.class, null);
 		HashMap<String, Double> hm = new HashMap<>();
 		String Uname = "gomint";
 		String Pword = "gomint";
@@ -72,6 +82,17 @@ public class Dashboard {
 			// .executeQuery("select txn.userresourceid as 'Username', txnt.name as 'Transaction Type', CAST(txn.lastupdate AS DATE) as 'Timestamp', format(acct.openingbalance /100,2) as 'Opening Balance', format(acct.closingbalance / 100,2) as 'Closing Balance', format(acct.amount / 100 , 2) as 'Amount',accts.name as 'Account Type'  from transactions txn join accounttransactions acct on txn.transactionid = acct.transactionid join transactiontypes txnt on txnt.transactiontypeid = txn.transactiontypeid join accounttypes accts on accts.accounttypeid = acct.accounttypeid   join accountholders ah on ah.username = txn.userresourceid  order by ah.username, txn.lastupdate");
 			while (rs.next()) {
 				x = x + 1;
+				Object objr = originalTb.addItem();
+				Item r = originalTb.getItem(objr);
+				Property<String> ptType = r.getItemProperty("Transaction Type");
+				Property<String> pfAcc = r.getItemProperty("Fees Account");
+
+				String tType = rs.getString("Transaction Type");
+				String fAcc = rs.getString("MM Operator");
+
+				ptType.setValue(tType);
+				pfAcc.setValue(fAcc);
+
 				String fidTxtype = "Transaction Type";
 
 				String transactiontype = rs.getString(fidTxtype);
@@ -80,6 +101,17 @@ public class Dashboard {
 				} else {
 					hm.put(transactiontype, hm.get(fidTxtype) + 1);
 				}
+			}
+
+			otb = originalTb;
+
+			List<?> rows = originalTb.getItemIds();
+			Iterator<?> rItr = rows.iterator();
+
+			while (rItr.hasNext()) {
+				Item r = originalTb.getItem(rItr.next());
+				Property<?> p = r.getItemProperty("Transaction Type");
+
 			}
 
 			Double total = 0.0;
@@ -107,7 +139,7 @@ public class Dashboard {
 				| IllegalAccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			Notification.show("Error Establishing DBConnection = " + e);
+			// Notification.show("Error Establishing DBConnection = " + e);
 		}
 		return hm;
 

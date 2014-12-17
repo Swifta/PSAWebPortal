@@ -8,11 +8,14 @@ import com.swifta.mats.web.report.Report;
 import com.swifta.mats.web.settings.Settings;
 import com.swifta.mats.web.transactions.Transactions;
 import com.swifta.mats.web.usermanagement.WorkSpaceManageUser;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.FormLayout;
@@ -20,7 +23,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
@@ -34,18 +36,14 @@ public class WorkSpace extends VerticalLayout implements View,
 	VerticalLayout dashboard3;
 	private Embedded emb;
 	private Button btnLogout;
-	Label la = new Label("Search details by:");
-	TextField lab1 = new TextField();
+	Label la = new Label("Filter by: ");
+	ComboBox comboGF = new ComboBox("Please select...");
 	DateField dat = new DateField();
 	DateField dat2 = new DateField();
 	Button filter = new Button("Filter");
-	/**
-	 * 
-	 */
+	HorizontalLayout pi;
+
 	private static final long serialVersionUID = 4370608410523325533L;
-	/**
-	 * 
-	 */
 
 	public static final String WORK_SPACE = "";
 	VerticalLayout dashboard6 = new VerticalLayout();
@@ -89,17 +87,18 @@ public class WorkSpace extends VerticalLayout implements View,
 		dashboard1.setCaption("Test1");
 		Dashboard dash = new Dashboard();
 		PiechartDash pie = new PiechartDash();
-		HorizontalLayout pi = new HorizontalLayout();
+		pi = new HorizontalLayout();
 		HorizontalLayout lut = new HorizontalLayout();
 		FormLayout former = new FormLayout();
 		BarChartDash bar = new BarChartDash();
 
-		lab1.setCaption("Agent ID");
 		dat.setCaption("Start Date");
 		dat2.setCaption("End Date");
+		comboGF.addItem("Transaction Type");
+		comboGF.addItem("Fees Account");
 
 		former.addComponent(la);
-		former.addComponent(lab1);
+		former.addComponent(comboGF);
 		former.addComponent(dat);
 		former.addComponent(dat2);
 		former.addComponent(filter);
@@ -181,6 +180,16 @@ public class WorkSpace extends VerticalLayout implements View,
 				UI.getCurrent().getNavigator().navigateTo(WORK_SPACE);
 
 			}
+		});
+
+		comboGF.addValueChangeListener(new ValueChangeListener() {
+			private static final long serialVersionUID = 2950767419735127495L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+
+			}
+
 		});
 
 		addComponent(layout);
