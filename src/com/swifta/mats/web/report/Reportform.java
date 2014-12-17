@@ -156,17 +156,24 @@ public class Reportform extends VerticalLayout {
 
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-				if (feesCommissionContainer.size() == 0) {
-					return;
-				}
+
 				if (comboVal.getValue() == null) {
 					return;
 				}
 
+				feesCommissionContainer.removeAllContainerFilters();
 				Filter filter = new And(new Compare.Equal(comboF.getValue()
 						.toString(), comboVal.getValue()));
 				feesCommissionContainer.addContainerFilter(filter);
+
+				table.setPageLength(15);
 				table.setContainerDataSource(feesCommissionContainer);
+				int t = table.getVisibleItemIds().size();
+				if (t > 10) {
+					t = 10;
+				}
+				table.setPageLength(t);
+				Notification.show(t + " I am not null.");
 
 			}
 
