@@ -207,7 +207,7 @@ public class UserManagementService {
 					.getActivationrequestResponse();
 			if (response2 != null) {
 				Activationresponse response3 = response2.get_return();
-				System.out.println(response3.getResponseMessage());
+				// System.out.println(response3.getResponseMessage());
 				if (response3 != null) {
 					statusMessage = response3.getResponsemessage();
 					if (statusMessage
