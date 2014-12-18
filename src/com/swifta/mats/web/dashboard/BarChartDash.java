@@ -22,6 +22,8 @@ import com.vaadin.ui.Component;
 
 public class BarChartDash {
 	public static HashMap<String, Double> hm;
+	public XAxis xAxis;
+	public ListSeries serie;
 
 	public String getDescription() {
 		return "Column with rotated labels";
@@ -33,13 +35,14 @@ public class BarChartDash {
 
 	public Component getChart() {
 		Chart chart = new Chart(ChartType.COLUMN);
+
 		String user = "Agent 001";
 		Configuration conf = chart.getConfiguration();
 		// conf.getChart().setMargin(50, 80, 100, 50);
 
 		conf.setTitle(new Title("Data Chart "));
 
-		XAxis xAxis = new XAxis();
+		xAxis = new XAxis();
 		Set<String> stxns = hm.keySet();
 		String[] txns = new String[stxns.size()];
 		stxns.toArray(txns);
@@ -74,7 +77,8 @@ public class BarChartDash {
 		Double[] tper = new Double[stxns.size()];
 		sper.toArray(tper);
 
-		ListSeries serie = new ListSeries("Percentage", tper);
+		serie = new ListSeries("Percentage", tper);
+
 		Labels dataLabels = new Labels();
 		dataLabels.setEnabled(true);
 		dataLabels.setRotation(-90);
@@ -90,6 +94,7 @@ public class BarChartDash {
 		PlotOptionsColumn plotOptionsColumn = new PlotOptionsColumn();
 		plotOptionsColumn.setDataLabels(dataLabels);
 		serie.setPlotOptions(plotOptionsColumn);
+
 		conf.addSeries(serie);
 
 		chart.drawChart(conf);

@@ -8,6 +8,9 @@ import com.swifta.mats.web.report.Report;
 import com.swifta.mats.web.settings.Settings;
 import com.swifta.mats.web.transactions.Transactions;
 import com.swifta.mats.web.usermanagement.WorkSpaceManageUser;
+import com.vaadin.addon.charts.Chart;
+import com.vaadin.addon.charts.model.DataSeries;
+import com.vaadin.addon.charts.model.DataSeriesItem;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.navigator.View;
@@ -90,7 +93,7 @@ public class WorkSpace extends VerticalLayout implements View,
 		pi = new HorizontalLayout();
 		HorizontalLayout lut = new HorizontalLayout();
 		FormLayout former = new FormLayout();
-		BarChartDash bar = new BarChartDash();
+		final BarChartDash bar = new BarChartDash();
 
 		dat.setCaption("Start Date");
 		dat2.setCaption("End Date");
@@ -103,8 +106,47 @@ public class WorkSpace extends VerticalLayout implements View,
 		former.addComponent(dat2);
 		former.addComponent(filter);
 		former.setWidth("100px");
-		pi.addComponent(pie.getChart());
-		pi.addComponent(bar.getChart());
+		final Chart barChart = (Chart) bar.getChart();
+		final Chart pieChart = (Chart) pie.getChart();
+		pi.addComponent(pieChart);
+		pi.addComponent(barChart);
+
+		filter.addClickListener(new Button.ClickListener() {
+
+			private static final long serialVersionUID = 7867132630286287368L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+
+				// XAxis xAxis = new XAxis();
+				// Set<String> stxns = hm.keySet();
+				// String[] txns = new String[stxns.size()];
+				// stxns.toArray(txns);
+
+				DataSeries series = new DataSeries();
+				series.add(new DataSeriesItem("xccd", 20));
+				series.add(new DataSeriesItem("kksksd", 30));
+				series.add(new DataSeriesItem("orri", 50));
+
+				// while (itr.hasNext()) {
+				// Entry<String, Double> e = itr.next();
+				// series.add(new DataSeriesItem(e.getKey(), e.getValue()));
+				// }
+				// series.add(new DataSeriesItem("Cash out", 32));
+				// DataSeriesItem chrome = new DataSeriesItem("Airtime", 18);
+				// chrome.setSliced(true);
+				// chrome.setSelected(true);
+				// series.add(chrome);
+
+				PiechartDash.conf.setSeries(series);
+				pieChart.drawChart();
+				bar.xAxis
+						.setCategories(new String[] { "xxmmx", "kkxkx", "skks" });
+				bar.serie.setData(new Number[] { 20, 50, 30 });
+				barChart.drawChart();
+
+			}
+		});
 
 		lut.setSizeFull();
 		lut.addComponent(former);

@@ -19,6 +19,7 @@ import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.ui.Component;
 
 public class PiechartDash {
+	public static Configuration conf;
 
 	public String getDescription() {
 		return "Pie chart with customized credits";
@@ -34,7 +35,7 @@ public class PiechartDash {
 	public static Chart createChart() {
 		Chart chart = new Chart(ChartType.PIE);
 		String user = "Agent 001";
-		Configuration conf = chart.getConfiguration();
+		conf = chart.getConfiguration();
 
 		conf.setTitle("Data Chart ");
 
