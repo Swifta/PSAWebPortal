@@ -31,7 +31,6 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
-import com.vaadin.ui.themes.ValoTheme;
 
 public class BE2 {
 	private BtnActions btnDetails;
@@ -478,13 +477,14 @@ public class BE2 {
 
 		final TextField tFU = new TextField("User Account ID");
 		final TextField tFP = new TextField("Parent Account ID");
-		final TextArea taReason = new TextArea();
-		taReason.setCaption("Reason");
-		taReason.setInputPrompt("Please enter reason here.");
-		tFU.setStyleName(ValoTheme.BUTTON_BORDERLESS);
+		// final TextArea taReason = new TextArea();
+		final TextField taReason = new TextField("Initiating User Name");
+		// m/ taReason.setCaption("Reason");
+		// m/ taReason.setInputPrompt("Please enter reason here.");
+		// m/ tFU.setStyleName(ValoTheme.BUTTON_BORDERLESS);
 		tFU.setEnabled(true);
 		tFU.setValue(arrID[2]);
-		tFU.setEnabled(false);
+		// m// tFU.setEnabled(false);
 		// tFPIN.setMaxLength(4);
 		// tFU.setMaxLength(4);
 
@@ -604,13 +604,15 @@ public class BE2 {
 
 		final TextField tFP = new TextField("Parent Account ID");
 		final TextField tFD = new TextField("Default Account ID");
-		final TextArea taReason = new TextArea();
-		taReason.setCaption("Reason");
-		taReason.setInputPrompt("Please enter reason here.");
-		tFP.setStyleName(ValoTheme.BUTTON_BORDERLESS);
-		tFP.setEnabled(true);
-		tFP.setValue(arrID[2]);
-		tFP.setEnabled(false);
+		// m/final TextArea taReason = new TextArea();
+
+		final TextField taReason = new TextField("Initiating User");
+		// m/ taReason.setCaption("Reason");
+		// taReason.setInputPrompt("Please enter reason here.");
+		// m/tFP.setStyleName(ValoTheme.BUTTON_BORDERLESS);
+		// m/tFP.setEnabled(true);
+		// m/tFP.setValue(arrID[2]);
+		// m/tFP.setEnabled(false);
 		// tFPIN.setMaxLength(4);
 		// tFU.setMaxLength(4);
 
@@ -729,14 +731,19 @@ public class BE2 {
 		final TextField tFU = new TextField("User Account ID");
 		final TextField tFUProf = new TextField("User Profile ID");
 		final TextField tFP = new TextField("Parent Account ID");
-		final TextArea taReason = new TextArea();
-		taReason.setCaption("Reason");
-		taReason.setInputPrompt("Please enter reason here.");
-		tFU.setValue(userID);
-		tFU.setEnabled(false);
+		// m/final TextArea taReason = new TextArea();
+		// m/taReason.setCaption("Reason");
+		// m/taReason.setInputPrompt("Please enter reason here.");
 
-		tFUProf.setValue(userProfID);
-		tFUProf.setEnabled(false);
+		final TextField taReason = new TextField("Initiating User");
+		// taReason.setCaption("Reason");
+		// taReason.setInputPrompt("Please enter reason here.");
+
+		// m/tFU.setValue(userID);
+		// m/tFU.setEnabled(false);
+
+		// m/tFUProf.setValue(userProfID);
+		// m/tFUProf.setEnabled(false);
 
 		// tFPIN.setMaxLength(4);
 		// tFU.setMaxLength(4);
