@@ -334,9 +334,22 @@ public class BE2 {
 		tFPIN.setMaxLength(4);
 		tFPINConf.setMaxLength(4);
 
+		final TextField tFBID = new TextField("Bank Domain ID");
+		final TextField tFCurrency = new TextField("Currency");
+
+		final TextField tFSecAns = new TextField("Security Answer");
+		final TextField tFIDD = new TextField("ID Number");
+		final TextField tFUserRID = new TextField("User Resource ID");
+
 		frmDeleteReason.addComponent(lbActivationPrompt);
 		frmDeleteReason.setComponentAlignment(lbActivationPrompt,
 				Alignment.TOP_LEFT);
+		frmDeleteReason.addComponent(tFBID);
+		frmDeleteReason.addComponent(tFCurrency);
+		frmDeleteReason.addComponent(tFSecAns);
+		frmDeleteReason.addComponent(tFIDD);
+		frmDeleteReason.addComponent(tFUserRID);
+
 		frmDeleteReason.addComponent(tFPIN);
 		frmDeleteReason.addComponent(tFPINConf);
 
@@ -390,12 +403,23 @@ public class BE2 {
 				String strResponse = null;
 				// StringBuilder builderDesc = null;
 				Notification.show(String.valueOf(arrLBulkIDs.get(0)));
+
+				String userresourceid = tFUserRID.getValue();
+				String bankdomainid = tFBID.getValue();
+				String IDnumber = tFIDD.getValue();
+				String SecurityAns = tFSecAns.getValue();
+
+				// TODO Please remember to update id.in the for loop.
+
+				String currency = tFCurrency.getValue();
+				String ret = "No response";
 				if (arrLBulkIDs != null)
 					for (String id : arrLBulkIDs) {
 						Notification.show(id);
 						try {
-							strResponse = ums.activateUser("001", "001", "001",
-									id, "001", tFPIN.getValue(),
+							strResponse = ums.activateUser(bankdomainid,
+									currency, IDnumber, userresourceid,
+									SecurityAns, tFPIN.getValue(),
 									tFPINConf.getValue());
 						} catch (Exception e) {
 							// TODO Auto-generated catch block
