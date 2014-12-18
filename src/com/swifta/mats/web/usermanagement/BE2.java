@@ -388,21 +388,21 @@ public class BE2 {
 					ums = new UserManagementService();
 
 				String strResponse = null;
-				try {
-					// StringBuilder builderDesc = null;
-					Notification.show(String.valueOf(arrLBulkIDs.get(0)));
-					if (arrLBulkIDs != null)
-						for (String id : arrLBulkIDs) {
-							Notification.show(id);
+				// StringBuilder builderDesc = null;
+				Notification.show(String.valueOf(arrLBulkIDs.get(0)));
+				if (arrLBulkIDs != null)
+					for (String id : arrLBulkIDs) {
+						Notification.show(id);
+						try {
 							strResponse = ums.activateUser("001", "001", "001",
 									id, "001", tFPIN.getValue(),
 									tFPINConf.getValue());
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
 						}
-					isSent = true;
-				} catch (RemoteException e) {
-
-					e.printStackTrace();
-				}
+					}
+				isSent = true;
 
 				Notification.show(strResponse);
 				/*
