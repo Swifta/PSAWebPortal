@@ -230,20 +230,23 @@ public class Login extends VerticalLayout implements View {
 				logger.info("---------------Before validating the username and password"
 						+ tfUsername.getValue());
 				// if(validCredentials()){
-				// if (loginService.authenticateUser(tfUsername.getValue(),
-				// tfPassword.getValue())) {
-				logger.info("---------------Validation successful");
-				UI.getCurrent().getSession()
-						.setAttribute("user", tfUsername.getValue());
-				logger.info("---------------After getting session in Login");
-				UI.getCurrent().getNavigator().navigateTo(WorkSpace.WORK_SPACE);
-				logger.info("---------------after getting navigator to workspace:::Login");
-				/*
-				 * } else { userLogin.setValue("Invalid Credentials");
-				 * userLogin.setStyleName("errorlogin"); logger.info(
-				 * "---------------The authentication FAILED!!!!!!!!!!!!!!"); }
-				 * // }
-				 */
+				if (loginService.authenticateUser(tfUsername.getValue(),
+						tfPassword.getValue())) {
+					logger.info("---------------Validation successful");
+					UI.getCurrent().getSession()
+							.setAttribute("user", tfUsername.getValue());
+					logger.info("---------------After getting session in Login");
+					UI.getCurrent().getNavigator()
+							.navigateTo(WorkSpace.WORK_SPACE);
+					logger.info("---------------after getting navigator to workspace:::Login");
+
+				} else {
+					userLogin.setValue("Invalid Credentials");
+					userLogin.setStyleName("errorlogin");
+					logger.info("---------------The authentication FAILED!!!!!!!!!!!!!!");
+				}
+				// }
+
 			}
 		});
 
