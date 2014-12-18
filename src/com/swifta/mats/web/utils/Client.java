@@ -3,11 +3,13 @@ package com.swifta.mats.web.utils;
 import java.rmi.RemoteException;
 import java.util.Date;
 
+import org.apache.axis2.AxisFault;
+
 public class Client {
 
 	public static void main(String args[]) throws Exception {
 
-		Client.register();
+		Client.authenticate();
 
 	}
 
@@ -112,7 +114,7 @@ public class Client {
 
 	}
 
-	public static void authenticate() {
+	public static void authenticate() throws AxisFault {
 		LoginService loginService = new LoginService();
 		System.out.println(loginService.authenticateUser("166735", "modupe"));
 
