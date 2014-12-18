@@ -49,6 +49,8 @@ public class Reportform extends VerticalLayout {
 	IndexedContainer feesCommissionContainer = new IndexedContainer();
 	ComboBox agent;
 	HashMap<String, HashSet<String>> ht = new HashMap<>();
+	ComboBox comboF;
+	ComboBox comboVal;
 
 	// PagedTableContainerCustom container = new
 	// PagedTableContainerCustom(contain);
@@ -136,11 +138,7 @@ public class Reportform extends VerticalLayout {
 		final HorizontalLayout cByAndVal = new HorizontalLayout();
 		cF.addComponent(cByAndVal);
 
-		final ComboBox comboF = new ComboBox("Filter by: ");
-		comboF.addItem("Transaction Type");
-		comboF.addItem("Fees Account");
-		comboF.addItem("Commission Account");
-		comboF.select(null);
+		comboF = new ComboBox("Filter by: ");
 
 		cByAndVal.addComponent(comboF);
 		cByAndVal.setSpacing(true);
@@ -148,37 +146,9 @@ public class Reportform extends VerticalLayout {
 		addComponent(reportType);
 		addComponent(cF);
 
-		final ComboBox comboVal = new ComboBox("Select " + comboF.getValue());
+		comboVal = new ComboBox("Select " + comboF.getValue());
 		cByAndVal.addComponent(comboVal);
 		comboVal.setVisible(false);
-
-		comboVal.addValueChangeListener(new ValueChangeListener() {
-
-			private static final long serialVersionUID = -2214024761998185485L;
-
-			@Override
-			public void valueChange(ValueChangeEvent event) {
-
-				if (comboVal.getValue() == null) {
-					return;
-				}
-
-				feesCommissionContainer.removeAllContainerFilters();
-				Filter filter = new And(new Compare.Equal(comboF.getValue()
-						.toString(), comboVal.getValue()));
-				feesCommissionContainer.addContainerFilter(filter);
-
-				table.setPageLength(15);
-				table.setContainerDataSource(feesCommissionContainer);
-				int t = table.getVisibleItemIds().size();
-				if (t > 10) {
-					t = 10;
-				}
-				table.setPageLength(t);
-
-			}
-
-		});
 
 		comboF.addValueChangeListener(new ValueChangeListener() {
 			private static final long serialVersionUID = 4792221698725213906L;
@@ -201,7 +171,6 @@ public class Reportform extends VerticalLayout {
 
 				comboVal.setCaption("Select " + creteria);
 				comboVal.setVisible(true);
-				feesCommissionContainer.removeAllContainerFilters();
 
 			}
 
@@ -221,6 +190,11 @@ public class Reportform extends VerticalLayout {
 				searchform.removeAllComponents();
 				String selectedId = (String) reportType.getValue();
 				if (selectedId != null) {
+
+					IndexedContainer ds = null;
+					if (ht != null) {
+						ht.clear();
+					}
 
 					if (selectedId.equalsIgnoreCase("Float Management Report")) {
 
@@ -272,6 +246,22 @@ public class Reportform extends VerticalLayout {
 								// .getString("transactionstatusid");
 								String dealerid = rs.getString("dealerid");
 
+								if (!ht.containsKey("Agent ID")) {
+									HashSet<String> arrL = new HashSet<>();
+									arrL.add(agentid);
+									ht.put("Agent ID", arrL);
+								} else {
+									ht.get("Agent ID").add(agentid);
+								}
+
+								if (!ht.containsKey("Dealer ID")) {
+									HashSet<String> arrL = new HashSet<>();
+									arrL.add(dealerid);
+									ht.put("Dealer ID", arrL);
+								} else {
+									ht.get("Dealer ID").add(dealerid);
+								}
+
 								tdPropertyserial.setValue(String.valueOf(x));
 
 								tdPropertytransactiondate.setValue(createdon);
@@ -290,6 +280,7 @@ public class Reportform extends VerticalLayout {
 							table.setPageLength(x);
 
 							table.setContainerDataSource(container);
+							ds = container;
 
 						} catch (SQLException | InstantiationException
 								| IllegalAccessException
@@ -309,6 +300,7 @@ public class Reportform extends VerticalLayout {
 						searchform.removeAllComponents();
 						searchform.addComponent(Transactions());
 						container2.removeAllItems();
+						ds = container2;
 						String Uname = "gomint";
 						String Pword = "gomint";
 						String drivers = "com.mysql.jdbc.Driver";
@@ -353,6 +345,26 @@ public class Reportform extends VerticalLayout {
 								String sender = rs.getString("From");
 								String receiver = rs.getString("To");
 								String status = rs.getString("Status");
+
+								String fida = "Commission Account";
+								String fido = "Fees Account";
+
+								if (!ht.containsKey("Transaction Type")) {
+									HashSet<String> arrL = new HashSet<>();
+									arrL.add(transactiontype);
+									ht.put("Transaction Type", arrL);
+								} else {
+									ht.get("Transaction Type").add(
+											transactiontype);
+								}
+
+								if (!ht.containsKey("Status")) {
+									HashSet<String> arrL = new HashSet<>();
+									arrL.add(status);
+									ht.put("Status", arrL);
+								} else {
+									ht.get("Status").add(status);
+								}
 
 								System.out
 										.println("-----------------------Print Data :::\nTransaction Type : "
@@ -435,6 +447,7 @@ public class Reportform extends VerticalLayout {
 					} else if (selectedId.equalsIgnoreCase("Summary Report")) {
 
 						container3.removeAllItems();
+						ds = container3;
 						String Uname = "gomint";
 						String Pword = "gomint";
 						String drivers = "com.mysql.jdbc.Driver";
@@ -464,7 +477,16 @@ public class Reportform extends VerticalLayout {
 										.getString("Transaction Name");
 								String amount = rs.getString("Total Amount");
 								String createdon = rs.getString("Date Created");
-								String name = rs.getString("Username");
+								// String name = rs.getString("Username");
+
+								if (!ht.containsKey("Transaction Type")) {
+									HashSet<String> arrL = new HashSet<>();
+									arrL.add(transactiontype);
+									ht.put("Transaction Type", arrL);
+								} else {
+									ht.get("Transaction Type").add(
+											transactiontype);
+								}
 
 								itemId = container3.addItem();
 
@@ -519,6 +541,7 @@ public class Reportform extends VerticalLayout {
 						searchform.removeAllComponents();
 						searchform.addComponent(Transactions());
 						feesCommissionContainer.removeAllItems();
+						ds = feesCommissionContainer;
 						String Uname = "gomint";
 						String Pword = "gomint";
 						String drivers = "com.mysql.jdbc.Driver";
@@ -687,6 +710,11 @@ public class Reportform extends VerticalLayout {
 						// searchform.addComponent(SettlementForm());
 
 					}
+					comboF.removeAllItems();
+					for (String s : ht.keySet())
+						comboF.addItem(s);
+					comboF.select(null);
+					addFilter(ds);
 				}
 			}
 
@@ -900,6 +928,34 @@ public class Reportform extends VerticalLayout {
 		tdPropertyamount.setValue(amount);
 
 		return tabContainer;
+
+	}
+
+	private void addFilter(final IndexedContainer ds) {
+		comboVal.addValueChangeListener(new ValueChangeListener() {
+
+			private static final long serialVersionUID = -2214024761998185485L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				ds.removeAllContainerFilters();
+				if (comboVal.getValue() != null) {
+					Filter filter = new And(new Compare.Equal(comboF.getValue()
+							.toString(), comboVal.getValue()));
+					ds.addContainerFilter(filter);
+				}
+
+				table.setPageLength(15);
+				table.setContainerDataSource(ds);
+				int t = table.getVisibleItemIds().size();
+				if (t > 30) {
+					t = 30;
+				}
+				table.setPageLength(t);
+
+			}
+
+		});
 
 	}
 
