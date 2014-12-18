@@ -72,15 +72,13 @@ public class Reportform extends VerticalLayout {
 		// Transaction
 
 		container2.addContainerProperty("S/N", String.class, "");
-		container2.addContainerProperty("Name", String.class, "");
+		container2.addContainerProperty("Transaction ID", String.class, "");
 		container2.addContainerProperty("Transaction Date", String.class, "");
 		container2.addContainerProperty("Amount (\u20A6)", String.class, "");
-		container2.addContainerProperty("Opening Balance (\u20A6)",
-				String.class, "");
-		container2.addContainerProperty("Closing Balance (\u20A6)",
-				String.class, "");
+		container2.addContainerProperty("Sender", String.class, "");
+		container2.addContainerProperty("Reciever", String.class, "");
 		container2.addContainerProperty("Transaction Type", String.class, "");
-		// container2.addContainerProperty("Account Type", String.class, "");
+		container2.addContainerProperty("Status", String.class, "");
 
 		// Summary
 		container3.addContainerProperty("S/N", String.class, "");
@@ -334,8 +332,9 @@ public class Reportform extends VerticalLayout {
 								agent.setInputPrompt("Select");
 
 							}
-							rs = stmt
-									.executeQuery("select txn.userresourceid as 'Username', txnt.name as 'Transaction Type', CAST(txn.lastupdate AS DATE) as 'Timestamp', format(acct.openingbalance /100,2) as 'Opening Balance', format(acct.closingbalance / 100,2) as 'Closing Balance', format(acct.amount / 100 , 2) as 'Amount',accts.name as 'Account Type'  from transactions txn join accounttransactions acct on txn.transactionid = acct.transactionid join transactiontypes txnt on txnt.transactiontypeid = txn.transactiontypeid join accounttypes accts on accts.accounttypeid = acct.accounttypeid   join accountholders ah on ah.username = txn.userresourceid  order by ah.username, txn.lastupdate");
+							String sql = "select txn.transactionid as 'Transaction ID', tvo.fromamount as 'Amount', fromah.username as 'From', toah.username as 'To',txnt.name as 'Transaction Type', CAST(txn.lastupdate AS DATE) as 'Timestamp', txnst.transactionstatusname as 'Status' from transactions txn join transactionvalueoperations tvo on tvo.transactionid = txn.transactionid join transactionstatus txnst on txnst.transactionstatusid = txn.transactionstatusid join transactiontypes txnt on txnt.transactiontypeid = txn.transactiontypeid join accountholders ah on ah.username = txn.userresourceid join accountholders fromah on fromah.accountholderid = tvo.fromaccountholderuserid join accountholders toah on toah.accountholderid = tvo.toaccountholderresourceid   order by tvo.transactionid, ah.username, txn.lastupdate";
+							rs = stmt.executeQuery(sql);
+							// .executeQuery("select txn.userresourceid as 'Username', txnt.name as 'Transaction Type', CAST(txn.lastupdate AS DATE) as 'Timestamp', format(acct.openingbalance /100,2) as 'Opening Balance', format(acct.closingbalance / 100,2) as 'Closing Balance', format(acct.amount / 100 , 2) as 'Amount',accts.name as 'Account Type'  from transactions txn join accounttransactions acct on txn.transactionid = acct.transactionid join transactiontypes txnt on txnt.transactiontypeid = txn.transactiontypeid join accounttypes accts on accts.accounttypeid = acct.accounttypeid   join accountholders ah on ah.username = txn.userresourceid  order by ah.username, txn.lastupdate");
 							while (rs.next()) {
 								x = x + 1;
 
@@ -343,11 +342,26 @@ public class Reportform extends VerticalLayout {
 										.getString("Transaction Type");
 								String amount = rs.getString("Amount");
 								String createdon = rs.getString("Timestamp");
-								String transactionID = rs.getString("Username");
-								String Sender = rs.getString("Opening Balance");
-								String Receiver = rs
-										.getString("Closing Balance");
-								String Status = rs.getString("Account Type");
+								String transactionID = rs
+										.getString("Transaction ID");
+								String sender = rs.getString("From");
+								String receiver = rs.getString("To");
+								String status = rs.getString("Status");
+
+								System.out
+										.println("-----------------------Print Data :::\nTransaction Type : "
+												+ transactiontype
+												+ "\nAmount : "
+												+ amount
+												+ "\nTimestamp : "
+												+ createdon
+												+ "\nTransaction ID : "
+												+ transactionID
+												+ "\nFrom : "
+												+ sender
+												+ "\nTo : "
+												+ receiver
+												+ "\nStatus : " + status);
 								itemId = container2.addItem();
 
 								trItem = container2.getItem(itemId);
@@ -360,7 +374,7 @@ public class Reportform extends VerticalLayout {
 										.getItemProperty("Transaction Date");
 								@SuppressWarnings("unchecked")
 								Property<String> tdPropertytransactionid = trItem
-										.getItemProperty("Name");
+										.getItemProperty("Transaction ID");
 								@SuppressWarnings("unchecked")
 								Property<String> tdPropertytransactiontype = trItem
 										.getItemProperty("Transaction Type");
@@ -369,13 +383,13 @@ public class Reportform extends VerticalLayout {
 										.getItemProperty("Amount (\u20A6)");
 								@SuppressWarnings("unchecked")
 								Property<String> tdPropertysender = trItem
-										.getItemProperty("Opening Balance (\u20A6)");
+										.getItemProperty("Sender");
 								@SuppressWarnings("unchecked")
 								Property<String> tdPropertyreceiver = trItem
-										.getItemProperty("Closing Balance (\u20A6)");
-								// @SuppressWarnings("unchecked")
-								// Property<String> tdPropertystatus = trItem
-								// .getItemProperty("Account Type");
+										.getItemProperty("Reciever");
+								@SuppressWarnings("unchecked")
+								Property<String> tdPropertystatus = trItem
+										.getItemProperty("Status");
 
 								tdPropertyserial.setValue(String.valueOf(x));
 								tdPropertytransactionid.setValue(transactionID);
@@ -383,9 +397,9 @@ public class Reportform extends VerticalLayout {
 								tdPropertytransactiontype
 										.setValue(transactiontype);
 								tdPropertyamount.setValue(amount);
-								tdPropertysender.setValue(Sender);
-								tdPropertyreceiver.setValue(Receiver);
-								// tdPropertystatus.setValue(Status);
+								tdPropertysender.setValue(sender);
+								tdPropertyreceiver.setValue(receiver);
+								tdPropertystatus.setValue(status);
 							}
 
 							conn.close();
