@@ -283,6 +283,12 @@ public class Reportform extends VerticalLayout {
 							conn.close();
 							Notification.show(x + " result(s) found");
 
+							if (x > 30) {
+								x = 30;
+							}
+
+							table.setPageLength(x);
+
 							table.setContainerDataSource(container);
 
 						} catch (SQLException | InstantiationException
@@ -405,6 +411,12 @@ public class Reportform extends VerticalLayout {
 							conn.close();
 							Notification.show(x + " result(s) found");
 
+							if (x > 30) {
+								x = 30;
+							}
+
+							table.setPageLength(x);
+
 							table.setContainerDataSource(container2);
 
 						} catch (SQLException | ClassNotFoundException
@@ -479,6 +491,12 @@ public class Reportform extends VerticalLayout {
 
 							conn.close();
 							Notification.show(x + "result(s) found");
+
+							if (x > 30) {
+								x = 30;
+							}
+
+							table.setPageLength(x);
 
 							table.setContainerDataSource(container3);
 
@@ -697,7 +715,8 @@ public class Reportform extends VerticalLayout {
 
 		table.setWidth("100%");
 		table.setHeightUndefined();
-		table.setPageLength(1);
+		table.setPageLength(0);
+
 		// table.setEditable(true);
 		// table.setSelectable(true);
 
@@ -705,7 +724,6 @@ public class Reportform extends VerticalLayout {
 
 		pnUserSearchResults = table.createControls();
 		pnUserSearchResults2 = table.createControls();
-
 		addComponent(searchform);
 
 		addComponent(pnUserSearchResults);
