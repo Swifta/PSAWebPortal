@@ -83,23 +83,13 @@ public class PagedTableCustom extends PagedTable {
 	@Override
 	public HorizontalLayout createControls() {
 
-		Label itemsPerPageLabel = new Label("Items per page:");
+		Label itemsPerPageLabel = new Label("Max. Items per page:");
 		itemsPerPageSelect = new ComboBox();
 
-		int pl;
-		if (container.size() > 10) {
-			pl = 10;
-		} else {
-			pl = container.size();
-			if (pl == 0) {
-				pl = 1;
-			}
-		}
-		itemsPerPageSelect.addItem(pl / 3);
-		itemsPerPageSelect.addItem(pl / 2);
-		itemsPerPageSelect.addItem(pl);
-
-		itemsPerPageSelect.select(pl);
+		itemsPerPageSelect.addItem(10);
+		itemsPerPageSelect.addItem(20);
+		itemsPerPageSelect.addItem(30);
+		itemsPerPageSelect.select(30);
 
 		itemsPerPageSelect.setImmediate(true);
 		itemsPerPageSelect.setNullSelectionAllowed(false);

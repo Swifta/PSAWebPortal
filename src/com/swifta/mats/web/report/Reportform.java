@@ -72,15 +72,13 @@ public class Reportform extends VerticalLayout {
 		// Transaction
 
 		container2.addContainerProperty("S/N", String.class, "");
-		container2.addContainerProperty("Name", String.class, "");
+		container2.addContainerProperty("Transaction ID", String.class, "");
 		container2.addContainerProperty("Transaction Date", String.class, "");
 		container2.addContainerProperty("Amount (\u20A6)", String.class, "");
-		container2.addContainerProperty("Opening Balance (\u20A6)",
-				String.class, "");
-		container2.addContainerProperty("Closing Balance (\u20A6)",
-				String.class, "");
+		container2.addContainerProperty("Sender", String.class, "");
+		container2.addContainerProperty("Reciever", String.class, "");
 		container2.addContainerProperty("Transaction Type", String.class, "");
-		// container2.addContainerProperty("Account Type", String.class, "");
+		container2.addContainerProperty("Status", String.class, "");
 
 		// Summary
 		container3.addContainerProperty("S/N", String.class, "");
@@ -93,6 +91,10 @@ public class Reportform extends VerticalLayout {
 		// Commission
 
 		feesCommissionContainer.addContainerProperty("S/N", String.class, "");
+		feesCommissionContainer.addContainerProperty("Trans. ID", String.class,
+				"");
+		feesCommissionContainer.addContainerProperty("Transaction Type",
+				String.class, "");
 		feesCommissionContainer.addContainerProperty("Commission Account",
 				String.class, "");
 		feesCommissionContainer.addContainerProperty("Fees Account",
@@ -102,12 +104,12 @@ public class Reportform extends VerticalLayout {
 
 		// feesCommissionContainer.addContainerProperty(
 		// "Opening Balance (\u20A6)", String.class, "");
-		feesCommissionContainer.addContainerProperty("Trans. ID", String.class,
-				"");
-		feesCommissionContainer.addContainerProperty("Transaction Type",
+
+		feesCommissionContainer.addContainerProperty("Adjusted Fees (\u20A6)",
 				String.class, "");
-		feesCommissionContainer.addContainerProperty("Fees (\u20A6)",
+		feesCommissionContainer.addContainerProperty("Original Fees (\u20A6)",
 				String.class, "");
+
 		feesCommissionContainer.addContainerProperty("Commission (\u20A6)",
 				String.class, "");
 
@@ -156,17 +158,23 @@ public class Reportform extends VerticalLayout {
 
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-				if (feesCommissionContainer.size() == 0) {
-					return;
-				}
+
 				if (comboVal.getValue() == null) {
 					return;
 				}
 
+				feesCommissionContainer.removeAllContainerFilters();
 				Filter filter = new And(new Compare.Equal(comboF.getValue()
 						.toString(), comboVal.getValue()));
 				feesCommissionContainer.addContainerFilter(filter);
+
+				table.setPageLength(15);
 				table.setContainerDataSource(feesCommissionContainer);
+				int t = table.getVisibleItemIds().size();
+				if (t > 10) {
+					t = 10;
+				}
+				table.setPageLength(t);
 
 			}
 
@@ -275,6 +283,12 @@ public class Reportform extends VerticalLayout {
 							conn.close();
 							Notification.show(x + " result(s) found");
 
+							if (x > 30) {
+								x = 30;
+							}
+
+							table.setPageLength(x);
+
 							table.setContainerDataSource(container);
 
 						} catch (SQLException | InstantiationException
@@ -324,8 +338,9 @@ public class Reportform extends VerticalLayout {
 								agent.setInputPrompt("Select");
 
 							}
-							rs = stmt
-									.executeQuery("select txn.userresourceid as 'Username', txnt.name as 'Transaction Type', CAST(txn.lastupdate AS DATE) as 'Timestamp', format(acct.openingbalance /100,2) as 'Opening Balance', format(acct.closingbalance / 100,2) as 'Closing Balance', format(acct.amount / 100 , 2) as 'Amount',accts.name as 'Account Type'  from transactions txn join accounttransactions acct on txn.transactionid = acct.transactionid join transactiontypes txnt on txnt.transactiontypeid = txn.transactiontypeid join accounttypes accts on accts.accounttypeid = acct.accounttypeid   join accountholders ah on ah.username = txn.userresourceid  order by ah.username, txn.lastupdate");
+							String sql = "select txn.transactionid as 'Transaction ID', tvo.fromamount as 'Amount', fromah.username as 'From', toah.username as 'To',txnt.name as 'Transaction Type', CAST(txn.lastupdate AS DATE) as 'Timestamp', txnst.transactionstatusname as 'Status' from transactions txn join transactionvalueoperations tvo on tvo.transactionid = txn.transactionid join transactionstatus txnst on txnst.transactionstatusid = txn.transactionstatusid join transactiontypes txnt on txnt.transactiontypeid = txn.transactiontypeid join accountholders ah on ah.username = txn.userresourceid join accountholders fromah on fromah.accountholderid = tvo.fromaccountholderuserid join accountholders toah on toah.accountholderid = tvo.toaccountholderresourceid   order by tvo.transactionid, ah.username, txn.lastupdate";
+							rs = stmt.executeQuery(sql);
+							// .executeQuery("select txn.userresourceid as 'Username', txnt.name as 'Transaction Type', CAST(txn.lastupdate AS DATE) as 'Timestamp', format(acct.openingbalance /100,2) as 'Opening Balance', format(acct.closingbalance / 100,2) as 'Closing Balance', format(acct.amount / 100 , 2) as 'Amount',accts.name as 'Account Type'  from transactions txn join accounttransactions acct on txn.transactionid = acct.transactionid join transactiontypes txnt on txnt.transactiontypeid = txn.transactiontypeid join accounttypes accts on accts.accounttypeid = acct.accounttypeid   join accountholders ah on ah.username = txn.userresourceid  order by ah.username, txn.lastupdate");
 							while (rs.next()) {
 								x = x + 1;
 
@@ -333,11 +348,26 @@ public class Reportform extends VerticalLayout {
 										.getString("Transaction Type");
 								String amount = rs.getString("Amount");
 								String createdon = rs.getString("Timestamp");
-								String transactionID = rs.getString("Username");
-								String Sender = rs.getString("Opening Balance");
-								String Receiver = rs
-										.getString("Closing Balance");
-								String Status = rs.getString("Account Type");
+								String transactionID = rs
+										.getString("Transaction ID");
+								String sender = rs.getString("From");
+								String receiver = rs.getString("To");
+								String status = rs.getString("Status");
+
+								System.out
+										.println("-----------------------Print Data :::\nTransaction Type : "
+												+ transactiontype
+												+ "\nAmount : "
+												+ amount
+												+ "\nTimestamp : "
+												+ createdon
+												+ "\nTransaction ID : "
+												+ transactionID
+												+ "\nFrom : "
+												+ sender
+												+ "\nTo : "
+												+ receiver
+												+ "\nStatus : " + status);
 								itemId = container2.addItem();
 
 								trItem = container2.getItem(itemId);
@@ -350,7 +380,7 @@ public class Reportform extends VerticalLayout {
 										.getItemProperty("Transaction Date");
 								@SuppressWarnings("unchecked")
 								Property<String> tdPropertytransactionid = trItem
-										.getItemProperty("Name");
+										.getItemProperty("Transaction ID");
 								@SuppressWarnings("unchecked")
 								Property<String> tdPropertytransactiontype = trItem
 										.getItemProperty("Transaction Type");
@@ -359,13 +389,13 @@ public class Reportform extends VerticalLayout {
 										.getItemProperty("Amount (\u20A6)");
 								@SuppressWarnings("unchecked")
 								Property<String> tdPropertysender = trItem
-										.getItemProperty("Opening Balance (\u20A6)");
+										.getItemProperty("Sender");
 								@SuppressWarnings("unchecked")
 								Property<String> tdPropertyreceiver = trItem
-										.getItemProperty("Closing Balance (\u20A6)");
-								// @SuppressWarnings("unchecked")
-								// Property<String> tdPropertystatus = trItem
-								// .getItemProperty("Account Type");
+										.getItemProperty("Reciever");
+								@SuppressWarnings("unchecked")
+								Property<String> tdPropertystatus = trItem
+										.getItemProperty("Status");
 
 								tdPropertyserial.setValue(String.valueOf(x));
 								tdPropertytransactionid.setValue(transactionID);
@@ -373,13 +403,19 @@ public class Reportform extends VerticalLayout {
 								tdPropertytransactiontype
 										.setValue(transactiontype);
 								tdPropertyamount.setValue(amount);
-								tdPropertysender.setValue(Sender);
-								tdPropertyreceiver.setValue(Receiver);
-								// tdPropertystatus.setValue(Status);
+								tdPropertysender.setValue(sender);
+								tdPropertyreceiver.setValue(receiver);
+								tdPropertystatus.setValue(status);
 							}
 
 							conn.close();
 							Notification.show(x + " result(s) found");
+
+							if (x > 30) {
+								x = 30;
+							}
+
+							table.setPageLength(x);
 
 							table.setContainerDataSource(container2);
 
@@ -456,6 +492,12 @@ public class Reportform extends VerticalLayout {
 							conn.close();
 							Notification.show(x + "result(s) found");
 
+							if (x > 30) {
+								x = 30;
+							}
+
+							table.setPageLength(x);
+
 							table.setContainerDataSource(container3);
 
 						} catch (SQLException | ClassNotFoundException
@@ -507,28 +549,42 @@ public class Reportform extends VerticalLayout {
 
 							}
 
-							rs = stmt
-									.executeQuery("select trx1.transactionid as txid,trxtyp.name as 'Transaction Type',acth2.username as 'Agent/Dealer',acts1.amount as commission ,acth.username as 'MM Operator',acts2.amount as Fees,acts3.amount as amount from accounttransactions acts1,  transactions trx1,transactiontypes trxtyp, accounttransactions acts2, accounttransactions acts3, accountholders acth, accountholders acth2 where acts1.transactionid = trx1.transactionid and acts2.transactionid = trx1.transactionid and acts2.userresourceid = acth.accountholderid and acts3.userresourceid = acth2.accountholderid and acts3.transactionid = trx1.transactionid and trx1.transactiontypeid = trxtyp.transactiontypeid and acts1.accountresourceid = 12 and acts2.accountresourceid in (select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from accountholders where profileid = 15 and accounttypeid = 2)) and acts3.accountresourceid in (select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from accountholders where (profileid = 11 or profileid = 6) and accounttypeid = 1))");
+							// rs = stmt
+							// .executeQuery("select trx1.transactionid as txid,trxtyp.name as 'Transaction Type',acth2.username as 'Agent/Dealer',acts1.amount as commission ,acth.username as 'MM Operator',acts2.amount as Fees,acts3.amount as amount from accounttransactions acts1,  transactions trx1,transactiontypes trxtyp, accounttransactions acts2, accounttransactions acts3, accountholders acth, accountholders acth2 where acts1.transactionid = trx1.transactionid and acts2.transactionid = trx1.transactionid and acts2.userresourceid = acth.accountholderid and acts3.userresourceid = acth2.accountholderid and acts3.transactionid = trx1.transactionid and trx1.transactiontypeid = trxtyp.transactiontypeid and acts1.accountresourceid = 12 and acts2.accountresourceid in (select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from accountholders where profileid = 15 and accounttypeid = 2)) and acts3.accountresourceid in (select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from accountholders where (profileid = 11 or profileid = 6) and accounttypeid = 1))");
 							// Notification.show(rs.);
 							// rs = stmt
 							// .executeQuery("select txn.userresourceid as 'Username', txnt.name as 'Transaction Type', CAST(txn.lastupdate AS DATE) as 'Timestamp', format(acct.openingbalance /100,2) as 'Opening Balance', format(acct.closingbalance / 100,2) as 'Closing Balance', format(acct.amount / 100 , 2) as 'Amount',accts.name as 'Account Type'  from transactions txn join accounttransactions acct on txn.transactionid = acct.transactionid join transactiontypes txnt on txnt.transactiontypeid = txn.transactiontypeid join accounttypes accts on accts.accounttypeid = acct.accounttypeid   join accountholders ah on ah.username = txn.userresourceid  order by ah.username, txn.lastupdate");
+
+							StringBuilder sb = new StringBuilder();
+							sb.append("select trx1.transactionid as txid,trxtyp.name as 'Transaction Type','MATS_TOTAL_FEE&COMMISSION' as 'Commission Account',acts1.amount as commission,");
+
+							sb.append("acth.username as 'Fees Account',acts2.amount as 'Adjusted Fees',acts2.amount+acts1.amount as 'Original Fees',acts3.amount as amount,acts1.datecreated as 'DoC' from accounttransactions acts1,  transactions trx1, transactiontypes trxtyp, accounttransactions acts2, accounttransactions acts3, accountholders");
+
+							sb.append(" acth, accountholders acth2, accounts act1, accounts act2, profiles pf1, profiles pf2 where acts1.transactionid = trx1.transactionid and act1.profileid = pf1.profileid and acts2.transactionid = trx1.transactionid and acts2.userresourceid = acth.accountholderid and acts1.accountresourceid = act1.accountid and act2.profileid = pf2.profileid and acts2.accountresourceid = act2.accountid and acts3.userresourceid = acth2.accountholderid and acts3.transactionid = trx1.transactionid and trx1.transactiontypeid = trxtyp.transactiontypeid and acts1.accountresourceid = 12 and acts2.accountresourceid in");
+
+							sb.append(" (select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from accountholders where profileid = 15 and accounttypeid = 2)) and acts3.accountresourceid in (select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from accountholders where (profileid = 11 or profileid = 6) and accounttypeid = 1))");
+
+							rs = stmt.executeQuery(sb.toString());
+
 							while (rs.next()) {
 								x = x + 1;
 								String fidTxtype = "Transaction Type";
-								String fidAgent = "Agent/Dealer";
-								String fidMMO = "MM Operator";
+								String fidCommAcc = "Commission Account";
+								String fidFAcc = "Fees Account";
 
 								String transactiontype = rs
 										.getString(fidTxtype);
-								String feesAccount = rs.getString(fidMMO);
+								String feesAccount = rs.getString(fidFAcc);
 								String commissionAccount = rs
-										.getString(fidAgent);
+										.getString(fidCommAcc);
 
 								String transID = rs.getString("txid");
 
 								String commission = rs.getString("commission");
 
-								String fees = rs.getString("Fees");
+								String afees = rs.getString("Adjusted Fees");
+
+								String ofees = rs.getString("Original Fees");
 
 								String amount = rs.getString("amount");
 
@@ -575,8 +631,11 @@ public class Reportform extends VerticalLayout {
 								Property<String> tdPropertytransactiontype = trItem
 										.getItemProperty("Transaction Type");
 
-								Property<String> tdPropertyFees = trItem
-										.getItemProperty("Fees (\u20A6)");
+								Property<String> tdPropertyAFees = trItem
+										.getItemProperty("Adjusted Fees (\u20A6)");
+								Property<String> tdPropertyOFees = trItem
+										.getItemProperty("Original Fees (\u20A6)");
+
 								Property<String> tdPropertyCommission = trItem
 										.getItemProperty("Commission (\u20A6)");
 
@@ -590,7 +649,8 @@ public class Reportform extends VerticalLayout {
 
 								tdPropertyCommAcc.setValue(commissionAccount);
 								tdPropertyFeesAcc.setValue(feesAccount);
-								tdPropertyFees.setValue(fees);
+								tdPropertyAFees.setValue(afees);
+								tdPropertyOFees.setValue(ofees);
 								tdPropertyCommission.setValue(commission);
 								tdPropertytxid.setValue(transID);
 
@@ -655,7 +715,8 @@ public class Reportform extends VerticalLayout {
 
 		table.setWidth("100%");
 		table.setHeightUndefined();
-		table.setPageLength(1);
+		table.setPageLength(0);
+
 		// table.setEditable(true);
 		// table.setSelectable(true);
 
@@ -663,7 +724,6 @@ public class Reportform extends VerticalLayout {
 
 		pnUserSearchResults = table.createControls();
 		pnUserSearchResults2 = table.createControls();
-
 		addComponent(searchform);
 
 		addComponent(pnUserSearchResults);
