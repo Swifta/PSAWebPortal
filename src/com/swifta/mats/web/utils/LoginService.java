@@ -21,6 +21,8 @@ public class LoginService {
 	private static final Logger logger = Logger.getLogger(LoginService.class
 			.getName());
 
+	static String esbendpoint = "http://127.0.0.1:8280/services/Provisionservice";
+
 	public boolean authenticateUser(String username, String password) {
 		String statusCode = "", responseMessage = "";
 		boolean status = false;
@@ -36,8 +38,7 @@ public class LoginService {
 		AuthenticateResponseE authenticateResponse = null;
 		try {
 			logger.info("---------------After initiating the authenticate parameters");
-			provisioningStub = new ProvisioningStub(
-					"http://54.164.96.105:8283/services/Provisionservice/");
+			provisioningStub = new ProvisioningStub(esbendpoint);
 			logger.info("---------------Calling the authenticate method in the provisioning class");
 			authenticateResponse = provisioningStub.authenticate(authenticate);
 			logger.info("---------------After Calling the authenticate method in the provisioning class");

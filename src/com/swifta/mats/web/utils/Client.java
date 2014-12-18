@@ -5,11 +5,13 @@ import java.util.Date;
 
 public class Client {
 
-	public static void main(String args[]) {
+	public static void main(String args[]) throws Exception {
 
-		Client.activate();
+		Client.register();
+
 	}
 
+	@SuppressWarnings("unused")
 	public static void register() {
 
 		UserManagementService register = new UserManagementService();
@@ -85,7 +87,7 @@ public class Client {
 
 	}
 
-	public static void activate() {
+	public static void activate() throws Exception {
 
 		UserManagementService activate = new UserManagementService();
 		// LoginService login = new LoginService();
@@ -103,16 +105,44 @@ public class Client {
 		String currency = "0";
 		String ret = "No response";
 
-		try {
-			ret = activate.activateUser(bankdomainid, currency, IDnumber,
-					userresourceid, SecurityAns, firstPin, confirmPin);
+		ret = activate.activateUser(bankdomainid, currency, IDnumber,
+				userresourceid, SecurityAns, firstPin, confirmPin);
 
-			System.out.println(ret);
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		System.out.println(ret);
 
 	}
 
+	public static void authenticate() {
+		LoginService loginService = new LoginService();
+		System.out.println(loginService.authenticateUser("166735", "modupe"));
+
+	}
+
+	public static void linkuser() throws RemoteException {
+		UserManagementService linkuser = new UserManagementService();
+
+		String parent = "166735";
+		String profileid = "8";
+		String initiatinguserresourceid = "backoffice";
+		String childuserresourceid = "oniru";
+
+		String ret = linkuser.linkUser(parent, profileid,
+				initiatinguserresourceid, childuserresourceid);
+
+		System.out.println(ret);
+	}
+
+	public static void setdefault() throws RemoteException {
+		UserManagementService setdefault = new UserManagementService();
+
+		String parent = "166735";
+		// String profileid = "8";
+		String initiatinguserresourceid = "backoffice";
+		String childuserresourceid = "oniru";
+
+		String ret = setdefault.setDefaultAccount(initiatinguserresourceid,
+				childuserresourceid, parent);
+
+		System.out.println(ret);
+	}
 }

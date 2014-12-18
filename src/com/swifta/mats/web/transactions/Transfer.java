@@ -112,7 +112,7 @@ public class Transfer {
 					ret = activate.activateUser(bankdomainid, currency,
 							IDnumber, userresourceid, SecurityAns, firstPin,
 							confirmPin);
-				} catch (RemoteException e) {
+				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}

@@ -113,7 +113,7 @@ public class CommissionService {
 				.setSetupservicefeesandcommission(setupservicefeesandcommission);
 		SetupservicefeesandcommissionResponseE feesAndCommissionResponseE = new SetupservicefeesandcommissionResponseE();
 		try {
-			provisioningStub = new ProvisioningStub();
+			provisioningStub = new ProvisioningStub("http://54.173.157.210:9765/Provisioning_1.0.0/services/provisioning");
 			long timeOutInMilliSeconds = (5 * 36 * 1000);
 			provisioningStub._getServiceClient().getOptions()
 					.setTimeOutInMilliSeconds(timeOutInMilliSeconds);
