@@ -2,6 +2,8 @@ package com.swifta.mats.web;
 
 import java.util.logging.Logger;
 
+import org.apache.axis2.AxisFault;
+
 import com.swifta.mats.web.utils.LoginService;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Validator;
@@ -230,20 +232,25 @@ public class Login extends VerticalLayout implements View {
 				logger.info("---------------Before validating the username and password"
 						+ tfUsername.getValue());
 				// if(validCredentials()){
-				if (loginService.authenticateUser(tfUsername.getValue(),
-						tfPassword.getValue())) {
-					logger.info("---------------Validation successful");
-					UI.getCurrent().getSession()
-							.setAttribute("user", tfUsername.getValue());
-					logger.info("---------------After getting session in Login");
-					UI.getCurrent().getNavigator()
-							.navigateTo(WorkSpace.WORK_SPACE);
-					logger.info("---------------after getting navigator to workspace:::Login");
+				try {
+					if (loginService.authenticateUser(tfUsername.getValue(),
+							tfPassword.getValue())) {
+						logger.info("---------------Validation successful");
+						UI.getCurrent().getSession()
+								.setAttribute("user", tfUsername.getValue());
+						logger.info("---------------After getting session in Login");
+						UI.getCurrent().getNavigator()
+								.navigateTo(WorkSpace.WORK_SPACE);
+						logger.info("---------------after getting navigator to workspace:::Login");
 
-				} else {
-					userLogin.setValue("Invalid Credentials");
-					userLogin.setStyleName("errorlogin");
-					logger.info("---------------The authentication FAILED!!!!!!!!!!!!!!");
+					} else {
+						userLogin.setValue("Invalid Credentials");
+						userLogin.setStyleName("errorlogin");
+						logger.info("---------------The authentication FAILED!!!!!!!!!!!!!!");
+					}
+				} catch (AxisFault e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 				// }
 
