@@ -5,6 +5,8 @@ import java.util.Date;
 
 import org.apache.axis2.AxisFault;
 
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.IdentificationType;
+
 public class Client {
 
 	public static void main(String args[]) throws Exception {
@@ -39,7 +41,7 @@ public class Client {
 		String province = "Kay";
 		Date Expirydate = new Date();
 		String idNumber = "166735";
-		String idType = "Kay";
+		IdentificationType idType = IdentificationType.PASSP;
 		Date Issuedate = new Date();
 		String Issue = "Kay";
 		String gender = "MALE";

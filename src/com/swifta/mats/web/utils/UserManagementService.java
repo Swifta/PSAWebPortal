@@ -72,8 +72,8 @@ public class UserManagementService {
 			String middlename, String occupation, String prefix, int stateid,
 			String suffix, String city, String postalcode,
 			String streetAddress, String province, Date Expirydate,
-			String idNumber, String idType, Date Issuedate, String Issue,
-			String PrimaryEmail, String PrimaryMobilenumber,
+			String idNumber, IdentificationType idType, Date Issuedate,
+			String Issue, String PrimaryEmail, String PrimaryMobilenumber,
 			String PrimaryPhonenumber, String SecondaryEmail,
 			String SecondaryMobilenumber, String SecondaryPhonenumber)
 			throws RemoteException {
@@ -100,9 +100,11 @@ public class UserManagementService {
 		identification.setExpirydate(utils.DateToCalendar(Expirydate));
 		identification.setIdentificationNo(idNumber);
 
-		IdentificationType idType3 = IdentificationType.EMID;
+		// IdentificationType idType3 = IdentificationType.EMID;
 
-		identification.setIdentificationType(idType3);
+		// matsStub.
+
+		identification.setIdentificationType(idType);
 		identification.setIssueDate(String.valueOf(Issuedate));
 		identification.setIssuer(Issue);
 

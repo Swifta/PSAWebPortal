@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.swifta.mats.web.utils.UserManagementService;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.IdentificationType;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.server.FontAwesome;
@@ -677,7 +679,8 @@ public class AddUserModule {
 					String prov = tFProv.getValue().toString();
 					Date doe = (Date) dFDoE.getValue();
 					String idno = tFIDNo.getValue().toString();
-					String idtype = comboIDType.getValue().toString();
+					IdentificationType idtype = ProvisioningStub.IdentificationType.Factory
+							.fromValue(comboIDType.getValue().toString());
 					Date doi = (Date) dFDoI.getValue();
 
 					String issuer = tFIssuer.getValue().toString();
