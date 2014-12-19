@@ -215,7 +215,8 @@ public class UserManagementService {
 					statusMessage = response3.getResponsemessage();
 					if (statusMessage
 							.equals("ACCOUNT_HOLDER_ACCOUNT_ACTIVATION_SUCCESSFUL")) {
-						UserManagementService.provisioning();
+						UserManagementService
+								.provisioning(resourceid, firstPin);
 					}
 				}
 			} else {
@@ -228,7 +229,7 @@ public class UserManagementService {
 		return statusMessage;
 	}
 
-	public static void provisioning() {
+	public static void provisioning(String username, String password) {
 		try {
 			ServiceClient sender = null;
 
@@ -241,17 +242,17 @@ public class UserManagementService {
 
 			OMElement userNameElement = fac.createOMElement("userName", null);
 			userNameElement.addChild(fac
-					.createOMText(userNameElement, "166735"));
+					.createOMText(userNameElement, username));
 
 			OMElement credential1Element = fac.createOMElement("credential",
 					null);
 			credential1Element.addChild(fac.createOMText(credential1Element,
-					"modupe"));
+					password));
 
 			OMElement profileNameElement = fac.createOMElement("profileName",
 					null);
-			profileNameElement.addChild(fac.createOMText(profileNameElement,
-					"me"));
+			profileNameElement.addChild(fac
+					.createOMText(profileNameElement, ""));
 
 			OMElement requirePasswordChangeElement = fac.createOMElement(
 					"requirePasswordChange", null);
