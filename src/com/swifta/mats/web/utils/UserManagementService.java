@@ -24,7 +24,6 @@ import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Activati
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Address;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Credentials;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Identification;
-import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.IdentificationType;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Linkaccountrequest;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.LinkaccountrequestE;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.LinkaccountrequestResponse;
@@ -54,7 +53,7 @@ public class UserManagementService {
 	// String endpoint =
 	// "http://127.0.0.1:9760/Provisioning-1.0.0/services/provisioning";
 
-	static String esbendpoint = "http://127.0.0.1:8280/services/Provisionservice";
+	static String esbendpoint = "http://54.173.157.210:8283/services/Provisionservice";
 
 	ProvisioningStub matsStub;
 
@@ -100,9 +99,13 @@ public class UserManagementService {
 		identification.setExpirydate(utils.DateToCalendar(Expirydate));
 		identification.setIdentificationNo(idNumber);
 
-		IdentificationType idType3 = IdentificationType.IDCD;
+		// IdentificationType idType3 = IdentificationType.EMID;
 
-		identification.setIdentificationType(idType3);
+		// matsStub.
+
+		identification
+				.setIdentificationType(ProvisioningStub.IdentificationType.Factory
+						.fromValue(idType));
 		identification.setIssueDate(String.valueOf(Issuedate));
 		identification.setIssuer(Issue);
 
@@ -212,7 +215,8 @@ public class UserManagementService {
 					statusMessage = response3.getResponsemessage();
 					if (statusMessage
 							.equals("ACCOUNT_HOLDER_ACCOUNT_ACTIVATION_SUCCESSFUL")) {
-						UserManagementService.provisioning();
+						UserManagementService
+								.provisioning(resourceid, firstPin);
 					}
 				}
 			} else {
@@ -225,7 +229,7 @@ public class UserManagementService {
 		return statusMessage;
 	}
 
-	public static void provisioning() {
+	public static void provisioning(String username, String password) {
 		try {
 			ServiceClient sender = null;
 
@@ -238,17 +242,17 @@ public class UserManagementService {
 
 			OMElement userNameElement = fac.createOMElement("userName", null);
 			userNameElement.addChild(fac
-					.createOMText(userNameElement, "166735"));
+					.createOMText(userNameElement, username));
 
 			OMElement credential1Element = fac.createOMElement("credential",
 					null);
 			credential1Element.addChild(fac.createOMText(credential1Element,
-					"modupe"));
+					password));
 
 			OMElement profileNameElement = fac.createOMElement("profileName",
 					null);
-			profileNameElement.addChild(fac.createOMText(profileNameElement,
-					"me"));
+			profileNameElement.addChild(fac
+					.createOMText(profileNameElement, ""));
 
 			OMElement requirePasswordChangeElement = fac.createOMElement(
 					"requirePasswordChange", null);

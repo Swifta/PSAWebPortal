@@ -128,7 +128,7 @@ public class Adjustment {
 				String province = "Kay";
 				Date Expirydate = new Date();
 				String idNumber = "166735";
-				String idType = "Kay";
+				String idType = "EMID";
 				Date Issuedate = new Date();
 				String Issue = "Kay";
 				String gender = "MALE";

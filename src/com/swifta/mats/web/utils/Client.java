@@ -9,11 +9,10 @@ public class Client {
 
 	public static void main(String args[]) throws Exception {
 
-		Client.authenticate();
+		Client.register();
 
 	}
 
-	@SuppressWarnings("unused")
 	public static void register() {
 
 		UserManagementService register = new UserManagementService();
@@ -39,7 +38,7 @@ public class Client {
 		String province = "Kay";
 		Date Expirydate = new Date();
 		String idNumber = "166735";
-		String idType = "Kay";
+		String idType = "PASSP";
 		Date Issuedate = new Date();
 		String Issue = "Kay";
 		String gender = "MALE";

@@ -696,6 +696,9 @@ public class AddUserModule {
 					String prov = tFProv.getValue().toString();
 					Date doe = (Date) dFDoE.getValue();
 					String idno = tFIDNo.getValue().toString();
+					// IdentificationType idtype =
+					// ProvisioningStub.IdentificationType.Factory
+					// .fromValue(comboIDType.getValue().toString());
 					String idtype = comboIDType.getValue().toString();
 					Date doi = (Date) dFDoI.getValue();
 
@@ -708,14 +711,12 @@ public class AddUserModule {
 					String smno = tFSMNo.getValue().toString();
 					String samno = tFSANo.getValue().toString();
 
-					strResponse =
-
-					ums.registerUser(bacc, bid, bd, clrno, cur, accEmail,
-							msisdn, profid, secQn, secAns, tAndC, un, country,
-							dob, employer, fn, gender, lang, ln, lgid, mn, occ,
-							pref, stateid, suff, city, pcode, str, prov, doe,
-							idno, idtype, doi, issuer, pem, pmno, pamno, sem,
-							smno, samno);
+					strResponse = ums.registerUser(bacc, bid, bd, clrno, cur,
+							accEmail, msisdn, profid, secQn, secAns, tAndC, un,
+							country, dob, employer, fn, gender, lang, ln, lgid,
+							mn, occ, pref, stateid, suff, city, pcode, str,
+							prov, doe, idno, idtype, doi, issuer, pem, pmno,
+							pamno, sem, smno, samno);
 				} catch (Exception e) {
 					// e.printStackTrace();
 					Notification.show("Response: " + e.getMessage());
