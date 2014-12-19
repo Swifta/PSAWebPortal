@@ -1,6 +1,12 @@
 package com.swifta.mats.web.usermanagement;
 
 import java.rmi.RemoteException;
+import java.sql.Connection;
+import java.sql.Driver;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -63,49 +69,7 @@ public class BE2 {
 	}
 
 	public VerticalLayout queryBackEnd(String strSearchParams) {
-		IndexedContainer container = new IndexedContainer();
-
-		container.addContainerProperty(" ", CheckBox.class, null);
-		container.addContainerProperty("UID", String.class, "000");
-		container.addContainerProperty("Username", String.class, "");
-		container.addContainerProperty("First Name", String.class, "");
-		container.addContainerProperty("Last Name", String.class, "");
-		container.addContainerProperty("Account Type", String.class, "");
-		container.addContainerProperty("Actions", HorizontalLayout.class, null);
-
-		arrLChkBulk = new ArrayList<>();
-		arrLCombos = new ArrayList<>();
-
-		/*
-		 * IndexedContainer container, String strUID, String strUname, String
-		 * strFname, String strLname, String strProf
-		 */
-		rowCount = 0;
-		addRow(container, "00494432493", "Live", "Paul", "Kig", "Admin");
-		addRow(container, "0049432338", "Kay", "Deny", "Sep", "Agent");
-		addRow(container, "00942333218", "Saneeddd", "Winssddo", "Mosssc",
-				"Agent");
-		addRow(container, "004934932233", "Liveede", "Paussxl", "Kig", "Admin");
-		addRow(container, "0049223438", "Kaddccy", "Denssssy", "Sep", "Agent");
-		addRow(container, "009422316678", "Sand", "Wino", "Moc", "Agent");
-		addRow(container, "00493442493", "Live", "Paul", "Kig", "Admin");
-		addRow(container, "00492234438", "Kayww", "Deny", "Sep", "Agent");
-		addRow(container, "00432943456218", "Sand", "Wino", "Moc", "Agent");
-		addRow(container, "0045549493", "Live", "Paul", "Kig", "Admin");
-		addRow(container, "032049445638", "Kaysss", "Deny", "Sep", "Agent");
-		addRow(container, "0094564218", "Sand", "Wino", "Moc", "Agent");
-		addRow(container, "667443453", "Live", "Paul", "Kig", "Admin");
-		addRow(container, "0043229438", "Kay", "Denysss", "Sep", "Agent");
-		addRow(container, "0096784218", "Sand", "Wino", "Moc", "Agent");
-		addRow(container, "0044329493", "Live", "Paul", "Kig", "Admin");
-		addRow(container, "0049457438", "Kay", "Deny", "Sep", "Agent");
-		addRow(container, "0094432218", "Sand", "Wino", "Moc", "Agent");
-		addRow(container, "004932493", "Live", "Paul", "Kig", "Admin");
-		addRow(container, "00424569438", "Kay", "Deny", "Sep", "Agent");
-		addRow(container, "00967894218", "Sand", "Wino", "Moc", "Agent");
-
-		// Notification.show(String.valueOf(rowCount));
-
+		IndexedContainer container = getTable();
 		VerticalLayout searchResultsContainer = new VerticalLayout();
 		searchResultsContainer.setSizeUndefined();
 		searchResultsContainer.setSpacing(true);
@@ -1207,5 +1171,96 @@ public class BE2 {
 
 		});
 
+	}
+
+	private IndexedContainer getTable() {
+		IndexedContainer container = new IndexedContainer();
+		container.addContainerProperty(" ", CheckBox.class, null);
+		container.addContainerProperty("UID", String.class, "000");
+		container.addContainerProperty("Username", String.class, "");
+		container.addContainerProperty("First Name", String.class, "");
+		container.addContainerProperty("Last Name", String.class, "");
+		container.addContainerProperty("Account Type", String.class, "");
+		container.addContainerProperty("Actions", HorizontalLayout.class, null);
+		arrLChkBulk = new ArrayList<>();
+		arrLCombos = new ArrayList<>();
+
+		/*
+		 * IndexedContainer container, String strUID, String strUname, String
+		 * strFname, String strLname, String strProf
+		 */
+		rowCount = 0;
+
+		/*
+		 * addRow(container, "00494432493", "Live", "Paul", "Kig", "Admin");
+		 * addRow(container, "0049432338", "Kay", "Deny", "Sep", "Agent");
+		 * addRow(container, "00942333218", "Saneeddd", "Winssddo", "Mosssc",
+		 * "Agent"); addRow(container, "004934932233", "Liveede", "Paussxl",
+		 * "Kig", "Admin"); addRow(container, "0049223438", "Kaddccy",
+		 * "Denssssy", "Sep", "Agent"); addRow(container, "009422316678",
+		 * "Sand", "Wino", "Moc", "Agent"); addRow(container, "00493442493",
+		 * "Live", "Paul", "Kig", "Admin"); addRow(container, "00492234438",
+		 * "Kayww", "Deny", "Sep", "Agent"); addRow(container, "00432943456218",
+		 * "Sand", "Wino", "Moc", "Agent"); addRow(container, "0045549493",
+		 * "Live", "Paul", "Kig", "Admin"); addRow(container, "032049445638",
+		 * "Kaysss", "Deny", "Sep", "Agent"); addRow(container, "0094564218",
+		 * "Sand", "Wino", "Moc", "Agent"); addRow(container, "667443453",
+		 * "Live", "Paul", "Kig", "Admin"); addRow(container, "0043229438",
+		 * "Kay", "Denysss", "Sep", "Agent"); addRow(container, "0096784218",
+		 * "Sand", "Wino", "Moc", "Agent"); addRow(container, "0044329493",
+		 * "Live", "Paul", "Kig", "Admin"); addRow(container, "0049457438",
+		 * "Kay", "Deny", "Sep", "Agent"); addRow(container, "0094432218",
+		 * "Sand", "Wino", "Moc", "Agent"); addRow(container, "004932493",
+		 * "Live", "Paul", "Kig", "Admin"); addRow(container, "00424569438",
+		 * "Kay", "Deny", "Sep", "Agent"); addRow(container, "00967894218",
+		 * "Sand", "Wino", "Moc", "Agent");
+		 */
+		String qx = "SELECT acth.username, acth.msisdn, acth.email, pf.profilename, acths.accountholderstatusname, acthd.firstname,  acthd.lastname, id.identificationnumber, ad.streetaddress from accountholders acth,  accountholderdetails acthd, accountholderstatus acths, identificationattribute id,  address ad, profiles pfwhere acth.accountholderdetailid = acthd.accountdetailsid and acth.accountholderstatusid = acths.accountholderstatusid and acthd.identificationid = id.identificationattrid and acthd.addressid = ad.addressid and pf.profileid = acth.profileid and pf.profiletypeid = 1;";
+
+		String Uname = "gomint";
+		String Pword = "gomint";
+		String drivers = "com.mysql.jdbc.Driver";
+		try {
+			Class driver_class = Class.forName(drivers);
+			Driver driver = (Driver) driver_class.newInstance();
+			DriverManager.registerDriver(driver);
+
+			Connection conn = DriverManager
+					.getConnection(
+							"jdbc:mysql://gomintdb.caabwbnfnavv.us-east-1.rds.amazonaws.com:3306/psadatasourcetest",
+							Uname, Pword);
+
+			Statement stmt = conn.createStatement();
+			String q = "SELECT acth.username as un, acth.msisdn as msisdn, acth.email as email, pf.profilename as prof,"
+					+ " acths.accountholderstatusname as status, acthd.firstname as fn,  acthd.lastname as ln,"
+					+ " id.identificationnumber as idno, ad.streetaddress as street from accountholders acth,"
+					+ "  accountholderdetails acthd, accountholderstatus acths, identificationattribute id,"
+					+ "  address ad, profiles pfwhere acth.accountholderdetailid = acthd.accountdetailsid "
+					+ "and acth.accountholderstatusid = acths.accountholderstatusid and "
+					+ "acthd.identificationid = id.identificationattrid and acthd.addressid = ad.addressid"
+					+ " and pf.profileid = acth.profileid and pf.profiletypeid = 1;";
+
+			ResultSet rs = stmt.executeQuery(qx);
+			int x = 0;
+
+			while (rs.next()) {
+				x++;
+				String un = rs.getString("un");
+				String fn = rs.getString("fn");
+				String ln = rs.getString("fn");
+				String prof = rs.getString("prof");
+				addRow(container, String.valueOf(x), un, fn, ln, prof);
+				// String status = rs.getString("status");
+
+			}
+
+		} catch (SQLException | ClassNotFoundException | InstantiationException
+				| IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			Notification.show("Error Establishing DBConnection:  " + e);
+		}
+
+		return container;
 	}
 }

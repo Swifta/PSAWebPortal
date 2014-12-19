@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.swifta.mats.web.utils.UserManagementService;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.server.FontAwesome;
@@ -139,12 +140,12 @@ public class AddUserModule {
 
 		OptionGroup opt = new OptionGroup("Gender");
 
-		opt.addItem(1);
-		opt.setItemCaption(1, "Female");
+		opt.addItem("FEMALE");
+		// opt.setItemCaption(1, "Female");
 
-		opt.addItem(2);
-		opt.setItemCaption(2, "Male");
-		opt.select(2);
+		opt.addItem("MALE");
+		// opt.setItemCaption(2, "Male");
+		opt.select("MALE");
 		optSex = opt;
 		cBasic.addComponent(opt);
 
@@ -576,91 +577,136 @@ public class AddUserModule {
 
 		cAcc.addComponent(cBtnSR);
 
-		if (comboHierarchy != null) {
+		// if (comboHierarchy != null) {
 
-			/*
-			 * comboHierarchy.addValueChangeListener(new ValueChangeListener() {
-			 * private static final long serialVersionUID =
-			 * 6060653158010946535L;
-			 * 
-			 * @Override public void valueChange(ValueChangeEvent event) {
-			 * String strHierarchy = (String) event.getProperty() .getValue();
-			 * if (strHierarchy == null) return;
-			 * 
-			 * if (strHierarchy.equals("Sub " + strUserType)) {
-			 * cRBody.setStyleName("c_body_visible");
-			 * cLBody.setStyleName("c_body_invisible");
-			 * 
-			 * for (int i = 0; i < cRBody.getComponentCount(); i++) {
-			 * cRBody.getComponent(i).setEnabled(true); }
-			 * 
-			 * for (int i = 0; i < cLBody.getComponentCount(); i++) {
-			 * cLBody.getComponent(i).setEnabled(false); }
-			 * 
-			 * } else if (strHierarchy.equals("Parent " + strUserType)) {
-			 * cRBody.setStyleName("c_body_invisible");
-			 * cLBody.setStyleName("c_body_visible");
-			 * 
-			 * for (int i = 0; i < cLBody.getComponentCount(); i++) {
-			 * cLBody.getComponent(i).setEnabled(true); }
-			 * 
-			 * for (int i = 0; i < cRBody.getComponentCount(); i++) {
-			 * cRBody.getComponent(i).setEnabled(false); } } }
-			 * 
-			 * });
-			 */
-		} else {
-			cLBody.setStyleName("c_body_invisible");
-			cRBody.setStyleName("c_body_visible");
-		}
+		/*
+		 * comboHierarchy.addValueChangeListener(new ValueChangeListener() {
+		 * private static final long serialVersionUID = 6060653158010946535L;
+		 * 
+		 * @Override public void valueChange(ValueChangeEvent event) { String
+		 * strHierarchy = (String) event.getProperty() .getValue(); if
+		 * (strHierarchy == null) return;
+		 * 
+		 * if (strHierarchy.equals("Sub " + strUserType)) {
+		 * cRBody.setStyleName("c_body_visible");
+		 * cLBody.setStyleName("c_body_invisible");
+		 * 
+		 * for (int i = 0; i < cRBody.getComponentCount(); i++) {
+		 * cRBody.getComponent(i).setEnabled(true); }
+		 * 
+		 * for (int i = 0; i < cLBody.getComponentCount(); i++) {
+		 * cLBody.getComponent(i).setEnabled(false); }
+		 * 
+		 * } else if (strHierarchy.equals("Parent " + strUserType)) {
+		 * cRBody.setStyleName("c_body_invisible");
+		 * cLBody.setStyleName("c_body_visible");
+		 * 
+		 * for (int i = 0; i < cLBody.getComponentCount(); i++) {
+		 * cLBody.getComponent(i).setEnabled(true); }
+		 * 
+		 * for (int i = 0; i < cRBody.getComponentCount(); i++) {
+		 * cRBody.getComponent(i).setEnabled(false); } } }
+		 * 
+		 * });
+		 */
+		// } else {
+		// cLBody.setStyleName("c_body_invisible");
+		// cRBody.setStyleName("c_body_visible");
+		// }
 
-		// btnSave.addClickListener(new Button.ClickListener() {
-		//
-		// private static final long serialVersionUID = -935880570210949227L;
-		//
-		// @Override
-		//
-		// public void buttonClick(ClickEvent event) {
-		// UserManagementService ums = new UserManagementService();
-		// String strResponse = null;
-		//
-		//
-		// try {
-		// strResponse =
-		//
-		// ums.registerUser(
-		// tFBAcc.getValue(),
-		// (Integer) comboBID.getValue(),
-		// comboBDomain.getValue().toString(),
-		// tFClrNo.getValue(),comboCur.getValue().toString(),
-		// tFAccEmail.getValue(), tFMSISDN.getValue(),
-		// (Integer) comboProfile.getValue(), comboSecQn.getValue().toString(),
-		// tFSecAns.getValue(),chcTAndC.getValue().toString(),
-		// tFUN.getValue(),(Integer) comboCountry.getValue(),
-		// (Date) dFDoB.getValue(), tFEmp.getValue(),
-		// tFFN.getValue(),optSex.getItemCaption(optSex.getValue()),
-		// (Integer) comboLang.getValue(), tFLN.getValue(),
-		// (Integer) comboLG.getValue(), tFMN.getValue().toString(),
-		// tFOcc.getValue(), comboPref.getValue().toString(),
-		// (Integer) comboState.getValue(),(Integer) comboLG.getValue(),
-		// (Integer) comboState.getValue(), comboSuff.getValue().toString(),
-		// tFCity.getValue(),tFPostalCode.getValue(),
-		// tFStreet.getValue(),tFProv.getValue(),
-		// (Date) dFDoE.getValue(), tFIDNo.getValue(),
-		// comboIDType.getValue().toString(), (Date) dFDoI.getValue(),
-		// tFIssuer.getValue(), tFPEmail.getValue(),
-		// tFPMNo.getValue(), tFPANo.getValue(),
-		// tFSEmail.getValue(), tFSMNo.getValue(), tFSANo.getValue()
-		//
-		// );
-		// } catch (RemoteException e) {
-		// e.printStackTrace();
-		// }
-		//
-		// Notification.show("Response: " + strResponse);
-		//
-		// }
-		// });
+		btnSave.addClickListener(new Button.ClickListener() {
+
+			private static final long serialVersionUID = -935880570210949227L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				UserManagementService ums = new UserManagementService();
+				String strResponse = null;
+
+				/*
+				 * registerUser(String bankAccount, int bankCodeid, String
+				 * bankdomainNameid, String clearingNumber, String currencyid,
+				 * String email, String msisdn, int profileid, String
+				 * securityQuest, String securityAns, String termscondition,
+				 * String username, int countryid, Date dateofBirth, String
+				 * employer, String firstname, String gender, int languageid,
+				 * String lastname, int Lgaid, String middlename, String
+				 * occupation, String prefix, int stateid, String suffix, String
+				 * city, String postalcode, String streetAddress, String
+				 * province, Date Expirydate, String idNumber, String idType,
+				 * Date Issuedate, String Issue, String PrimaryEmail, String
+				 * PrimaryMobilenumber, String PrimaryPhonenumber, String
+				 * SecondaryEmail, String SecondaryMobilenumber, String
+				 * SecondaryPhonenumber)
+				 */
+
+				try {
+					String bacc = tFBAcc.getValue().toString();
+					int bid = Integer.valueOf(comboBID.getValue().toString());
+					String bd = comboBDomain.getValue().toString();
+					String clrno = tFClrNo.getValue().toString();
+					String cur = comboCur.getValue().toString();
+					String accEmail = tFAccEmail.getValue().toString();
+					String msisdn = tFMSISDN.getValue().toString();
+					int profid = Integer.valueOf(comboProfile.getValue()
+							.toString());
+					String secQn = comboSecQn.getValue().toString();
+					String secAns = tFSecAns.getValue().toString();
+					String tAndC = chcTAndC.getValue().toString();
+					String un = tFUN.getValue().toString();
+					int country = Integer.valueOf(comboCountry.getValue()
+							.toString());
+					Date dob = (Date) dFDoB.getValue();
+					String employer = tFEmp.getValue().toString();
+					String fn = tFFN.getValue().toString();
+					String gender = optSex.getItemCaption(optSex.getValue())
+							.toString();
+					int lang = Integer.valueOf(comboLang.getValue().toString());
+					String ln = tFLN.getValue().toString();
+					int lgid = Integer.valueOf(comboLG.getValue().toString());
+
+					String mn = tFMN.getValue().toString();
+					String occ = tFOcc.getValue().toString();
+					String pref = comboPref.getValue().toString();
+					int stateid = Integer.valueOf(comboState.getValue()
+							.toString());
+					String suff = comboSuff.getValue().toString();
+					String city = tFCity.getValue().toString();
+					String pcode = tFPostalCode.getValue().toString();
+					String str = tFStreet.getValue().toString();
+					String prov = tFProv.getValue().toString();
+					Date doe = (Date) dFDoE.getValue();
+					String idno = tFIDNo.getValue().toString();
+					String idtype = comboIDType.getValue().toString();
+					Date doi = (Date) dFDoI.getValue();
+
+					String issuer = tFIssuer.getValue().toString();
+					String pem = tFPEmail.getValue().toString();
+					String pmno = tFPMNo.getValue().toString();
+
+					String pamno = tFPANo.getValue().toString();
+					String sem = tFSEmail.getValue().toString();
+					String smno = tFSMNo.getValue().toString();
+					String samno = tFSANo.getValue().toString();
+
+					strResponse =
+
+					ums.registerUser(bacc, bid, bd, clrno, cur, accEmail,
+							msisdn, profid, secQn, secAns, tAndC, un, country,
+							dob, employer, fn, gender, lang, ln, lgid, mn, occ,
+							pref, stateid, suff, city, pcode, str, prov, doe,
+							idno, idtype, doi, issuer, pem, pmno, pamno, sem,
+							smno, samno);
+				} catch (Exception e) {
+					// e.printStackTrace();
+					Notification.show("Response: " + e.getMessage());
+					return;
+				}
+
+				Notification.show("Response: " + strResponse);
+
+			}
+		});
 
 		btnReset.addClickListener(new Button.ClickListener() {
 			private static final long serialVersionUID = 3212854064282339617L;
