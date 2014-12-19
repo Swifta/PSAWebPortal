@@ -19,6 +19,8 @@ import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Setupser
 
 public class CommissionService {
 	private ProvisioningStub provisioningStub;
+
+	static String esbendpoint = "http://54.173.157.210:8283/services/Provisionservice";
 	private static final Logger logger = Logger
 			.getLogger(CommissionService.class.getName());
 	public String statusMessage = "";
@@ -113,7 +115,7 @@ public class CommissionService {
 				.setSetupservicefeesandcommission(setupservicefeesandcommission);
 		SetupservicefeesandcommissionResponseE feesAndCommissionResponseE = new SetupservicefeesandcommissionResponseE();
 		try {
-			provisioningStub = new ProvisioningStub("http://54.173.157.210:9765/Provisioning_1.0.0/services/provisioning");
+			provisioningStub = new ProvisioningStub(esbendpoint);
 			long timeOutInMilliSeconds = (5 * 36 * 1000);
 			provisioningStub._getServiceClient().getOptions()
 					.setTimeOutInMilliSeconds(timeOutInMilliSeconds);
