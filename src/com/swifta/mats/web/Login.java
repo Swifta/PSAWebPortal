@@ -2,6 +2,8 @@ package com.swifta.mats.web;
 
 import java.util.logging.Logger;
 
+import org.apache.axis2.AxisFault;
+
 import com.swifta.mats.web.utils.LoginService;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Validator;
@@ -23,6 +25,7 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
@@ -224,27 +227,34 @@ public class Login extends VerticalLayout implements View {
 				try {
 					fg.commit();
 				} catch (Exception e) {
-					// Notification.show("Invalid value");
+					Notification.show("Invalid value");
 					return;
 				}
 				logger.info("---------------Before validating the username and password"
 						+ tfUsername.getValue());
-				// if(validCredentials()){
-				// m/if (loginService.authenticateUser(tfUsername.getValue(),
-				// m/tfPassword.getValue())) {
-				logger.info("---------------Validation successful");
-				UI.getCurrent().getSession()
-						.setAttribute("user", tfUsername.getValue());
-				logger.info("---------------After getting session in Login");
-				UI.getCurrent().getNavigator().navigateTo(WorkSpace.WORK_SPACE);
-				logger.info("---------------after getting navigator to workspace:::Login");
+				if (validCredentials()) {
+					try {
+						if (loginService.authenticateUser(
+								tfUsername.getValue(), tfPassword.getValue())) {
+							logger.info("---------------Validation successful");
+							UI.getCurrent()
+									.getSession()
+									.setAttribute("user", tfUsername.getValue());
+							logger.info("---------------After getting session in Login");
+							UI.getCurrent().getNavigator()
+									.navigateTo(WorkSpace.WORK_SPACE);
+							logger.info("---------------after getting navigator to workspace:::Login");
 
-				// m/ } else {
-				// m/userLogin.setValue("Invalid Credentials");
-				// m/userLogin.setStyleName("errorlogin");
-				logger.info("---------------The authentication FAILED!!!!!!!!!!!!!!");
-				// m/}
-				// }
+						} else {
+							userLogin.setValue("Invalid Credentials");
+							userLogin.setStyleName("errorlogin");
+							logger.info("---------------The authentication FAILED!!!!!!!!!!!!!!");
+						}
+					} catch (AxisFault e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
 
 			}
 		});
