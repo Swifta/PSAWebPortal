@@ -24,7 +24,6 @@ import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Activati
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Address;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Credentials;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Identification;
-import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.IdentificationType;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Linkaccountrequest;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.LinkaccountrequestE;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.LinkaccountrequestResponse;
@@ -72,8 +71,8 @@ public class UserManagementService {
 			String middlename, String occupation, String prefix, int stateid,
 			String suffix, String city, String postalcode,
 			String streetAddress, String province, Date Expirydate,
-			String idNumber, IdentificationType idType, Date Issuedate,
-			String Issue, String PrimaryEmail, String PrimaryMobilenumber,
+			String idNumber, String idType, Date Issuedate, String Issue,
+			String PrimaryEmail, String PrimaryMobilenumber,
 			String PrimaryPhonenumber, String SecondaryEmail,
 			String SecondaryMobilenumber, String SecondaryPhonenumber)
 			throws RemoteException {
@@ -104,7 +103,9 @@ public class UserManagementService {
 
 		// matsStub.
 
-		identification.setIdentificationType(idType);
+		identification
+				.setIdentificationType(ProvisioningStub.IdentificationType.Factory
+						.fromValue(idType));
 		identification.setIssueDate(String.valueOf(Issuedate));
 		identification.setIssuer(Issue);
 

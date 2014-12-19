@@ -9,7 +9,6 @@ import com.swifta.mats.web.utils.TransactionsService;
 import com.swifta.mats.web.utils.UserManagementService;
 import com.swifta.sub.mats.operation.financial.v1_0.FinancialsStub.AdjustmentType;
 import com.swifta.sub.mats.operation.financial.v1_0.FinancialsStub.StatusCode;
-import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.IdentificationType;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.ComboBox;
@@ -129,7 +128,7 @@ public class Adjustment {
 				String province = "Kay";
 				Date Expirydate = new Date();
 				String idNumber = "166735";
-				IdentificationType idType = IdentificationType.EMID;
+				String idType = "EMID";
 				Date Issuedate = new Date();
 				String Issue = "Kay";
 				String gender = "MALE";
