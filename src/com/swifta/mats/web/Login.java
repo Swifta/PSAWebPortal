@@ -14,6 +14,7 @@ import com.vaadin.data.util.sqlcontainer.SQLContainer;
 import com.vaadin.data.util.sqlcontainer.connection.JDBCConnectionPool;
 import com.vaadin.data.util.sqlcontainer.connection.SimpleJDBCConnectionPool;
 import com.vaadin.data.util.sqlcontainer.query.TableQuery;
+import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.ThemeResource;
@@ -28,6 +29,7 @@ import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.Reindeer;
 
 public class Login extends VerticalLayout implements View {
 	/**
@@ -192,6 +194,8 @@ public class Login extends VerticalLayout implements View {
 		// tfPassword.addValidator(new);
 
 		btnLogin = new Button("Login");
+		btnLogin.setClickShortcut(KeyCode.ENTER);
+		btnLogin.setStyleName(Reindeer.BUTTON_DEFAULT);
 		panelLoginContent.addComponent(tfUsername);
 		panelLoginContent.addComponent(tfPassword);
 		panelLoginContent.addComponent(btnLogin);

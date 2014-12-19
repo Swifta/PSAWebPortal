@@ -899,6 +899,7 @@ public class Reportform extends VerticalLayout {
 		return fees;
 	}
 
+	@SuppressWarnings("unchecked")
 	public IndexedContainer populateTable(String serialnumber,
 			String transactionid, String transactiondate, String agentid,
 			String dealerid, String amount, IndexedContainer tabContainer) {

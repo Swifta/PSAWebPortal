@@ -393,7 +393,7 @@ public class BE2 {
 					}
 				isSent = true;
 
-				if (strResponse.trim() == null)
+				if (strResponse == null || strResponse.trim() == null)
 					strResponse = "Activation successful!";
 
 				Notification.show("Response: " + strResponse);

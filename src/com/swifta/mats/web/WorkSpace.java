@@ -1,5 +1,12 @@
 package com.swifta.mats.web;
 
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map.Entry;
+import java.util.Set;
+
 import com.swifta.mats.web.accountprofile.WorkSpaceManageProfile;
 import com.swifta.mats.web.dashboard.BarChartDash;
 import com.swifta.mats.web.dashboard.Dashboard;
@@ -11,6 +18,9 @@ import com.swifta.mats.web.usermanagement.WorkSpaceManageUser;
 import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.charts.model.DataSeries;
 import com.vaadin.addon.charts.model.DataSeriesItem;
+import com.vaadin.data.Container.Filter;
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.navigator.View;
@@ -45,6 +55,7 @@ public class WorkSpace extends VerticalLayout implements View,
 	DateField dat2 = new DateField();
 	Button filter = new Button("Filter");
 	HorizontalLayout pi;
+	String dCat;
 
 	private static final long serialVersionUID = 4370608410523325533L;
 
@@ -111,38 +122,90 @@ public class WorkSpace extends VerticalLayout implements View,
 		pi.addComponent(pieChart);
 		pi.addComponent(barChart);
 
+		dCat = "Transaction Type";
+
 		filter.addClickListener(new Button.ClickListener() {
 
 			private static final long serialVersionUID = 7867132630286287368L;
 
+			@SuppressWarnings("unchecked")
 			@Override
 			public void buttonClick(ClickEvent event) {
+				Object cat = comboGF.getValue();
+				if (cat == null || cat.toString().equals(dCat))
+					return;
+				if (Dashboard.otb == null || Dashboard.otb.size() == 0)
+					return;
+				// Filter gfilter = new And(Compare.LessOrEqual("doc"))
+				dCat = cat.toString();
+				Date start = dat.getValue();
+				Date end = dat2.getValue();
+				Filter dfilter = null;
+				Dashboard.otb.removeAllContainerFilters();
+				// m/if (start != null && end != null) {
 
-				// XAxis xAxis = new XAxis();
-				// Set<String> stxns = hm.keySet();
-				// String[] txns = new String[stxns.size()];
-				// stxns.toArray(txns);
+				// m/ dfilter = new And(new GreaterOrEqual("DoT", start.),
+				// m/ new LessOrEqual("DoT", end));
+				// m/ Dashboard.otb.addContainerFilter(dfilter);
+				// m/}
+
+				Iterator<Integer> itr = (Iterator<Integer>) Dashboard.otb
+						.getItemIds().iterator();
+
+				HashMap<String, Integer> hm = new HashMap<>();
+
+				while (itr.hasNext()) {
+					int rid = itr.next();
+					Item r = Dashboard.otb.getItem(rid);
+					Property<?> f = r.getItemProperty(cat);
+					String param = f.getValue().toString();
+					if (!hm.containsKey(param)) {
+						hm.put(param, 1);
+					} else {
+						hm.put(param, hm.get(param) + 1);
+					}
+				}
+
+				Integer t = 0;
+				Iterator<Entry<String, Integer>> itrx = (Iterator<Entry<String, Integer>>) hm
+						.entrySet().iterator();
+				while (itrx.hasNext()) {
+					Entry<String, Integer> e = (Entry<String, Integer>) itrx
+							.next();
+					t = t + e.getValue();
+				}
 
 				DataSeries series = new DataSeries();
-				series.add(new DataSeriesItem("xccd", 20));
-				series.add(new DataSeriesItem("kksksd", 30));
-				series.add(new DataSeriesItem("orri", 50));
 
-				// while (itr.hasNext()) {
-				// Entry<String, Double> e = itr.next();
-				// series.add(new DataSeriesItem(e.getKey(), e.getValue()));
-				// }
-				// series.add(new DataSeriesItem("Cash out", 32));
-				// DataSeriesItem chrome = new DataSeriesItem("Airtime", 18);
-				// chrome.setSliced(true);
-				// chrome.setSelected(true);
-				// series.add(chrome);
+				Iterator<Entry<String, Integer>> itrSet = hm.entrySet()
+						.iterator();
+				while (itrSet.hasNext()) {
+					Entry<String, Integer> e = (Entry<String, Integer>) itrSet
+							.next();
+
+					series.add(new DataSeriesItem(e.getKey(), e.getValue()));
+
+				}
+
+				itrx = hm.entrySet().iterator();
+				while (itrx.hasNext()) {
+					Entry<String, Integer> e = (Entry<String, Integer>) itrx
+							.next();
+					hm.put(e.getKey(), ((e.getValue() * 100) / t));
+				}
+
+				Set<String> types = hm.keySet();
+				String[] type = new String[types.size()];
+				types.toArray(type);
+
+				Collection<Integer> vals = hm.values();
+				Integer[] val = new Integer[vals.size()];
+				vals.toArray(val);
 
 				PiechartDash.conf.setSeries(series);
 				pieChart.drawChart();
-				bar.xAxis
-						.setCategories(new String[] { "xxmmx", "kkxkx", "skks" });
-				bar.serie.setData(new Number[] { 20, 50, 30 });
+				bar.xAxis.setCategories(type);
+				bar.serie.setData(val);
 				barChart.drawChart();
 
 			}
