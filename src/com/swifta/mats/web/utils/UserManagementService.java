@@ -100,7 +100,7 @@ public class UserManagementService {
 		identification.setExpirydate(utils.DateToCalendar(Expirydate));
 		identification.setIdentificationNo(idNumber);
 
-		IdentificationType idType3 = IdentificationType.IDCD;
+		IdentificationType idType3 = IdentificationType.EMID;
 
 		identification.setIdentificationType(idType3);
 		identification.setIssueDate(String.valueOf(Issuedate));

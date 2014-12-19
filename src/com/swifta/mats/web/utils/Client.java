@@ -9,7 +9,7 @@ public class Client {
 
 	public static void main(String args[]) throws Exception {
 
-		Client.linkuser();
+		Client.register();
 
 	}
 
