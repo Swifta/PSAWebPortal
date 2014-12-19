@@ -378,20 +378,25 @@ public class BE2 {
 				String ret = "No response";
 				if (arrLBulkIDs != null)
 					for (String id : arrLBulkIDs) {
-						Notification.show(id);
+
 						try {
 							strResponse = ums.activateUser(bankdomainid,
 									currency, IDnumber, userresourceid,
 									SecurityAns, tFPIN.getValue(),
 									tFPINConf.getValue());
+							Notification.show("");
 						} catch (Exception e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
+							Notification.show("Response: " + e.getMessage());
 						}
 					}
 				isSent = true;
 
-				Notification.show(strResponse);
+				if (strResponse.trim() == null)
+					strResponse = "Activation successful!";
+
+				Notification.show("Response: " + strResponse);
 				/*
 				 * 
 				 * TODO on positive response, update the table.
@@ -989,7 +994,7 @@ public class BE2 {
 		trItem = container.getItem(strUID);
 
 		Property<CheckBox> tdPropertyCheck = trItem.getItemProperty(" ");
-		Property<String> tdPropertyUID = trItem.getItemProperty("UID");
+		Property<String> tdPropertyUID = trItem.getItemProperty("S/N");
 		Property<String> tdPropertyUname = trItem.getItemProperty("Username");
 		Property<String> tdPropertyFname = trItem.getItemProperty("First Name");
 		Property<String> tdPropertyLname = trItem.getItemProperty("Last Name");
@@ -1176,7 +1181,7 @@ public class BE2 {
 	private IndexedContainer getTable() {
 		IndexedContainer container = new IndexedContainer();
 		container.addContainerProperty(" ", CheckBox.class, null);
-		container.addContainerProperty("UID", String.class, "000");
+		container.addContainerProperty("S/N", String.class, "000");
 		container.addContainerProperty("Username", String.class, "");
 		container.addContainerProperty("First Name", String.class, "");
 		container.addContainerProperty("Last Name", String.class, "");
@@ -1191,37 +1196,12 @@ public class BE2 {
 		 */
 		rowCount = 0;
 
-		/*
-		 * addRow(container, "00494432493", "Live", "Paul", "Kig", "Admin");
-		 * addRow(container, "0049432338", "Kay", "Deny", "Sep", "Agent");
-		 * addRow(container, "00942333218", "Saneeddd", "Winssddo", "Mosssc",
-		 * "Agent"); addRow(container, "004934932233", "Liveede", "Paussxl",
-		 * "Kig", "Admin"); addRow(container, "0049223438", "Kaddccy",
-		 * "Denssssy", "Sep", "Agent"); addRow(container, "009422316678",
-		 * "Sand", "Wino", "Moc", "Agent"); addRow(container, "00493442493",
-		 * "Live", "Paul", "Kig", "Admin"); addRow(container, "00492234438",
-		 * "Kayww", "Deny", "Sep", "Agent"); addRow(container, "00432943456218",
-		 * "Sand", "Wino", "Moc", "Agent"); addRow(container, "0045549493",
-		 * "Live", "Paul", "Kig", "Admin"); addRow(container, "032049445638",
-		 * "Kaysss", "Deny", "Sep", "Agent"); addRow(container, "0094564218",
-		 * "Sand", "Wino", "Moc", "Agent"); addRow(container, "667443453",
-		 * "Live", "Paul", "Kig", "Admin"); addRow(container, "0043229438",
-		 * "Kay", "Denysss", "Sep", "Agent"); addRow(container, "0096784218",
-		 * "Sand", "Wino", "Moc", "Agent"); addRow(container, "0044329493",
-		 * "Live", "Paul", "Kig", "Admin"); addRow(container, "0049457438",
-		 * "Kay", "Deny", "Sep", "Agent"); addRow(container, "0094432218",
-		 * "Sand", "Wino", "Moc", "Agent"); addRow(container, "004932493",
-		 * "Live", "Paul", "Kig", "Admin"); addRow(container, "00424569438",
-		 * "Kay", "Deny", "Sep", "Agent"); addRow(container, "00967894218",
-		 * "Sand", "Wino", "Moc", "Agent");
-		 */
-		String qx = "SELECT acth.username, acth.msisdn, acth.email, pf.profilename, acths.accountholderstatusname, acthd.firstname,  acthd.lastname, id.identificationnumber, ad.streetaddress from accountholders acth,  accountholderdetails acthd, accountholderstatus acths, identificationattribute id,  address ad, profiles pfwhere acth.accountholderdetailid = acthd.accountdetailsid and acth.accountholderstatusid = acths.accountholderstatusid and acthd.identificationid = id.identificationattrid and acthd.addressid = ad.addressid and pf.profileid = acth.profileid and pf.profiletypeid = 1;";
-
+		String qx = "SELECT acth.username as un, acth.msisdn as msisdn, acth.email as email,pf.profilename as prof, acths.accountholderstatusname as status,acthd.firstname as fn ,acthd.lastname as ln,id.identificationnumber as id,ad.streetaddress as street from accountholders acth, accountholderdetails acthd, accountholderstatus acths, identificationattribute id, address ad, profiles pf where acth.accountholderdetailid = acthd.accountdetailsid and acth.accountholderstatusid = acths.accountholderstatusid and acthd.identificationid = id.identificationattrid and acthd.addressid = ad.addressid and pf.profileid = acth.profileid and pf.profiletypeid = 1;";
 		String Uname = "gomint";
 		String Pword = "gomint";
 		String drivers = "com.mysql.jdbc.Driver";
 		try {
-			Class driver_class = Class.forName(drivers);
+			Class<?> driver_class = Class.forName(drivers);
 			Driver driver = (Driver) driver_class.newInstance();
 			DriverManager.registerDriver(driver);
 
@@ -1231,25 +1211,19 @@ public class BE2 {
 							Uname, Pword);
 
 			Statement stmt = conn.createStatement();
-			String q = "SELECT acth.username as un, acth.msisdn as msisdn, acth.email as email, pf.profilename as prof,"
-					+ " acths.accountholderstatusname as status, acthd.firstname as fn,  acthd.lastname as ln,"
-					+ " id.identificationnumber as idno, ad.streetaddress as street from accountholders acth,"
-					+ "  accountholderdetails acthd, accountholderstatus acths, identificationattribute id,"
-					+ "  address ad, profiles pfwhere acth.accountholderdetailid = acthd.accountdetailsid "
-					+ "and acth.accountholderstatusid = acths.accountholderstatusid and "
-					+ "acthd.identificationid = id.identificationattrid and acthd.addressid = ad.addressid"
-					+ " and pf.profileid = acth.profileid and pf.profiletypeid = 1;";
 
 			ResultSet rs = stmt.executeQuery(qx);
 			int x = 0;
 
 			while (rs.next()) {
 				x++;
+				// String id = rs.getString("id");
+				String idp = String.valueOf(x);
 				String un = rs.getString("un");
 				String fn = rs.getString("fn");
 				String ln = rs.getString("fn");
 				String prof = rs.getString("prof");
-				addRow(container, String.valueOf(x), un, fn, ln, prof);
+				addRow(container, idp, un, fn, ln, prof);
 				// String status = rs.getString("status");
 
 			}
