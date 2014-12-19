@@ -392,4 +392,58 @@ public class UserManagementService {
 		return statusMessage;
 	}
 
+	public static void resetPassword(String username, String oldPassword,
+			String newPassword) {
+		try {
+			ServiceClient sender = null;
+
+			OMFactory fac = OMAbstractFactory.getOMFactory();
+
+			OMNamespace omNs = fac.createOMNamespace(
+					"http://service.ws.um.carbon.wso2.org", "ser");
+
+			OMElement addUser = fac.createOMElement("activationrequest", omNs);
+
+			OMElement userNameElement = fac.createOMElement("userName", null);
+			userNameElement.addChild(fac
+					.createOMText(userNameElement, "166735"));
+
+			OMElement credential1Element = fac.createOMElement("credential",
+					null);
+			credential1Element.addChild(fac.createOMText(credential1Element,
+					"modupe"));
+
+			OMElement profileNameElement = fac.createOMElement("profileName",
+					null);
+			profileNameElement.addChild(fac.createOMText(profileNameElement,
+					"me"));
+
+			OMElement requirePasswordChangeElement = fac.createOMElement(
+					"requirePasswordChange", null);
+			requirePasswordChangeElement.addChild(fac.createOMText(
+					requirePasswordChangeElement, "false"));
+
+			addUser.addChild(userNameElement);
+			addUser.addChild(credential1Element);
+			addUser.addChild(profileNameElement);
+			addUser.addChild(requirePasswordChangeElement);
+
+			Options options = new Options();
+			options.setTo(targetEPR);
+			options.setTransportInProtocol(Constants.TRANSPORT_HTTP);
+			options.setAction("urn:addUser");
+
+			options.setProperty(HTTPConstants.CHUNKED, Constants.VALUE_FALSE);
+
+			sender = new ServiceClient();
+			sender.setOptions(options);
+			sender.fireAndForget(addUser);
+
+		} catch (AxisFault e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
 }
