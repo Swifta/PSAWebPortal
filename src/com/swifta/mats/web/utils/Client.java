@@ -9,7 +9,7 @@ public class Client {
 
 	public static void main(String args[]) throws Exception {
 
-		Client.activate();
+		Client.setdefault();
 
 	}
 
@@ -101,8 +101,8 @@ public class Client {
 		String bankdomainid = "0";
 		String IDnumber = "166735";
 		String SecurityAns = "Mrs.fd X";
-		String firstPin = "modupe";
-		String confirmPin = "modupe";
+		String firstPin = "mo123";
+		String confirmPin = "mo123";
 		String currency = "0";
 		String ret = "No response";
 

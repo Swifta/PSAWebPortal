@@ -6,10 +6,8 @@ import java.util.HashMap;
 
 import com.swifta.mats.web.usermanagement.UserDetailsModule;
 import com.swifta.mats.web.utils.CommissionService;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ServiceCommission;
-import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ServiceCommissionConditionTypes;
-import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ServiceCommissionModelTypes;
-import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ServiceFeematrix;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ServiceFees;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
@@ -819,8 +817,8 @@ public class FeesAndCommModule {
 			sf[i].setMaximumamount(BigDecimal.valueOf(Float.valueOf(rfg
 					.getField("Max").getValue().toString().trim())));
 
-			sf[i].setServicefeetype(ServiceFeematrix.Factory.fromValue(mfg
-					.getField("Mat").getValue().toString().trim()));
+			sf[i].setServicefeetype(ProvisioningStub.ServiceFeematrix.Factory
+					.fromValue(mfg.getField("Mat").getValue().toString().trim()));
 
 			sf[i].setServicefee(BigDecimal.valueOf(Float.valueOf(mfg
 					.getField("Amt").getValue().toString().trim())));
@@ -845,12 +843,12 @@ public class FeesAndCommModule {
 					.getField("Min").getValue().toString().trim())));
 			sc[i].setMaximumamount(BigDecimal.valueOf(Float.valueOf(rfg
 					.getField("Max").getValue().toString().trim())));
-			sc[i].setServicecommissioncondition(ServiceCommissionConditionTypes.Factory
+			sc[i].setServicecommissioncondition(ProvisioningStub.ServiceCommissionConditionTypes.Factory
 					.fromValue(conType));
-			sc[i].setServicecommissionmodeltype(ServiceCommissionModelTypes.Factory
+			sc[i].setServicecommissionmodeltype(ProvisioningStub.ServiceCommissionModelTypes.Factory
 					.fromValue(modType));
-			sc[i].setCommissionfeetype(ServiceFeematrix.Factory.fromValue(mfg
-					.getField("Mat").getValue().toString().trim()));
+			sc[i].setCommissionfeetype(ProvisioningStub.ServiceCommissionmatrix.Factory
+					.fromValue(mfg.getField("Mat").getValue().toString().trim()));
 			// sc[i].setCommissionfeetype(mfg.getField("Mat").getValue()
 			// .toString().trim());
 			sc[i].setCommissionfee(BigDecimal.valueOf(Float.valueOf(mfg

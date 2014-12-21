@@ -20,7 +20,7 @@ import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Setupser
 public class CommissionService {
 	private ProvisioningStub provisioningStub;
 
-	static String esbendpoint = "http://54.173.157.210:8283/services/Provisionservice";
+	static String esbendpoint = "http://127.0.0.1:8280/services/Provisionservice";
 	private static final Logger logger = Logger
 			.getLogger(CommissionService.class.getName());
 	public String statusMessage = "";
@@ -99,7 +99,7 @@ public class CommissionService {
 		setupservicefeesandcommission
 				.setServicefeecondition(ServiceFeeConditionTypes.TRANSACTIONTYPE);
 		logger.info("--------------------------After setting service fee condition "
-				+ ServiceFeeConditionTypes.TRANSACTIONTYPE);
+				+ "TRANSACTIONTYPE");
 		setupservicefeesandcommission.setServicefeedetails(serviceFeesArray);
 		logger.info("--------------------------After setting service fees array "
 				+ serviceFeesArray);
@@ -108,7 +108,7 @@ public class CommissionService {
 		setupservicefeesandcommission
 				.setServicefeemodel(ServiceFeeModelTypes.TIERED);
 		logger.info("--------------------------After service fee model "
-				+ ServiceFeeModelTypes.TIERED);
+				+ "TIERED");
 		setupservicefeesandcommission.setSpaccountholderid(mmoId);
 		logger.info("--------------------------After setting mmoId " + mmoId);
 		setupservicefeesandcommissionE
