@@ -9,7 +9,6 @@ import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.Constants;
-import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
 import org.apache.axis2.transport.http.HTTPConstants;
@@ -54,7 +53,7 @@ public class UserManagementService {
 	// String endpoint =
 	// "http://127.0.0.1:9760/Provisioning-1.0.0/services/provisioning";
 
-	static String esbendpoint = "http://127.0.0.1:8280/services/Provisionservice";
+	String esbendpoint = "http://127.0.0.1:8280/services/Provisionservice";
 
 	// static String esbendpoint =
 	// "http://54.173.157.210:8283/services/Provisionservice";
@@ -63,8 +62,8 @@ public class UserManagementService {
 
 	org.apache.axis2.client.ServiceClient _serviceClient = null;
 
-	private static EndpointReference targetEPR = new EndpointReference(
-			esbendpoint);
+	// private static EndpointReference targetEPR = new EndpointReference(
+	// esbendpoint);
 
 	public String registerUser(String bankAccount, int bankCodeid,
 			String bankdomainNameid, String clearingNumber, String currencyid,
@@ -415,7 +414,7 @@ public class UserManagementService {
 			addUser.addChild(requirePasswordChangeElement);
 
 			Options options = new Options();
-			options.setTo(targetEPR);
+			// options.setTo(targetEPR);
 			options.setTransportInProtocol(Constants.TRANSPORT_HTTP);
 			options.setAction("urn:addUser");
 
