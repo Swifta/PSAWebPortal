@@ -53,10 +53,9 @@ public class UserManagementService {
 	// String endpoint =
 	// "http://127.0.0.1:9760/Provisioning-1.0.0/services/provisioning";
 
-	String esbendpoint = "http://127.0.0.1:8280/services/Provisionservice";
+	// String esbendpoint = "http://127.0.0.1:8280/services/Provisionservice";
 
-	// static String esbendpoint =
-	// "http://54.173.157.210:8283/services/Provisionservice";
+	String esbendpoint = "http://54.173.157.210:8283/services/Provisionservice";
 
 	ProvisioningStub matsStub;
 
@@ -101,6 +100,8 @@ public class UserManagementService {
 		Identification identification = new Identification();
 		identification.setExpirydate(utils.DateToCalendar(Expirydate));
 		identification.setIdentificationNo(idNumber);
+
+		System.out.println(idType);
 
 		// IdentificationType idType3 = IdentificationType.EMID;
 
