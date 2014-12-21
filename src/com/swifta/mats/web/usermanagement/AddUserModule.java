@@ -705,13 +705,16 @@ public class AddUserModule {
 							mn, occ, pref, stateid, suff, city, pcode, str,
 							prov, doe, idno, idtype, doi, issuer, pem, pmno,
 							pamno, sem, smno, samno);
+
+					Notification.show("Response: " + strResponse);
+
 				} catch (Exception e) {
 					// e.printStackTrace();
 					Notification.show("Response: " + e.getMessage());
 					return;
 				}
 
-				Notification.show("Response: " + strResponse);
+				// Notification.show("Response: " + strResponse);
 
 			}
 		});
