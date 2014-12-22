@@ -10,21 +10,27 @@
 	</classpathentry>
 	<classpathentry exported="true" kind="con" path="org.apache.ivyde.eclipse.cpcontainer.IVYDE_CONTAINER/?project=MATS_WEB_PORTAL&amp;ivyXmlPath=ivy.xml&amp;confs=widgetset-compile&amp;ivySettingsPath=%24%7Bworkspace_loc%3AMATS_WEB_PORTAL%2Fivysettings.xml%7D&amp;loadSettingsOnDemand=false&amp;ivyUserDir=&amp;propertyFiles="/>
 	<classpathentry exported="true" kind="con" path="org.apache.ivyde.eclipse.cpcontainer.IVYDE_CONTAINER/?project=MATS_WEB_PORTAL&amp;ivyXmlPath=ivy.xml&amp;confs=nodeploy&amp;ivySettingsPath=%24%7Bworkspace_loc%3AMATS_WEB_PORTAL%2Fivysettings.xml%7D&amp;loadSettingsOnDemand=false&amp;ivyUserDir=&amp;propertyFiles="/>
-	<classpathentry kind="lib" path="lib/opencsv-2.2.jar"/>
-	<classpathentry kind="lib" path="lib/commons-codec-1.9.jar"/>
-	<classpathentry kind="lib" path="lib/commons-logging-1.2.jar"/>
-	<classpathentry kind="lib" path="lib/org.apache.commons.httpclient.jar"/>
-	<classpathentry kind="lib" path="lib/log4j-1.2.17.jar"/>
-	<classpathentry kind="lib" path="lib/axis2-kernel-1.6.0.jar"/>
-	<classpathentry kind="lib" path="lib/axis2-adb-1.6.0.jar"/>
-	<classpathentry kind="lib" path="lib/axiom-api-1.2.11.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-io-1.4.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/gson-2.2.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/vaadin-charts-1.1.7.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
-	<classpathentry kind="lib" path="lib/tableexport-for-vaadin-1.5.1.5.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/poi-3.8-beta3-20110606.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/AxisNoADBCodec"/>
 	<classpathentry kind="con" path="org.eclipse.jst.server.core.container/org.eclipse.jst.server.tomcat.runtimeTarget/ Apache Tomcat v7.0"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/axiom_1.2.11.wso2v4.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/axis2_1.6.1.wso2v10.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-codec_1.4.0.wso2v1.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-httpclient_3.1.0.wso2v2.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-io-1.4.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-logging-1.2.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/gson-2.2.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/httpcore-4.2.4.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jsr311-api-1.0.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/neethi_2.0.4.wso2v4.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/org.wso2.securevault_1.0.0.wso2v2.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/wsdl4j_1.6.2.wso2v4.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/wss4j-1.6.11.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/XmlSchema-1.4.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/PagedTable-0.6.5.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/poi-3.8-beta3-20110606.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/vaadin-charts-1.1.7.jar"/>
+	<classpathentry kind="lib" path="lib/opencsv-2.2.jar"/>
+	<classpathentry kind="lib" path="lib/tableexport-for-vaadin-1.5.1.5.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

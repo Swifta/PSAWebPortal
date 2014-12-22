@@ -27,7 +27,10 @@ public class LoginService {
 	private static final Logger logger = Logger.getLogger(LoginService.class
 			.getName());
 
-	static String esbendpoint = "http://127.0.0.1:8280/services/Provisionservice";
+	// static String esbendpoint =
+	// "http://127.0.0.1:8280/services/Provisionservice";
+
+	static String esbendpoint = "http://54.173.157.210:8283/services/Provisionservice";
 
 	org.apache.axis2.client.ServiceClient _serviceClient = null;
 

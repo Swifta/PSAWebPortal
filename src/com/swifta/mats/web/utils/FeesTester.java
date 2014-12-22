@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ServiceCommission;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ServiceCommissionConditionTypes;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ServiceCommissionModelTypes;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ServiceCommissionmatrix;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ServiceFeematrix;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ServiceFees;
 
@@ -26,13 +27,14 @@ public class FeesTester {
 		for (int i = 0; i < commissionCount; i++) {
 			newServiceCommission = new ServiceCommission();
 			newServiceCommission.setCommissionfee(commissionFeeArray[i]);
-			newServiceCommission.setCommissionfeetype(ServiceFeematrix.FIXED);
+			newServiceCommission
+					.setCommissionfeetype(ServiceCommissionmatrix.FIXED);
 			newServiceCommission.setMaximumamount(maxAmtArray[i]);
 			newServiceCommission.setMinimumamount(minAmtArray[i]);
 			newServiceCommission
-					.setServicecommissioncondition(ServiceCommissionConditionTypes.AMOUNT);
+					.setServicecommissioncondition(ServiceCommissionConditionTypes.FEE);
 			newServiceCommission
-					.setServicecommissionmodeltype(ServiceCommissionModelTypes.TIERED);
+					.setServicecommissionmodeltype(ServiceCommissionModelTypes.NOTAPPLICABLE);
 			// either cashin cashout ID
 			newServiceCommission.setTransactiontypeid(transactionTypeId);
 			serviceCommission[i] = newServiceCommission;

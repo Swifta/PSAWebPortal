@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.swifta.mats.web.utils.UserManagementService;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.server.FontAwesome;
@@ -89,24 +90,12 @@ public class AddUserModule {
 		 */
 
 		profToID.put(1, "MATS_ADMIN_USER_PROFILE");
-		profToID.put(2, "MATS_SERVICE_PROVIDER_PROFILE");
-		profToID.put(3, "MATS_FINANCIAL_CONTROLLER_USER_PROFILE");
-		profToID.put(4, "MATS_CUSTOMER_CARE_USER_PROFILE");
-		profToID.put(5, "MATS_MOBILEMONEY_ACCOUNT_PROFILE");
-		profToID.put(6, "MATS_SUPER_AGENT_USER_PROFILE");
-		profToID.put(7, "MATS_SUB_AGENT_USER_PROFILE");
-		profToID.put(8, "DEPOSIT_ONLY");
-		profToID.put(9, "DEPOSIT_AND_WITHDRAWAL");
-		profToID.put(10, "WITHDRAWAL_ONLY");
-		profToID.put(11, "MATS_DEALER_USER_PROFILE");
-		profToID.put(12, "MATS_CASH_ACCOUNT_PROFILE");
-		profToID.put(13, "MATS_TOTAL_SYSTEMS_ACCOUNT_PROFILE");
-		profToID.put(14, "MATS_SYSTEMS_USER_PROFILE");
-		profToID.put(15, "MATS_SERVICE_PROVIDER_USER_PROFILE");
-		profToID.put(16, "MATS_SERVICE_PROVIDER_MOMO_ACCOUNT_PROFILE");
-		profToID.put(17,
-				"MATS_SERVICE_PROVIDER_MOMO_FEE_COMMISSION_ACCOUNT_PROFILE");
-		profToID.put(18, "MATS_TOTAL_SYSTEMS_FEE_COMMISSION_ACCOUNT_PROFILE");
+		profToID.put(2, "MATS_FINANCIAL_CONTROLLER_USER_PROFILE");
+		profToID.put(3, "MATS_CUSTOMER_CARE_USER_PROFILE");
+		profToID.put(4, "MATS_SUPER_AGENT_USER_PROFILE");
+		profToID.put(5, "MATS_SUB_AGENT_USER_PROFILE");
+		profToID.put(6, "MATS_DEALER_USER_PROFILE");
+		profToID.put(7, "MATS_SERVICE_PROVIDER_USER_PROFILE");
 
 	}
 
@@ -122,6 +111,7 @@ public class AddUserModule {
 		return addUserContainer;
 	}
 
+	@SuppressWarnings("deprecation")
 	private VerticalLayout getNewUserContainer() {
 
 		int userID = 0;
@@ -275,14 +265,15 @@ public class AddUserModule {
 			combo = new ComboBox("ID Type");
 			if (!(strUserType.equals("CCO") || strUserType.equals("BA"))) {
 
-				combo.addItem("Passport");
-				combo.addItem("Voter's Card");
-				combo.addItem("Driving License");
-				combo.addItem("National ID");
-				combo.addItem("Residential ID");
-				combo.select("Passport");
+				combo.addItem("Passport Number");
+				combo.addItem("National Registration Identification Number");
+				combo.addItem("Drivers License Number");
+				combo.addItem("Identification Card");
+				combo.addItem("Employer Identification Number");
+				combo.select("Passport Number");
 				comboIDType = combo;
 				cCompany.addComponent(combo);
+				// combo.setNullSelectionAllowed(false);
 
 				tF = new TextField("ID No.");
 				tF.setValue("001");
@@ -640,7 +631,7 @@ public class AddUserModule {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				UserManagementService ums = new UserManagementService();
-				String strResponse = null;
+				String strResponse = "";
 
 				/*
 				 * registerUser(String bankAccount, int bankCodeid, String
@@ -658,6 +649,7 @@ public class AddUserModule {
 				 * SecondaryEmail, String SecondaryMobilenumber, String
 				 * SecondaryPhonenumber)
 				 */
+				String idtype = "";
 
 				try {
 					String bacc = tFBAcc.getValue().toString();
@@ -696,10 +688,51 @@ public class AddUserModule {
 					String prov = tFProv.getValue().toString();
 					Date doe = (Date) dFDoE.getValue();
 					String idno = tFIDNo.getValue().toString();
+
 					// IdentificationType idtype =
 					// ProvisioningStub.IdentificationType.Factory
 					// .fromValue(comboIDType.getValue().toString());
-					String idtype = comboIDType.getValue().toString();
+					if (comboIDType.getValue().toString()
+							.equals("Passport Number")) {
+						idtype = ProvisioningStub.IdentificationType.PASSP
+								.toString();
+						System.out.println("idtype>>>>>1 " + idtype);
+					} else if (comboIDType
+							.getValue()
+							.toString()
+							.equals("National Registration Identification Number")) {
+						idtype = ProvisioningStub.IdentificationType.NRIN
+								.toString();
+						System.out.println("idtype>>>>>2 " + idtype);
+					} else if (comboIDType.getValue().toString()
+							.equals("Drivers License Number")) {
+						idtype = ProvisioningStub.IdentificationType.DRLCS
+								.toString();
+						System.out.println("idtype>>>>>3 " + idtype);
+					} else if (comboIDType.getValue().toString()
+							.equals("Identification Card")) {
+						idtype = ProvisioningStub.IdentificationType.IDCD
+								.toString();
+						System.out.println("idtype>>>>>4 " + idtype);
+					} else if (comboIDType.getValue().toString()
+							.equals("Employer Identification Number")) {
+						idtype = ProvisioningStub.IdentificationType.EMID
+								.toString();
+					}
+
+					System.out.println("idtype>>>>> " + idtype);
+
+					System.out.println("idtype>>>>> "
+							+ ProvisioningStub.IdentificationType.PASSP
+									.toString());
+
+					// combo.addItem("Passport");
+					// combo.addItem("Voter's Card");
+					// combo.addItem("Driving License");
+					// combo.addItem("National ID");
+					// combo.addItem("Residential ID");
+					// combo.select("Passport");
+					// String idtype = comboIDType.getValue().toString();
 					Date doi = (Date) dFDoI.getValue();
 
 					String issuer = tFIssuer.getValue().toString();
@@ -717,13 +750,16 @@ public class AddUserModule {
 							mn, occ, pref, stateid, suff, city, pcode, str,
 							prov, doe, idno, idtype, doi, issuer, pem, pmno,
 							pamno, sem, smno, samno);
+
+					Notification.show("Response: " + strResponse);
+
 				} catch (Exception e) {
-					// e.printStackTrace();
+					e.printStackTrace();
 					Notification.show("Response: " + e.getMessage());
 					return;
 				}
 
-				Notification.show("Response: " + strResponse);
+				// Notification.show("Response: " + strResponse);
 
 			}
 		});

@@ -9,10 +9,10 @@ import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.Constants;
-import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
 import org.apache.axis2.transport.http.HTTPConstants;
+import org.apache.axis2.wsdl.WSDLConstants;
 
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Accountholderdetails;
@@ -53,14 +53,16 @@ public class UserManagementService {
 	// String endpoint =
 	// "http://127.0.0.1:9760/Provisioning-1.0.0/services/provisioning";
 
-	static String esbendpoint = "http://54.173.157.210:8283/services/Provisionservice";
+	// String esbendpoint = "http://127.0.0.1:8280/services/Provisionservice";
+
+	String esbendpoint = "http://54.173.157.210:8283/services/Provisionservice";
 
 	ProvisioningStub matsStub;
 
 	org.apache.axis2.client.ServiceClient _serviceClient = null;
 
-	private static EndpointReference targetEPR = new EndpointReference(
-			esbendpoint);
+	// private static EndpointReference targetEPR = new EndpointReference(
+	// esbendpoint);
 
 	public String registerUser(String bankAccount, int bankCodeid,
 			String bankdomainNameid, String clearingNumber, String currencyid,
@@ -98,6 +100,8 @@ public class UserManagementService {
 		Identification identification = new Identification();
 		identification.setExpirydate(utils.DateToCalendar(Expirydate));
 		identification.setIdentificationNo(idNumber);
+
+		System.out.println(idType);
 
 		// IdentificationType idType3 = IdentificationType.EMID;
 
@@ -183,103 +187,81 @@ public class UserManagementService {
 
 	public String activateUser(String bankdomainid, String currency,
 			String IDnumber, String resourceid, String SecurityAns,
-			String firstPin, String confirmPin) throws Exception {
+			String firstPin, String confirmPin) {
 
 		String statusMessage = "";
-		matsStub = new ProvisioningStub(esbendpoint);
-		Credentials cre = new Credentials();
-		cre.setFirstpin(firstPin);
-		cre.setConfirmpin(confirmPin);
+		try {
 
-		ActivationrequestE actE = new ActivationrequestE();
+			matsStub = new ProvisioningStub(esbendpoint);
+			Credentials cre = new Credentials();
+			cre.setFirstpin(firstPin);
+			cre.setConfirmpin(confirmPin);
 
-		Activationrequest act = new Activationrequest();
+			ActivationrequestE actE = new ActivationrequestE();
 
-		act.setBankdomainid(bankdomainid);
-		act.setCredential(cre);
-		act.setCurrency(currency);
-		act.setIdentificationno(IDnumber);
-		act.setResourceid(resourceid);
-		act.setSecurityquestionanswer(SecurityAns);
+			Activationrequest act = new Activationrequest();
 
-		actE.setActivationrequest(act);
-		ActivationrequestResponseE response = matsStub.activationrequest(actE);
+			act.setBankdomainid(bankdomainid);
+			act.setCredential(cre);
+			act.setCurrency(currency);
+			act.setIdentificationno(IDnumber);
+			act.setResourceid(resourceid);
+			act.setSecurityquestionanswer(SecurityAns);
 
-		if (response != null) {
-			ActivationrequestResponse response2 = response
-					.getActivationrequestResponse();
-			if (response2 != null) {
-				Activationresponse response3 = response2.get_return();
-				// System.out.println(response3.getResponseMessage());
-				if (response3 != null) {
-					statusMessage = response3.getResponsemessage();
-					if (statusMessage
-							.equals("ACCOUNT_HOLDER_ACCOUNT_ACTIVATION_SUCCESSFUL")) {
-						UserManagementService
-								.provisioning(resourceid, firstPin);
+			actE.setActivationrequest(act);
+			ActivationrequestResponseE response = matsStub
+					.activationrequest(actE);
+
+			if (response != null) {
+				ActivationrequestResponse response2 = response
+						.getActivationrequestResponse();
+				if (response2 != null) {
+					Activationresponse response3 = response2.get_return();
+					// System.out.println(response3.getResponseMessage());
+					if (response3 != null) {
+						statusMessage = response3.getResponsemessage();
+						// if (statusMessage
+						// .equals("ACCOUNT_HOLDER_ACCOUNT_ACTIVATION_SUCCESSFUL"))
+						// {
+						// // UserManagementService
+						// // .provisioning(resourceid, firstPin);
+						// }
 					}
+				} else {
+					statusMessage = "Activation Response is empty";
 				}
 			} else {
 				statusMessage = "Activation Response is empty";
 			}
-		} else {
-			statusMessage = "Activation Response is empty";
+		} catch (Exception e) {
+			// e.printStackTrace();
+			try {
+				System.out
+						.println("HTTP status code: "
+								+ matsStub
+										._getServiceClient()
+										.getLastOperationContext()
+										.getMessageContext(
+												WSDLConstants.MESSAGE_LABEL_IN_VALUE)
+										.getProperty(
+												HTTPConstants.MC_HTTP_STATUS_CODE));
+				Integer statuscode = (Integer) matsStub
+						._getServiceClient()
+						.getLastOperationContext()
+						.getMessageContext(WSDLConstants.MESSAGE_LABEL_IN_VALUE)
+						.getProperty(HTTPConstants.MC_HTTP_STATUS_CODE);
+				if (statuscode == 202) {
+					statusMessage = "ACCOUNT_HOLDER_ACCOUNT_ACTIVATION_SUCCESSFUL";
+				} else {
+					statusMessage = "REQUEST CANNOT BE COMPLETED AT THIS MOMENT, TRY AGAIN LATER";
+				}
+			} catch (Exception e1) {
+				statusMessage = "REQUEST CANNOT BE COMPLETED AT THIS MOMENT, TRY AGAIN LATER";
+				e1.printStackTrace();
+			}
 		}
 
 		return statusMessage;
-	}
-
-	public static void provisioning(String username, String password) {
-		try {
-			ServiceClient sender = null;
-
-			OMFactory fac = OMAbstractFactory.getOMFactory();
-
-			OMNamespace omNs = fac.createOMNamespace(
-					"http://service.ws.um.carbon.wso2.org", "ser");
-
-			OMElement addUser = fac.createOMElement("activationrequest", omNs);
-
-			OMElement userNameElement = fac.createOMElement("userName", null);
-			userNameElement.addChild(fac
-					.createOMText(userNameElement, username));
-
-			OMElement credential1Element = fac.createOMElement("credential",
-					null);
-			credential1Element.addChild(fac.createOMText(credential1Element,
-					password));
-
-			OMElement profileNameElement = fac.createOMElement("profileName",
-					null);
-			profileNameElement.addChild(fac
-					.createOMText(profileNameElement, ""));
-
-			OMElement requirePasswordChangeElement = fac.createOMElement(
-					"requirePasswordChange", null);
-			requirePasswordChangeElement.addChild(fac.createOMText(
-					requirePasswordChangeElement, "false"));
-
-			addUser.addChild(userNameElement);
-			addUser.addChild(credential1Element);
-			addUser.addChild(profileNameElement);
-			addUser.addChild(requirePasswordChangeElement);
-
-			Options options = new Options();
-			options.setTo(targetEPR);
-			options.setTransportInProtocol(Constants.TRANSPORT_HTTP);
-			options.setAction("urn:addUser");
-
-			options.setProperty(HTTPConstants.CHUNKED, Constants.VALUE_FALSE);
-
-			sender = new ServiceClient();
-			sender.setOptions(options);
-			sender.fireAndForget(addUser);
-
-		} catch (AxisFault e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
 	}
 
 	public String linkUser(String paraentaccountresourceid, String profileid,
@@ -433,7 +415,7 @@ public class UserManagementService {
 			addUser.addChild(requirePasswordChangeElement);
 
 			Options options = new Options();
-			options.setTo(targetEPR);
+			// options.setTo(targetEPR);
 			options.setTransportInProtocol(Constants.TRANSPORT_HTTP);
 			options.setAction("urn:addUser");
 
