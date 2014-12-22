@@ -66,6 +66,22 @@ public class BE2 {
 	BE2() {
 		icDelete = new ThemeResource("img/ic_delete_small.png");
 		isPopupShowing = false;
+
+	}
+
+	private enum ACCOUNTSTATUS {
+		ACTIVE, REGISTERED;
+
+		public void disable(ACCOUNTSTATUS a, Button btn) {
+			switch (a) {
+			case ACTIVE:
+				btn.setEnabled(false);
+				break;
+			default:
+				btn.setVisible(false);
+				break;
+			}
+		}
 	}
 
 	public VerticalLayout queryBackEnd(String strSearchParams) {
@@ -256,7 +272,7 @@ public class BE2 {
 	}
 
 	private void showActivateUserContainer(final ArrayList<String> arrLBulkIDs,
-			final String[] arrID) {
+			final String[] arrID, Button btn) {
 
 		isPopupShowing = true;
 		isSent = false;
@@ -294,8 +310,8 @@ public class BE2 {
 
 		final PasswordField tFPIN = new PasswordField("Enter PIN");
 		final PasswordField tFPINConf = new PasswordField("Confirm PIN");
-		tFPIN.setMaxLength(4);
-		tFPINConf.setMaxLength(4);
+		tFPIN.setMaxLength(30);
+		tFPINConf.setMaxLength(30);
 
 		final TextField tFBID = new TextField("Bank Domain ID");
 		final TextField tFCurrency = new TextField("Currency");
@@ -303,6 +319,7 @@ public class BE2 {
 		final TextField tFSecAns = new TextField("Security Answer");
 		final TextField tFIDD = new TextField("ID Number");
 		final TextField tFUserRID = new TextField("User Resource ID");
+		tFUserRID.setValue(arrID[3]);
 
 		frmDeleteReason.addComponent(lbActivationPrompt);
 		frmDeleteReason.setComponentAlignment(lbActivationPrompt,
@@ -321,7 +338,7 @@ public class BE2 {
 		cPopupBtns.setSpacing(true);
 
 		Button btnCancel = new Button("Cancel");
-		Button btnActivate = new Button("Activate");
+		final Button btnActivate = new Button("Activate");
 		btnActivate.setIcon(FontAwesome.KEY);
 		cPopupBtns.addComponent(btnActivate);
 		cPopupBtns.addComponent(btnCancel);
@@ -384,7 +401,7 @@ public class BE2 {
 									currency, IDnumber, userresourceid,
 									SecurityAns, tFPIN.getValue(),
 									tFPINConf.getValue());
-							Notification.show("");
+
 						} catch (Exception e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -393,8 +410,12 @@ public class BE2 {
 					}
 				isSent = true;
 
-				if (strResponse == null || strResponse.trim() == null)
+				if (strResponse == null || strResponse.trim() == null) {
 					strResponse = "Activation successful!";
+					btnActivate.setVisible(false);
+					btnActivate.setEnabled(false);
+
+				}
 
 				Notification.show("Response: " + strResponse);
 				/*
@@ -939,7 +960,7 @@ public class BE2 {
 
 				String strAction = (String) comboBulk.getValue();
 				if (strAction.equals("Activate")) {
-					showActivateUserContainer(arrLBulkIDs, null);
+					showActivateUserContainer(arrLBulkIDs, null, null);
 					return;
 				} else if (strAction.equals("Delete")) {
 
@@ -983,7 +1004,8 @@ public class BE2 {
 
 	@SuppressWarnings("unchecked")
 	private void addRow(IndexedContainer container, String strUID,
-			String strUname, String strFname, String strLname, String strProf) {
+			String strUname, String strFname, String strLname, String strProf,
+			String status) {
 		rowCount++;
 		actionsC = new HorizontalLayout();
 		actionsC.setSizeUndefined();
@@ -1062,6 +1084,14 @@ public class BE2 {
 		actionsC.addComponent(btnDetails);
 		actionsC.addComponent(btnEdit);
 		actionsC.addComponent(btnDelete);
+
+		// Notification.show(ACCOUNTSTATUS.ACTIVE + " : This.");
+		// Notification.show(status);
+
+		if (status.equals("ACTIVE")) {
+			btnActivate.setVisible(false);
+			// btnActivate.setEnabled(false);
+		}
 		// actionsC.addComponent(btnMoreActions);
 
 		btnDetails.addClickListener(new BtnActionsClickListener(false, null));
@@ -1096,7 +1126,7 @@ public class BE2 {
 				String[] arrID = event.getButton().getId().split("_");
 				arrLBulkIDs = new ArrayList<>();
 				arrLBulkIDs.add(arrID[2]);
-				showActivateUserContainer(arrLBulkIDs, arrID);
+				showActivateUserContainer(arrLBulkIDs, arrID, event.getButton());
 
 			}
 		});
@@ -1223,8 +1253,8 @@ public class BE2 {
 				String fn = rs.getString("fn");
 				String ln = rs.getString("fn");
 				String prof = rs.getString("prof");
-				addRow(container, idp, un, fn, ln, prof);
-				// String status = rs.getString("status");
+				String status = rs.getString("status");
+				addRow(container, idp, un, fn, ln, prof, status);
 
 			}
 
