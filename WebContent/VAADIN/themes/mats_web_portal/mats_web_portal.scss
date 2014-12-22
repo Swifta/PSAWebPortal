@@ -53,6 +53,10 @@
 	//border: 1px solid #7ec0ee;
 	//border-radius: 5px;
 	min-height: 560px;
+	overflow-x: scroll;
+	//background: #F00;
+	
+	
 		
 }
 .tabref2{
@@ -995,6 +999,18 @@ ul.empty li{
 }
 .tb_u_search_results{
 	overflow-x: auto;
+}
+
+.s_r_cx{
+	overflow-x: auto;
+	min-width: 800px;
+	background: #F00;
+}
+
+.tb_s_rx{
+	overflow: auto !important;
+	min-width: 800px !important;
+	background: #F00;
 }
 
 

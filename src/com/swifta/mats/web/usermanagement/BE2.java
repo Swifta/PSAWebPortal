@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 import com.swifta.mats.web.utils.UserManagementService;
@@ -62,26 +63,20 @@ public class BE2 {
 	ArrayList<String> arrLBulkIDs;
 
 	ThemeResource icDelete;
+	HashMap<String, Integer> hm;
 
 	BE2() {
 		icDelete = new ThemeResource("img/ic_delete_small.png");
 		isPopupShowing = false;
+		hm = new HashMap<>();
+		hm.put("MATS_ADMIN_USER_PROFILE", 1);
+		hm.put("MATS_FINANCIAL_CONTROLLER_USER_PROFILE", 2);
+		hm.put("MATS_CUSTOMER_CARE_USER_PROFILE", 3);
+		hm.put("MATS_SUPER_AGENT_USER_PROFILE", 4);
+		hm.put("MATS_SUB_AGENT_USER_PROFILE", 5);
+		hm.put("MATS_DEALER_USER_PROFILE", 6);
+		hm.put("MATS_SERVICE_PROVIDER_USER_PROFILE", 7);
 
-	}
-
-	private enum ACCOUNTSTATUS {
-		ACTIVE, REGISTERED;
-
-		public void disable(ACCOUNTSTATUS a, Button btn) {
-			switch (a) {
-			case ACTIVE:
-				btn.setEnabled(false);
-				break;
-			default:
-				btn.setVisible(false);
-				break;
-			}
-		}
 	}
 
 	public VerticalLayout queryBackEnd(String strSearchParams) {
@@ -150,6 +145,20 @@ public class BE2 {
 		tb.setPageLength(rowCount);
 		tb.setContainerDataSource(container);
 		tb.setColumnIcon(" ", FontAwesome.CHECK_SQUARE_O);
+		tb.setWidth("900px");
+		tb.setSelectable(true);
+
+		// HorizontalLayout ctb = new HorizontalLayout();
+		// ctb.setSizeUndefined();
+		// ctb.addComponent(tb);
+		// ctb.setWidth(width);
+		// tb.setWidth("800px");
+		// Panel panel = new Panel();
+		// panel.setWidth("800");
+		// panel.setContent(tb);
+		// panel.sets
+		// ctb.setWidth(width);
+		// ctb.setStyleName("tb_s_r");
 
 		// HorizontalLayout upperControls = getControls(tb);
 		// HorizontalLayout lowerControls = upperControls;
@@ -158,6 +167,7 @@ public class BE2 {
 		searchResultsContainer.addComponent(tb);
 		searchResultsContainer.addComponent(getControls(tb));
 		searchResultsContainer.addComponent(getBulkActionsC());
+		// searchResultsContainer.setStyleName("s_r_c");
 
 		return searchResultsContainer;
 	}
@@ -466,15 +476,21 @@ public class BE2 {
 		frmDeleteReason.setMargin(true);
 		cDeletePrompt.addComponent(frmDeleteReason);
 
-		final TextField tFU = new TextField("User Account ID");
+		final TextField tFU = new TextField("User Resource ID");
+		tFU.setValue(arrID[3]);
+		tFU.setEnabled(false);
 		final TextField tFP = new TextField("Parent Account ID");
 		// final TextArea taReason = new TextArea();
-		final TextField taReason = new TextField("Initiating User Name");
+		final TextField tFInitUser = new TextField("Initiating User Name");
+		tFInitUser.setValue(UI.getCurrent().getSession().getAttribute("user")
+				.toString());
+		tFInitUser.setEnabled(false);
+
 		// m/ taReason.setCaption("Reason");
 		// m/ taReason.setInputPrompt("Please enter reason here.");
 		// m/ tFU.setStyleName(ValoTheme.BUTTON_BORDERLESS);
-		tFU.setEnabled(true);
-		tFU.setValue(arrID[2]);
+		// tFU.setEnabled(true);
+		// tFU.setValue(arrID[2]);
 		// m// tFU.setEnabled(false);
 		// tFPIN.setMaxLength(4);
 		// tFU.setMaxLength(4);
@@ -484,7 +500,7 @@ public class BE2 {
 				Alignment.TOP_LEFT);
 		frmDeleteReason.addComponent(tFU);
 		frmDeleteReason.addComponent(tFP);
-		frmDeleteReason.addComponent(taReason);
+		frmDeleteReason.addComponent(tFInitUser);
 
 		VerticalLayout cPopupBtns = new VerticalLayout();
 		cPopupBtns.setSizeUndefined();
@@ -529,7 +545,7 @@ public class BE2 {
 				String strResponse = null;
 				try {
 					strResponse = ums.setParent(tFP.getValue(),
-							taReason.getValue(), tFU.getValue());
+							tFInitUser.getValue(), tFU.getValue());
 					isSent = true;
 				} catch (RemoteException e) {
 
@@ -597,7 +613,11 @@ public class BE2 {
 		final TextField tFD = new TextField("Default Account ID");
 		// m/final TextArea taReason = new TextArea();
 
-		final TextField taReason = new TextField("Initiating User");
+		final TextField tFInitUser = new TextField("Initiating User");
+		tFInitUser.setValue(UI.getCurrent().getSession().getAttribute("user")
+				.toString());
+		tFInitUser.setEnabled(false);
+
 		// m/ taReason.setCaption("Reason");
 		// taReason.setInputPrompt("Please enter reason here.");
 		// m/tFP.setStyleName(ValoTheme.BUTTON_BORDERLESS);
@@ -612,7 +632,7 @@ public class BE2 {
 				Alignment.TOP_LEFT);
 		frmDeleteReason.addComponent(tFP);
 		frmDeleteReason.addComponent(tFD);
-		frmDeleteReason.addComponent(taReason);
+		frmDeleteReason.addComponent(tFInitUser);
 
 		VerticalLayout cPopupBtns = new VerticalLayout();
 		cPopupBtns.setSizeUndefined();
@@ -657,7 +677,7 @@ public class BE2 {
 				String strResponse = null;
 				try {
 					strResponse = ums.setDefaultAccount(tFP.getValue(),
-							taReason.getValue(), tFD.getValue());
+							tFInitUser.getValue(), tFD.getValue());
 					isSent = true;
 				} catch (RemoteException e) {
 
@@ -687,6 +707,8 @@ public class BE2 {
 	}
 
 	private void showLinkUserContainer(String[] arrID) {
+		// for (String s : arrID)
+		// Notification.show(s);
 
 		isPopupShowing = true;
 		isSent = false;
@@ -719,14 +741,24 @@ public class BE2 {
 		frmDeleteReason.setMargin(true);
 		cDeletePrompt.addComponent(frmDeleteReason);
 
-		final TextField tFU = new TextField("User Account ID");
+		final TextField tFU = new TextField("Account Resource ID");
+		tFU.setValue(arrID[3]);
+		tFU.setEnabled(false);
+
 		final TextField tFUProf = new TextField("User Profile ID");
+		tFUProf.setValue(arrID[2]);
+		tFUProf.setEnabled(false);
+
 		final TextField tFP = new TextField("Parent Account ID");
 		// m/final TextArea taReason = new TextArea();
 		// m/taReason.setCaption("Reason");
 		// m/taReason.setInputPrompt("Please enter reason here.");
 
-		final TextField taReason = new TextField("Initiating User");
+		final TextField tFInitUser = new TextField("Initiating User");
+		tFInitUser.setValue(UI.getCurrent().getSession().getAttribute("user")
+				.toString());
+		tFInitUser.setEnabled(false);
+
 		// taReason.setCaption("Reason");
 		// taReason.setInputPrompt("Please enter reason here.");
 
@@ -745,7 +777,7 @@ public class BE2 {
 		frmDeleteReason.addComponent(tFU);
 		frmDeleteReason.addComponent(tFUProf);
 		frmDeleteReason.addComponent(tFP);
-		frmDeleteReason.addComponent(taReason);
+		frmDeleteReason.addComponent(tFInitUser);
 
 		VerticalLayout cPopupBtns = new VerticalLayout();
 		cPopupBtns.setSizeUndefined();
@@ -796,7 +828,7 @@ public class BE2 {
 				String strResponse = null;
 				try {
 					strResponse = ums.linkUser(tFP.getValue(),
-							tFUProf.getValue(), taReason.getValue(),
+							tFUProf.getValue(), tFInitUser.getValue(),
 							tFU.getValue());
 					isSent = true;
 				} catch (RemoteException e) {
@@ -1017,7 +1049,8 @@ public class BE2 {
 		trItem = container.getItem(strUID);
 
 		Property<CheckBox> tdPropertyCheck = trItem.getItemProperty(" ");
-		Property<String> tdPropertyUID = trItem.getItemProperty("UID");
+		// Property<String> tdPropertyUID = trItem.getItemProperty("UID");
+		Property<String> tdPropertyUID = trItem.getItemProperty("S/N");
 		Property<String> tdPropertyUname = trItem.getItemProperty("Username");
 		Property<String> tdPropertyFname = trItem.getItemProperty("First Name");
 		Property<String> tdPropertyLname = trItem.getItemProperty("Last Name");
@@ -1058,20 +1091,26 @@ public class BE2 {
 
 		btnSetDefaultAcc = new Button("D");
 
-		btnDetails.setId("users_personal_" + strUID + "_" + strUname
+		// StringBuilder sb = new StringBuilder();
+		// sb.append("users_personal_");
+
+		btnDetails.setId("users_personal_" + hm.get(strProf) + "_" + strUname
 				+ "_details");
-		btnEdit.setId("user_personal_" + strUID + "_" + strUname + "_edit");
-		btnLink.setId("user_account_" + strUID + "_" + strUname + "_link");
-		btnActivate.setId("user_account_" + strUID + "_" + strUname
+		btnEdit.setId("user_personal_" + hm.get(strProf) + "_" + strUname
+				+ "_edit");
+		btnLink.setId("user_account_" + hm.get(strProf) + "_" + strUname
+				+ "_link");
+		btnActivate.setId("user_account_" + hm.get(strProf) + "_" + strUname
 				+ "_activate");
-		btnDelete.setId("user_account_" + strUID + "_" + strUname + "_delete");
-		btnMoreActions.setId("user_account_" + strUID + "_" + strUname
+		btnDelete.setId("user_account_" + hm.get(strProf) + "_" + strUname
+				+ "_delete");
+		btnMoreActions.setId("user_account_" + hm.get(strProf) + "_" + strUname
 				+ "_moreActions");
 
-		btnSetParent.setId("user_account_" + strUID + "_" + strUname
+		btnSetParent.setId("user_account_" + hm.get(strProf) + "_" + strUname
 				+ "_parent");
-		btnSetDefaultAcc.setId("user_account_" + strUID + "_" + strUname
-				+ "_default");
+		btnSetDefaultAcc.setId("user_account_" + hm.get(strProf) + "_"
+				+ strUname + "_default");
 
 		btnSetDefaultAcc.setDescription("Set Default Account");
 		btnSetParent.setDescription("Set Parent Account");
@@ -1212,7 +1251,8 @@ public class BE2 {
 	private IndexedContainer getTable() {
 		IndexedContainer container = new IndexedContainer();
 		container.addContainerProperty(" ", CheckBox.class, null);
-		container.addContainerProperty("UID", String.class, "000");
+		container.addContainerProperty("S/N", String.class, "000");
+		// container.addContainerProperty("UID", String.class, "000");
 		container.addContainerProperty("Username", String.class, "");
 		container.addContainerProperty("First Name", String.class, "");
 		container.addContainerProperty("Last Name", String.class, "");
@@ -1248,14 +1288,14 @@ public class BE2 {
 
 			while (rs.next()) {
 				x++;
-				String id = rs.getString("id");
-				// String idp = String.valueOf(x);
+				// String id = rs.getString("id");
+				String idp = String.valueOf(x);
 				String un = rs.getString("un");
 				String fn = rs.getString("fn");
 				String ln = rs.getString("fn");
 				String prof = rs.getString("prof");
 				String status = rs.getString("status");
-				addRow(container, id, un, fn, ln, prof, status);
+				addRow(container, idp, un, fn, ln, prof, status);
 
 			}
 

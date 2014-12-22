@@ -69,7 +69,7 @@ public class AddUserModule {
 	private PopupDateField dFDoB;
 	private PopupDateField dFDoI;
 	private PopupDateField dFDoE;
-	Map<Integer, String> profToID;
+	public static Map<Integer, String> profToID;
 	private OptionGroup optSex;
 	private boolean isReset = false;
 

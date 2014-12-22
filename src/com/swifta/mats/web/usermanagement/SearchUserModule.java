@@ -240,6 +240,7 @@ public class SearchUserModule {
 				searchResultsC = getSearchResults(strSessionSearchParam);
 				contentC.addComponent(searchResultsC);
 				searchResultsC.setSizeUndefined();
+				// searchResultsC.setStyleName("s_r_c");
 				contentC.setComponentAlignment(searchResultsC,
 						Alignment.TOP_LEFT);
 				contentC.setSizeUndefined();
