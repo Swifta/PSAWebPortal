@@ -1,5 +1,6 @@
 package com.swifta.mats.web;
 
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -34,6 +35,7 @@ import com.vaadin.ui.Embedded;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.UI;
@@ -141,6 +143,9 @@ public class WorkSpace extends VerticalLayout implements View,
 				Date start = dat.getValue();
 				Date end = dat2.getValue();
 				Filter dfilter = null;
+				Calendar cal = Calendar.getInstance();
+				cal.setTime(start);
+				Notification.show(cal.toString());
 				Dashboard.otb.removeAllContainerFilters();
 				// m/if (start != null && end != null) {
 

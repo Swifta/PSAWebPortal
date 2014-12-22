@@ -64,6 +64,7 @@ public class FeesAndCommModule {
 	FieldGroup otherfg;
 	ArrayList<FieldGroup> prfg;
 	ArrayList<FieldGroup> pmfg;
+	boolean isReset = false;
 
 	public FeesAndCommModule() {
 		udm = new UserDetailsModule();
@@ -314,6 +315,10 @@ public class FeesAndCommModule {
 		@Override
 		public void validate(Object v) throws InvalidValueException,
 				NumberFormatException {
+
+			if (!isTiered) {
+				return;
+			}
 
 			if (v.toString().trim().isEmpty())
 				return;
@@ -867,6 +872,7 @@ public class FeesAndCommModule {
 					Notification.show("Tariff information saved successfully!");
 					confCount = 0;
 					resetFields(lookedTab);
+
 				} else {
 					confCount = 0;
 					comboOp.setEnabled(true);
@@ -874,13 +880,16 @@ public class FeesAndCommModule {
 					lookedTab = null;
 					Notification.show("Tariff saving FAILED: "
 							+ cs.statusMessage);
+					isReset = false;
 				}
 
 			} else {
 				Notification.show("Tariff saving FAILED: " + cs.statusMessage);
+				isReset = false;
 			}
 		} catch (Exception ce) {
 			ce.printStackTrace();
+			isReset = false;
 			return;
 		}
 
@@ -979,6 +988,7 @@ public class FeesAndCommModule {
 
 	private void resetFields(String type) {
 		lookedTab = type;
+		isReset = true;
 
 		if (type.equals(COMMISSION)) {
 
@@ -1019,7 +1029,7 @@ public class FeesAndCommModule {
 			return;
 		}
 		cContent.addComponent(getFeesContainer(strTbName));
-		if (lookedTab != null) {
+		if (lookedTab != null && !isReset) {
 			if (lookedTab.equals(strTbName)) {
 
 				comboOp.setEnabled(true);
