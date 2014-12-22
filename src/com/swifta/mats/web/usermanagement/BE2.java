@@ -150,7 +150,6 @@ public class BE2 {
 		tb.setPageLength(rowCount);
 		tb.setContainerDataSource(container);
 		tb.setColumnIcon(" ", FontAwesome.CHECK_SQUARE_O);
-		tb.setStyleName("tb_u_search_results");
 
 		// HorizontalLayout upperControls = getControls(tb);
 		// HorizontalLayout lowerControls = upperControls;
@@ -320,6 +319,7 @@ public class BE2 {
 		final TextField tFIDD = new TextField("ID Number");
 		final TextField tFUserRID = new TextField("User Resource ID");
 		tFUserRID.setValue(arrID[3]);
+		tFUserRID.setEnabled(false);
 
 		frmDeleteReason.addComponent(lbActivationPrompt);
 		frmDeleteReason.setComponentAlignment(lbActivationPrompt,
@@ -365,6 +365,8 @@ public class BE2 {
 		btnActivate.addClickListener(new Button.ClickListener() {
 
 			private static final long serialVersionUID = -6318666715385643538L;
+			String strSxs = new String(
+					"ACCOUNT_HOLDER_ACCOUNT_ACTIVATION_SUCCESSFUL");
 
 			@Override
 			public void buttonClick(ClickEvent event) {
@@ -410,11 +412,10 @@ public class BE2 {
 					}
 				isSent = true;
 
-				if (strResponse == null || strResponse.trim() == null) {
+				if (strResponse != null && strResponse.equals(strSxs)) {
 					strResponse = "Activation successful!";
 					btnActivate.setVisible(false);
 					btnActivate.setEnabled(false);
-
 				}
 
 				Notification.show("Response: " + strResponse);
@@ -1016,7 +1017,7 @@ public class BE2 {
 		trItem = container.getItem(strUID);
 
 		Property<CheckBox> tdPropertyCheck = trItem.getItemProperty(" ");
-		Property<String> tdPropertyUID = trItem.getItemProperty("S/N");
+		Property<String> tdPropertyUID = trItem.getItemProperty("UID");
 		Property<String> tdPropertyUname = trItem.getItemProperty("Username");
 		Property<String> tdPropertyFname = trItem.getItemProperty("First Name");
 		Property<String> tdPropertyLname = trItem.getItemProperty("Last Name");
@@ -1211,7 +1212,7 @@ public class BE2 {
 	private IndexedContainer getTable() {
 		IndexedContainer container = new IndexedContainer();
 		container.addContainerProperty(" ", CheckBox.class, null);
-		container.addContainerProperty("S/N", String.class, "000");
+		container.addContainerProperty("UID", String.class, "000");
 		container.addContainerProperty("Username", String.class, "");
 		container.addContainerProperty("First Name", String.class, "");
 		container.addContainerProperty("Last Name", String.class, "");
@@ -1247,14 +1248,14 @@ public class BE2 {
 
 			while (rs.next()) {
 				x++;
-				// String id = rs.getString("id");
-				String idp = String.valueOf(x);
+				String id = rs.getString("id");
+				// String idp = String.valueOf(x);
 				String un = rs.getString("un");
 				String fn = rs.getString("fn");
 				String ln = rs.getString("fn");
 				String prof = rs.getString("prof");
 				String status = rs.getString("status");
-				addRow(container, idp, un, fn, ln, prof, status);
+				addRow(container, id, un, fn, ln, prof, status);
 
 			}
 
