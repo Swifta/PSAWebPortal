@@ -239,10 +239,8 @@ public class Login extends VerticalLayout implements View {
 						+ tfUsername.getValue());
 				// if (validCredentials()) {
 				try {
-					if (1 == 1
-							|| loginService.authenticateUser(
-									tfUsername.getValue(),
-									tfPassword.getValue())) {
+					if (loginService.authenticateUser(tfUsername.getValue(),
+							tfPassword.getValue())) {
 						logger.info("---------------Validation successful");
 						UI.getCurrent().getSession()
 								.setAttribute("user", tfUsername.getValue());
