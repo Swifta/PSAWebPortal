@@ -1,6 +1,5 @@
 package com.swifta.mats.web;
 
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -24,6 +23,10 @@ import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.data.Validator;
+import com.vaadin.data.util.filter.And;
+import com.vaadin.data.util.filter.Compare.GreaterOrEqual;
+import com.vaadin.data.util.filter.Compare.LessOrEqual;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Alignment;
@@ -35,7 +38,6 @@ import com.vaadin.ui.Embedded;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.UI;
@@ -55,6 +57,7 @@ public class WorkSpace extends VerticalLayout implements View,
 	ComboBox comboGF = new ComboBox("Please select...");
 	DateField dat = new DateField();
 	DateField dat2 = new DateField();
+
 	Button filter = new Button("Filter");
 	HorizontalLayout pi;
 	String dCat;
@@ -68,6 +71,57 @@ public class WorkSpace extends VerticalLayout implements View,
 	public WorkSpace() {
 		wsmu = new WorkSpaceManageUser();
 		wsmp = new WorkSpaceManageProfile();
+		dat.addValidator(new ValidateRange(dat, dat2));
+		dat2.addValidator(new ValidateRange(dat, dat2));
+		dat.addValueChangeListener(new ValueChangeListener() {
+
+			private static final long serialVersionUID = -1020854682753361028L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				dat.setComponentError(null);
+				dat2.setComponentError(null);
+
+			}
+
+		});
+
+		dat2.addValueChangeListener(new ValueChangeListener() {
+
+			private static final long serialVersionUID = -1020854682753361028L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				dat.setComponentError(null);
+				dat2.setComponentError(null);
+
+			}
+
+		});
+
+	}
+
+	private class ValidateRange implements Validator {
+		private static final long serialVersionUID = -5454180295673067279L;
+		DateField start;
+		DateField end;
+
+		ValidateRange(DateField dat, DateField dat2) {
+			this.start = dat;
+			this.end = dat2;
+		}
+
+		@Override
+		public void validate(Object value) throws InvalidValueException {
+			Date s = start.getValue();
+			Date e = end.getValue();
+
+			if (s != null && e != null)
+				if (s.compareTo(e) > 0) {
+					throw new InvalidValueException("Invalid date range");
+				}
+		}
+
 	}
 
 	@Override
@@ -138,21 +192,22 @@ public class WorkSpace extends VerticalLayout implements View,
 					return;
 				if (Dashboard.otb == null || Dashboard.otb.size() == 0)
 					return;
-				// Filter gfilter = new And(Compare.LessOrEqual("doc"))
+
 				dCat = cat.toString();
 				Date start = dat.getValue();
 				Date end = dat2.getValue();
 				Filter dfilter = null;
-				Calendar cal = Calendar.getInstance();
-				cal.setTime(start);
-				Notification.show(cal.toString());
-				Dashboard.otb.removeAllContainerFilters();
-				// m/if (start != null && end != null) {
 
-				// m/ dfilter = new And(new GreaterOrEqual("DoT", start.),
-				// m/ new LessOrEqual("DoT", end));
-				// m/ Dashboard.otb.addContainerFilter(dfilter);
-				// m/}
+				Dashboard.otb.removeAllContainerFilters();
+				if (start != null && end != null) {
+
+					dat2.validate();
+
+					dfilter = new And(
+							new GreaterOrEqual("DoT", start.getTime()),
+							new LessOrEqual("DoT", end.getTime()));
+					Dashboard.otb.addContainerFilter(dfilter);
+				}
 
 				Iterator<Integer> itr = (Iterator<Integer>) Dashboard.otb
 						.getItemIds().iterator();

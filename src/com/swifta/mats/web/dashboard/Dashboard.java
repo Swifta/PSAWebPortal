@@ -6,7 +6,6 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -59,7 +58,7 @@ public class Dashboard {
 		IndexedContainer originalTb = new IndexedContainer();
 		originalTb.addContainerProperty("Transaction Type", String.class, null);
 		originalTb.addContainerProperty("Fees Account", String.class, null);
-		originalTb.addContainerProperty("DoT", Date.class, null);
+		originalTb.addContainerProperty("DoT", Long.class, null);
 		HashMap<String, Double> hm = new HashMap<>();
 		String Uname = "gomint";
 		String Pword = "gomint";
@@ -92,11 +91,11 @@ public class Dashboard {
 				Item r = originalTb.getItem(objr);
 				Property<String> ptType = r.getItemProperty("Transaction Type");
 				Property<String> pfAcc = r.getItemProperty("Fees Account");
-				Property<Date> pDoT = r.getItemProperty("DoT");
+				Property<Long> pDoT = r.getItemProperty("DoT");
 
 				String tType = rs.getString("Transaction Type");
 				String fAcc = rs.getString("MM Operator");
-				Date fDoT = rs.getDate("DoT");
+				long fDoT = rs.getDate("DoT").getTime();
 
 				ptType.setValue(tType);
 				pfAcc.setValue(fAcc);
