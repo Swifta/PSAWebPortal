@@ -4,6 +4,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import com.swifta.mats.web.utils.UserManagementService;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub;
@@ -90,12 +92,12 @@ public class AddUserModule {
 		 */
 
 		profToID.put(1, "MATS_ADMIN_USER_PROFILE");
-		profToID.put(2, "MATS_FINANCIAL_CONTROLLER_USER_PROFILE");
-		profToID.put(3, "MATS_CUSTOMER_CARE_USER_PROFILE");
-		profToID.put(4, "MATS_SUPER_AGENT_USER_PROFILE");
-		profToID.put(5, "MATS_SUB_AGENT_USER_PROFILE");
-		profToID.put(6, "MATS_DEALER_USER_PROFILE");
-		profToID.put(7, "MATS_SERVICE_PROVIDER_USER_PROFILE");
+		profToID.put(3, "MATS_FINANCIAL_CONTROLLER_USER_PROFILE");
+		profToID.put(4, "MATS_CUSTOMER_CARE_USER_PROFILE");
+		profToID.put(6, "MATS_SUPER_AGENT_USER_PROFILE");
+		profToID.put(7, "MATS_SUB_AGENT_USER_PROFILE");
+		profToID.put(11, "MATS_DEALER_USER_PROFILE");
+		profToID.put(15, "MATS_SERVICE_PROVIDER_USER_PROFILE");
 
 	}
 
@@ -399,9 +401,10 @@ public class AddUserModule {
 
 		comboHierarchy = new ComboBox("Profile");
 
-		for (int i = 0; i < profToID.size(); i++) {
-			comboHierarchy.addItem(i + 1);
-			comboHierarchy.setItemCaption(i + 1, profToID.get(i + 1));
+		Set<Entry<Integer, String>> set = profToID.entrySet();
+		for (Entry<Integer, String> e : set) {
+			comboHierarchy.addItem(e.getKey());
+			comboHierarchy.setItemCaption(e.getKey(), e.getValue());
 		}
 
 		comboHierarchy.select(1);

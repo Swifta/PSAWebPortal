@@ -70,12 +70,12 @@ public class BE2 {
 		isPopupShowing = false;
 		hm = new HashMap<>();
 		hm.put("MATS_ADMIN_USER_PROFILE", 1);
-		hm.put("MATS_FINANCIAL_CONTROLLER_USER_PROFILE", 2);
-		hm.put("MATS_CUSTOMER_CARE_USER_PROFILE", 3);
-		hm.put("MATS_SUPER_AGENT_USER_PROFILE", 4);
-		hm.put("MATS_SUB_AGENT_USER_PROFILE", 5);
-		hm.put("MATS_DEALER_USER_PROFILE", 6);
-		hm.put("MATS_SERVICE_PROVIDER_USER_PROFILE", 7);
+		hm.put("MATS_FINANCIAL_CONTROLLER_USER_PROFILE", 3);
+		hm.put("MATS_CUSTOMER_CARE_USER_PROFILE", 4);
+		hm.put("MATS_SUPER_AGENT_USER_PROFILE", 6);
+		hm.put("MATS_SUB_AGENT_USER_PROFILE", 7);
+		hm.put("MATS_DEALER_USER_PROFILE", 11);
+		hm.put("MATS_SERVICE_PROVIDER_USER_PROFILE", 15);
 
 	}
 
@@ -394,7 +394,7 @@ public class BE2 {
 
 				String strResponse = null;
 				// StringBuilder builderDesc = null;
-				Notification.show(String.valueOf(arrLBulkIDs.get(0)));
+				// Notification.show(String.valueOf(arrLBulkIDs.get(0)));
 
 				String userresourceid = tFUserRID.getValue();
 				String bankdomainid = tFBID.getValue();
@@ -417,7 +417,7 @@ public class BE2 {
 						} catch (Exception e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
-							Notification.show("Response: " + e.getMessage());
+							NotifCustom.show("Activation", e.getMessage());
 						}
 					}
 				isSent = true;
@@ -428,7 +428,7 @@ public class BE2 {
 					btnActivate.setEnabled(false);
 				}
 
-				Notification.show("Response: " + strResponse);
+				NotifCustom.show("Activation", strResponse);
 				/*
 				 * 
 				 * TODO on positive response, update the table.
@@ -552,7 +552,8 @@ public class BE2 {
 					e.printStackTrace();
 				}
 
-				Notification.show(strResponse);
+				// Notification.show(strResponse);
+				NotifCustom.show("Set Parent", strResponse);
 				/*
 				 * 
 				 * TODO on positive response, update the table.
@@ -609,7 +610,9 @@ public class BE2 {
 		frmDeleteReason.setMargin(true);
 		cDeletePrompt.addComponent(frmDeleteReason);
 
-		final TextField tFP = new TextField("Parent Account ID");
+		final TextField tFC = new TextField("Child Account ID");
+		tFC.setValue(arrID[3]);
+		tFC.setEnabled(false);
 		final TextField tFD = new TextField("Default Account ID");
 		// m/final TextArea taReason = new TextArea();
 
@@ -630,7 +633,7 @@ public class BE2 {
 		frmDeleteReason.addComponent(lbActivationPrompt);
 		frmDeleteReason.setComponentAlignment(lbActivationPrompt,
 				Alignment.TOP_LEFT);
-		frmDeleteReason.addComponent(tFP);
+		frmDeleteReason.addComponent(tFC);
 		frmDeleteReason.addComponent(tFD);
 		frmDeleteReason.addComponent(tFInitUser);
 
@@ -676,15 +679,16 @@ public class BE2 {
 
 				String strResponse = null;
 				try {
-					strResponse = ums.setDefaultAccount(tFP.getValue(),
-							tFInitUser.getValue(), tFD.getValue());
+					strResponse = ums.setDefaultAccount(tFInitUser.getValue(),
+							tFC.getValue(), tFD.getValue());
 					isSent = true;
 				} catch (RemoteException e) {
 
 					e.printStackTrace();
 				}
 
-				Notification.show(strResponse);
+				// Notification.show(strResponse);
+				NotifCustom.show("Set Default", strResponse);
 				/*
 				 * 
 				 * TODO on positive response, update the table.
@@ -836,7 +840,7 @@ public class BE2 {
 					e.printStackTrace();
 				}
 
-				Notification.show(strResponse);
+				NotifCustom.show("Link", strResponse);
 				/*
 				 * 
 				 * TODO on positive response, update the table.
@@ -1036,7 +1040,7 @@ public class BE2 {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void addRow(IndexedContainer container, String strUID,
+	private void addRow(IndexedContainer container, String sn, String strUID,
 			String strUname, String strFname, String strLname, String strProf,
 			String status) {
 		rowCount++;
@@ -1049,8 +1053,9 @@ public class BE2 {
 		trItem = container.getItem(strUID);
 
 		Property<CheckBox> tdPropertyCheck = trItem.getItemProperty(" ");
+		Property<String> tdPropertySN = trItem.getItemProperty("S/N");
 		// Property<String> tdPropertyUID = trItem.getItemProperty("UID");
-		Property<String> tdPropertyUID = trItem.getItemProperty("S/N");
+
 		Property<String> tdPropertyUname = trItem.getItemProperty("Username");
 		Property<String> tdPropertyFname = trItem.getItemProperty("First Name");
 		Property<String> tdPropertyLname = trItem.getItemProperty("Last Name");
@@ -1062,7 +1067,8 @@ public class BE2 {
 		chk.setId(strUID);
 
 		tdPropertyCheck.setValue(chk);
-		tdPropertyUID.setValue(strUID);
+		tdPropertySN.setValue(sn);
+		// tdPropertyUID.setValue(strUID);
 		tdPropertyUname.setValue(strUname);
 		tdPropertyFname.setValue(strFname);
 		tdPropertyLname.setValue(strLname);
@@ -1288,14 +1294,14 @@ public class BE2 {
 
 			while (rs.next()) {
 				x++;
-				// String id = rs.getString("id");
-				String idp = String.valueOf(x);
+				String id = rs.getString("id");
+				String sn = String.valueOf(x);
 				String un = rs.getString("un");
 				String fn = rs.getString("fn");
 				String ln = rs.getString("fn");
 				String prof = rs.getString("prof");
 				String status = rs.getString("status");
-				addRow(container, idp, un, fn, ln, prof, status);
+				addRow(container, sn, id, un, fn, ln, prof, status);
 
 			}
 
@@ -1303,7 +1309,8 @@ public class BE2 {
 				| IllegalAccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			Notification.show("Error Establishing DBConnection:  " + e);
+			NotifCustom.show("DB Connection",
+					"Error Establishing DBConnection:  " + e);
 		}
 
 		return container;
