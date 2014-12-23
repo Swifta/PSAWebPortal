@@ -14,7 +14,7 @@ public class NotifCustom {
 
 	private static void create(String action, String msg) {
 
-		Window pop = new Window(action + " status");
+		Window pop = new Window(action + " response");
 		VerticalLayout cMessage = new VerticalLayout();
 		cMessage.setMargin(true);
 		Label lb = new Label(msg);
