@@ -10,14 +10,18 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 
 import com.swifta.mats.web.utils.UserManagementService;
+import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.IndexedContainer;
+import com.vaadin.data.util.filter.Compare;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
@@ -64,6 +68,8 @@ public class BE2 {
 
 	ThemeResource icDelete;
 	HashMap<String, Integer> hm;
+	HashMap<String, String> hmFilter;
+	IndexedContainer container;
 
 	BE2() {
 		icDelete = new ThemeResource("img/ic_delete_small.png");
@@ -80,7 +86,10 @@ public class BE2 {
 	}
 
 	public VerticalLayout queryBackEnd(String strSearchParams) {
-		IndexedContainer container = getTable();
+		rowCount = 0;
+		if (container == null)
+			container = getTable();
+		hmFilter = new HashMap<>();
 		VerticalLayout searchResultsContainer = new VerticalLayout();
 		searchResultsContainer.setSizeUndefined();
 		searchResultsContainer.setSpacing(true);
@@ -95,6 +104,7 @@ public class BE2 {
 		for (String strParam : arrAllParams) {
 			arrP = strParam.split("=");
 			if (arrP.length == 2) {
+				hmFilter.put(arrP[0], arrP[1]);
 				strBuilder.append(arrP[0]);
 				strBuilder.append(" of ");
 				strBuilder.append(arrP[1]);
@@ -121,8 +131,7 @@ public class BE2 {
 			strSearchResultsParams = "Nothing.";
 		}
 
-		Label lbSearch = new Label("Match results for: "
-				+ strSearchResultsParams);
+		Label lbSearch = new Label();
 		lbSearch.setSizeUndefined();
 		lbSearch.setStyleName("label_search_user");
 		lbSearch.setSizeUndefined();
@@ -137,16 +146,26 @@ public class BE2 {
 		searchUserHeader.setStyleName("search_results_header");
 		searchResultsContainer.addComponent(searchUserHeader);
 
-		if (!(rowCount < 10)) {
-			rowCount = 10;
-		}
+		addFilters(hmFilter, container);
+
+		lbSearch.setValue("(" + container.size() + ")Match for: "
+				+ strSearchResultsParams);
 
 		tb = new PagedTableCustom("Results (Summary)");
-		tb.setPageLength(rowCount);
+
 		tb.setContainerDataSource(container);
 		tb.setColumnIcon(" ", FontAwesome.CHECK_SQUARE_O);
 		tb.setWidth("900px");
 		tb.setSelectable(true);
+
+		int t = tb.size();
+		rowCount = t;
+
+		if (t > 30) {
+			t = 30;
+		}
+
+		tb.setPageLength(t);
 
 		// HorizontalLayout ctb = new HorizontalLayout();
 		// ctb.setSizeUndefined();
@@ -167,6 +186,7 @@ public class BE2 {
 		searchResultsContainer.addComponent(tb);
 		searchResultsContainer.addComponent(getControls(tb));
 		searchResultsContainer.addComponent(getBulkActionsC());
+
 		// searchResultsContainer.setStyleName("s_r_c");
 
 		return searchResultsContainer;
@@ -749,9 +769,16 @@ public class BE2 {
 		tFU.setValue(arrID[3]);
 		tFU.setEnabled(false);
 
-		final TextField tFUProf = new TextField("User Profile ID");
-		tFUProf.setValue(arrID[2]);
-		tFUProf.setEnabled(false);
+		final ComboBox comboUProf = new ComboBox("Select Profile");
+		comboUProf.addItem(8);
+		comboUProf.setItemCaption(8, "DEPOSIT_ONLY");
+
+		comboUProf.addItem(9);
+		comboUProf.setItemCaption(9, "DEPOSIT_AND_WITHDRAWAL");
+
+		comboUProf.select(8);
+
+		// tFUProf.setEnabled(false);
 
 		final TextField tFP = new TextField("Parent Account ID");
 		// m/final TextArea taReason = new TextArea();
@@ -779,7 +806,7 @@ public class BE2 {
 		frmDeleteReason.setComponentAlignment(lbActivationPrompt,
 				Alignment.TOP_LEFT);
 		frmDeleteReason.addComponent(tFU);
-		frmDeleteReason.addComponent(tFUProf);
+		frmDeleteReason.addComponent(comboUProf);
 		frmDeleteReason.addComponent(tFP);
 		frmDeleteReason.addComponent(tFInitUser);
 
@@ -831,9 +858,9 @@ public class BE2 {
 
 				String strResponse = null;
 				try {
-					strResponse = ums.linkUser(tFP.getValue(),
-							tFUProf.getValue(), tFInitUser.getValue(),
-							tFU.getValue());
+					strResponse = ums.linkUser(tFP.getValue(), comboUProf
+							.getValue().toString(), tFInitUser.getValue(), tFU
+							.getValue());
 					isSent = true;
 				} catch (RemoteException e) {
 
@@ -958,6 +985,7 @@ public class BE2 {
 
 		Button btnBulkOk = new Button("Apply");
 		btnBulkOk.setStyleName("btn_link");
+		btnBulkOk.setEnabled(false);
 		HorizontalLayout cBulk = new HorizontalLayout();
 		cBulk.setSizeUndefined();
 		cBulk.addComponent(comboBulk);
@@ -1042,7 +1070,7 @@ public class BE2 {
 	@SuppressWarnings("unchecked")
 	private void addRow(IndexedContainer container, String sn, String strUID,
 			String strUname, String strFname, String strLname, String strProf,
-			String status) {
+			String status, String email, String msisdn) {
 		rowCount++;
 		actionsC = new HorizontalLayout();
 		actionsC.setSizeUndefined();
@@ -1055,12 +1083,13 @@ public class BE2 {
 		Property<CheckBox> tdPropertyCheck = trItem.getItemProperty(" ");
 		Property<String> tdPropertySN = trItem.getItemProperty("S/N");
 		// Property<String> tdPropertyUID = trItem.getItemProperty("UID");
-
+		Property<String> tdPropertyEmail = trItem.getItemProperty("Email");
+		Property<String> tdPropertyMSISDN = trItem.getItemProperty("MSISDN");
 		Property<String> tdPropertyUname = trItem.getItemProperty("Username");
 		Property<String> tdPropertyFname = trItem.getItemProperty("First Name");
 		Property<String> tdPropertyLname = trItem.getItemProperty("Last Name");
 		Property<String> tdPropertyACCType = trItem
-				.getItemProperty("Account Type");
+				.getItemProperty("Profile Type");
 		Property<HorizontalLayout> tdPropertyActions = trItem
 				.getItemProperty("Actions");
 		final CheckBox chk = new CheckBox();
@@ -1073,6 +1102,8 @@ public class BE2 {
 		tdPropertyFname.setValue(strFname);
 		tdPropertyLname.setValue(strLname);
 		tdPropertyACCType.setValue(strProf);
+		tdPropertyEmail.setValue(email);
+		tdPropertyMSISDN.setValue(msisdn);
 		tdPropertyActions.setValue(actionsC);
 
 		btnDetails = new BtnActions("Details");
@@ -1260,9 +1291,16 @@ public class BE2 {
 		container.addContainerProperty("S/N", String.class, "000");
 		// container.addContainerProperty("UID", String.class, "000");
 		container.addContainerProperty("Username", String.class, "");
+
 		container.addContainerProperty("First Name", String.class, "");
 		container.addContainerProperty("Last Name", String.class, "");
-		container.addContainerProperty("Account Type", String.class, "");
+
+		container.addContainerProperty("Profile Type", String.class, "");
+
+		container.addContainerProperty("Email", String.class, "");
+
+		container.addContainerProperty("MSISDN", String.class, "");
+
 		container.addContainerProperty("Actions", HorizontalLayout.class, null);
 		arrLChkBulk = new ArrayList<>();
 		arrLCombos = new ArrayList<>();
@@ -1271,7 +1309,6 @@ public class BE2 {
 		 * IndexedContainer container, String strUID, String strUname, String
 		 * strFname, String strLname, String strProf
 		 */
-		rowCount = 0;
 
 		String qx = "SELECT acth.username as un, acth.msisdn as msisdn, acth.email as email,pf.profilename as prof, acths.accountholderstatusname as status,acthd.firstname as fn ,acthd.lastname as ln,id.identificationnumber as id,ad.streetaddress as street from accountholders acth, accountholderdetails acthd, accountholderstatus acths, identificationattribute id, address ad, profiles pf where acth.accountholderdetailid = acthd.accountdetailsid and acth.accountholderstatusid = acths.accountholderstatusid and acthd.identificationid = id.identificationattrid and acthd.addressid = ad.addressid and pf.profileid = acth.profileid and pf.profiletypeid = 1;";
 		String Uname = "gomint";
@@ -1297,11 +1334,16 @@ public class BE2 {
 				String id = rs.getString("id");
 				String sn = String.valueOf(x);
 				String un = rs.getString("un");
-				String fn = rs.getString("fn");
-				String ln = rs.getString("fn");
 				String prof = rs.getString("prof");
+				String msisdn = rs.getString("msisdn");
+				String email = rs.getString("email");
+				String fn = rs.getString("fn");
+
+				String ln = rs.getString("ln");
+
 				String status = rs.getString("status");
-				addRow(container, sn, id, un, fn, ln, prof, status);
+				addRow(container, sn, id, un, fn, ln, prof, status, email,
+						msisdn);
 
 			}
 
@@ -1310,9 +1352,37 @@ public class BE2 {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			NotifCustom.show("DB Connection",
-					"Error Establishing DBConnection:  " + e);
+					"Error Establishing DBConnection:  " + e.getMessage());
 		}
 
 		return container;
+	}
+
+	private void addFilters(HashMap<String, String> hmFilter,
+			IndexedContainer container) {
+		container.removeAllContainerFilters();
+
+		Filter f = null;
+
+		String prof = hmFilter.remove("Profile Type");
+
+		Iterator<Entry<String, String>> itr = hmFilter.entrySet().iterator();
+
+		if (!prof.equals("ALL")) {
+			f = new Compare.Equal("Profile Type", prof);
+			container.addContainerFilter(f);
+		}
+
+		Entry<String, String> e = null;
+
+		while (itr.hasNext()) {
+			e = itr.next();
+			f = new Compare.Equal(e.getKey(), e.getValue());
+			// NotifCustom.show("Field: ", e.getKey());
+			// NotifCustom.show("Value: ", e.getValue());
+			container.addContainerFilter(f);
+
+		}
+
 	}
 }

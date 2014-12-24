@@ -109,15 +109,16 @@ public class SearchUserModule {
 
 		ArrayList<String> arrLTfCaptions = new ArrayList<String>();
 
-		arrLTfCaptions.add("ID");
+		// arrLTfCaptions.add("ID");
 		// arrLTfCaptions.add(strUserType + " ID");
 		// arrLTfCaptions.add("Type of User");
 		arrLTfCaptions.add("Username");
 		arrLTfCaptions.add("MSISDN");
-		arrLTfCaptions.add("Company");
-		arrLTfCaptions.add("First Name");
-		arrLTfCaptions.add("Last Name");
-		arrLTfCaptions.add("Others");
+		arrLTfCaptions.add("E-mail");
+		// arrLTfCaptions.add("Company");
+		// arrLTfCaptions.add("First Name");
+		// arrLTfCaptions.add("Last Name");
+		// arrLTfCaptions.add("Others");
 
 		searchForm.addComponent(searchUserHeader);
 		arrLTfs = addTfs(arrLTfCaptions, searchForm);
