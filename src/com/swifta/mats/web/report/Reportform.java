@@ -76,10 +76,13 @@ public class Reportform extends VerticalLayout {
 		container2.addContainerProperty("S/N", String.class, "");
 		container2.addContainerProperty("Transaction ID", String.class, "");
 		container2.addContainerProperty("Transaction Date", String.class, "");
+		container2.addContainerProperty("Transaction Type", String.class, "");
 		container2.addContainerProperty("Amount (\u20A6)", String.class, "");
 		container2.addContainerProperty("Sender", String.class, "");
-		container2.addContainerProperty("Reciever", String.class, "");
-		container2.addContainerProperty("Transaction Type", String.class, "");
+		container2.addContainerProperty("Sent_on_behalf_of", String.class, "");
+		container2.addContainerProperty("Receiver", String.class, "");
+		container2.addContainerProperty("Received_on_behalf_of", String.class,
+				"");
 		container2.addContainerProperty("Status", String.class, "");
 
 		// Summary
@@ -87,8 +90,10 @@ public class Reportform extends VerticalLayout {
 		// container3.addContainerProperty("Name", String.class, "");
 		container3.addContainerProperty("Transaction Date", String.class, "");
 		container3.addContainerProperty("Transaction Type", String.class, "");
+		container3.addContainerProperty("Transaction Count", String.class, "");
 		container3.addContainerProperty("Sum of Transaction Amount (\u20A6)",
 				String.class, "");
+		container3.addContainerProperty("Status", String.class, "");
 
 		// Commission
 
@@ -330,8 +335,18 @@ public class Reportform extends VerticalLayout {
 								agent.setInputPrompt("Select");
 
 							}
-							String sql = "select txn.transactionid as 'Transaction ID', tvo.fromamount as 'Amount', fromah.username as 'From', toah.username as 'To',txnt.name as 'Transaction Type', CAST(txn.lastupdate AS DATE) as 'Timestamp', txnst.transactionstatusname as 'Status' from transactions txn join transactionvalueoperations tvo on tvo.transactionid = txn.transactionid join transactionstatus txnst on txnst.transactionstatusid = txn.transactionstatusid join transactiontypes txnt on txnt.transactiontypeid = txn.transactiontypeid join accountholders ah on ah.username = txn.userresourceid join accountholders fromah on fromah.accountholderid = tvo.fromaccountholderuserid join accountholders toah on toah.accountholderid = tvo.toaccountholderresourceid   order by tvo.transactionid, ah.username, txn.lastupdate";
-							rs = stmt.executeQuery(sql);
+							// String sql =
+							// "select txn.transactionid as 'Transaction ID', tvo.fromamount as 'Amount', fromah.username as 'From', toah.username as 'To',txnt.name as 'Transaction Type', CAST(txn.lastupdate AS DATE) as 'Timestamp', txnst.transactionstatusname as 'Status' from transactions txn join transactionvalueoperations tvo on tvo.transactionid = txn.transactionid join transactionstatus txnst on txnst.transactionstatusid = txn.transactionstatusid join transactiontypes txnt on txnt.transactiontypeid = txn.transactiontypeid join accountholders ah on ah.username = txn.userresourceid join accountholders fromah on fromah.accountholderid = tvo.fromaccountholderuserid join accountholders toah on toah.accountholderid = tvo.toaccountholderresourceid   order by tvo.transactionid, ah.username, txn.lastupdate";
+							StringBuilder trxnsql = new StringBuilder();
+							trxnsql.append("select  txn.transactionid as 'Transaction ID', rolejoin.amount as 'Amount', rolejoin.sender as 'Sender', rolejoin.send_onbehalf_of as 'send_onbehalf_of',");
+							trxnsql.append("rolejoin.receiver as 'Receiver', rolejoin.received_onbehalf_of as 'received_onbehalf_of',txnt.name as 'Transaction Type', txn.lastupdate as 'Timestamp', txnst.transactionstatusname as 'Status'");
+							trxnsql.append(" from transactions txn, (select transactionid as transactionid, operatorid as sender, operatorid as send_onbehalf_of, dealerid as receiver, dealerid as received_onbehalf_of,");
+							trxnsql.append("amount as amount from cashtransactions union select transactionid as transactionid,initiatinguserresourceid as sender, realuserresourceid as onbehalf_of_sender,");
+							trxnsql.append("toreceivinguserresource as receiver, (select username from accountholders where accountholderid = torealaccountholderresourceid) as onbehalf_of_receiver, toamount as amount from transactionvalueoperations) rolejoin,");
+							trxnsql.append("transactionstatus txnst, transactiontypes txnt where rolejoin.transactionid = txn.transactionid and txnst.transactionstatusid = txn.transactionstatusid");
+							trxnsql.append(" and txnt.transactiontypeid = txn.transactiontypeid order by rolejoin.transactionid, txn.lastupdate;");
+
+							rs = stmt.executeQuery(trxnsql.toString());
 							// .executeQuery("select txn.userresourceid as 'Username', txnt.name as 'Transaction Type', CAST(txn.lastupdate AS DATE) as 'Timestamp', format(acct.openingbalance /100,2) as 'Opening Balance', format(acct.closingbalance / 100,2) as 'Closing Balance', format(acct.amount / 100 , 2) as 'Amount',accts.name as 'Account Type'  from transactions txn join accounttransactions acct on txn.transactionid = acct.transactionid join transactiontypes txnt on txnt.transactiontypeid = txn.transactiontypeid join accounttypes accts on accts.accounttypeid = acct.accounttypeid   join accountholders ah on ah.username = txn.userresourceid  order by ah.username, txn.lastupdate");
 							while (rs.next()) {
 								x = x + 1;
@@ -342,12 +357,16 @@ public class Reportform extends VerticalLayout {
 								String createdon = rs.getString("Timestamp");
 								String transactionID = rs
 										.getString("Transaction ID");
-								String sender = rs.getString("From");
-								String receiver = rs.getString("To");
+								String sender = rs.getString("Sender");
+								String send_onbehalf_of = rs
+										.getString("send_onbehalf_of");
+								String receiver = rs.getString("Receiver");
+								String received_onbehalf_of = rs
+										.getString("received_onbehalf_of");
 								String status = rs.getString("Status");
 
-								String fida = "Commission Account";
-								String fido = "Fees Account";
+								// String fida = "Commission Account";
+								// String fido = "Fees Account";
 
 								if (!ht.containsKey("Transaction Type")) {
 									HashSet<String> arrL = new HashSet<>();
@@ -383,29 +402,26 @@ public class Reportform extends VerticalLayout {
 								itemId = container2.addItem();
 
 								trItem = container2.getItem(itemId);
-
-								@SuppressWarnings("unchecked")
 								Property<String> tdPropertyserial = trItem
 										.getItemProperty("S/N");
-								@SuppressWarnings("unchecked")
+
 								Property<String> tdPropertytransactiondate = trItem
 										.getItemProperty("Transaction Date");
-								@SuppressWarnings("unchecked")
 								Property<String> tdPropertytransactionid = trItem
 										.getItemProperty("Transaction ID");
-								@SuppressWarnings("unchecked")
 								Property<String> tdPropertytransactiontype = trItem
 										.getItemProperty("Transaction Type");
-								@SuppressWarnings("unchecked")
 								Property<String> tdPropertyamount = trItem
 										.getItemProperty("Amount (\u20A6)");
-								@SuppressWarnings("unchecked")
 								Property<String> tdPropertysender = trItem
 										.getItemProperty("Sender");
-								@SuppressWarnings("unchecked")
+								Property<String> tdPropertysenderonbehalfof = trItem
+										.getItemProperty("Sent_on_behalf_of");
+
 								Property<String> tdPropertyreceiver = trItem
-										.getItemProperty("Reciever");
-								@SuppressWarnings("unchecked")
+										.getItemProperty("Receiver");
+								Property<String> tdPropertyreceiveronbehalfof = trItem
+										.getItemProperty("Received_on_behalf_of");
 								Property<String> tdPropertystatus = trItem
 										.getItemProperty("Status");
 
@@ -416,8 +432,13 @@ public class Reportform extends VerticalLayout {
 										.setValue(transactiontype);
 								tdPropertyamount.setValue(amount);
 								tdPropertysender.setValue(sender);
+								tdPropertysenderonbehalfof
+										.setValue(send_onbehalf_of);
 								tdPropertyreceiver.setValue(receiver);
+								tdPropertyreceiveronbehalfof
+										.setValue(received_onbehalf_of);
 								tdPropertystatus.setValue(status);
+
 							}
 
 							conn.close();
@@ -468,15 +489,32 @@ public class Reportform extends VerticalLayout {
 							Object itemId;
 							Item trItem;
 
-							rs = stmt
-									.executeQuery("select acct.transactionid as 'Transaction ID', ah.username as 'Username',prf.profilename as 'Profile Name', format(sum(acct.amount / 100),2) as 'Total Amount', CAST(acct.datecreated AS DATE) as 'Date Created', tnst.name as 'Transaction Name' from accounttransactions acct join transactions tns on tns.transactionid = acct.transactionid join accountholders ah on ah.accountholderid = acct.userresourceid join transactiontypes tnst on tnst.transactiontypeid = tns.transactiontypeid join profiles prf on prf.profileid = ah.profileid where prf.profileid = 11 or prf.profileid = 7 or prf.profileid = 6 group by tns.transactiontypeid, CAST(acct.datecreated AS DATE) order by acct.datecreated,tns.transactiontypeid");
+							StringBuilder summarysql = new StringBuilder();
+							summarysql
+									.append("select txnt.name as 'Transaction Type', count(txnt.name) as 'No of transactions', sum(rolejoin.amount) as 'Total Amount', CAST(txn.lastupdate AS DATE) as 'Date',");
+							summarysql
+									.append("txnst.transactionstatusname as 'Status' from transactions txn, (select transactionid as transactionid, operatorid as originatinguser,dealerid as receivinguser,");
+							summarysql
+									.append("amount as amount from cashtransactions union select transactionid as transactionid, realuserresourceid as originatinguser, toreceivinguserresource as receivinguser, toamount as amount");
+							summarysql
+									.append(" from transactionvalueoperations) rolejoin, transactionstatus txnst,transactiontypes txnt where rolejoin.transactionid = txn.transactionid");
+							summarysql
+									.append(" and txnst.transactionstatusid = txn.transactionstatusid and txnt.transactiontypeid = txn.transactiontypeid group by txnt.name,txnst.transactionstatusname,CAST(txn.lastupdate AS DATE)");
+
+							rs = stmt.executeQuery(summarysql.toString());
 							while (rs.next()) {
 								x = x + 1;
 
 								String transactiontype = rs
-										.getString("Transaction Name");
+										.getString("Transaction Type");
 								String amount = rs.getString("Total Amount");
-								String createdon = rs.getString("Date Created");
+								String nooftransactions = rs
+										.getString("No of transactions");
+								String createdon = rs.getString("Date");
+								String status = rs.getString("Status");
+								System.out.println(nooftransactions);
+								System.out.println(amount);
+								System.out.println(createdon);
 								// String name = rs.getString("Username");
 
 								if (!ht.containsKey("Transaction Type")) {
@@ -500,8 +538,12 @@ public class Reportform extends VerticalLayout {
 										.getItemProperty("Transaction Date");
 								Property<String> tdPropertytransactiontype = trItem
 										.getItemProperty("Transaction Type");
+								Property<String> tdPropertytransactioncount = trItem
+										.getItemProperty("Transaction Count");
 								Property<String> tdPropertyamount = trItem
 										.getItemProperty("Sum of Transaction Amount (\u20A6)");
+								Property<String> tdPropertytransactionstatus = trItem
+										.getItemProperty("Status");
 
 								// tdPropertyname.setValue(name);
 								tdPropertyserial.setValue(String.valueOf(x));
@@ -509,6 +551,9 @@ public class Reportform extends VerticalLayout {
 								tdPropertytransactiontype
 										.setValue(transactiontype);
 								tdPropertyamount.setValue(amount);
+								tdPropertytransactioncount
+										.setValue(nooftransactions);
+								tdPropertytransactionstatus.setValue(status);
 							}
 
 							conn.close();

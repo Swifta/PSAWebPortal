@@ -9,7 +9,7 @@ public class Client {
 
 	public static void main(String args[]) throws Exception {
 
-		Client.setdefault();
+		Client.sql();
 
 	}
 
@@ -145,5 +145,21 @@ public class Client {
 				childuserresourceid, parent);
 
 		System.out.println(ret);
+	}
+
+	public static void sql() {
+		StringBuilder summarysql = new StringBuilder();
+		summarysql
+				.append("select txnt.name as 'Transaction Type', count(txnt.name) as 'No of transactions', sum(rolejoin.amount) as 'Total Amount', CAST(txn.lastupdate AS DATE) as 'Date',");
+		summarysql
+				.append("txnst.transactionstatusname as 'Status' from transactions txn, (select transactionid as transactionid, operatorid as originatinguser,dealerid as receivinguser,");
+		summarysql
+				.append("amount as amount from cashtransactions union select transactionid as transactionid, realuserresourceid as originatinguser, toreceivinguserresource as receivinguser, toamount as amount");
+		summarysql
+				.append(" from transactionvalueoperations) rolejoin, transactionstatus txnst,transactiontypes txnt where rolejoin.transactionid = txn.transactionid");
+		summarysql
+				.append(" and txnst.transactionstatusid = txn.transactionstatusid and txnt.transactiontypeid = txn.transactiontypeid group by txnt.name,txnst.transactionstatusname,CAST(txn.lastupdate AS DATE)");
+
+		System.out.println(summarysql.toString());
 	}
 }
