@@ -135,11 +135,13 @@ public class FeesAndCommModule {
 				comboMat.setRequired(false);
 				if (comboMat.getValue() == null) {
 					comboMat.setRequired(true);
-					Notification.show("Fields marked with (*) are required.");
+					Notification.show("Fields marked with (*) are required.",
+							Notification.Type.WARNING_MESSAGE);
 					throw new CommitException("Field required.");
 				} else if (tfAmt.getValue().trim().isEmpty()) {
 					tfAmt.setRequired(true);
-					Notification.show("Fields marked with (*) are required.");
+					Notification.show("Fields marked with (*) are required.",
+							Notification.Type.WARNING_MESSAGE);
 					throw new CommitException("Field required.");
 				} else {
 					tfAmt.setRequired(false);
@@ -236,12 +238,14 @@ public class FeesAndCommModule {
 				tfMax.setRequired(false);
 				if (tfMin.getValue().trim().isEmpty()) {
 					tfMin.setRequired(true);
-					Notification.show("Fields marked with (*) are required.");
+					Notification.show("Fields marked with (*) are required.",
+							Notification.Type.WARNING_MESSAGE);
 					throw new CommitException("Field required.");
 				}
 				if (tfMax.getValue().trim().isEmpty()) {
 					tfMax.setRequired(true);
-					Notification.show("Fields marked with (*) are required.");
+					Notification.show("Fields marked with (*) are required.",
+							Notification.Type.WARNING_MESSAGE);
 					throw new CommitException("Field required.");
 				} else {
 					tfMin.setRequired(false);
@@ -534,21 +538,25 @@ public class FeesAndCommModule {
 				comboTxType.setRequired(false);
 				if (comboOp.getValue() == null) {
 					comboOp.setRequired(true);
-					Notification.show("Field marked with (*) is required.");
+					Notification.show("Field marked with (*) is required.",
+							Notification.Type.WARNING_MESSAGE);
 					throw new CommitException("Field is required.");
 				} else if (comboConditionType.getValue() == null) {
 					comboConditionType.setRequired(true);
-					Notification.show("Field marked with (*) is required.");
+					Notification.show("Field marked with (*) is required.",
+							Notification.Type.WARNING_MESSAGE);
 					throw new CommitException("Field is required.");
 
 				} else if (comboModelType.getValue() == null) {
 					comboModelType.setRequired(true);
-					Notification.show("Field marked with (*) is required.");
+					Notification.show("Field marked with (*) is required.",
+							Notification.Type.WARNING_MESSAGE);
 					throw new CommitException("Field is required.");
 
 				} else if (comboTxType.getValue() == null) {
 					comboTxType.setRequired(true);
-					Notification.show("Field marked with (*) is required.");
+					Notification.show("Field marked with (*) is required.",
+							Notification.Type.WARNING_MESSAGE);
 					throw new CommitException("Field is required.");
 				} else {
 					comboOp.setRequired(false);
@@ -867,7 +875,8 @@ public class FeesAndCommModule {
 		try {
 			if (cs.setFeesAndCommission(opID, txID, sc, sf)) {
 				if (cs.statusMessage == null) {
-					Notification.show("Tariff information saved successfully!");
+					Notification.show("Tariff information saved successfully!",
+							Notification.Type.WARNING_MESSAGE);
 					confCount = 0;
 					resetFields(lookedTab);
 
@@ -877,12 +886,14 @@ public class FeesAndCommModule {
 					comboTxType.setEnabled(true);
 					lookedTab = null;
 					Notification.show("Tariff saving FAILED: "
-							+ cs.statusMessage);
+							+ cs.statusMessage,
+							Notification.Type.WARNING_MESSAGE);
 					isReset = false;
 				}
 
 			} else {
-				Notification.show("Tariff saving FAILED: " + cs.statusMessage);
+				Notification.show("Tariff saving FAILED: " + cs.statusMessage,
+						Notification.Type.ERROR_MESSAGE);
 				isReset = false;
 			}
 		} catch (Exception ce) {
@@ -897,14 +908,16 @@ public class FeesAndCommModule {
 		comboOp.setRequired(false);
 		if (comboOp.getValue() == null) {
 			comboOp.setRequired(true);
-			Notification.show("Field marked with (*) is required.");
+			Notification.show("Field marked with (*) is required.",
+					Notification.Type.WARNING_MESSAGE);
 			return false;
 		}
 
 		comboTxType.setRequired(false);
 		if (comboTxType.getValue() == null) {
 			comboTxType.setRequired(true);
-			Notification.show("Field marked with (*) is required.");
+			Notification.show("Field marked with (*) is required.",
+					Notification.Type.WARNING_MESSAGE);
 			return false;
 		}
 
@@ -1162,21 +1175,25 @@ public class FeesAndCommModule {
 				comboTxType.setRequired(false);
 				if (comboOp.getValue() == null) {
 					comboOp.setRequired(true);
-					Notification.show("Field marked with (*) is required.");
+					Notification.show("Field marked with (*) is required.",
+							Notification.Type.WARNING_MESSAGE);
 					throw new CommitException("Field is required.");
 				} else if (comboConditionType.getValue() == null) {
 					comboConditionType.setRequired(true);
-					Notification.show("Field marked with (*) is required.");
+					Notification.show("Field marked with (*) is required.",
+							Notification.Type.WARNING_MESSAGE);
 					throw new CommitException("Field is required.");
 
 				} else if (comboModelType.getValue() == null) {
 					comboModelType.setRequired(true);
-					Notification.show("Field marked with (*) is required.");
+					Notification.show("Field marked with (*) is required.",
+							Notification.Type.WARNING_MESSAGE);
 					throw new CommitException("Field is required.");
 
 				} else if (comboTxType.getValue() == null) {
 					comboTxType.setRequired(true);
-					Notification.show("Field marked with (*) is required.");
+					Notification.show("Field marked with (*) is required.",
+							Notification.Type.WARNING_MESSAGE);
 					throw new CommitException("Field is required.");
 				} else {
 					comboOp.setRequired(false);
@@ -1716,14 +1733,14 @@ public class FeesAndCommModule {
 
 		HorizontalLayout cAttrVal = new HorizontalLayout();
 		cAttrVal.setWidth(tb.getHeight() + "%");
-		Notification.show(tb.getHeight() + "");
+		// Notification.show(tb.getHeight() + "");
 
 		cAttrVal.addComponent(lbAttrVal);
 		cTType.addComponent(cAttrVal);
 		cTType.setComponentAlignment(cAttrVal, Alignment.MIDDLE_CENTER);
 
 		cTTier.addComponent(tb);
-		Notification.show(cTTier.getHeight() + "");
+		// Notification.show(cTTier.getHeight() + "");
 
 		/*
 		 * HorizontalLayout crow = new HorizontalLayout(); VerticalLayout cTType

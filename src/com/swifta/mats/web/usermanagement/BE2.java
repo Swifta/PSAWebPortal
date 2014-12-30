@@ -500,6 +500,7 @@ public class BE2 {
 		tFU.setValue(arrID[3]);
 		tFU.setEnabled(false);
 		final TextField tFP = new TextField("Parent Account ID");
+		tFP.setRequired(true);
 		// final TextArea taReason = new TextArea();
 		final TextField tFInitUser = new TextField("Initiating User Name");
 		tFInitUser.setValue(UI.getCurrent().getSession().getAttribute("user")
@@ -634,6 +635,8 @@ public class BE2 {
 		tFC.setValue(arrID[3]);
 		tFC.setEnabled(false);
 		final TextField tFD = new TextField("Default Account ID");
+		tFD.setRequired(true);
+
 		// m/final TextArea taReason = new TextArea();
 
 		final TextField tFInitUser = new TextField("Initiating User");
@@ -770,6 +773,8 @@ public class BE2 {
 		tFU.setEnabled(false);
 
 		final ComboBox comboUProf = new ComboBox("Select Profile");
+		comboUProf.setNullSelectionAllowed(false);
+		comboUProf.setRequired(true);
 		comboUProf.addItem(8);
 		comboUProf.setItemCaption(8, "DEPOSIT_ONLY");
 
@@ -781,6 +786,7 @@ public class BE2 {
 		// tFUProf.setEnabled(false);
 
 		final TextField tFP = new TextField("Parent Account ID");
+		tFP.setRequired(true);
 		// m/final TextArea taReason = new TextArea();
 		// m/taReason.setCaption("Reason");
 		// m/taReason.setInputPrompt("Please enter reason here.");
@@ -1010,8 +1016,8 @@ public class BE2 {
 				Collection<?> arrLCurItemIDs = tb.getVisibleItemIds();
 				for (Object ids : arrLCurItemIDs) {
 					Item row = tb.getItem(ids);
-					Property<CheckBox> col = row.getItemProperty(" ");
-					CheckBox curChk = col.getValue();
+					Property<?> col = row.getItemProperty(" ");
+					CheckBox curChk = (CheckBox) col.getValue();
 					boolean isChecked = curChk.getValue();
 					if (isChecked) {
 						arrLBulkIDs.add(curChk.getId());

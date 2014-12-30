@@ -20,7 +20,6 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.PopupDateField;
@@ -754,11 +753,11 @@ public class AddUserModule {
 							prov, doe, idno, idtype, doi, issuer, pem, pmno,
 							pamno, sem, smno, samno);
 
-					Notification.show("Response: " + strResponse);
+					NotifCustom.show("Response: ", strResponse);
 
 				} catch (Exception e) {
 					e.printStackTrace();
-					Notification.show("Response: " + e.getMessage());
+					NotifCustom.show("Response: ", e.getMessage());
 					return;
 				}
 
@@ -776,7 +775,7 @@ public class AddUserModule {
 				if (isReset)
 					return;
 
-				Notification.show("Cleared.");
+				NotifCustom.show("Message: ", "Cleared.");
 
 				tFFN.setValue("");
 				tFMN.setValue("");

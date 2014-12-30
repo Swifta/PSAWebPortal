@@ -29,7 +29,7 @@ public class MenuItemClickable extends HorizontalLayout {
 			public void layoutClick(LayoutClickEvent event) {
 				if (event.getChildComponent() == lb) {
 
-					if (curRole == "add_user") {
+					if (curRole.equals("add_user")) {
 						UI.getCurrent()
 								.getSession()
 								.setAttribute(
@@ -43,12 +43,9 @@ public class MenuItemClickable extends HorizontalLayout {
 
 					}
 
-					if (curRole == "manage_user") {
-					}
 				}
 			}
 
 		});
 	}
-
 }

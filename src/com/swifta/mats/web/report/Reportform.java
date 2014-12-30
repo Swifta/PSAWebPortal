@@ -239,7 +239,9 @@ public class Reportform extends VerticalLayout {
 
 						}
 						conn.close();
-						Notification.show(x + " result(s) found");
+
+						Notification.show(x + " result(s) found",
+								Notification.Type.WARNING_MESSAGE);
 
 						if (x > 30) {
 							x = 30;
@@ -253,8 +255,9 @@ public class Reportform extends VerticalLayout {
 							| IllegalAccessException | ClassNotFoundException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
+
 						Notification.show("Error Establishing DBConnection = "
-								+ e);
+								+ e, Notification.Type.ERROR_MESSAGE);
 					}
 
 					// searchform.removeAllComponents();
@@ -420,7 +423,8 @@ public class Reportform extends VerticalLayout {
 						}
 
 						conn.close();
-						Notification.show(x + " result(s) found");
+						Notification.show(x + " result(s) found",
+								Notification.Type.WARNING_MESSAGE);
 
 						if (x > 30) {
 							x = 30;
@@ -435,7 +439,7 @@ public class Reportform extends VerticalLayout {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 						Notification.show("Error Establishing DBConnection = "
-								+ e);
+								+ e, Notification.Type.ERROR_MESSAGE);
 					}
 
 					// searchform.removeAllComponents();
@@ -550,7 +554,8 @@ public class Reportform extends VerticalLayout {
 						}
 
 						conn.close();
-						Notification.show(x + "result(s) found");
+						Notification.show(x + " result(s) found",
+								Notification.Type.WARNING_MESSAGE);
 
 						if (x > 30) {
 							x = 30;
@@ -565,7 +570,7 @@ public class Reportform extends VerticalLayout {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 						Notification.show("Error Establishing DBConnection = "
-								+ e);
+								+ e, Notification.Type.ERROR_MESSAGE);
 					}
 
 					// searchform.removeAllComponents();
@@ -749,7 +754,8 @@ public class Reportform extends VerticalLayout {
 						}
 
 						conn.close();
-						Notification.show(x + " result(s) found");
+						Notification.show(x + " result(s) found",
+								Notification.Type.WARNING_MESSAGE);
 
 						table.setContainerDataSource(feesCommissionContainer);
 
@@ -762,8 +768,8 @@ public class Reportform extends VerticalLayout {
 							| InstantiationException | IllegalAccessException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
-						Notification.show("Error Establishing DBConnection:  "
-								+ e);
+						Notification.show("Error Establishing DBConnection = "
+								+ e, Notification.Type.ERROR_MESSAGE);
 					}
 				}
 				comboF.removeAllItems();
