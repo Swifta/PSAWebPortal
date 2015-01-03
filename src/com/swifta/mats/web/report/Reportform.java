@@ -167,8 +167,8 @@ public class Reportform extends VerticalLayout {
 							"Dealer's E-value Balance (\u20A6)", String.class,
 							"");
 
-					String Uname = "gomint";
-					String Pword = "gomint";
+					String Uname = "psatestuser";
+					String Pword = "psatest_2015";
 					String drivers = "com.mysql.jdbc.Driver";
 					try {
 
@@ -309,8 +309,8 @@ public class Reportform extends VerticalLayout {
 						return;
 					}
 
-					String Uname = "gomint";
-					String Pword = "gomint";
+					String Uname = "psatestuser";
+					String Pword = "psatest_2015";
 					String drivers = "com.mysql.jdbc.Driver";
 					try {
 
@@ -488,8 +488,8 @@ public class Reportform extends VerticalLayout {
 						return;
 					}
 
-					String Uname = "gomint";
-					String Pword = "gomint";
+					String Uname = "psatestuser";
+					String Pword = "psatest_2015";
 					String drivers = "com.mysql.jdbc.Driver";
 					try {
 
@@ -635,8 +635,8 @@ public class Reportform extends VerticalLayout {
 					}
 
 					ds = feesCommissionContainer;
-					String Uname = "gomint";
-					String Pword = "gomint";
+					String Uname = "psatestuser";
+					String Pword = "psatest_2015";
 					String drivers = "com.mysql.jdbc.Driver";
 					try {
 
