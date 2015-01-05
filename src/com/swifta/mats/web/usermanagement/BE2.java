@@ -1357,8 +1357,9 @@ public class BE2 {
 				| IllegalAccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			NotifCustom.show("DB Connection",
-					"Error Establishing DBConnection:  " + e.getMessage());
+			Notification.show("DB Connection",
+					"Error Establishing DBConnection:  " + e.getMessage(),
+					Notification.Type.ERROR_MESSAGE);
 		}
 
 		return container;

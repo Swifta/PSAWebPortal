@@ -1,8 +1,15 @@
 package com.swifta.mats.web.usermanagement;
 
+import java.sql.Connection;
+import java.sql.Driver;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -11,6 +18,8 @@ import com.swifta.mats.web.utils.UserManagementService;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.event.FieldEvents.FocusEvent;
+import com.vaadin.event.FieldEvents.FocusListener;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
@@ -20,6 +29,7 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.PopupDateField;
@@ -112,7 +122,7 @@ public class AddUserModule {
 		return addUserContainer;
 	}
 
-	@SuppressWarnings("deprecation")
+	@SuppressWarnings({ "deprecation", "unchecked" })
 	private VerticalLayout getNewUserContainer() {
 
 		int userID = 0;
@@ -135,17 +145,20 @@ public class AddUserModule {
 
 		TextField tF = new TextField("First Name");
 		tFFN = tF;
+		tFFN.setRequired(true);
 		tF.setValue("Paul");
 		cBasic.addComponent(tF);
 
 		tF = new TextField("Middle Name");
 		tF.setValue("Pwndz");
 		tFMN = tF;
+		tFMN.setRequired(true);
 		cBasic.addComponent(tF);
 
 		tF = new TextField("Last Name");
 		tF.setValue("Kigozi");
 		tFLN = tF;
+		tFLN.setRequired(true);
 		cBasic.addComponent(tF);
 
 		OptionGroup opt = new OptionGroup("Gender");
@@ -157,6 +170,7 @@ public class AddUserModule {
 		// opt.setItemCaption(2, "Male");
 		opt.select("MALE");
 		optSex = opt;
+		optSex.setRequired(true);
 		cBasic.addComponent(opt);
 
 		ComboBox combo = new ComboBox("Prefix");
@@ -187,11 +201,13 @@ public class AddUserModule {
 		combo.addItem(3);
 		combo.setItemCaption(3, "fr");
 		comboLang = combo;
+		comboLang.setRequired(true);
 		cBasic.addComponent(combo);
 
 		tF = new TextField("Occupation");
 		tF.setValue("Software Engineer");
 		tFOcc = tF;
+		tFOcc.setRequired(true);
 		cBasic.addComponent(tF);
 
 		tF = new TextField("Employer");
@@ -204,25 +220,24 @@ public class AddUserModule {
 		dFDoB = dF;
 		cBasic.addComponent(dF);
 
+		combo = new ComboBox("Country");
+
+		comboCountry = combo;
+		comboCountry.setRequired(true);
+		cBasic.addComponent(combo);
+
 		combo = new ComboBox("State");
-		combo.addItem(1);
-		combo.setItemCaption(1, "California");
-		combo.select(1);
 		comboState = combo;
+		comboState.setRequired(true);
+		comboState.setNullSelectionAllowed(false);
 		cBasic.addComponent(combo);
 
 		combo = new ComboBox("Local Government");
-		combo.addItem(1);
-		combo.setItemCaption(1, "Ca. LG");
-		combo.select(1);
+		// combo.addItem(1);
+		// combo.setItemCaption(1, "Ca. LG");
+		// combo.select(1);
 		comboLG = combo;
-		cBasic.addComponent(combo);
-
-		combo = new ComboBox("Country");
-		combo.addItem(1);
-		combo.setItemCaption(1, "USA");
-		combo.select(1);
-		comboCountry = combo;
+		comboLG.setRequired(true);
 		cBasic.addComponent(combo);
 
 		/*
@@ -273,12 +288,14 @@ public class AddUserModule {
 				combo.addItem("Employer Identification Number");
 				combo.select("Passport Number");
 				comboIDType = combo;
+				comboIDType.setRequired(true);
 				cCompany.addComponent(combo);
 				// combo.setNullSelectionAllowed(false);
 
 				tF = new TextField("ID No.");
 				tF.setValue("001");
 				tFIDNo = tF;
+				tFIDNo.setRequired(true);
 				cCompany.addComponent(tF);
 
 				tF = new TextField("Issuer");
@@ -294,6 +311,8 @@ public class AddUserModule {
 				dF = new PopupDateField("Expiry Date");
 				dF.setValue(new Date("12/12/14"));
 				dFDoE = dF;
+				dFDoE.setRequired(true);
+
 				cCompany.addComponent(dF);
 
 			}
@@ -362,6 +381,7 @@ public class AddUserModule {
 		tF = new TextField("Street");
 		tF.setValue("Yusuf Lule Rd.");
 		tFStreet = tF;
+		tFStreet.setRequired(true);
 		physicalC.addComponent(tF);
 
 		tF = new TextField("Postal Code");
@@ -372,6 +392,7 @@ public class AddUserModule {
 		tF = new TextField("City");
 		tF.setValue("Kampala");
 		tFCity = tF;
+		tFCity.setRequired(true);
 		physicalC.addComponent(tF);
 
 		tF = new TextField("Province");
@@ -408,6 +429,7 @@ public class AddUserModule {
 
 		comboHierarchy.select(1);
 		comboProfile = comboHierarchy;
+		comboProfile.setRequired(true);
 		cAcc.addComponent(comboHierarchy);
 
 		final VerticalLayout cLBody = new VerticalLayout();
@@ -415,11 +437,13 @@ public class AddUserModule {
 		tF = new TextField("Username");
 		tF.setValue("Livepwndz");
 		tFUN = tF;
+		tFUN.setRequired(true);
 		cLBody.addComponent(tF);
 
 		tF = new TextField("MSISDN");
 		tF.setValue("+256774191152");
 		tFMSISDN = tF;
+		tFMSISDN.setRequired(true);
 		cLBody.addComponent(tF);
 
 		// / tF = new TextField("PIN");
@@ -427,6 +451,7 @@ public class AddUserModule {
 
 		tF = new TextField("Email");
 		tFAccEmail = tF;
+		tFAccEmail.setRequired(true);
 		tFAccEmail.setValue("ppounds1@gmail.com");
 		cLBody.addComponent(tF);
 
@@ -488,6 +513,11 @@ public class AddUserModule {
 		chk.setStyleName("check_t_and_c");
 		chk.addValueChangeListener(new ValueChangeListener() {
 
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				// Notification.show(event.getProperty().getValue().toString());
@@ -497,6 +527,141 @@ public class AddUserModule {
 			}
 
 		});
+
+		comboCountry.addFocusListener(new FocusListener() {
+
+			private static final long serialVersionUID = -5162384967736354225L;
+
+			@Override
+			public void focus(FocusEvent event) {
+				Set<Entry<Integer, String>> es = (Set<Entry<Integer, String>>) getCountries()
+						.entrySet();
+				if (es.size() == 0)
+					return;
+				Iterator<Entry<Integer, String>> itr = es.iterator();
+				comboCountry.setNullSelectionAllowed(false);
+				while (itr.hasNext()) {
+					Entry<Integer, String> e = (Entry<Integer, String>) itr
+							.next();
+					comboCountry.addItem(e.getKey());
+					comboCountry.setItemCaption(e.getKey(), e.getValue());
+				}
+				comboCountry.select(1);
+
+			}
+
+		});
+
+		comboCountry.addValueChangeListener(new ValueChangeListener() {
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				if (comboCountry.getValue() == null) {
+					return;
+				}
+				Set<Entry<Integer, String>> es = (Set<Entry<Integer, String>>) getStates(Integer
+						.valueOf(comboCountry.getValue().toString()));
+				if (es.isEmpty()) {
+					return;
+				}
+
+				Iterator<Entry<Integer, String>> itr = es.iterator();
+				while (itr.hasNext()) {
+					Entry<Integer, String> e = itr.next();
+					comboState.addItem(e.getKey());
+					comboState.setItemCaption(e.getKey(), e.getValue());
+				}
+
+				comboState.select(1);
+
+			}
+
+		});
+
+		comboState.addFocusListener(new FocusListener() {
+
+			private static final long serialVersionUID = 892516817835461278L;
+
+			@Override
+			public void focus(FocusEvent event) {
+				if (comboCountry.getValue() == null) {
+					Notification.show("Please select country first",
+							Notification.Type.WARNING_MESSAGE);
+					comboCountry.focus();
+					return;
+
+				}
+
+			}
+
+		});
+
+		comboState.addValueChangeListener(new ValueChangeListener() {
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				if (comboCountry.getValue() == null) {
+					Notification.show("Please select country first",
+							Notification.Type.WARNING_MESSAGE);
+					comboCountry.focus();
+					return;
+				}
+
+				if (comboState.getValue() == null) {
+					Notification.show("Please select state first",
+							Notification.Type.WARNING_MESSAGE);
+					comboState.focus();
+					return;
+				}
+				Set<Entry<Integer, String>> es = (Set<Entry<Integer, String>>) getLGs(Integer
+						.valueOf(comboState.getValue().toString()));
+				if (es.isEmpty()) {
+					return;
+				}
+
+				Iterator<Entry<Integer, String>> itr = es.iterator();
+				while (itr.hasNext()) {
+					Entry<Integer, String> e = itr.next();
+					comboLG.addItem(e.getKey());
+					comboLG.setItemCaption(e.getKey(), e.getValue());
+				}
+
+				comboLG.select(1);
+
+			}
+
+		});
+
+		comboLG.addFocusListener(new FocusListener() {
+
+			private static final long serialVersionUID = 8925916817835461278L;
+
+			@Override
+			public void focus(FocusEvent event) {
+				if (comboCountry.getValue() == null) {
+					Notification.show("Please select country first",
+							Notification.Type.WARNING_MESSAGE);
+					comboCountry.focus();
+					return;
+
+				}
+
+				if (comboState.getValue() == null) {
+					Notification.show("Please select state first",
+							Notification.Type.WARNING_MESSAGE);
+					comboCountry.focus();
+					return;
+
+				}
+
+			}
+
+		});
+
 		HorizontalLayout cChk = new HorizontalLayout();
 		cChk.setSizeUndefined();
 		cChk.setMargin(new MarginInfo(true, false, true, false));
@@ -753,15 +918,19 @@ public class AddUserModule {
 							prov, doe, idno, idtype, doi, issuer, pem, pmno,
 							pamno, sem, smno, samno);
 
-					NotifCustom.show("Response: ", strResponse);
-
 				} catch (Exception e) {
 					e.printStackTrace();
-					NotifCustom.show("Response: ", e.getMessage());
+					Notification.show("Response: ", e.getMessage(),
+							Notification.Type.ERROR_MESSAGE);
 					return;
 				}
 
-				// Notification.show("Response: " + strResponse);
+				if (strResponse.contains("completed")
+						&& strResponse.contains("successful"))
+					NotifCustom.show("Message: ", strResponse);
+				else
+					Notification.show("Response: " + strResponse,
+							Notification.Type.ERROR_MESSAGE);
 
 			}
 		});
@@ -869,6 +1038,125 @@ public class AddUserModule {
 		contentC.setMargin(true);
 		contentC.setSizeFull();
 		return uf;
+	}
+
+	private HashMap<Integer, String> getCountries() {
+		HashMap<Integer, String> c = new HashMap<>();
+		String qx = "SELECT countryname as cname, countryid as cid FROM psadatasourcetest.country;";
+		String Uname = "gomint";
+		String Pword = "gomint";
+		String drivers = "com.mysql.jdbc.Driver";
+		try {
+			Class<?> driver_class = Class.forName(drivers);
+			Driver driver = (Driver) driver_class.newInstance();
+			DriverManager.registerDriver(driver);
+
+			Connection conn = DriverManager
+					.getConnection(
+							"jdbc:mysql://gomintdb.caabwbnfnavv.us-east-1.rds.amazonaws.com:3306/psadatasourcetest",
+							Uname, Pword);
+
+			Statement stmt = conn.createStatement();
+
+			ResultSet rs = stmt.executeQuery(qx);
+
+			while (rs.next()) {
+				c.put(rs.getInt("cid"), rs.getString("cname"));
+
+			}
+
+		} catch (SQLException | ClassNotFoundException | InstantiationException
+				| IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			Notification.show("DB Connection",
+					"Error Establishing DBConnection:  " + e.getMessage(),
+					Notification.Type.ERROR_MESSAGE);
+		}
+
+		return c;
+
+	}
+
+	private HashMap<Integer, String> getStates(int cid) {
+
+		HashMap<Integer, String> s = new HashMap<>();
+		String qx = "SELECT state as s, countrystateid as sid FROM psadatasourcetest.countrystate where countryid = "
+				+ cid + ";";
+		String Uname = "gomint";
+		String Pword = "gomint";
+		String drivers = "com.mysql.jdbc.Driver";
+		try {
+			Class<?> driver_class = Class.forName(drivers);
+			Driver driver = (Driver) driver_class.newInstance();
+			DriverManager.registerDriver(driver);
+
+			Connection conn = DriverManager
+					.getConnection(
+							"jdbc:mysql://gomintdb.caabwbnfnavv.us-east-1.rds.amazonaws.com:3306/psadatasourcetest",
+							Uname, Pword);
+
+			Statement stmt = conn.createStatement();
+
+			ResultSet rs = stmt.executeQuery(qx);
+
+			while (rs.next()) {
+				s.put(rs.getInt("sid"), rs.getString("s"));
+
+			}
+
+		} catch (SQLException | ClassNotFoundException | InstantiationException
+				| IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			Notification.show("DB Connection",
+					"Error Establishing DBConnection:  " + e.getMessage(),
+					Notification.Type.ERROR_MESSAGE);
+		}
+
+		return s;
+
+	}
+
+	private HashMap<Integer, String> getLGs(int sid) {
+
+		HashMap<Integer, String> s = new HashMap<>();
+		// = 1
+		String qx = "SELECT countrystatelgaid as lgid, lganame as lg FROM psadatasourcetest.countrystatelga where countrystateid = "
+				+ sid + ";";
+		String Uname = "gomint";
+		String Pword = "gomint";
+		String drivers = "com.mysql.jdbc.Driver";
+		try {
+			Class<?> driver_class = Class.forName(drivers);
+			Driver driver = (Driver) driver_class.newInstance();
+			DriverManager.registerDriver(driver);
+
+			Connection conn = DriverManager
+					.getConnection(
+							"jdbc:mysql://gomintdb.caabwbnfnavv.us-east-1.rds.amazonaws.com:3306/psadatasourcetest",
+							Uname, Pword);
+
+			Statement stmt = conn.createStatement();
+
+			ResultSet rs = stmt.executeQuery(qx);
+
+			while (rs.next()) {
+				s.put(rs.getInt("lgid"), rs.getString("lg"));
+
+			}
+
+		} catch (SQLException | ClassNotFoundException | InstantiationException
+				| IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			Notification.show("DB Connection",
+					"Error Establishing DBConnection:  " + e.getMessage(),
+					Notification.Type.ERROR_MESSAGE);
+		}
+
+		return s;
+
 	}
 
 }

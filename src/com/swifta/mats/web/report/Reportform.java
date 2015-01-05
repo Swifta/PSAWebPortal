@@ -87,6 +87,10 @@ public class Reportform extends VerticalLayout {
 
 		comboF = new ComboBox("Filter by: ");
 
+		Button btnReload = new Button("Refresh");
+		cF.setSpacing(true);
+		cF.addComponent(btnReload);
+
 		cByAndVal.addComponent(comboF);
 		cByAndVal.setSpacing(true);
 
@@ -123,6 +127,18 @@ public class Reportform extends VerticalLayout {
 
 		});
 
+		btnReload.addClickListener(new Button.ClickListener() {
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				if (reportType.getValue() == null)
+					return;
+				loadData(reportType.getValue());
+			}
+		});
+
 		reportType.addValueChangeListener(new ValueChangeListener() {
 
 			/**
@@ -133,650 +149,9 @@ public class Reportform extends VerticalLayout {
 			@SuppressWarnings("unchecked")
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-				// TODO Auto-generated method stub
-				if (searchform != null)
-					searchform.removeAllComponents();
-
-				Object objselectedId = reportType.getValue();
-				String selectedId = null;
-				if (objselectedId != null)
-					selectedId = objselectedId.toString();
-				if (selectedId == null)
+				if (reportType.getValue() == null)
 					return;
-				if (ht != null) {
-					ht.clear();
-				}
-
-				if (selectedId.equalsIgnoreCase("Float Management Report")) {
-
-					IndexedContainer container = new IndexedContainer();
-
-					container.addContainerProperty("S/N", String.class, "");
-					// container.addContainerProperty("Transaction ID",
-					// String.class, "");
-
-					container.addContainerProperty("Transaction Date",
-							String.class, "");
-					container
-							.addContainerProperty("Agent ID", String.class, "");
-					container.addContainerProperty("Dealer ID", String.class,
-							"");
-					container.addContainerProperty("Dealer's Balance (\u20A6)",
-							String.class, "");
-
-					String Uname = "gomint";
-					String Pword = "gomint";
-					String drivers = "com.mysql.jdbc.Driver";
-					try {
-
-						Class driver_class = Class.forName(drivers);
-						Driver driver = (Driver) driver_class.newInstance();
-						DriverManager.registerDriver(driver);
-
-						Connection conn = DriverManager
-								.getConnection(
-										"jdbc:mysql://gomintdb.caabwbnfnavv.us-east-1.rds.amazonaws.com:3306/psadatasourcetest",
-										Uname, Pword);
-
-						Statement stmt = conn.createStatement();
-						ResultSet rs;
-						int x = 0;
-						Object itemId;
-						Item trItem;
-						ds = container;
-						if (!container.removeAllItems()) {
-							return;
-						}
-						rs = stmt
-								.executeQuery("SELECT count(amount) as 'transactioncount',operatorid,format(sum(amount / 100),2) as 'amount',CAST(createdon as DATE) as 'created',dealerid FROM cashtransactions group by operatorid,CAST(createdon as DATE),dealerid order by created,operatorid");
-						while (rs.next()) {
-							x = x + 1;
-
-							itemId = container.addItem();
-
-							trItem = container.getItem(itemId);
-
-							Property<String> tdPropertyserial = trItem
-									.getItemProperty("S/N");
-
-							Property<String> tdPropertytransactiondate = trItem
-									.getItemProperty("Transaction Date");
-							Property<String> tdPropertyagentid = trItem
-									.getItemProperty("Agent ID");
-							Property<String> tdPropertydealerid = trItem
-									.getItemProperty("Dealer ID");
-							Property<String> tdPropertyamount = trItem
-									.getItemProperty("Dealer's Balance (\u20A6)");
-
-							String agentid = rs.getString("operatorid");
-							String amount = rs.getString("amount");
-							String createdon = rs.getString("created");
-							// String transactionstatusid = rs
-							// .getString("transactionstatusid");
-							String dealerid = rs.getString("dealerid");
-
-							if (!ht.containsKey("Agent ID")) {
-								HashSet<String> arrL = new HashSet<>();
-								arrL.add(agentid);
-								ht.put("Agent ID", arrL);
-							} else {
-								ht.get("Agent ID").add(agentid);
-							}
-
-							if (!ht.containsKey("Dealer ID")) {
-								HashSet<String> arrL = new HashSet<>();
-								arrL.add(dealerid);
-								ht.put("Dealer ID", arrL);
-							} else {
-								ht.get("Dealer ID").add(dealerid);
-							}
-
-							tdPropertyserial.setValue(String.valueOf(x));
-							tdPropertytransactiondate.setValue(createdon);
-							tdPropertyagentid.setValue(agentid);
-							tdPropertydealerid.setValue(dealerid);
-							tdPropertyamount.setValue(amount);
-
-						}
-						conn.close();
-
-						Notification.show(x + " result(s) found",
-								Notification.Type.WARNING_MESSAGE);
-
-						if (x > 30) {
-							x = 30;
-						}
-
-						table.setPageLength(x);
-
-						table.setContainerDataSource(container);
-
-					} catch (SQLException | InstantiationException
-							| IllegalAccessException | ClassNotFoundException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-
-						Notification.show("Error Establishing DBConnection = "
-								+ e, Notification.Type.ERROR_MESSAGE);
-					}
-
-					// searchform.removeAllComponents();
-					// searchform.addComponent(FloatManagementForm());
-				} else if (selectedId.equalsIgnoreCase("Transaction Report")) {
-					IndexedContainer container2 = new IndexedContainer();
-					container2.addContainerProperty("S/N", String.class, "");
-					container2.addContainerProperty("Transaction ID",
-							String.class, "");
-					container2.addContainerProperty("Transaction Date",
-							String.class, "");
-					container2.addContainerProperty("Transaction Type",
-							String.class, "");
-					container2.addContainerProperty("Amount (\u20A6)",
-							String.class, "");
-					container2.addContainerProperty("Sender", String.class, "");
-					container2.addContainerProperty("Sent_on_behalf_of",
-							String.class, "");
-					container2.addContainerProperty("Receiver", String.class,
-							"");
-					container2.addContainerProperty("Received_on_behalf_of",
-							String.class, "");
-					container2.addContainerProperty("Status", String.class, "");
-
-					searchform.removeAllComponents();
-					searchform.addComponent(Transactions());
-					ds = container2;
-					if (!container2.removeAllItems()) {
-						return;
-					}
-
-					String Uname = "gomint";
-					String Pword = "gomint";
-					String drivers = "com.mysql.jdbc.Driver";
-					try {
-
-						Class driver_class = Class.forName(drivers);
-						Driver driver = (Driver) driver_class.newInstance();
-						DriverManager.registerDriver(driver);
-
-						Connection conn = DriverManager
-								.getConnection(
-										"jdbc:mysql://gomintdb.caabwbnfnavv.us-east-1.rds.amazonaws.com:3306/psadatasourcetest",
-										Uname, Pword);
-
-						Statement stmt = conn.createStatement();
-						Statement stmt2 = conn.createStatement();
-						ResultSet rs, rs2;
-						int x = 0;
-						Object itemId;
-						Item trItem;
-						rs2 = stmt2
-								.executeQuery("select txn.userresourceid as 'Username', txnt.name as 'Transaction Type', txn.lastupdate as 'Timestamp', acct.openingbalance as 'Opening Balance', acct.closingbalance as 'Closing Balance', acct.amount as 'Amount',accts.name as 'Account Type'  from transactions txn join accounttransactions acct on txn.transactionid = acct.transactionid join transactiontypes txnt on txnt.transactiontypeid = txn.transactiontypeid join accounttypes accts on accts.accounttypeid = acct.accounttypeid   join accountholders ah on ah.username = txn.userresourceid group by txn.userresourceid order by txn.lastupdate");
-						while (rs2.next()) {
-							agent.addItem(rs2.getString("Username"));
-							agent.setNullSelectionAllowed(false);
-							agent.setTextInputAllowed(false);
-							agent.setInputPrompt("Select");
-
-						}
-						// String sql =
-						// "select txn.transactionid as 'Transaction ID', tvo.fromamount as 'Amount', fromah.username as 'From', toah.username as 'To',txnt.name as 'Transaction Type', CAST(txn.lastupdate AS DATE) as 'Timestamp', txnst.transactionstatusname as 'Status' from transactions txn join transactionvalueoperations tvo on tvo.transactionid = txn.transactionid join transactionstatus txnst on txnst.transactionstatusid = txn.transactionstatusid join transactiontypes txnt on txnt.transactiontypeid = txn.transactiontypeid join accountholders ah on ah.username = txn.userresourceid join accountholders fromah on fromah.accountholderid = tvo.fromaccountholderuserid join accountholders toah on toah.accountholderid = tvo.toaccountholderresourceid   order by tvo.transactionid, ah.username, txn.lastupdate";
-						StringBuilder trxnsql = new StringBuilder();
-						trxnsql.append("select  txn.transactionid as 'Transaction ID', rolejoin.amount as 'Amount', rolejoin.sender as 'Sender', rolejoin.send_onbehalf_of as 'send_onbehalf_of',");
-						trxnsql.append("rolejoin.receiver as 'Receiver', rolejoin.received_onbehalf_of as 'received_onbehalf_of',txnt.name as 'Transaction Type', txn.lastupdate as 'Timestamp', txnst.transactionstatusname as 'Status'");
-						trxnsql.append(" from transactions txn, (select transactionid as transactionid, operatorid as sender, operatorid as send_onbehalf_of, dealerid as receiver, dealerid as received_onbehalf_of,");
-						trxnsql.append("amount as amount from cashtransactions union select transactionid as transactionid,initiatinguserresourceid as sender, realuserresourceid as onbehalf_of_sender,");
-						trxnsql.append("toreceivinguserresource as receiver, (select username from accountholders where accountholderid = torealaccountholderresourceid) as onbehalf_of_receiver, toamount as amount from transactionvalueoperations) rolejoin,");
-						trxnsql.append("transactionstatus txnst, transactiontypes txnt where rolejoin.transactionid = txn.transactionid and txnst.transactionstatusid = txn.transactionstatusid");
-						trxnsql.append(" and txnt.transactiontypeid = txn.transactiontypeid order by rolejoin.transactionid, txn.lastupdate;");
-
-						rs = stmt.executeQuery(trxnsql.toString());
-						// .executeQuery("select txn.userresourceid as 'Username', txnt.name as 'Transaction Type', CAST(txn.lastupdate AS DATE) as 'Timestamp', format(acct.openingbalance /100,2) as 'Opening Balance', format(acct.closingbalance / 100,2) as 'Closing Balance', format(acct.amount / 100 , 2) as 'Amount',accts.name as 'Account Type'  from transactions txn join accounttransactions acct on txn.transactionid = acct.transactionid join transactiontypes txnt on txnt.transactiontypeid = txn.transactiontypeid join accounttypes accts on accts.accounttypeid = acct.accounttypeid   join accountholders ah on ah.username = txn.userresourceid  order by ah.username, txn.lastupdate");
-						while (rs.next()) {
-							x = x + 1;
-
-							String transactiontype = rs
-									.getString("Transaction Type");
-							String amount = rs.getString("Amount");
-							String createdon = rs.getString("Timestamp");
-							String transactionID = rs
-									.getString("Transaction ID");
-							String sender = rs.getString("Sender");
-							String send_onbehalf_of = rs
-									.getString("send_onbehalf_of");
-							String receiver = rs.getString("Receiver");
-							String received_onbehalf_of = rs
-									.getString("received_onbehalf_of");
-							String status = rs.getString("Status");
-
-							// String fida = "Commission Account";
-							// String fido = "Fees Account";
-
-							if (!ht.containsKey("Transaction Type")) {
-								HashSet<String> arrL = new HashSet<>();
-								arrL.add(transactiontype);
-								ht.put("Transaction Type", arrL);
-							} else {
-								ht.get("Transaction Type").add(transactiontype);
-							}
-
-							if (!ht.containsKey("Status")) {
-								HashSet<String> arrL = new HashSet<>();
-								arrL.add(status);
-								ht.put("Status", arrL);
-							} else {
-								ht.get("Status").add(status);
-							}
-
-							System.out
-									.println("-----------------------Print Data :::\nTransaction Type : "
-											+ transactiontype
-											+ "\nAmount : "
-											+ amount
-											+ "\nTimestamp : "
-											+ createdon
-											+ "\nTransaction ID : "
-											+ transactionID
-											+ "\nFrom : "
-											+ sender
-											+ "\nTo : "
-											+ receiver
-											+ "\nStatus : " + status);
-							itemId = container2.addItem();
-
-							trItem = container2.getItem(itemId);
-							Property<String> tdPropertyserial = trItem
-									.getItemProperty("S/N");
-
-							Property<String> tdPropertytransactiondate = trItem
-									.getItemProperty("Transaction Date");
-							Property<String> tdPropertytransactionid = trItem
-									.getItemProperty("Transaction ID");
-							Property<String> tdPropertytransactiontype = trItem
-									.getItemProperty("Transaction Type");
-							Property<String> tdPropertyamount = trItem
-									.getItemProperty("Amount (\u20A6)");
-							Property<String> tdPropertysender = trItem
-									.getItemProperty("Sender");
-							Property<String> tdPropertysenderonbehalfof = trItem
-									.getItemProperty("Sent_on_behalf_of");
-
-							Property<String> tdPropertyreceiver = trItem
-									.getItemProperty("Receiver");
-							Property<String> tdPropertyreceiveronbehalfof = trItem
-									.getItemProperty("Received_on_behalf_of");
-							Property<String> tdPropertystatus = trItem
-									.getItemProperty("Status");
-
-							tdPropertyserial.setValue(String.valueOf(x));
-							tdPropertytransactionid.setValue(transactionID);
-							tdPropertytransactiondate.setValue(createdon);
-							tdPropertytransactiontype.setValue(transactiontype);
-							tdPropertyamount.setValue(amount);
-							tdPropertysender.setValue(sender);
-							tdPropertysenderonbehalfof
-									.setValue(send_onbehalf_of);
-							tdPropertyreceiver.setValue(receiver);
-							tdPropertyreceiveronbehalfof
-									.setValue(received_onbehalf_of);
-							tdPropertystatus.setValue(status);
-
-						}
-
-						conn.close();
-						Notification.show(x + " result(s) found",
-								Notification.Type.WARNING_MESSAGE);
-
-						if (x > 30) {
-							x = 30;
-						}
-
-						table.setPageLength(x);
-
-						table.setContainerDataSource(container2);
-
-					} catch (SQLException | ClassNotFoundException
-							| InstantiationException | IllegalAccessException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-						Notification.show("Error Establishing DBConnection = "
-								+ e, Notification.Type.ERROR_MESSAGE);
-					}
-
-					// searchform.removeAllComponents();
-					// searchform.addComponent(SettlementForm());
-
-				} else if (selectedId.equalsIgnoreCase("Summary Report")) {
-					IndexedContainer container3 = new IndexedContainer();
-
-					container3.addContainerProperty("S/N", String.class, "");
-					// container3.addContainerProperty("Name", String.class,
-					// "");
-					container3.addContainerProperty("Transaction Date",
-							String.class, "");
-					container3.addContainerProperty("Transaction Type",
-							String.class, "");
-					container3.addContainerProperty("Transaction Count",
-							String.class, "");
-					container3.addContainerProperty(
-							"Sum of Transaction Amount (\u20A6)", String.class,
-							"");
-					container3.addContainerProperty("Status", String.class, "");
-
-					ds = container3;
-
-					if (!container3.removeAllItems()) {
-						return;
-					}
-
-					String Uname = "gomint";
-					String Pword = "gomint";
-					String drivers = "com.mysql.jdbc.Driver";
-					try {
-
-						Class driver_class = Class.forName(drivers);
-						Driver driver = (Driver) driver_class.newInstance();
-						DriverManager.registerDriver(driver);
-
-						Connection conn = DriverManager
-								.getConnection(
-										"jdbc:mysql://gomintdb.caabwbnfnavv.us-east-1.rds.amazonaws.com:3306/psadatasourcetest",
-										Uname, Pword);
-
-						Statement stmt = conn.createStatement();
-						ResultSet rs;
-						int x = 0;
-						Object itemId;
-						Item trItem;
-
-						StringBuilder summarysql = new StringBuilder();
-						summarysql
-								.append("select txnt.name as 'Transaction Type', count(txnt.name) as 'No of transactions', sum(rolejoin.amount) as 'Total Amount', CAST(txn.lastupdate AS DATE) as 'Date',");
-						summarysql
-								.append("txnst.transactionstatusname as 'Status' from transactions txn, (select transactionid as transactionid, operatorid as originatinguser,dealerid as receivinguser,");
-						summarysql
-								.append("amount as amount from cashtransactions union select transactionid as transactionid, realuserresourceid as originatinguser, toreceivinguserresource as receivinguser, toamount as amount");
-						summarysql
-								.append(" from transactionvalueoperations) rolejoin, transactionstatus txnst,transactiontypes txnt where rolejoin.transactionid = txn.transactionid");
-						summarysql
-								.append(" and txnst.transactionstatusid = txn.transactionstatusid and txnt.transactiontypeid = txn.transactiontypeid group by txnt.name,txnst.transactionstatusname,CAST(txn.lastupdate AS DATE)");
-
-						rs = stmt.executeQuery(summarysql.toString());
-						while (rs.next()) {
-							x = x + 1;
-
-							String transactiontype = rs
-									.getString("Transaction Type");
-							String amount = rs.getString("Total Amount");
-							String nooftransactions = rs
-									.getString("No of transactions");
-							String createdon = rs.getString("Date");
-							String status = rs.getString("Status");
-							System.out.println(nooftransactions);
-							System.out.println(amount);
-							System.out.println(createdon);
-							// String name = rs.getString("Username");
-
-							if (!ht.containsKey("Transaction Type")) {
-								HashSet<String> arrL = new HashSet<>();
-								arrL.add(transactiontype);
-								ht.put("Transaction Type", arrL);
-							} else {
-								ht.get("Transaction Type").add(transactiontype);
-							}
-
-							itemId = container3.addItem();
-
-							trItem = container3.getItem(itemId);
-
-							Property<String> tdPropertyserial = trItem
-									.getItemProperty("S/N");
-							// Property<String> tdPropertyname = trItem
-							// .getItemProperty("Name");
-							Property<String> tdPropertytransactiondate = trItem
-									.getItemProperty("Transaction Date");
-							Property<String> tdPropertytransactiontype = trItem
-									.getItemProperty("Transaction Type");
-							Property<String> tdPropertytransactioncount = trItem
-									.getItemProperty("Transaction Count");
-							Property<String> tdPropertyamount = trItem
-									.getItemProperty("Sum of Transaction Amount (\u20A6)");
-							Property<String> tdPropertytransactionstatus = trItem
-									.getItemProperty("Status");
-
-							// tdPropertyname.setValue(name);
-							tdPropertyserial.setValue(String.valueOf(x));
-							tdPropertytransactiondate.setValue(createdon);
-							tdPropertytransactiontype.setValue(transactiontype);
-							tdPropertyamount.setValue(amount);
-							tdPropertytransactioncount
-									.setValue(nooftransactions);
-							tdPropertytransactionstatus.setValue(status);
-						}
-
-						conn.close();
-						Notification.show(x + " result(s) found",
-								Notification.Type.WARNING_MESSAGE);
-
-						if (x > 30) {
-							x = 30;
-						}
-
-						table.setPageLength(x);
-
-						table.setContainerDataSource(container3);
-
-					} catch (SQLException | ClassNotFoundException
-							| InstantiationException | IllegalAccessException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-						Notification.show("Error Establishing DBConnection = "
-								+ e, Notification.Type.ERROR_MESSAGE);
-					}
-
-					// searchform.removeAllComponents();
-					// searchform.addComponent(SettlementForm());
-
-				} else if (selectedId
-						.equalsIgnoreCase("Fees / Commission Report")) {
-
-					IndexedContainer feesCommissionContainer = new IndexedContainer();
-					feesCommissionContainer.addContainerProperty("S/N",
-							String.class, "");
-					feesCommissionContainer.addContainerProperty("Trans. ID",
-							String.class, "");
-					feesCommissionContainer.addContainerProperty(
-							"Transaction Type", String.class, "");
-					feesCommissionContainer.addContainerProperty(
-							"Commission Account", String.class, "");
-					feesCommissionContainer.addContainerProperty(
-							"Fees Account", String.class, "");
-					// feesCommissionContainer.addContainerProperty("Transaction Date",
-					// String.class, "");
-
-					// feesCommissionContainer.addContainerProperty(
-					// "Opening Balance (\u20A6)", String.class, "");
-
-					feesCommissionContainer.addContainerProperty(
-							"Adjusted Fees (\u20A6)", String.class, "");
-					feesCommissionContainer.addContainerProperty(
-							"Original Fees (\u20A6)", String.class, "");
-
-					feesCommissionContainer.addContainerProperty(
-							"Commission (\u20A6)", String.class, "");
-
-					feesCommissionContainer.addContainerProperty(
-							"Amount (\u20A6)", String.class, "");
-					searchform.removeAllComponents();
-					searchform.addComponent(Transactions());
-					ds = feesCommissionContainer;
-					// feesCommissionContainer.removeAllItems();
-					if (!feesCommissionContainer.removeAllItems()) {
-						return;
-					}
-
-					ds = feesCommissionContainer;
-					String Uname = "gomint";
-					String Pword = "gomint";
-					String drivers = "com.mysql.jdbc.Driver";
-					try {
-
-						Class driver_class = Class.forName(drivers);
-						Driver driver = (Driver) driver_class.newInstance();
-						DriverManager.registerDriver(driver);
-
-						Connection conn = DriverManager
-								.getConnection(
-										"jdbc:mysql://gomintdb.caabwbnfnavv.us-east-1.rds.amazonaws.com:3306/psadatasourcetest",
-										Uname, Pword);
-
-						Statement stmt = conn.createStatement();
-						Statement stmt2 = conn.createStatement();
-						ResultSet rs, rs2;
-						int x = 0;
-						Object itemId;
-						Item trItem;
-						rs2 = stmt2
-								.executeQuery("select txn.userresourceid as 'Username', txnt.name as 'Transaction Type', txn.lastupdate as 'Timestamp', acct.openingbalance as 'Opening Balance', acct.closingbalance as 'Closing Balance', acct.amount as 'Amount',accts.name as 'Account Type'  from transactions txn join accounttransactions acct on txn.transactionid = acct.transactionid join transactiontypes txnt on txnt.transactiontypeid = txn.transactiontypeid join accounttypes accts on accts.accounttypeid = acct.accounttypeid   join accountholders ah on ah.username = txn.userresourceid group by txn.userresourceid order by txn.lastupdate");
-						while (rs2.next()) {
-							agent.addItem(rs2.getString("Username"));
-							agent.setNullSelectionAllowed(false);
-							agent.setTextInputAllowed(false);
-							agent.setInputPrompt("Select");
-
-						}
-
-						// rs = stmt
-						// .executeQuery("select trx1.transactionid as txid,trxtyp.name as 'Transaction Type',acth2.username as 'Agent/Dealer',acts1.amount as commission ,acth.username as 'MM Operator',acts2.amount as Fees,acts3.amount as amount from accounttransactions acts1,  transactions trx1,transactiontypes trxtyp, accounttransactions acts2, accounttransactions acts3, accountholders acth, accountholders acth2 where acts1.transactionid = trx1.transactionid and acts2.transactionid = trx1.transactionid and acts2.userresourceid = acth.accountholderid and acts3.userresourceid = acth2.accountholderid and acts3.transactionid = trx1.transactionid and trx1.transactiontypeid = trxtyp.transactiontypeid and acts1.accountresourceid = 12 and acts2.accountresourceid in (select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from accountholders where profileid = 15 and accounttypeid = 2)) and acts3.accountresourceid in (select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from accountholders where (profileid = 11 or profileid = 6) and accounttypeid = 1))");
-						// Notification.show(rs.);
-						// rs = stmt
-						// .executeQuery("select txn.userresourceid as 'Username', txnt.name as 'Transaction Type', CAST(txn.lastupdate AS DATE) as 'Timestamp', format(acct.openingbalance /100,2) as 'Opening Balance', format(acct.closingbalance / 100,2) as 'Closing Balance', format(acct.amount / 100 , 2) as 'Amount',accts.name as 'Account Type'  from transactions txn join accounttransactions acct on txn.transactionid = acct.transactionid join transactiontypes txnt on txnt.transactiontypeid = txn.transactiontypeid join accounttypes accts on accts.accounttypeid = acct.accounttypeid   join accountholders ah on ah.username = txn.userresourceid  order by ah.username, txn.lastupdate");
-
-						StringBuilder sb = new StringBuilder();
-						sb.append("select trx1.transactionid as txid,trxtyp.name as 'Transaction Type','MATS_TOTAL_FEE&COMMISSION' as 'Commission Account',acts1.amount as commission,");
-
-						sb.append("acth.username as 'Fees Account',acts2.amount as 'Adjusted Fees',acts2.amount+acts1.amount as 'Original Fees',acts3.amount as amount,acts1.datecreated as 'DoC' from accounttransactions acts1,  transactions trx1, transactiontypes trxtyp, accounttransactions acts2, accounttransactions acts3, accountholders");
-
-						sb.append(" acth, accountholders acth2, accounts act1, accounts act2, profiles pf1, profiles pf2 where acts1.transactionid = trx1.transactionid and act1.profileid = pf1.profileid and acts2.transactionid = trx1.transactionid and acts2.userresourceid = acth.accountholderid and acts1.accountresourceid = act1.accountid and act2.profileid = pf2.profileid and acts2.accountresourceid = act2.accountid and acts3.userresourceid = acth2.accountholderid and acts3.transactionid = trx1.transactionid and trx1.transactiontypeid = trxtyp.transactiontypeid and acts1.accountresourceid = 12 and acts2.accountresourceid in");
-
-						sb.append(" (select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from accountholders where profileid = 15 and accounttypeid = 2)) and acts3.accountresourceid in (select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from accountholders where (profileid = 11 or profileid = 6) and accounttypeid = 1))");
-
-						rs = stmt.executeQuery(sb.toString());
-
-						while (rs.next()) {
-							x = x + 1;
-							String fidTxtype = "Transaction Type";
-							String fidCommAcc = "Commission Account";
-							String fidFAcc = "Fees Account";
-
-							String transactiontype = rs.getString(fidTxtype);
-							String feesAccount = rs.getString(fidFAcc);
-							String commissionAccount = rs.getString(fidCommAcc);
-
-							String transID = rs.getString("txid");
-
-							String commission = rs.getString("commission");
-
-							String afees = rs.getString("Adjusted Fees");
-
-							String ofees = rs.getString("Original Fees");
-
-							String amount = rs.getString("amount");
-
-							String fida = "Commission Account";
-							String fido = "Fees Account";
-
-							if (!ht.containsKey(fidTxtype)) {
-								HashSet<String> arrL = new HashSet<>();
-								arrL.add(transactiontype);
-								ht.put(fidTxtype, arrL);
-							} else {
-								ht.get(fidTxtype).add(transactiontype);
-							}
-
-							if (!ht.containsKey(fido)) {
-								HashSet<String> arrL = new HashSet<>();
-								arrL.add(feesAccount);
-								ht.put(fido, arrL);
-							} else {
-								ht.get(fido).add(feesAccount);
-							}
-
-							if (!ht.containsKey(fida)) {
-								HashSet<String> arrL = new HashSet<>();
-								arrL.add(commissionAccount);
-								ht.put(fida, arrL);
-							} else {
-								ht.get(fida).add(commissionAccount);
-							}
-
-							itemId = feesCommissionContainer.addItem();
-
-							trItem = feesCommissionContainer.getItem(itemId);
-
-							Property<String> tdPropertyserial = trItem
-									.getItemProperty("S/N");
-							Property<String> tdPropertyCommAcc = trItem
-									.getItemProperty("Commission Account");
-
-							Property<String> tdPropertyFeesAcc = trItem
-									.getItemProperty("Fees Account");
-
-							Property<String> tdPropertytransactiontype = trItem
-									.getItemProperty("Transaction Type");
-
-							Property<String> tdPropertyAFees = trItem
-									.getItemProperty("Adjusted Fees (\u20A6)");
-							Property<String> tdPropertyOFees = trItem
-									.getItemProperty("Original Fees (\u20A6)");
-
-							Property<String> tdPropertyCommission = trItem
-									.getItemProperty("Commission (\u20A6)");
-
-							Property<String> tdPropertyamount = trItem
-									.getItemProperty("Amount (\u20A6)");
-
-							Property<String> tdPropertytxid = trItem
-									.getItemProperty("Trans. ID");
-
-							tdPropertyserial.setValue(String.valueOf(x));
-
-							tdPropertyCommAcc.setValue(commissionAccount);
-							tdPropertyFeesAcc.setValue(feesAccount);
-							tdPropertyAFees.setValue(afees);
-							tdPropertyOFees.setValue(ofees);
-							tdPropertyCommission.setValue(commission);
-							tdPropertytxid.setValue(transID);
-
-							tdPropertytransactiontype.setValue(transactiontype);
-
-							tdPropertyamount.setValue(amount);
-
-						}
-
-						conn.close();
-						Notification.show(x + " result(s) found",
-								Notification.Type.WARNING_MESSAGE);
-
-						table.setContainerDataSource(feesCommissionContainer);
-
-						if (x > 30)
-							x = 30;
-						table.setPageLength(x);
-						table.setSelectable(true);
-						// table.setEditable(true);
-					} catch (SQLException | ClassNotFoundException
-							| InstantiationException | IllegalAccessException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-						Notification.show("Error Establishing DBConnection = "
-								+ e, Notification.Type.ERROR_MESSAGE);
-					}
-				}
-				comboF.removeAllItems();
-				for (String s : ht.keySet())
-					comboF.addItem(s);
-				comboF.select(null);
-				addFilter(ds);
+				loadData(reportType.getValue());
 			}
 			// searchform.removeAllComponents();
 			// searchform.addComponent(SettlementForm());
@@ -1018,6 +393,635 @@ public class Reportform extends VerticalLayout {
 
 		});
 
+	}
+
+	private void loadData(Object tbName) {
+		if (searchform != null)
+			searchform.removeAllComponents();
+
+		String selectedId = tbName.toString();
+		if (selectedId == null)
+			return;
+		if (ht != null) {
+			ht.clear();
+		}
+
+		if (selectedId.equalsIgnoreCase("Float Management Report")) {
+
+			IndexedContainer container = new IndexedContainer();
+
+			container.addContainerProperty("S/N", String.class, "");
+			// container.addContainerProperty("Transaction ID",
+			// String.class, "");
+
+			container
+					.addContainerProperty("Transaction Date", String.class, "");
+			container.addContainerProperty("Agent ID", String.class, "");
+			container.addContainerProperty("Dealer ID", String.class, "");
+			container.addContainerProperty("Dealer's Balance (\u20A6)",
+					String.class, "");
+
+			String Uname = "gomint";
+			String Pword = "gomint";
+			String drivers = "com.mysql.jdbc.Driver";
+			try {
+
+				Class driver_class = Class.forName(drivers);
+				Driver driver = (Driver) driver_class.newInstance();
+				DriverManager.registerDriver(driver);
+
+				Connection conn = DriverManager
+						.getConnection(
+								"jdbc:mysql://gomintdb.caabwbnfnavv.us-east-1.rds.amazonaws.com:3306/psadatasourcetest",
+								Uname, Pword);
+
+				Statement stmt = conn.createStatement();
+				ResultSet rs;
+				int x = 0;
+				Object itemId;
+				Item trItem;
+				ds = container;
+				if (!container.removeAllItems()) {
+					return;
+				}
+				rs = stmt
+						.executeQuery("SELECT count(amount) as 'transactioncount',operatorid,format(sum(amount / 100),2) as 'amount',CAST(createdon as DATE) as 'created',dealerid FROM cashtransactions group by operatorid,CAST(createdon as DATE),dealerid order by created,operatorid");
+				while (rs.next()) {
+					x = x + 1;
+
+					itemId = container.addItem();
+
+					trItem = container.getItem(itemId);
+
+					Property<String> tdPropertyserial = trItem
+							.getItemProperty("S/N");
+
+					Property<String> tdPropertytransactiondate = trItem
+							.getItemProperty("Transaction Date");
+					Property<String> tdPropertyagentid = trItem
+							.getItemProperty("Agent ID");
+					Property<String> tdPropertydealerid = trItem
+							.getItemProperty("Dealer ID");
+					Property<String> tdPropertyamount = trItem
+							.getItemProperty("Dealer's Balance (\u20A6)");
+
+					String agentid = rs.getString("operatorid");
+					String amount = rs.getString("amount");
+					String createdon = rs.getString("created");
+					// String transactionstatusid = rs
+					// .getString("transactionstatusid");
+					String dealerid = rs.getString("dealerid");
+
+					if (!ht.containsKey("Agent ID")) {
+						HashSet<String> arrL = new HashSet<>();
+						arrL.add(agentid);
+						ht.put("Agent ID", arrL);
+					} else {
+						ht.get("Agent ID").add(agentid);
+					}
+
+					if (!ht.containsKey("Dealer ID")) {
+						HashSet<String> arrL = new HashSet<>();
+						arrL.add(dealerid);
+						ht.put("Dealer ID", arrL);
+					} else {
+						ht.get("Dealer ID").add(dealerid);
+					}
+
+					tdPropertyserial.setValue(String.valueOf(x));
+					tdPropertytransactiondate.setValue(createdon);
+					tdPropertyagentid.setValue(agentid);
+					tdPropertydealerid.setValue(dealerid);
+					tdPropertyamount.setValue(amount);
+
+				}
+				conn.close();
+
+				Notification.show(x + " result(s) found",
+						Notification.Type.WARNING_MESSAGE);
+
+				if (x > 30) {
+					x = 30;
+				}
+
+				table.setPageLength(x);
+
+				table.setContainerDataSource(container);
+
+			} catch (SQLException | InstantiationException
+					| IllegalAccessException | ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+
+				Notification.show("Error Establishing DBConnection = " + e,
+						Notification.Type.ERROR_MESSAGE);
+			}
+
+			// searchform.removeAllComponents();
+			// searchform.addComponent(FloatManagementForm());
+		} else if (selectedId.equalsIgnoreCase("Transaction Report")) {
+			IndexedContainer container2 = new IndexedContainer();
+			container2.addContainerProperty("S/N", String.class, "");
+			container2.addContainerProperty("Transaction ID", String.class, "");
+			container2.addContainerProperty("Transaction Date", String.class,
+					"");
+			container2.addContainerProperty("Transaction Type", String.class,
+					"");
+			container2
+					.addContainerProperty("Amount (\u20A6)", String.class, "");
+			container2.addContainerProperty("Sender", String.class, "");
+			container2.addContainerProperty("Sent_on_behalf_of", String.class,
+					"");
+			container2.addContainerProperty("Receiver", String.class, "");
+			container2.addContainerProperty("Received_on_behalf_of",
+					String.class, "");
+			container2.addContainerProperty("Status", String.class, "");
+
+			searchform.removeAllComponents();
+			searchform.addComponent(Transactions());
+			ds = container2;
+			if (!container2.removeAllItems()) {
+				return;
+			}
+
+			String Uname = "gomint";
+			String Pword = "gomint";
+			String drivers = "com.mysql.jdbc.Driver";
+			try {
+
+				Class driver_class = Class.forName(drivers);
+				Driver driver = (Driver) driver_class.newInstance();
+				DriverManager.registerDriver(driver);
+
+				Connection conn = DriverManager
+						.getConnection(
+								"jdbc:mysql://gomintdb.caabwbnfnavv.us-east-1.rds.amazonaws.com:3306/psadatasourcetest",
+								Uname, Pword);
+
+				Statement stmt = conn.createStatement();
+				Statement stmt2 = conn.createStatement();
+				ResultSet rs, rs2;
+				int x = 0;
+				Object itemId;
+				Item trItem;
+				rs2 = stmt2
+						.executeQuery("select txn.userresourceid as 'Username', txnt.name as 'Transaction Type', txn.lastupdate as 'Timestamp', acct.openingbalance as 'Opening Balance', acct.closingbalance as 'Closing Balance', acct.amount as 'Amount',accts.name as 'Account Type'  from transactions txn join accounttransactions acct on txn.transactionid = acct.transactionid join transactiontypes txnt on txnt.transactiontypeid = txn.transactiontypeid join accounttypes accts on accts.accounttypeid = acct.accounttypeid   join accountholders ah on ah.username = txn.userresourceid group by txn.userresourceid order by txn.lastupdate");
+				while (rs2.next()) {
+					agent.addItem(rs2.getString("Username"));
+					agent.setNullSelectionAllowed(false);
+					agent.setTextInputAllowed(false);
+					agent.setInputPrompt("Select");
+
+				}
+				// String sql =
+				// "select txn.transactionid as 'Transaction ID', tvo.fromamount as 'Amount', fromah.username as 'From', toah.username as 'To',txnt.name as 'Transaction Type', CAST(txn.lastupdate AS DATE) as 'Timestamp', txnst.transactionstatusname as 'Status' from transactions txn join transactionvalueoperations tvo on tvo.transactionid = txn.transactionid join transactionstatus txnst on txnst.transactionstatusid = txn.transactionstatusid join transactiontypes txnt on txnt.transactiontypeid = txn.transactiontypeid join accountholders ah on ah.username = txn.userresourceid join accountholders fromah on fromah.accountholderid = tvo.fromaccountholderuserid join accountholders toah on toah.accountholderid = tvo.toaccountholderresourceid   order by tvo.transactionid, ah.username, txn.lastupdate";
+				StringBuilder trxnsql = new StringBuilder();
+				trxnsql.append("select  txn.transactionid as 'Transaction ID', rolejoin.amount as 'Amount', rolejoin.sender as 'Sender', rolejoin.send_onbehalf_of as 'send_onbehalf_of',");
+				trxnsql.append("rolejoin.receiver as 'Receiver', rolejoin.received_onbehalf_of as 'received_onbehalf_of',txnt.name as 'Transaction Type', txn.lastupdate as 'Timestamp', txnst.transactionstatusname as 'Status'");
+				trxnsql.append(" from transactions txn, (select transactionid as transactionid, operatorid as sender, operatorid as send_onbehalf_of, dealerid as receiver, dealerid as received_onbehalf_of,");
+				trxnsql.append("amount as amount from cashtransactions union select transactionid as transactionid,initiatinguserresourceid as sender, realuserresourceid as onbehalf_of_sender,");
+				trxnsql.append("toreceivinguserresource as receiver, (select username from accountholders where accountholderid = torealaccountholderresourceid) as onbehalf_of_receiver, toamount as amount from transactionvalueoperations) rolejoin,");
+				trxnsql.append("transactionstatus txnst, transactiontypes txnt where rolejoin.transactionid = txn.transactionid and txnst.transactionstatusid = txn.transactionstatusid");
+				trxnsql.append(" and txnt.transactiontypeid = txn.transactiontypeid order by rolejoin.transactionid, txn.lastupdate;");
+
+				rs = stmt.executeQuery(trxnsql.toString());
+				// .executeQuery("select txn.userresourceid as 'Username', txnt.name as 'Transaction Type', CAST(txn.lastupdate AS DATE) as 'Timestamp', format(acct.openingbalance /100,2) as 'Opening Balance', format(acct.closingbalance / 100,2) as 'Closing Balance', format(acct.amount / 100 , 2) as 'Amount',accts.name as 'Account Type'  from transactions txn join accounttransactions acct on txn.transactionid = acct.transactionid join transactiontypes txnt on txnt.transactiontypeid = txn.transactiontypeid join accounttypes accts on accts.accounttypeid = acct.accounttypeid   join accountholders ah on ah.username = txn.userresourceid  order by ah.username, txn.lastupdate");
+				while (rs.next()) {
+					x = x + 1;
+
+					String transactiontype = rs.getString("Transaction Type");
+					String amount = rs.getString("Amount");
+					String createdon = rs.getString("Timestamp");
+					String transactionID = rs.getString("Transaction ID");
+					String sender = rs.getString("Sender");
+					String send_onbehalf_of = rs.getString("send_onbehalf_of");
+					String receiver = rs.getString("Receiver");
+					String received_onbehalf_of = rs
+							.getString("received_onbehalf_of");
+					String status = rs.getString("Status");
+
+					// String fida = "Commission Account";
+					// String fido = "Fees Account";
+
+					if (!ht.containsKey("Transaction Type")) {
+						HashSet<String> arrL = new HashSet<>();
+						arrL.add(transactiontype);
+						ht.put("Transaction Type", arrL);
+					} else {
+						ht.get("Transaction Type").add(transactiontype);
+					}
+
+					if (!ht.containsKey("Status")) {
+						HashSet<String> arrL = new HashSet<>();
+						arrL.add(status);
+						ht.put("Status", arrL);
+					} else {
+						ht.get("Status").add(status);
+					}
+
+					System.out
+							.println("-----------------------Print Data :::\nTransaction Type : "
+									+ transactiontype
+									+ "\nAmount : "
+									+ amount
+									+ "\nTimestamp : "
+									+ createdon
+									+ "\nTransaction ID : "
+									+ transactionID
+									+ "\nFrom : "
+									+ sender
+									+ "\nTo : "
+									+ receiver + "\nStatus : " + status);
+					itemId = container2.addItem();
+
+					trItem = container2.getItem(itemId);
+					Property<String> tdPropertyserial = trItem
+							.getItemProperty("S/N");
+
+					Property<String> tdPropertytransactiondate = trItem
+							.getItemProperty("Transaction Date");
+					Property<String> tdPropertytransactionid = trItem
+							.getItemProperty("Transaction ID");
+					Property<String> tdPropertytransactiontype = trItem
+							.getItemProperty("Transaction Type");
+					Property<String> tdPropertyamount = trItem
+							.getItemProperty("Amount (\u20A6)");
+					Property<String> tdPropertysender = trItem
+							.getItemProperty("Sender");
+					Property<String> tdPropertysenderonbehalfof = trItem
+							.getItemProperty("Sent_on_behalf_of");
+
+					Property<String> tdPropertyreceiver = trItem
+							.getItemProperty("Receiver");
+					Property<String> tdPropertyreceiveronbehalfof = trItem
+							.getItemProperty("Received_on_behalf_of");
+					Property<String> tdPropertystatus = trItem
+							.getItemProperty("Status");
+
+					tdPropertyserial.setValue(String.valueOf(x));
+					tdPropertytransactionid.setValue(transactionID);
+					tdPropertytransactiondate.setValue(createdon);
+					tdPropertytransactiontype.setValue(transactiontype);
+					tdPropertyamount.setValue(amount);
+					tdPropertysender.setValue(sender);
+					tdPropertysenderonbehalfof.setValue(send_onbehalf_of);
+					tdPropertyreceiver.setValue(receiver);
+					tdPropertyreceiveronbehalfof.setValue(received_onbehalf_of);
+					tdPropertystatus.setValue(status);
+
+				}
+
+				conn.close();
+				Notification.show(x + " result(s) found",
+						Notification.Type.WARNING_MESSAGE);
+
+				if (x > 30) {
+					x = 30;
+				}
+
+				table.setPageLength(x);
+
+				table.setContainerDataSource(container2);
+
+			} catch (SQLException | ClassNotFoundException
+					| InstantiationException | IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				Notification.show("Error Establishing DBConnection = " + e,
+						Notification.Type.ERROR_MESSAGE);
+			}
+
+			// searchform.removeAllComponents();
+			// searchform.addComponent(SettlementForm());
+
+		} else if (selectedId.equalsIgnoreCase("Summary Report")) {
+			IndexedContainer container3 = new IndexedContainer();
+
+			container3.addContainerProperty("S/N", String.class, "");
+			// container3.addContainerProperty("Name", String.class,
+			// "");
+			container3.addContainerProperty("Transaction Date", String.class,
+					"");
+			container3.addContainerProperty("Transaction Type", String.class,
+					"");
+			container3.addContainerProperty("Transaction Count", String.class,
+					"");
+			container3.addContainerProperty(
+					"Sum of Transaction Amount (\u20A6)", String.class, "");
+			container3.addContainerProperty("Status", String.class, "");
+
+			ds = container3;
+
+			if (!container3.removeAllItems()) {
+				return;
+			}
+
+			String Uname = "gomint";
+			String Pword = "gomint";
+			String drivers = "com.mysql.jdbc.Driver";
+			try {
+
+				Class driver_class = Class.forName(drivers);
+				Driver driver = (Driver) driver_class.newInstance();
+				DriverManager.registerDriver(driver);
+
+				Connection conn = DriverManager
+						.getConnection(
+								"jdbc:mysql://gomintdb.caabwbnfnavv.us-east-1.rds.amazonaws.com:3306/psadatasourcetest",
+								Uname, Pword);
+
+				Statement stmt = conn.createStatement();
+				ResultSet rs;
+				int x = 0;
+				Object itemId;
+				Item trItem;
+
+				StringBuilder summarysql = new StringBuilder();
+				summarysql
+						.append("select txnt.name as 'Transaction Type', count(txnt.name) as 'No of transactions', sum(rolejoin.amount) as 'Total Amount', CAST(txn.lastupdate AS DATE) as 'Date',");
+				summarysql
+						.append("txnst.transactionstatusname as 'Status' from transactions txn, (select transactionid as transactionid, operatorid as originatinguser,dealerid as receivinguser,");
+				summarysql
+						.append("amount as amount from cashtransactions union select transactionid as transactionid, realuserresourceid as originatinguser, toreceivinguserresource as receivinguser, toamount as amount");
+				summarysql
+						.append(" from transactionvalueoperations) rolejoin, transactionstatus txnst,transactiontypes txnt where rolejoin.transactionid = txn.transactionid");
+				summarysql
+						.append(" and txnst.transactionstatusid = txn.transactionstatusid and txnt.transactiontypeid = txn.transactiontypeid group by txnt.name,txnst.transactionstatusname,CAST(txn.lastupdate AS DATE)");
+
+				rs = stmt.executeQuery(summarysql.toString());
+				while (rs.next()) {
+					x = x + 1;
+
+					String transactiontype = rs.getString("Transaction Type");
+					String amount = rs.getString("Total Amount");
+					String nooftransactions = rs
+							.getString("No of transactions");
+					String createdon = rs.getString("Date");
+					String status = rs.getString("Status");
+					System.out.println(nooftransactions);
+					System.out.println(amount);
+					System.out.println(createdon);
+					// String name = rs.getString("Username");
+
+					if (!ht.containsKey("Transaction Type")) {
+						HashSet<String> arrL = new HashSet<>();
+						arrL.add(transactiontype);
+						ht.put("Transaction Type", arrL);
+					} else {
+						ht.get("Transaction Type").add(transactiontype);
+					}
+
+					itemId = container3.addItem();
+
+					trItem = container3.getItem(itemId);
+
+					Property<String> tdPropertyserial = trItem
+							.getItemProperty("S/N");
+					// Property<String> tdPropertyname = trItem
+					// .getItemProperty("Name");
+					Property<String> tdPropertytransactiondate = trItem
+							.getItemProperty("Transaction Date");
+					Property<String> tdPropertytransactiontype = trItem
+							.getItemProperty("Transaction Type");
+					Property<String> tdPropertytransactioncount = trItem
+							.getItemProperty("Transaction Count");
+					Property<String> tdPropertyamount = trItem
+							.getItemProperty("Sum of Transaction Amount (\u20A6)");
+					Property<String> tdPropertytransactionstatus = trItem
+							.getItemProperty("Status");
+
+					// tdPropertyname.setValue(name);
+					tdPropertyserial.setValue(String.valueOf(x));
+					tdPropertytransactiondate.setValue(createdon);
+					tdPropertytransactiontype.setValue(transactiontype);
+					tdPropertyamount.setValue(amount);
+					tdPropertytransactioncount.setValue(nooftransactions);
+					tdPropertytransactionstatus.setValue(status);
+				}
+
+				conn.close();
+				Notification.show(x + " result(s) found",
+						Notification.Type.WARNING_MESSAGE);
+
+				if (x > 30) {
+					x = 30;
+				}
+
+				table.setPageLength(x);
+
+				table.setContainerDataSource(container3);
+
+			} catch (SQLException | ClassNotFoundException
+					| InstantiationException | IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				Notification.show("Error Establishing DBConnection = " + e,
+						Notification.Type.ERROR_MESSAGE);
+			}
+
+			// searchform.removeAllComponents();
+			// searchform.addComponent(SettlementForm());
+
+		} else if (selectedId.equalsIgnoreCase("Fees / Commission Report")) {
+
+			IndexedContainer feesCommissionContainer = new IndexedContainer();
+			feesCommissionContainer.addContainerProperty("S/N", String.class,
+					"");
+			feesCommissionContainer.addContainerProperty("Trans. ID",
+					String.class, "");
+			feesCommissionContainer.addContainerProperty("Transaction Type",
+					String.class, "");
+			feesCommissionContainer.addContainerProperty("Commission Account",
+					String.class, "");
+			feesCommissionContainer.addContainerProperty("Fees Account",
+					String.class, "");
+			// feesCommissionContainer.addContainerProperty("Transaction Date",
+			// String.class, "");
+
+			// feesCommissionContainer.addContainerProperty(
+			// "Opening Balance (\u20A6)", String.class, "");
+
+			feesCommissionContainer.addContainerProperty(
+					"Adjusted Fees (\u20A6)", String.class, "");
+			feesCommissionContainer.addContainerProperty(
+					"Original Fees (\u20A6)", String.class, "");
+
+			feesCommissionContainer.addContainerProperty("Commission (\u20A6)",
+					String.class, "");
+
+			feesCommissionContainer.addContainerProperty("Amount (\u20A6)",
+					String.class, "");
+			searchform.removeAllComponents();
+			searchform.addComponent(Transactions());
+			ds = feesCommissionContainer;
+			// feesCommissionContainer.removeAllItems();
+			if (!feesCommissionContainer.removeAllItems()) {
+				return;
+			}
+
+			ds = feesCommissionContainer;
+			String Uname = "gomint";
+			String Pword = "gomint";
+			String drivers = "com.mysql.jdbc.Driver";
+			try {
+
+				Class driver_class = Class.forName(drivers);
+				Driver driver = (Driver) driver_class.newInstance();
+				DriverManager.registerDriver(driver);
+
+				Connection conn = DriverManager
+						.getConnection(
+								"jdbc:mysql://gomintdb.caabwbnfnavv.us-east-1.rds.amazonaws.com:3306/psadatasourcetest",
+								Uname, Pword);
+
+				Statement stmt = conn.createStatement();
+				Statement stmt2 = conn.createStatement();
+				ResultSet rs, rs2;
+				int x = 0;
+				Object itemId;
+				Item trItem;
+				rs2 = stmt2
+						.executeQuery("select txn.userresourceid as 'Username', txnt.name as 'Transaction Type', txn.lastupdate as 'Timestamp', acct.openingbalance as 'Opening Balance', acct.closingbalance as 'Closing Balance', acct.amount as 'Amount',accts.name as 'Account Type'  from transactions txn join accounttransactions acct on txn.transactionid = acct.transactionid join transactiontypes txnt on txnt.transactiontypeid = txn.transactiontypeid join accounttypes accts on accts.accounttypeid = acct.accounttypeid   join accountholders ah on ah.username = txn.userresourceid group by txn.userresourceid order by txn.lastupdate");
+				while (rs2.next()) {
+					agent.addItem(rs2.getString("Username"));
+					agent.setNullSelectionAllowed(false);
+					agent.setTextInputAllowed(false);
+					agent.setInputPrompt("Select");
+
+				}
+
+				// rs = stmt
+				// .executeQuery("select trx1.transactionid as txid,trxtyp.name as 'Transaction Type',acth2.username as 'Agent/Dealer',acts1.amount as commission ,acth.username as 'MM Operator',acts2.amount as Fees,acts3.amount as amount from accounttransactions acts1,  transactions trx1,transactiontypes trxtyp, accounttransactions acts2, accounttransactions acts3, accountholders acth, accountholders acth2 where acts1.transactionid = trx1.transactionid and acts2.transactionid = trx1.transactionid and acts2.userresourceid = acth.accountholderid and acts3.userresourceid = acth2.accountholderid and acts3.transactionid = trx1.transactionid and trx1.transactiontypeid = trxtyp.transactiontypeid and acts1.accountresourceid = 12 and acts2.accountresourceid in (select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from accountholders where profileid = 15 and accounttypeid = 2)) and acts3.accountresourceid in (select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from accountholders where (profileid = 11 or profileid = 6) and accounttypeid = 1))");
+				// Notification.show(rs.);
+				// rs = stmt
+				// .executeQuery("select txn.userresourceid as 'Username', txnt.name as 'Transaction Type', CAST(txn.lastupdate AS DATE) as 'Timestamp', format(acct.openingbalance /100,2) as 'Opening Balance', format(acct.closingbalance / 100,2) as 'Closing Balance', format(acct.amount / 100 , 2) as 'Amount',accts.name as 'Account Type'  from transactions txn join accounttransactions acct on txn.transactionid = acct.transactionid join transactiontypes txnt on txnt.transactiontypeid = txn.transactiontypeid join accounttypes accts on accts.accounttypeid = acct.accounttypeid   join accountholders ah on ah.username = txn.userresourceid  order by ah.username, txn.lastupdate");
+
+				StringBuilder sb = new StringBuilder();
+				sb.append("select trx1.transactionid as txid,trxtyp.name as 'Transaction Type','MATS_TOTAL_FEE&COMMISSION' as 'Commission Account',acts1.amount as commission,");
+
+				sb.append("acth.username as 'Fees Account',acts2.amount as 'Adjusted Fees',acts2.amount+acts1.amount as 'Original Fees',acts3.amount as amount,acts1.datecreated as 'DoC' from accounttransactions acts1,  transactions trx1, transactiontypes trxtyp, accounttransactions acts2, accounttransactions acts3, accountholders");
+
+				sb.append(" acth, accountholders acth2, accounts act1, accounts act2, profiles pf1, profiles pf2 where acts1.transactionid = trx1.transactionid and act1.profileid = pf1.profileid and acts2.transactionid = trx1.transactionid and acts2.userresourceid = acth.accountholderid and acts1.accountresourceid = act1.accountid and act2.profileid = pf2.profileid and acts2.accountresourceid = act2.accountid and acts3.userresourceid = acth2.accountholderid and acts3.transactionid = trx1.transactionid and trx1.transactiontypeid = trxtyp.transactiontypeid and acts1.accountresourceid = 12 and acts2.accountresourceid in");
+
+				sb.append(" (select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from accountholders where profileid = 15 and accounttypeid = 2)) and acts3.accountresourceid in (select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from accountholders where (profileid = 11 or profileid = 6) and accounttypeid = 1))");
+
+				rs = stmt.executeQuery(sb.toString());
+
+				while (rs.next()) {
+					x = x + 1;
+					String fidTxtype = "Transaction Type";
+					String fidCommAcc = "Commission Account";
+					String fidFAcc = "Fees Account";
+
+					String transactiontype = rs.getString(fidTxtype);
+					String feesAccount = rs.getString(fidFAcc);
+					String commissionAccount = rs.getString(fidCommAcc);
+
+					String transID = rs.getString("txid");
+
+					String commission = rs.getString("commission");
+
+					String afees = rs.getString("Adjusted Fees");
+
+					String ofees = rs.getString("Original Fees");
+
+					String amount = rs.getString("amount");
+
+					String fida = "Commission Account";
+					String fido = "Fees Account";
+
+					if (!ht.containsKey(fidTxtype)) {
+						HashSet<String> arrL = new HashSet<>();
+						arrL.add(transactiontype);
+						ht.put(fidTxtype, arrL);
+					} else {
+						ht.get(fidTxtype).add(transactiontype);
+					}
+
+					if (!ht.containsKey(fido)) {
+						HashSet<String> arrL = new HashSet<>();
+						arrL.add(feesAccount);
+						ht.put(fido, arrL);
+					} else {
+						ht.get(fido).add(feesAccount);
+					}
+
+					if (!ht.containsKey(fida)) {
+						HashSet<String> arrL = new HashSet<>();
+						arrL.add(commissionAccount);
+						ht.put(fida, arrL);
+					} else {
+						ht.get(fida).add(commissionAccount);
+					}
+
+					itemId = feesCommissionContainer.addItem();
+
+					trItem = feesCommissionContainer.getItem(itemId);
+
+					Property<String> tdPropertyserial = trItem
+							.getItemProperty("S/N");
+					Property<String> tdPropertyCommAcc = trItem
+							.getItemProperty("Commission Account");
+
+					Property<String> tdPropertyFeesAcc = trItem
+							.getItemProperty("Fees Account");
+
+					Property<String> tdPropertytransactiontype = trItem
+							.getItemProperty("Transaction Type");
+
+					Property<String> tdPropertyAFees = trItem
+							.getItemProperty("Adjusted Fees (\u20A6)");
+					Property<String> tdPropertyOFees = trItem
+							.getItemProperty("Original Fees (\u20A6)");
+
+					Property<String> tdPropertyCommission = trItem
+							.getItemProperty("Commission (\u20A6)");
+
+					Property<String> tdPropertyamount = trItem
+							.getItemProperty("Amount (\u20A6)");
+
+					Property<String> tdPropertytxid = trItem
+							.getItemProperty("Trans. ID");
+
+					tdPropertyserial.setValue(String.valueOf(x));
+
+					tdPropertyCommAcc.setValue(commissionAccount);
+					tdPropertyFeesAcc.setValue(feesAccount);
+					tdPropertyAFees.setValue(afees);
+					tdPropertyOFees.setValue(ofees);
+					tdPropertyCommission.setValue(commission);
+					tdPropertytxid.setValue(transID);
+
+					tdPropertytransactiontype.setValue(transactiontype);
+
+					tdPropertyamount.setValue(amount);
+
+				}
+
+				conn.close();
+				Notification.show(x + " result(s) found",
+						Notification.Type.WARNING_MESSAGE);
+
+				table.setContainerDataSource(feesCommissionContainer);
+
+				if (x > 30)
+					x = 30;
+				table.setPageLength(x);
+				table.setSelectable(true);
+				// table.setEditable(true);
+			} catch (SQLException | ClassNotFoundException
+					| InstantiationException | IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				Notification.show("Error Establishing DBConnection = " + e,
+						Notification.Type.ERROR_MESSAGE);
+			}
+		}
+		comboF.removeAllItems();
+		for (String s : ht.keySet())
+			comboF.addItem(s);
+		comboF.select(null);
+		addFilter(ds);
 	}
 
 }
