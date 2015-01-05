@@ -1317,8 +1317,8 @@ public class BE2 {
 		 */
 
 		String qx = "SELECT acth.username as un, acth.msisdn as msisdn, acth.email as email,pf.profilename as prof, acths.accountholderstatusname as status,acthd.firstname as fn ,acthd.lastname as ln,id.identificationnumber as id,ad.streetaddress as street from accountholders acth, accountholderdetails acthd, accountholderstatus acths, identificationattribute id, address ad, profiles pf where acth.accountholderdetailid = acthd.accountdetailsid and acth.accountholderstatusid = acths.accountholderstatusid and acthd.identificationid = id.identificationattrid and acthd.addressid = ad.addressid and pf.profileid = acth.profileid and pf.profiletypeid = 1;";
-		String Uname = "gomint";
-		String Pword = "gomint";
+		String Uname = "psatestuser";
+		String Pword = "psatest_2015";
 		String drivers = "com.mysql.jdbc.Driver";
 		try {
 			Class<?> driver_class = Class.forName(drivers);
