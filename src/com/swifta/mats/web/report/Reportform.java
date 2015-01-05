@@ -158,17 +158,20 @@ public class Reportform extends VerticalLayout {
 					// container.addContainerProperty("Transaction ID",
 					// String.class, "");
 
-					container.addContainerProperty("Transaction Date",
-							String.class, "");
-					container
-							.addContainerProperty("Agent ID", String.class, "");
+					// container.addContainerProperty("Transaction Date",
+					// String.class, "");
+					// container
+					// .addContainerProperty("Agent ID", String.class, "");
 					container.addContainerProperty("Dealer ID", String.class,
 							"");
-					container.addContainerProperty("Dealer's Balance (\u20A6)",
-							String.class, "");
+					container.addContainerProperty(
+							"Dealer's Cash Balance (\u20A6)", String.class, "");
+					container.addContainerProperty(
+							"Dealer's E-value Balance (\u20A6)", String.class,
+							"");
 
-					String Uname = "gomint";
-					String Pword = "gomint";
+					String Uname = "psatestuser";
+					String Pword = "psatest_2015";
 					String drivers = "com.mysql.jdbc.Driver";
 					try {
 
@@ -190,8 +193,20 @@ public class Reportform extends VerticalLayout {
 						if (!container.removeAllItems()) {
 							return;
 						}
-						rs = stmt
-								.executeQuery("SELECT count(amount) as 'transactioncount',operatorid,format(sum(amount / 100),2) as 'amount',CAST(createdon as DATE) as 'created',dealerid FROM cashtransactions group by operatorid,CAST(createdon as DATE),dealerid order by created,operatorid");
+
+						StringBuilder agentsql = new StringBuilder();
+
+						agentsql.append("select ach.username, tbl1.cashbalance, tbl2.evaluebalance from accountholders ach,(select actxns.userresourceid as cashacctid,sum(actxns.closingbalance) - sum(actxns.openingbalance) as cashbalance");
+						agentsql.append(" from accounttransactions actxns, transactions trx,accounts acts where actxns.transactionid = trx.transactionid and trx.transactionstatusid = 1");
+						agentsql.append(" and actxns.accountresourceid = acts.accountid and acts.profileid = 12 group by actxns.userresourceid) tbl1,");
+						agentsql.append("(select actxns.userresourceid as evalueacctid,sum(actxns.closingbalance) - sum(actxns.openingbalance) as evaluebalance");
+						agentsql.append(" from accounttransactions actxns, transactions trx,accounts acts where actxns.transactionid = trx.transactionid and trx.transactionstatusid = 1");
+						agentsql.append(" and actxns.accountresourceid = acts.accountid and acts.profileid = 5 group by actxns.userresourceid) tbl2 where ach.accountholderid = tbl1.cashacctid and tbl1.cashacctid = tbl2.evalueacctid");
+
+						// rs = stmt
+						// .executeQuery("SELECT count(amount) as 'transactioncount',operatorid,format(sum(amount / 100),2) as 'amount',CAST(createdon as DATE) as 'created',dealerid FROM cashtransactions group by operatorid,CAST(createdon as DATE),dealerid order by created,operatorid");
+						rs = stmt.executeQuery(agentsql.toString());
+
 						while (rs.next()) {
 							x = x + 1;
 
@@ -202,29 +217,33 @@ public class Reportform extends VerticalLayout {
 							Property<String> tdPropertyserial = trItem
 									.getItemProperty("S/N");
 
-							Property<String> tdPropertytransactiondate = trItem
-									.getItemProperty("Transaction Date");
-							Property<String> tdPropertyagentid = trItem
-									.getItemProperty("Agent ID");
+							// Property<String> tdPropertytransactiondate =
+							// trItem
+							// .getItemProperty("Transaction Date");
+							// Property<String> tdPropertyagentid = trItem
+							// .getItemProperty("Agent ID");
 							Property<String> tdPropertydealerid = trItem
 									.getItemProperty("Dealer ID");
-							Property<String> tdPropertyamount = trItem
-									.getItemProperty("Dealer's Balance (\u20A6)");
+							Property<String> tdPropertycashamount = trItem
+									.getItemProperty("Dealer's Cash Balance (\u20A6)");
+							Property<String> tdPropertyevalueamount = trItem
+									.getItemProperty("Dealer's E-value Balance (\u20A6)");
 
-							String agentid = rs.getString("operatorid");
-							String amount = rs.getString("amount");
-							String createdon = rs.getString("created");
+							// String agentid = rs.getString("operatorid");
+							String cashamount = rs.getString("cashbalance");
+							String evalueamount = rs.getString("evaluebalance");
+							// String createdon = rs.getString("created");
 							// String transactionstatusid = rs
 							// .getString("transactionstatusid");
-							String dealerid = rs.getString("dealerid");
+							String dealerid = rs.getString("username");
 
-							if (!ht.containsKey("Agent ID")) {
-								HashSet<String> arrL = new HashSet<>();
-								arrL.add(agentid);
-								ht.put("Agent ID", arrL);
-							} else {
-								ht.get("Agent ID").add(agentid);
-							}
+							// if (!ht.containsKey("Agent ID")) {
+							// HashSet<String> arrL = new HashSet<>();
+							// arrL.add(agentid);
+							// ht.put("Agent ID", arrL);
+							// } else {
+							// ht.get("Agent ID").add(agentid);
+							// }
 
 							if (!ht.containsKey("Dealer ID")) {
 								HashSet<String> arrL = new HashSet<>();
@@ -235,10 +254,11 @@ public class Reportform extends VerticalLayout {
 							}
 
 							tdPropertyserial.setValue(String.valueOf(x));
-							tdPropertytransactiondate.setValue(createdon);
-							tdPropertyagentid.setValue(agentid);
+							// tdPropertytransactiondate.setValue(createdon);
+							// tdPropertyagentid.setValue(agentid);
 							tdPropertydealerid.setValue(dealerid);
-							tdPropertyamount.setValue(amount);
+							tdPropertycashamount.setValue(cashamount);
+							tdPropertyevalueamount.setValue(evalueamount);
 
 						}
 						conn.close();
@@ -292,8 +312,8 @@ public class Reportform extends VerticalLayout {
 						return;
 					}
 
-					String Uname = "gomint";
-					String Pword = "gomint";
+					String Uname = "psatestuser";
+					String Pword = "psatest_2015";
 					String drivers = "com.mysql.jdbc.Driver";
 					try {
 
@@ -471,8 +491,8 @@ public class Reportform extends VerticalLayout {
 						return;
 					}
 
-					String Uname = "gomint";
-					String Pword = "gomint";
+					String Uname = "psatestuser";
+					String Pword = "psatest_2015";
 					String drivers = "com.mysql.jdbc.Driver";
 					try {
 
@@ -618,8 +638,8 @@ public class Reportform extends VerticalLayout {
 					}
 
 					ds = feesCommissionContainer;
-					String Uname = "gomint";
-					String Pword = "gomint";
+					String Uname = "psatestuser";
+					String Pword = "psatest_2015";
 					String drivers = "com.mysql.jdbc.Driver";
 					try {
 
