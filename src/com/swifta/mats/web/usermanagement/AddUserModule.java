@@ -83,6 +83,10 @@ public class AddUserModule {
 	public static Map<Integer, String> profToID;
 	private OptionGroup optSex;
 	private boolean isReset = false;
+	boolean isCSelected = false;
+	String curC = null;
+	String curState = null;
+	String curLG = null;
 
 	public AddUserModule() {
 
@@ -534,6 +538,8 @@ public class AddUserModule {
 
 			@Override
 			public void focus(FocusEvent event) {
+				if (isCSelected)
+					return;
 				Set<Entry<Integer, String>> es = (Set<Entry<Integer, String>>) getCountries()
 						.entrySet();
 				if (es.size() == 0)
@@ -546,7 +552,10 @@ public class AddUserModule {
 					comboCountry.addItem(e.getKey());
 					comboCountry.setItemCaption(e.getKey(), e.getValue());
 				}
+
 				comboCountry.select(1);
+
+				isCSelected = true;
 
 			}
 
@@ -554,16 +563,41 @@ public class AddUserModule {
 
 		comboCountry.addValueChangeListener(new ValueChangeListener() {
 
-			private static final long serialVersionUID = 1L;
+			private static final long serialVersionUID = -404551290095133508L;
 
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-				if (comboCountry.getValue() == null) {
+				curC = comboCountry.getValue().toString();
+			}
+
+		});
+
+		comboState.addFocusListener(new FocusListener() {
+
+			private static final long serialVersionUID = 892516817835461278L;
+
+			@Override
+			public void focus(FocusEvent event) {
+				Object c = comboCountry.getValue();
+
+				if (c == null) {
+					Notification.show("Please select country first",
+							Notification.Type.WARNING_MESSAGE);
+					comboCountry.focus();
 					return;
+
 				}
-				Set<Entry<Integer, String>> es = (Set<Entry<Integer, String>>) getStates(Integer
-						.valueOf(comboCountry.getValue().toString()));
+
+				if (curC != null && curC.equals(c.toString()))
+					return;
+
+				comboState.removeAllItems();
+
+				Set<Entry<Integer, String>> es = (Set<Entry<Integer, String>>) getStates(
+						Integer.valueOf(c.toString())).entrySet();
+
 				if (es.isEmpty()) {
+
 					return;
 				}
 
@@ -580,12 +614,14 @@ public class AddUserModule {
 
 		});
 
-		comboState.addFocusListener(new FocusListener() {
+		comboLG.addFocusListener(new FocusListener() {
 
-			private static final long serialVersionUID = 892516817835461278L;
+			private static final long serialVersionUID = 8925916817835461278L;
 
 			@Override
 			public void focus(FocusEvent event) {
+
+				Object s = comboState.getValue();
 				if (comboCountry.getValue() == null) {
 					Notification.show("Please select country first",
 							Notification.Type.WARNING_MESSAGE);
@@ -594,31 +630,21 @@ public class AddUserModule {
 
 				}
 
-			}
-
-		});
-
-		comboState.addValueChangeListener(new ValueChangeListener() {
-
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void valueChange(ValueChangeEvent event) {
-				if (comboCountry.getValue() == null) {
-					Notification.show("Please select country first",
-							Notification.Type.WARNING_MESSAGE);
-					comboCountry.focus();
-					return;
-				}
-
-				if (comboState.getValue() == null) {
+				if (s == null) {
 					Notification.show("Please select state first",
 							Notification.Type.WARNING_MESSAGE);
 					comboState.focus();
 					return;
+
 				}
-				Set<Entry<Integer, String>> es = (Set<Entry<Integer, String>>) getLGs(Integer
-						.valueOf(comboState.getValue().toString()));
+
+				if (curState != null && curState.equals(s.toString()))
+					return;
+
+				comboLG.removeAllItems();
+
+				Set<Entry<Integer, String>> es = (Set<Entry<Integer, String>>) getLGs(
+						Integer.valueOf(s.toString())).entrySet();
 				if (es.isEmpty()) {
 					return;
 				}
@@ -636,28 +662,13 @@ public class AddUserModule {
 
 		});
 
-		comboLG.addFocusListener(new FocusListener() {
+		comboState.addValueChangeListener(new ValueChangeListener() {
 
-			private static final long serialVersionUID = 8925916817835461278L;
+			private static final long serialVersionUID = -404551290095133508L;
 
 			@Override
-			public void focus(FocusEvent event) {
-				if (comboCountry.getValue() == null) {
-					Notification.show("Please select country first",
-							Notification.Type.WARNING_MESSAGE);
-					comboCountry.focus();
-					return;
-
-				}
-
-				if (comboState.getValue() == null) {
-					Notification.show("Please select state first",
-							Notification.Type.WARNING_MESSAGE);
-					comboCountry.focus();
-					return;
-
-				}
-
+			public void valueChange(ValueChangeEvent event) {
+				curState = comboState.getValue().toString();
 			}
 
 		});
@@ -1043,8 +1054,8 @@ public class AddUserModule {
 	private HashMap<Integer, String> getCountries() {
 		HashMap<Integer, String> c = new HashMap<>();
 		String qx = "SELECT countryname as cname, countryid as cid FROM psadatasourcetest.country;";
-		String Uname = "gomint";
-		String Pword = "gomint";
+		String Uname = "psatestuser";
+		String Pword = "psatest_2015";
 		String drivers = "com.mysql.jdbc.Driver";
 		try {
 			Class<?> driver_class = Class.forName(drivers);
@@ -1083,8 +1094,8 @@ public class AddUserModule {
 		HashMap<Integer, String> s = new HashMap<>();
 		String qx = "SELECT state as s, countrystateid as sid FROM psadatasourcetest.countrystate where countryid = "
 				+ cid + ";";
-		String Uname = "gomint";
-		String Pword = "gomint";
+		String Uname = "psatestuser";
+		String Pword = "psatest_2015";
 		String drivers = "com.mysql.jdbc.Driver";
 		try {
 			Class<?> driver_class = Class.forName(drivers);
@@ -1124,8 +1135,8 @@ public class AddUserModule {
 		// = 1
 		String qx = "SELECT countrystatelgaid as lgid, lganame as lg FROM psadatasourcetest.countrystatelga where countrystateid = "
 				+ sid + ";";
-		String Uname = "gomint";
-		String Pword = "gomint";
+		String Uname = "psatestuser";
+		String Pword = "psatest_2015";
 		String drivers = "com.mysql.jdbc.Driver";
 		try {
 			Class<?> driver_class = Class.forName(drivers);
