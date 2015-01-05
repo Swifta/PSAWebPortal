@@ -9,7 +9,11 @@ public class Client {
 
 	public static void main(String args[]) throws Exception {
 
-		Client.sql();
+		String result = Client.passreset();
+
+		System.out.println(result);
+
+		// Client.authenticate();
 
 	}
 
@@ -148,18 +152,19 @@ public class Client {
 	}
 
 	public static void sql() {
-		StringBuilder summarysql = new StringBuilder();
-		summarysql
-				.append("select txnt.name as 'Transaction Type', count(txnt.name) as 'No of transactions', sum(rolejoin.amount) as 'Total Amount', CAST(txn.lastupdate AS DATE) as 'Date',");
-		summarysql
-				.append("txnst.transactionstatusname as 'Status' from transactions txn, (select transactionid as transactionid, operatorid as originatinguser,dealerid as receivinguser,");
-		summarysql
-				.append("amount as amount from cashtransactions union select transactionid as transactionid, realuserresourceid as originatinguser, toreceivinguserresource as receivinguser, toamount as amount");
-		summarysql
-				.append(" from transactionvalueoperations) rolejoin, transactionstatus txnst,transactiontypes txnt where rolejoin.transactionid = txn.transactionid");
-		summarysql
-				.append(" and txnst.transactionstatusid = txn.transactionstatusid and txnt.transactiontypeid = txn.transactiontypeid group by txnt.name,txnst.transactionstatusname,CAST(txn.lastupdate AS DATE)");
+		StringBuilder trxnsql = new StringBuilder();
+		trxnsql.append("select  txn.transactionid as 'Transaction ID', rolejoin.amount as 'Amount', rolejoin.sender as 'Sender', rolejoin.send_onbehalf_of as 'send_onbehalf_of',");
+		trxnsql.append("rolejoin.receiver as 'Receiver', rolejoin.received_onbehalf_of as 'received_onbehalf_of',txnt.name as 'Transaction Type', txn.lastupdate as 'Timestamp', txnst.transactionstatusname as 'Status'");
+		trxnsql.append(" from transactions txn, (select transactionid as transactionid, operatorid as sender, operatorid as send_onbehalf_of, dealerid as receiver, dealerid as received_onbehalf_of,");
+		trxnsql.append("amount as amount from cashtransactions union select transactionid as transactionid,initiatinguserresourceid as sender, realuserresourceid as onbehalf_of_sender,");
+		trxnsql.append("toreceivinguserresource as receiver, (select username from accountholders where accountholderid = torealaccountholderresourceid) as onbehalf_of_receiver, toamount as amount from transactionvalueoperations) rolejoin,");
+		trxnsql.append("transactionstatus txnst, transactiontypes txnt where rolejoin.transactionid = txn.transactionid and txnst.transactionstatusid = txn.transactionstatusid");
+		trxnsql.append(" and txnt.transactiontypeid = txn.transactiontypeid order by rolejoin.transactionid, txn.lastupdate;");
 
-		System.out.println(summarysql.toString());
+		System.out.println(trxnsql.toString());
+	}
+
+	public static String passreset() throws AxisFault {
+		return UserManagementService.passwordResetByAdmin("modupe", "1234");
 	}
 }

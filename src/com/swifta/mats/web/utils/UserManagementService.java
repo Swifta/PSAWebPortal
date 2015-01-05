@@ -9,6 +9,7 @@ import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.Constants;
+import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
 import org.apache.axis2.transport.http.HTTPConstants;
@@ -53,16 +54,17 @@ public class UserManagementService {
 	// String endpoint =
 	// "http://127.0.0.1:9760/Provisioning-1.0.0/services/provisioning";
 
-	// String esbendpoint = "http://127.0.0.1:8280/services/Provisionservice";
+	static String esbendpoint = "http://127.0.0.1:8280/services/Provisionservice";
 
-	String esbendpoint = "http://54.173.157.210:8283/services/Provisionservice";
+	// String esbendpoint =
+	// "http://54.173.157.210:8283/services/Provisionservice";
 
 	ProvisioningStub matsStub;
 
 	org.apache.axis2.client.ServiceClient _serviceClient = null;
 
-	// private static EndpointReference targetEPR = new EndpointReference(
-	// esbendpoint);
+	private static EndpointReference targetEPR = new EndpointReference(
+			esbendpoint);
 
 	public String registerUser(String bankAccount, int bankCodeid,
 			String bankdomainNameid, String clearingNumber, String currencyid,
@@ -378,8 +380,8 @@ public class UserManagementService {
 		return statusMessage;
 	}
 
-	public static void resetPassword(String username, String oldPassword,
-			String newPassword) {
+	public static void passwordResetByAdmin(String username,
+			String oldPassword, String newPassword) {
 		try {
 			ServiceClient sender = null;
 
@@ -388,47 +390,106 @@ public class UserManagementService {
 			OMNamespace omNs = fac.createOMNamespace(
 					"http://service.ws.um.carbon.wso2.org", "ser");
 
-			OMElement addUser = fac.createOMElement("activationrequest", omNs);
+			OMElement updateCredentialByAdmin = fac.createOMElement(
+					"updateCredentialByAdmin", omNs);
 
-			OMElement userNameElement = fac.createOMElement("userName", null);
+			OMElement userNameElement = fac.createOMElement("userName", omNs);
 			userNameElement.addChild(fac
 					.createOMText(userNameElement, "166735"));
 
-			OMElement credential1Element = fac.createOMElement("credential",
-					null);
-			credential1Element.addChild(fac.createOMText(credential1Element,
-					"modupe"));
+			OMElement newCredentialElement = fac.createOMElement(
+					"newCredential", omNs);
+			newCredentialElement.addChild(fac.createOMText(
+					newCredentialElement, "modupe"));
 
-			OMElement profileNameElement = fac.createOMElement("profileName",
-					null);
-			profileNameElement.addChild(fac.createOMText(profileNameElement,
-					"me"));
-
-			OMElement requirePasswordChangeElement = fac.createOMElement(
-					"requirePasswordChange", null);
-			requirePasswordChangeElement.addChild(fac.createOMText(
-					requirePasswordChangeElement, "false"));
-
-			addUser.addChild(userNameElement);
-			addUser.addChild(credential1Element);
-			addUser.addChild(profileNameElement);
-			addUser.addChild(requirePasswordChangeElement);
+			updateCredentialByAdmin.addChild(userNameElement);
+			updateCredentialByAdmin.addChild(newCredentialElement);
 
 			Options options = new Options();
 			// options.setTo(targetEPR);
 			options.setTransportInProtocol(Constants.TRANSPORT_HTTP);
-			options.setAction("urn:addUser");
+			options.setAction("urn:updateCredentialByAdmin");
 
 			options.setProperty(HTTPConstants.CHUNKED, Constants.VALUE_FALSE);
 
 			sender = new ServiceClient();
 			sender.setOptions(options);
-			sender.fireAndForget(addUser);
+			sender.fireAndForget(updateCredentialByAdmin);
 
 		} catch (AxisFault e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
+	}
+
+	public static String passwordResetByAdmin(String username,
+			String newPassword) throws AxisFault {
+
+		ServiceClient sender = new ServiceClient();
+
+		String statusMessage = "";
+		try {
+
+			OMFactory fac = OMAbstractFactory.getOMFactory();
+
+			OMNamespace omNs = fac.createOMNamespace(
+					"http://service.ws.um.carbon.wso2.org", "ser");
+
+			OMElement updateCredentialByAdmin = fac.createOMElement(
+					"updateCredentialByAdmin", omNs);
+
+			OMElement userNameElement = fac.createOMElement("userName", omNs);
+			userNameElement.addChild(fac
+					.createOMText(userNameElement, username));
+
+			OMElement newCredentialElement = fac.createOMElement(
+					"newCredential", omNs);
+			newCredentialElement.addChild(fac.createOMText(
+					newCredentialElement, newPassword));
+
+			updateCredentialByAdmin.addChild(userNameElement);
+			updateCredentialByAdmin.addChild(newCredentialElement);
+
+			Options options = new Options();
+			options.setTo(targetEPR);
+			options.setTransportInProtocol(Constants.TRANSPORT_HTTP);
+			options.setAction("urn:updateCredentialByAdmin");
+
+			options.setProperty(HTTPConstants.CHUNKED, Constants.VALUE_FALSE);
+
+			sender = new ServiceClient();
+			sender.setOptions(options);
+			OMElement result = sender.sendReceive(updateCredentialByAdmin);
+
+			return result.getFirstElement().getText().toString();
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			// e.printStackTrace();
+			try {
+				System.out
+						.println("HTTP status code: "
+								+ sender.getLastOperationContext()
+										.getMessageContext(
+												WSDLConstants.MESSAGE_LABEL_IN_VALUE)
+										.getProperty(
+												HTTPConstants.MC_HTTP_STATUS_CODE));
+				Integer statuscode = (Integer) sender
+						.getLastOperationContext()
+						.getMessageContext(WSDLConstants.MESSAGE_LABEL_IN_VALUE)
+						.getProperty(HTTPConstants.MC_HTTP_STATUS_CODE);
+				if (statuscode == 202) {
+					statusMessage = "PASSWORD_RESET_WAS_SUCCESSFUL";
+				} else {
+					statusMessage = "REQUEST CANNOT BE COMPLETED AT THIS MOMENT, TRY AGAIN LATER1";
+				}
+			} catch (Exception e1) {
+				statusMessage = "REQUEST CANNOT BE COMPLETED AT THIS MOMENT, TRY AGAIN LATER";
+				e1.printStackTrace();
+			}
+		}
+		return statusMessage;
 
 	}
 
