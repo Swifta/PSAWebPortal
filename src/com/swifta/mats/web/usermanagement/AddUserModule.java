@@ -567,7 +567,42 @@ public class AddUserModule {
 
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-				curC = comboCountry.getValue().toString();
+
+				comboState.removeAllItems();
+				comboLG.removeAllItems();
+
+				Set<Entry<Integer, String>> es = (Set<Entry<Integer, String>>) getStates(
+						Integer.valueOf(comboCountry.getValue().toString()))
+						.entrySet();
+
+				if (es.isEmpty()) {
+					return;
+				}
+
+				Iterator<Entry<Integer, String>> itr = es.iterator();
+				while (itr.hasNext()) {
+					Entry<Integer, String> e = itr.next();
+					comboState.addItem(e.getKey());
+					comboState.setItemCaption(e.getKey(), e.getValue());
+				}
+
+				comboState.select(1);
+
+				Set<Entry<Integer, String>> esl = (Set<Entry<Integer, String>>) getLGs(
+						Integer.valueOf(comboState.getValue().toString()))
+						.entrySet();
+				if (es.isEmpty()) {
+					return;
+				}
+
+				Iterator<Entry<Integer, String>> itrl = esl.iterator();
+				while (itrl.hasNext()) {
+					Entry<Integer, String> e = itrl.next();
+					comboLG.addItem(e.getKey());
+					comboLG.setItemCaption(e.getKey(), e.getValue());
+				}
+
+				comboLG.select(1);
 			}
 
 		});
@@ -587,28 +622,6 @@ public class AddUserModule {
 					return;
 
 				}
-
-				if (curC != null && curC.equals(c.toString()))
-					return;
-
-				comboState.removeAllItems();
-
-				Set<Entry<Integer, String>> es = (Set<Entry<Integer, String>>) getStates(
-						Integer.valueOf(c.toString())).entrySet();
-
-				if (es.isEmpty()) {
-
-					return;
-				}
-
-				Iterator<Entry<Integer, String>> itr = es.iterator();
-				while (itr.hasNext()) {
-					Entry<Integer, String> e = itr.next();
-					comboState.addItem(e.getKey());
-					comboState.setItemCaption(e.getKey(), e.getValue());
-				}
-
-				comboState.select(1);
 
 			}
 
@@ -638,37 +651,6 @@ public class AddUserModule {
 
 				}
 
-				if (curState != null && curState.equals(s.toString()))
-					return;
-
-				comboLG.removeAllItems();
-
-				Set<Entry<Integer, String>> es = (Set<Entry<Integer, String>>) getLGs(
-						Integer.valueOf(s.toString())).entrySet();
-				if (es.isEmpty()) {
-					return;
-				}
-
-				Iterator<Entry<Integer, String>> itr = es.iterator();
-				while (itr.hasNext()) {
-					Entry<Integer, String> e = itr.next();
-					comboLG.addItem(e.getKey());
-					comboLG.setItemCaption(e.getKey(), e.getValue());
-				}
-
-				comboLG.select(1);
-
-			}
-
-		});
-
-		comboState.addValueChangeListener(new ValueChangeListener() {
-
-			private static final long serialVersionUID = -404551290095133508L;
-
-			@Override
-			public void valueChange(ValueChangeEvent event) {
-				curState = comboState.getValue().toString();
 			}
 
 		});
