@@ -544,19 +544,20 @@ public class Reportform extends VerticalLayout {
 			IndexedContainer container2 = new IndexedContainer();
 			container2.addContainerProperty("S/N", String.class, "");
 			container2.addContainerProperty("Transaction ID", String.class, "");
-			container2.addContainerProperty("Transaction Date", String.class,
-					"");
 			container2.addContainerProperty("Transaction Type", String.class,
 					"");
-			container2
-					.addContainerProperty("Amount (\u20A6)", String.class, "");
+			// container2
+			// .addContainerProperty("Amount (\u20A6)", String.class, "");
 			container2.addContainerProperty("Sender", String.class, "");
-			container2.addContainerProperty("Sent_on_behalf_of", String.class,
-					"");
-			container2.addContainerProperty("Receiver", String.class, "");
-			container2.addContainerProperty("Received_on_behalf_of",
-					String.class, "");
+			// container2.addContainerProperty("Sent_on_behalf_of",
+			// String.class,
+			// "");
+			// container2.addContainerProperty("Receiver", String.class, "");
+			// container2.addContainerProperty("Received_on_behalf_of",
+			// String.class, "");
 			container2.addContainerProperty("Status", String.class, "");
+			container2.addContainerProperty("Transaction Date", String.class,
+					"");
 
 			searchform.removeAllComponents();
 			searchform.addComponent(Transactions());
@@ -597,13 +598,19 @@ public class Reportform extends VerticalLayout {
 				// String sql =
 				// "select txn.transactionid as 'Transaction ID', tvo.fromamount as 'Amount', fromah.username as 'From', toah.username as 'To',txnt.name as 'Transaction Type', CAST(txn.lastupdate AS DATE) as 'Timestamp', txnst.transactionstatusname as 'Status' from transactions txn join transactionvalueoperations tvo on tvo.transactionid = txn.transactionid join transactionstatus txnst on txnst.transactionstatusid = txn.transactionstatusid join transactiontypes txnt on txnt.transactiontypeid = txn.transactiontypeid join accountholders ah on ah.username = txn.userresourceid join accountholders fromah on fromah.accountholderid = tvo.fromaccountholderuserid join accountholders toah on toah.accountholderid = tvo.toaccountholderresourceid   order by tvo.transactionid, ah.username, txn.lastupdate";
 				StringBuilder trxnsql = new StringBuilder();
-				trxnsql.append("select  txn.transactionid as 'Transaction ID', rolejoin.amount as 'Amount', rolejoin.sender as 'Sender', rolejoin.send_onbehalf_of as 'send_onbehalf_of',");
-				trxnsql.append("rolejoin.receiver as 'Receiver', rolejoin.received_onbehalf_of as 'received_onbehalf_of',txnt.name as 'Transaction Type', txn.lastupdate as 'Timestamp', txnst.transactionstatusname as 'Status'");
-				trxnsql.append(" from transactions txn, (select transactionid as transactionid, operatorid as sender, operatorid as send_onbehalf_of, dealerid as receiver, dealerid as received_onbehalf_of,");
-				trxnsql.append("amount as amount from cashtransactions union select transactionid as transactionid,initiatinguserresourceid as sender, realuserresourceid as onbehalf_of_sender,");
-				trxnsql.append("toreceivinguserresource as receiver, (select username from accountholders where accountholderid = torealaccountholderresourceid) as onbehalf_of_receiver, toamount as amount from transactionvalueoperations) rolejoin,");
-				trxnsql.append("transactionstatus txnst, transactiontypes txnt where rolejoin.transactionid = txn.transactionid and txnst.transactionstatusid = txn.transactionstatusid");
-				trxnsql.append(" and txnt.transactiontypeid = txn.transactiontypeid order by rolejoin.transactionid, txn.lastupdate;");
+				// trxnsql.append("select  txn.transactionid as 'Transaction ID', rolejoin.amount as 'Amount', rolejoin.sender as 'Sender', rolejoin.send_onbehalf_of as 'send_onbehalf_of',");
+				// trxnsql.append("rolejoin.receiver as 'Receiver', rolejoin.received_onbehalf_of as 'received_onbehalf_of',txnt.name as 'Transaction Type', txn.lastupdate as 'Timestamp', txnst.transactionstatusname as 'Status'");
+				// trxnsql.append(" from transactions txn, (select transactionid as transactionid, operatorid as sender, operatorid as send_onbehalf_of, dealerid as receiver, dealerid as received_onbehalf_of,");
+				// trxnsql.append("amount as amount from cashtransactions union select transactionid as transactionid,initiatinguserresourceid as sender, realuserresourceid as onbehalf_of_sender,");
+				// trxnsql.append("toreceivinguserresource as receiver, (select username from accountholders where accountholderid = torealaccountholderresourceid) as onbehalf_of_receiver, toamount as amount from transactionvalueoperations) rolejoin,");
+				// trxnsql.append("transactionstatus txnst, transactiontypes txnt where rolejoin.transactionid = txn.transactionid and txnst.transactionstatusid = txn.transactionstatusid");
+				// trxnsql.append(" and txnt.transactiontypeid = txn.transactiontypeid order by rolejoin.transactionid, txn.lastupdate;");
+
+				trxnsql.append("SELECT txn.transactionid AS 'Transaction ID', txnt.name AS 'Transaction Type',");
+				trxnsql.append("txn.lastupdate AS 'Timestamp', txn.userresourceid as 'Sender', txnst.transactionstatusname AS 'Status' ");
+				trxnsql.append("FROM transactions txn, transactionstatus txnst, transactiontypes txnt WHERE txnst.transactionstatusid = txn.transactionstatusid ");
+				trxnsql.append("AND txnt.transactiontypeid = txn.transactiontypeid ");
+				trxnsql.append("ORDER BY txn.transactionid , txn.lastupdate;");
 
 				rs = stmt.executeQuery(trxnsql.toString());
 				// .executeQuery("select txn.userresourceid as 'Username', txnt.name as 'Transaction Type', CAST(txn.lastupdate AS DATE) as 'Timestamp', format(acct.openingbalance /100,2) as 'Opening Balance', format(acct.closingbalance / 100,2) as 'Closing Balance', format(acct.amount / 100 , 2) as 'Amount',accts.name as 'Account Type'  from transactions txn join accounttransactions acct on txn.transactionid = acct.transactionid join transactiontypes txnt on txnt.transactiontypeid = txn.transactiontypeid join accounttypes accts on accts.accounttypeid = acct.accounttypeid   join accountholders ah on ah.username = txn.userresourceid  order by ah.username, txn.lastupdate");
@@ -611,14 +618,15 @@ public class Reportform extends VerticalLayout {
 					x = x + 1;
 
 					String transactiontype = rs.getString("Transaction Type");
-					String amount = rs.getString("Amount");
+					// String amount = rs.getString("Amount");
 					String createdon = rs.getString("Timestamp");
 					String transactionID = rs.getString("Transaction ID");
 					String sender = rs.getString("Sender");
-					String send_onbehalf_of = rs.getString("send_onbehalf_of");
-					String receiver = rs.getString("Receiver");
-					String received_onbehalf_of = rs
-							.getString("received_onbehalf_of");
+					// String send_onbehalf_of =
+					// rs.getString("send_onbehalf_of");
+					// String receiver = rs.getString("Receiver");
+					// String received_onbehalf_of = rs
+					// .getString("received_onbehalf_of");
 					String status = rs.getString("Status");
 
 					// String fida = "Commission Account";
@@ -643,16 +651,13 @@ public class Reportform extends VerticalLayout {
 					System.out
 							.println("-----------------------Print Data :::\nTransaction Type : "
 									+ transactiontype
-									+ "\nAmount : "
-									+ amount
 									+ "\nTimestamp : "
 									+ createdon
 									+ "\nTransaction ID : "
 									+ transactionID
 									+ "\nFrom : "
 									+ sender
-									+ "\nTo : "
-									+ receiver + "\nStatus : " + status);
+									+ "\nStatus : " + status);
 					itemId = container2.addItem();
 
 					trItem = container2.getItem(itemId);
@@ -665,17 +670,17 @@ public class Reportform extends VerticalLayout {
 							.getItemProperty("Transaction ID");
 					Property<String> tdPropertytransactiontype = trItem
 							.getItemProperty("Transaction Type");
-					Property<String> tdPropertyamount = trItem
-							.getItemProperty("Amount (\u20A6)");
+					// Property<String> tdPropertyamount = trItem
+					// .getItemProperty("Amount (\u20A6)");
 					Property<String> tdPropertysender = trItem
 							.getItemProperty("Sender");
-					Property<String> tdPropertysenderonbehalfof = trItem
-							.getItemProperty("Sent_on_behalf_of");
+					// Property<String> tdPropertysenderonbehalfof = trItem
+					// .getItemProperty("Sent_on_behalf_of");
 
-					Property<String> tdPropertyreceiver = trItem
-							.getItemProperty("Receiver");
-					Property<String> tdPropertyreceiveronbehalfof = trItem
-							.getItemProperty("Received_on_behalf_of");
+					// Property<String> tdPropertyreceiver = trItem
+					// .getItemProperty("Receiver");
+					// Property<String> tdPropertyreceiveronbehalfof = trItem
+					// .getItemProperty("Received_on_behalf_of");
 					Property<String> tdPropertystatus = trItem
 							.getItemProperty("Status");
 
@@ -683,11 +688,11 @@ public class Reportform extends VerticalLayout {
 					tdPropertytransactionid.setValue(transactionID);
 					tdPropertytransactiondate.setValue(createdon);
 					tdPropertytransactiontype.setValue(transactiontype);
-					tdPropertyamount.setValue(amount);
+					// tdPropertyamount.setValue(amount);
 					tdPropertysender.setValue(sender);
-					tdPropertysenderonbehalfof.setValue(send_onbehalf_of);
-					tdPropertyreceiver.setValue(receiver);
-					tdPropertyreceiveronbehalfof.setValue(received_onbehalf_of);
+					// tdPropertysenderonbehalfof.setValue(send_onbehalf_of);
+					// tdPropertyreceiver.setValue(receiver);
+					// tdPropertyreceiveronbehalfof.setValue(received_onbehalf_of);
 					tdPropertystatus.setValue(status);
 
 				}
@@ -1045,5 +1050,4 @@ public class Reportform extends VerticalLayout {
 		addFilter(ds);
 
 	}
-
 }

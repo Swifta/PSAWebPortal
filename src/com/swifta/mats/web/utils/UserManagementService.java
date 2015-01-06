@@ -380,51 +380,8 @@ public class UserManagementService {
 		return statusMessage;
 	}
 
-	public static void passwordResetByAdmin(String username,
-			String oldPassword, String newPassword) {
-		try {
-			ServiceClient sender = null;
-
-			OMFactory fac = OMAbstractFactory.getOMFactory();
-
-			OMNamespace omNs = fac.createOMNamespace(
-					"http://service.ws.um.carbon.wso2.org", "ser");
-
-			OMElement updateCredentialByAdmin = fac.createOMElement(
-					"updateCredentialByAdmin", omNs);
-
-			OMElement userNameElement = fac.createOMElement("userName", omNs);
-			userNameElement.addChild(fac
-					.createOMText(userNameElement, "166735"));
-
-			OMElement newCredentialElement = fac.createOMElement(
-					"newCredential", omNs);
-			newCredentialElement.addChild(fac.createOMText(
-					newCredentialElement, "modupe"));
-
-			updateCredentialByAdmin.addChild(userNameElement);
-			updateCredentialByAdmin.addChild(newCredentialElement);
-
-			Options options = new Options();
-			// options.setTo(targetEPR);
-			options.setTransportInProtocol(Constants.TRANSPORT_HTTP);
-			options.setAction("urn:updateCredentialByAdmin");
-
-			options.setProperty(HTTPConstants.CHUNKED, Constants.VALUE_FALSE);
-
-			sender = new ServiceClient();
-			sender.setOptions(options);
-			sender.fireAndForget(updateCredentialByAdmin);
-
-		} catch (AxisFault e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-	}
-
-	public static String passwordResetByAdmin(String username,
-			String newPassword) throws AxisFault {
+	public static String passwordResetByAdmin(String initiatinguser,
+			String username, String newPassword) throws AxisFault {
 
 		ServiceClient sender = new ServiceClient();
 
