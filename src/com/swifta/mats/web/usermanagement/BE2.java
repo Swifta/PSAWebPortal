@@ -339,6 +339,9 @@ public class BE2 {
 
 		final PasswordField tFPIN = new PasswordField("Enter PIN");
 		final PasswordField tFPINConf = new PasswordField("Confirm PIN");
+
+		tFPIN.setRequired(true);
+		tFPINConf.setRequired(true);
 		tFPIN.setMaxLength(30);
 		tFPINConf.setMaxLength(30);
 
@@ -348,6 +351,7 @@ public class BE2 {
 		final TextField tFSecAns = new TextField("Security Answer");
 		final TextField tFIDD = new TextField("ID Number");
 		final TextField tFUserRID = new TextField("User Resource ID");
+		tFUserRID.setRequired(true);
 		tFUserRID.setValue(arrID[3]);
 		tFUserRID.setEnabled(false);
 

@@ -18,6 +18,8 @@ import com.swifta.mats.web.utils.UserManagementService;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.data.Validator;
+import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.event.FieldEvents.FocusEvent;
 import com.vaadin.event.FieldEvents.FocusListener;
 import com.vaadin.server.FontAwesome;
@@ -474,6 +476,8 @@ public class AddUserModule {
 		tF = new TextField("Bank Account");
 		tF.setValue("00232333452315");
 		tFBAcc = tF;
+		// tFBAcc.setValidationVisible(true);
+		// tFBAcc.addValidator(new NoNull());
 		cLBody.addComponent(tF);
 
 		combo.addItem(1);
@@ -553,7 +557,7 @@ public class AddUserModule {
 					comboCountry.setItemCaption(e.getKey(), e.getValue());
 				}
 
-				comboCountry.select(1);
+				comboCountry.select(null);
 
 				isCSelected = true;
 
@@ -571,6 +575,9 @@ public class AddUserModule {
 				comboState.removeAllItems();
 				comboLG.removeAllItems();
 
+				if (comboCountry.getValue() == null)
+					return;
+
 				Set<Entry<Integer, String>> es = (Set<Entry<Integer, String>>) getStates(
 						Integer.valueOf(comboCountry.getValue().toString()))
 						.entrySet();
@@ -586,23 +593,8 @@ public class AddUserModule {
 					comboState.setItemCaption(e.getKey(), e.getValue());
 				}
 
-				comboState.select(1);
+				comboState.select(null);
 
-				Set<Entry<Integer, String>> esl = (Set<Entry<Integer, String>>) getLGs(
-						Integer.valueOf(comboState.getValue().toString()))
-						.entrySet();
-				if (es.isEmpty()) {
-					return;
-				}
-
-				Iterator<Entry<Integer, String>> itrl = esl.iterator();
-				while (itrl.hasNext()) {
-					Entry<Integer, String> e = itrl.next();
-					comboLG.addItem(e.getKey());
-					comboLG.setItemCaption(e.getKey(), e.getValue());
-				}
-
-				comboLG.select(1);
 			}
 
 		});
@@ -621,6 +613,34 @@ public class AddUserModule {
 					comboCountry.focus();
 					return;
 
+				}
+
+			}
+
+		});
+
+		comboState.addValueChangeListener(new ValueChangeListener() {
+
+			private static final long serialVersionUID = 8849241310354979908L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+
+				comboLG.removeAllItems();
+				if (comboState.getValue() == null)
+					return;
+				Set<Entry<Integer, String>> esl = (Set<Entry<Integer, String>>) getLGs(
+						Integer.valueOf(comboState.getValue().toString()))
+						.entrySet();
+				if (esl.isEmpty()) {
+					return;
+				}
+
+				Iterator<Entry<Integer, String>> itrl = esl.iterator();
+				while (itrl.hasNext()) {
+					Entry<Integer, String> e = itrl.next();
+					comboLG.addItem(e.getKey());
+					comboLG.setItemCaption(e.getKey(), e.getValue());
 				}
 
 			}
@@ -812,6 +832,145 @@ public class AddUserModule {
 				String idtype = "";
 
 				try {
+					// tFBAcc.addValidator(new NoNull());
+					// tFBAcc.validate();
+					tFFN.setRequired(false);
+					tFMN.setRequired(false);
+					tFLN.setRequired(false);
+					tFOcc.setRequired(false);
+					// tFEmp.setRequired(false);
+					tFUN.setRequired(false);
+					tFMSISDN.setRequired(false);
+					// tFBAcc.setRequired(false);
+					tFAccEmail.setRequired(false);
+					// tFClrNo.setRequired(false);
+					// tFSecAns.setRequired(false);
+					// tFPMNo.setRequired(false);
+					// tFPANo.setRequired(false);
+					// tFPEmail.setRequired(false);
+					// tFPostalCode.setRequired(false);
+					tFStreet.setRequired(false);
+					tFCity.setRequired(false);
+					// tFProv.setRequired(false);
+					// tFSMNo.setRequired(false);
+					// tFSANo.setRequired(false);
+					// tFSEmail.setRequired(false);
+					// tFIssuer.setRequired(false);
+					tFIDNo.setRequired(false);
+
+					// chcTAndC.setRequired(false);
+					// comboPref.setRequired(false);
+
+					// comboSuff.setRequired(false);
+					comboState.setRequired(false);
+					comboLG.setRequired(false);
+					comboCountry.setRequired(false);
+					comboLang.setRequired(false);
+					// comboBDomain.setRequired(false);
+					// comboBID.setRequired(false);
+					// comboCur.setRequired(false);
+					// comboSecQn.setRequired(false);
+					comboProfile.setRequired(false);
+					comboIDType.setRequired(false);
+
+					// dFDoB.setRequired(false);
+					// dFDoI.setRequired(false);
+					dFDoE.setRequired(false);
+					optSex.setRequired(false);
+
+					tFFN.addValidator(new NoNull());
+					tFMN.addValidator(new NoNull());
+					tFLN.addValidator(new NoNull());
+					tFOcc.addValidator(new NoNull());
+					// tFEmp.addValidator(new NoNull());
+					tFUN.addValidator(new NoNull());
+					tFMSISDN.addValidator(new NoNull());
+					// tFBAcc.addValidator(new NoNull());
+					tFAccEmail.addValidator(new NoNull());
+					// tFClrNo.addValidator(new NoNull());
+					// tFSecAns.addValidator(new NoNull());
+					// tFPMNo.addValidator(new NoNull());
+					// tFPANo.addValidator(new NoNull());
+					// tFPEmail.addValidator(new NoNull());
+					// tFPostalCode.addValidator(new NoNull());
+					tFStreet.addValidator(new NoNull());
+					tFCity.addValidator(new NoNull());
+					// tFProv.addValidator(new NoNull());
+					// tFSMNo.addValidator(new NoNull());
+					// tFSANo.addValidator(new NoNull());
+					// tFSEmail.addValidator(new NoNull());
+					// tFIssuer.addValidator(new NoNull());
+					tFIDNo.addValidator(new NoNull());
+
+					// chcTAndC.addValidator(new NoNull());
+					// comboPref.addValidator(new NoNull());
+
+					// comboSuff.addValidator(new NoNull());
+					comboState.addValidator(new NoNull());
+					comboLG.addValidator(new NoNull());
+					comboCountry.addValidator(new NoNull());
+					comboLang.addValidator(new NoNull());
+					// comboBDomain.addValidator(new NoNull());
+					// comboBID.addValidator(new NoNull());
+					// comboCur.addValidator(new NoNull());
+					// comboSecQn.addValidator(new NoNull());
+					comboProfile.addValidator(new NoNull());
+					comboIDType.addValidator(new NoNull());
+
+					// dFDoB.addValidator(new NoNull());
+					// dFDoI.addValidator(new NoNull());
+					dFDoE.addValidator(new NoNull());
+					optSex.addValidator(new NoNull());
+					try {
+						tFFN.validate();
+						tFMN.validate();
+						tFLN.validate();
+						tFOcc.validate();
+						tFEmp.validate();
+						tFUN.validate();
+						tFMSISDN.validate();
+						tFBAcc.validate();
+						tFAccEmail.validate();
+						tFClrNo.validate();
+						tFSecAns.validate();
+						tFPMNo.validate();
+						tFPANo.validate();
+						tFPEmail.validate();
+						tFPostalCode.validate();
+						tFStreet.validate();
+						tFCity.validate();
+						tFProv.validate();
+						tFSMNo.validate();
+						tFSANo.validate();
+						tFSEmail.validate();
+						tFIssuer.validate();
+						tFIDNo.validate();
+
+						chcTAndC.validate();
+						comboPref.validate();
+
+						comboSuff.validate();
+						comboState.validate();
+						comboLG.validate();
+						comboCountry.validate();
+						comboLang.validate();
+						comboBDomain.validate();
+						comboBID.validate();
+						comboCur.validate();
+						comboSecQn.validate();
+						comboProfile.validate();
+						comboIDType.validate();
+
+						dFDoB.validate();
+						dFDoI.validate();
+						dFDoE.validate();
+						optSex.validate();
+					} catch (InvalidValueException e) {
+						Notification.show("Message: ", e.getMessage(),
+								Notification.Type.ERROR_MESSAGE);
+						return;
+					}
+
 					String bacc = tFBAcc.getValue().toString();
 					int bid = Integer.valueOf(comboBID.getValue().toString());
 					String bd = comboBDomain.getValue().toString();
@@ -934,87 +1093,7 @@ public class AddUserModule {
 			@Override
 			public void buttonClick(ClickEvent event) {
 
-				if (isReset)
-					return;
-
-				NotifCustom.show("Message: ", "Cleared.");
-
-				tFFN.setValue("");
-				tFMN.setValue("");
-				tFLN.setValue("");
-				tFOcc.setValue("");
-				tFEmp.setValue("");
-				tFUN.setValue("");
-				tFMSISDN.setValue("");
-				tFBAcc.setValue("");
-				tFAccEmail.setValue("");
-				tFClrNo.setValue("");
-				tFSecAns.setValue("");
-				tFPMNo.setValue("");
-				tFPANo.setValue("");
-				tFPEmail.setValue("");
-				tFPostalCode.setValue("");
-				tFStreet.setValue("");
-				tFCity.setValue("");
-				tFProv.setValue("");
-				tFSMNo.setValue("");
-				tFSANo.setValue("");
-				tFSEmail.setValue("");
-				tFIssuer.setValue("");
-				tFIDNo.setValue("");
-
-				chcTAndC.setValue(false);
-				comboPref.select(null);
-
-				comboSuff.select(null);
-				comboState.select(null);
-				comboLG.select(null);
-				comboCountry.select(null);
-				comboLang.select(null);
-				comboBDomain.select(null);
-				comboBID.select(null);
-				comboCur.select(null);
-				comboSecQn.select(null);
-				comboProfile.select(null);
-				comboIDType.select(null);
-
-				Calendar cal = Calendar.getInstance();
-				Date date = cal.getTime();
-
-				dFDoB.setValue(date);
-				dFDoB.setValue(date);
-				dFDoI.setValue(date);
-				dFDoE.setValue(date);
-				optSex.select(null);
-				isReset = true;
-
-				/*
-				 * ArrayList<Object> arrLAllFields = new ArrayList<>();
-				 * arrLAllFields.add(false); arrLAllFields.add(tFFN);
-				 * arrLAllFields.add(tFMN); arrLAllFields.add(tFLN);
-				 * arrLAllFields.add(tFOcc); arrLAllFields.add(tFEmp);
-				 * arrLAllFields.add(tFUN); arrLAllFields.add(tFMSISDN);
-				 * arrLAllFields.add(tFBAcc); arrLAllFields.add(tFAccEmail);
-				 * arrLAllFields.add(tFClrNo); arrLAllFields.add(tFSecAns);
-				 * arrLAllFields.add(tFPMNo); arrLAllFields.add(tFPANo);
-				 * arrLAllFields.add(tFPEmail); arrLAllFields.add(tFPostalCode);
-				 * arrLAllFields.add(tFStreet); arrLAllFields.add(tFCity);
-				 * arrLAllFields.add(tFProv); arrLAllFields.add(tFSMNo);
-				 * arrLAllFields.add(tFSANo); arrLAllFields.add(tFSEmail);
-				 * arrLAllFields.add(tFIssuer); arrLAllFields.add(tFIDNo);
-				 * 
-				 * arrLAllFields.add(chcTAndC); arrLAllFields.add(comboPref);
-				 * arrLAllFields.add(comboSuff); arrLAllFields.add(comboState);
-				 * arrLAllFields.add(comboLG); arrLAllFields.add(comboCountry);
-				 * arrLAllFields.add(comboLang);
-				 * arrLAllFields.add(comboBDomain); arrLAllFields.add(comboBID);
-				 * arrLAllFields.add(comboCur); arrLAllFields.add(comboSecQn);
-				 * arrLAllFields.add(comboProfile);
-				 * arrLAllFields.add(comboIDType);
-				 * 
-				 * arrLAllFields.add(dFDoB); arrLAllFields.add(dFDoI);
-				 * arrLAllFields.add(dFDoE); arrLAllFields.add(optSex);
-				 */
+				reset();
 
 			}
 		});
@@ -1149,6 +1228,103 @@ public class AddUserModule {
 		}
 
 		return s;
+
+	}
+
+	private class NoNull implements Validator {
+		private static final long serialVersionUID = -5634103226093178664L;
+
+		@Override
+		public void validate(Object value) throws InvalidValueException {
+			if (value == null || value.toString().isEmpty()) {
+
+				throw new InvalidValueException(
+						"Please fill in all fields marked with (!).");
+
+			}
+
+		}
+
+	}
+
+	private void reset() {
+
+		tFFN.setValue("");
+		tFMN.setValue("");
+		tFLN.setValue("");
+		tFOcc.setValue("");
+		tFEmp.setValue("");
+		tFUN.setValue("");
+		tFMSISDN.setValue("");
+		tFBAcc.setValue("");
+		tFAccEmail.setValue("");
+		tFClrNo.setValue("");
+		tFSecAns.setValue("");
+		tFPMNo.setValue("");
+		tFPANo.setValue("");
+		tFPEmail.setValue("");
+		tFPostalCode.setValue("");
+		tFStreet.setValue("");
+		tFCity.setValue("");
+		tFProv.setValue("");
+		tFSMNo.setValue("");
+		tFSANo.setValue("");
+		tFSEmail.setValue("");
+		tFIssuer.setValue("");
+		tFIDNo.setValue("");
+
+		chcTAndC.setValue(false);
+		comboPref.select(null);
+
+		comboSuff.select(null);
+		comboState.select(null);
+		comboLG.select(null);
+		comboCountry.select(null);
+		comboLang.select(null);
+		comboBDomain.select(null);
+		comboBID.select(null);
+		comboCur.select(null);
+		comboSecQn.select(null);
+		comboProfile.select(null);
+		comboIDType.select(null);
+
+		Calendar cal = Calendar.getInstance();
+		Date date = cal.getTime();
+
+		dFDoB.setValue(date);
+		dFDoB.setValue(date);
+		dFDoI.setValue(date);
+		dFDoE.setValue(date);
+		optSex.select(null);
+		isReset = true;
+		Notification.show("Fields reset.");
+
+		/*
+		 * ArrayList<Object> arrLAllFields = new ArrayList<>();
+		 * arrLAllFields.add(false); arrLAllFields.add(tFFN);
+		 * arrLAllFields.add(tFMN); arrLAllFields.add(tFLN);
+		 * arrLAllFields.add(tFOcc); arrLAllFields.add(tFEmp);
+		 * arrLAllFields.add(tFUN); arrLAllFields.add(tFMSISDN);
+		 * arrLAllFields.add(tFBAcc); arrLAllFields.add(tFAccEmail);
+		 * arrLAllFields.add(tFClrNo); arrLAllFields.add(tFSecAns);
+		 * arrLAllFields.add(tFPMNo); arrLAllFields.add(tFPANo);
+		 * arrLAllFields.add(tFPEmail); arrLAllFields.add(tFPostalCode);
+		 * arrLAllFields.add(tFStreet); arrLAllFields.add(tFCity);
+		 * arrLAllFields.add(tFProv); arrLAllFields.add(tFSMNo);
+		 * arrLAllFields.add(tFSANo); arrLAllFields.add(tFSEmail);
+		 * arrLAllFields.add(tFIssuer); arrLAllFields.add(tFIDNo);
+		 * 
+		 * arrLAllFields.add(chcTAndC); arrLAllFields.add(comboPref);
+		 * arrLAllFields.add(comboSuff); arrLAllFields.add(comboState);
+		 * arrLAllFields.add(comboLG); arrLAllFields.add(comboCountry);
+		 * arrLAllFields.add(comboLang); arrLAllFields.add(comboBDomain);
+		 * arrLAllFields.add(comboBID); arrLAllFields.add(comboCur);
+		 * arrLAllFields.add(comboSecQn); arrLAllFields.add(comboProfile);
+		 * arrLAllFields.add(comboIDType);
+		 * 
+		 * arrLAllFields.add(dFDoB); arrLAllFields.add(dFDoI);
+		 * arrLAllFields.add(dFDoE); arrLAllFields.add(optSex);
+		 */
 
 	}
 
