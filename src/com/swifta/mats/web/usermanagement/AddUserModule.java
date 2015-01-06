@@ -84,7 +84,7 @@ public class AddUserModule {
 	private PopupDateField dFDoE;
 	public static Map<Integer, String> profToID;
 	private OptionGroup optSex;
-	private boolean isReset = false;
+	private boolean isValidatorAdded = false;
 	boolean isCSelected = false;
 	String curC = null;
 	String curState = null;
@@ -318,6 +318,7 @@ public class AddUserModule {
 				dF.setValue(new Date("12/12/14"));
 				dFDoE = dF;
 				dFDoE.setRequired(true);
+				dFDoE.setImmediate(true);
 
 				cCompany.addComponent(dF);
 
@@ -529,8 +530,6 @@ public class AddUserModule {
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				// Notification.show(event.getProperty().getValue().toString());
-				if (chcTAndC.getValue())
-					isReset = false;
 
 			}
 
@@ -813,255 +812,146 @@ public class AddUserModule {
 				UserManagementService ums = new UserManagementService();
 				String strResponse = "";
 
-				/*
-				 * registerUser(String bankAccount, int bankCodeid, String
-				 * bankdomainNameid, String clearingNumber, String currencyid,
-				 * String email, String msisdn, int profileid, String
-				 * securityQuest, String securityAns, String termscondition,
-				 * String username, int countryid, Date dateofBirth, String
-				 * employer, String firstname, String gender, int languageid,
-				 * String lastname, int Lgaid, String middlename, String
-				 * occupation, String prefix, int stateid, String suffix, String
-				 * city, String postalcode, String streetAddress, String
-				 * province, Date Expirydate, String idNumber, String idType,
-				 * Date Issuedate, String Issue, String PrimaryEmail, String
-				 * PrimaryMobilenumber, String PrimaryPhonenumber, String
-				 * SecondaryEmail, String SecondaryMobilenumber, String
-				 * SecondaryPhonenumber)
-				 */
 				String idtype = "";
 
 				try {
-					// tFBAcc.addValidator(new NoNull());
-					// tFBAcc.validate();
-					tFFN.setRequired(false);
-					tFMN.setRequired(false);
-					tFLN.setRequired(false);
-					tFOcc.setRequired(false);
-					// tFEmp.setRequired(false);
-					tFUN.setRequired(false);
-					tFMSISDN.setRequired(false);
-					// tFBAcc.setRequired(false);
-					tFAccEmail.setRequired(false);
-					// tFClrNo.setRequired(false);
-					// tFSecAns.setRequired(false);
-					// tFPMNo.setRequired(false);
-					// tFPANo.setRequired(false);
-					// tFPEmail.setRequired(false);
-					// tFPostalCode.setRequired(false);
-					tFStreet.setRequired(false);
-					tFCity.setRequired(false);
-					// tFProv.setRequired(false);
-					// tFSMNo.setRequired(false);
-					// tFSANo.setRequired(false);
-					// tFSEmail.setRequired(false);
-					// tFIssuer.setRequired(false);
-					tFIDNo.setRequired(false);
 
-					// chcTAndC.setRequired(false);
-					// comboPref.setRequired(false);
-
-					// comboSuff.setRequired(false);
-					comboState.setRequired(false);
-					comboLG.setRequired(false);
-					comboCountry.setRequired(false);
-					comboLang.setRequired(false);
-					// comboBDomain.setRequired(false);
-					// comboBID.setRequired(false);
-					// comboCur.setRequired(false);
-					// comboSecQn.setRequired(false);
-					comboProfile.setRequired(false);
-					comboIDType.setRequired(false);
-
-					// dFDoB.setRequired(false);
-					// dFDoI.setRequired(false);
-					dFDoE.setRequired(false);
-					optSex.setRequired(false);
-
-					tFFN.addValidator(new NoNull());
-					tFMN.addValidator(new NoNull());
-					tFLN.addValidator(new NoNull());
-					tFOcc.addValidator(new NoNull());
-					// tFEmp.addValidator(new NoNull());
-					tFUN.addValidator(new NoNull());
-					tFMSISDN.addValidator(new NoNull());
-					// tFBAcc.addValidator(new NoNull());
-					tFAccEmail.addValidator(new NoNull());
-					// tFClrNo.addValidator(new NoNull());
-					// tFSecAns.addValidator(new NoNull());
-					// tFPMNo.addValidator(new NoNull());
-					// tFPANo.addValidator(new NoNull());
-					// tFPEmail.addValidator(new NoNull());
-					// tFPostalCode.addValidator(new NoNull());
-					tFStreet.addValidator(new NoNull());
-					tFCity.addValidator(new NoNull());
-					// tFProv.addValidator(new NoNull());
-					// tFSMNo.addValidator(new NoNull());
-					// tFSANo.addValidator(new NoNull());
-					// tFSEmail.addValidator(new NoNull());
-					// tFIssuer.addValidator(new NoNull());
-					tFIDNo.addValidator(new NoNull());
-
-					// chcTAndC.addValidator(new NoNull());
-					// comboPref.addValidator(new NoNull());
-
-					// comboSuff.addValidator(new NoNull());
-					comboState.addValidator(new NoNull());
-					comboLG.addValidator(new NoNull());
-					comboCountry.addValidator(new NoNull());
-					comboLang.addValidator(new NoNull());
-					// comboBDomain.addValidator(new NoNull());
-					// comboBID.addValidator(new NoNull());
-					// comboCur.addValidator(new NoNull());
-					// comboSecQn.addValidator(new NoNull());
-					comboProfile.addValidator(new NoNull());
-					comboIDType.addValidator(new NoNull());
-
-					// dFDoB.addValidator(new NoNull());
-					// dFDoI.addValidator(new NoNull());
-					dFDoE.addValidator(new NoNull());
-					optSex.addValidator(new NoNull());
 					try {
-						tFFN.validate();
-						tFMN.validate();
-						tFLN.validate();
-						tFOcc.validate();
-						tFEmp.validate();
-						tFUN.validate();
-						tFMSISDN.validate();
-						tFBAcc.validate();
-						tFAccEmail.validate();
-						tFClrNo.validate();
-						tFSecAns.validate();
-						tFPMNo.validate();
-						tFPANo.validate();
-						tFPEmail.validate();
-						tFPostalCode.validate();
-						tFStreet.validate();
-						tFCity.validate();
-						tFProv.validate();
-						tFSMNo.validate();
-						tFSANo.validate();
-						tFSEmail.validate();
-						tFIssuer.validate();
-						tFIDNo.validate();
+						if (!isValidatorAdded)
+							addValidators();
+						validate();
 
-						chcTAndC.validate();
-						comboPref.validate();
-
-						comboSuff.validate();
-						comboState.validate();
-						comboLG.validate();
-						comboCountry.validate();
-						comboLang.validate();
-						comboBDomain.validate();
-						comboBID.validate();
-						comboCur.validate();
-						comboSecQn.validate();
-						comboProfile.validate();
-						comboIDType.validate();
-
-						dFDoB.validate();
-						dFDoI.validate();
-						dFDoE.validate();
-						optSex.validate();
 					} catch (InvalidValueException e) {
 						Notification.show("Message: ", e.getMessage(),
 								Notification.Type.ERROR_MESSAGE);
 						return;
 					}
 
-					String bacc = tFBAcc.getValue().toString();
-					int bid = Integer.valueOf(comboBID.getValue().toString());
-					String bd = comboBDomain.getValue().toString();
-					String clrno = tFClrNo.getValue().toString();
-					String cur = comboCur.getValue().toString();
-					String accEmail = tFAccEmail.getValue().toString();
-					String msisdn = tFMSISDN.getValue().toString();
-					int profid = Integer.valueOf(comboProfile.getValue()
-							.toString());
-					String secQn = comboSecQn.getValue().toString();
-					String secAns = tFSecAns.getValue().toString();
-					String tAndC = chcTAndC.getValue().toString();
-					String un = tFUN.getValue().toString();
-					int country = Integer.valueOf(comboCountry.getValue()
-							.toString());
-					Date dob = (Date) dFDoB.getValue();
-					String employer = tFEmp.getValue().toString();
-					String fn = tFFN.getValue().toString();
-					String gender = optSex.getItemCaption(optSex.getValue())
-							.toString();
-					int lang = Integer.valueOf(comboLang.getValue().toString());
-					String ln = tFLN.getValue().toString();
-					int lgid = Integer.valueOf(comboLG.getValue().toString());
+					String bacc = (tFBAcc.getValue() == null) ? "" : tFBAcc
+							.getValue().toString();
+					int bid = (comboBID.getValue() == null) ? 0 : Integer
+							.valueOf(comboBID.getValue().toString());
+					String bd = (comboBDomain.getValue() == null) ? ""
+							: comboBDomain.getValue().toString();
+					String clrno = (tFClrNo.getValue() == null) ? "" : tFClrNo
+							.getValue().toString();
+					String cur = (comboCur.getValue() == null) ? "" : comboCur
+							.getValue().toString();
+					String accEmail = (tFAccEmail.getValue() == null) ? ""
+							: tFAccEmail.getValue().toString();
+					String msisdn = (tFMSISDN.getValue() == null) ? ""
+							: tFMSISDN.getValue().toString();
+					int profid = (comboProfile.getValue() == null) ? 0
+							: Integer.valueOf(comboProfile.getValue()
+									.toString());
+					String secQn = (comboSecQn.getValue() == null) ? ""
+							: comboSecQn.getValue().toString();
+					String secAns = (tFSecAns.getValue() == null) ? ""
+							: tFSecAns.getValue().toString();
+					String tAndC = (chcTAndC.getValue() == null) ? ""
+							: chcTAndC.getValue().toString();
+					String un = (tFUN.getValue() == null) ? "" : tFUN
+							.getValue().toString();
+					int country = (comboCountry.getValue() == null) ? 0
+							: Integer.valueOf(comboCountry.getValue()
+									.toString());
+					Date dob = (dFDoB.getValue() == null) ? new Date()
+							: (Date) dFDoB.getValue();
+					String employer = (tFEmp.getValue() == null) ? "" : tFEmp
+							.getValue().toString();
+					String fn = (tFFN.getValue() == null) ? "" : tFFN
+							.getValue().toString();
+					String gender = (optSex.getValue() == null) ? "" : optSex
+							.getItemCaption(optSex.getValue()).toString();
+					int lang = (comboLang.getValue() == null) ? 0 : Integer
+							.valueOf(comboLang.getValue().toString());
+					String ln = (tFLN.getValue() == null) ? "" : tFLN
+							.getValue().toString();
+					int lgid = (comboLG.getValue() == null) ? 0 : Integer
+							.valueOf(comboLG.getValue().toString());
 
-					String mn = tFMN.getValue().toString();
-					String occ = tFOcc.getValue().toString();
-					String pref = comboPref.getValue().toString();
-					int stateid = Integer.valueOf(comboState.getValue()
-							.toString());
-					String suff = comboSuff.getValue().toString();
-					String city = tFCity.getValue().toString();
-					String pcode = tFPostalCode.getValue().toString();
-					String str = tFStreet.getValue().toString();
-					String prov = tFProv.getValue().toString();
-					Date doe = (Date) dFDoE.getValue();
-					String idno = tFIDNo.getValue().toString();
+					String mn = (tFMN.getValue() == null) ? "" : tFMN
+							.getValue().toString();
+					String occ = (tFOcc.getValue() == null) ? "" : tFOcc
+							.getValue().toString();
+					String pref = (comboPref.getValue() == null) ? ""
+							: comboPref.getValue().toString();
+					int stateid = (comboState.getValue() == null) ? 0 : Integer
+							.valueOf(comboState.getValue().toString());
+					String suff = (comboSuff.getValue() == null) ? ""
+							: comboSuff.getValue().toString();
+					String city = (tFCity.getValue() == null) ? "" : tFCity
+							.getValue().toString();
+					String pcode = (tFPostalCode.getValue() == null) ? ""
+							: tFPostalCode.getValue().toString();
+					String str = (tFStreet.getValue() == null) ? "" : tFStreet
+							.getValue().toString();
+					String prov = (tFProv.getValue() == null) ? "" : tFProv
+							.getValue().toString();
+					Date doe = (dFDoE.getValue() == null) ? new Date()
+							: (Date) dFDoE.getValue();
+					String idno = (tFIDNo.getValue() == null) ? "" : tFIDNo
+							.getValue().toString();
+
+					Date doi = (dFDoI.getValue() == null) ? new Date()
+							: (Date) dFDoI.getValue();
+
+					String issuer = (tFIssuer.getValue() == null) ? ""
+							: tFIssuer.getValue().toString();
+					String pem = (tFPEmail.getValue() == null) ? "" : tFPEmail
+							.getValue().toString();
+					String pmno = (tFPMNo.getValue() == null) ? "" : tFPMNo
+							.getValue().toString();
+
+					String pamno = (tFPANo.getValue() == null) ? "" : tFPANo
+							.getValue().toString();
+					String sem = (tFSEmail.getValue() == null) ? "" : tFSEmail
+							.getValue().toString();
+					String smno = (tFSMNo.getValue() == null) ? "" : tFSMNo
+							.getValue().toString();
+					String samno = (tFSANo.getValue() == null) ? "" : tFSANo
+							.getValue().toString();
 
 					// IdentificationType idtype =
 					// ProvisioningStub.IdentificationType.Factory
 					// .fromValue(comboIDType.getValue().toString());
-					if (comboIDType.getValue().toString()
-							.equals("Passport Number")) {
-						idtype = ProvisioningStub.IdentificationType.PASSP
-								.toString();
-						System.out.println("idtype>>>>>1 " + idtype);
-					} else if (comboIDType
-							.getValue()
-							.toString()
-							.equals("National Registration Identification Number")) {
-						idtype = ProvisioningStub.IdentificationType.NRIN
-								.toString();
-						System.out.println("idtype>>>>>2 " + idtype);
-					} else if (comboIDType.getValue().toString()
-							.equals("Drivers License Number")) {
-						idtype = ProvisioningStub.IdentificationType.DRLCS
-								.toString();
-						System.out.println("idtype>>>>>3 " + idtype);
-					} else if (comboIDType.getValue().toString()
-							.equals("Identification Card")) {
-						idtype = ProvisioningStub.IdentificationType.IDCD
-								.toString();
-						System.out.println("idtype>>>>>4 " + idtype);
-					} else if (comboIDType.getValue().toString()
-							.equals("Employer Identification Number")) {
-						idtype = ProvisioningStub.IdentificationType.EMID
-								.toString();
-					}
+					if (comboIDType.getValue() != null)
+						if (comboIDType.getValue().toString()
+								.equals("Passport Number")) {
+							idtype = ProvisioningStub.IdentificationType.PASSP
+									.toString();
+							System.out.println("idtype>>>>>1 " + idtype);
+						} else if (comboIDType
+								.getValue()
+								.toString()
+								.equals("National Registration Identification Number")) {
+							idtype = ProvisioningStub.IdentificationType.NRIN
+									.toString();
+							System.out.println("idtype>>>>>2 " + idtype);
+						} else if (comboIDType.getValue().toString()
+								.equals("Drivers License Number")) {
+							idtype = ProvisioningStub.IdentificationType.DRLCS
+									.toString();
+							System.out.println("idtype>>>>>3 " + idtype);
+						} else if (comboIDType.getValue().toString()
+								.equals("Identification Card")) {
+							idtype = ProvisioningStub.IdentificationType.IDCD
+									.toString();
+							System.out.println("idtype>>>>>4 " + idtype);
+						} else if (comboIDType.getValue().toString()
+								.equals("Employer Identification Number")) {
+							idtype = ProvisioningStub.IdentificationType.EMID
+									.toString();
+						}
+
+						else
+							idtype = "";
 
 					System.out.println("idtype>>>>> " + idtype);
 
 					System.out.println("idtype>>>>> "
 							+ ProvisioningStub.IdentificationType.PASSP
 									.toString());
-
-					// combo.addItem("Passport");
-					// combo.addItem("Voter's Card");
-					// combo.addItem("Driving License");
-					// combo.addItem("National ID");
-					// combo.addItem("Residential ID");
-					// combo.select("Passport");
-					// String idtype = comboIDType.getValue().toString();
-					Date doi = (Date) dFDoI.getValue();
-
-					String issuer = tFIssuer.getValue().toString();
-					String pem = tFPEmail.getValue().toString();
-					String pmno = tFPMNo.getValue().toString();
-
-					String pamno = tFPANo.getValue().toString();
-					String sem = tFSEmail.getValue().toString();
-					String smno = tFSMNo.getValue().toString();
-					String samno = tFSANo.getValue().toString();
 
 					strResponse = ums.registerUser(bacc, bid, bd, clrno, cur,
 							accEmail, msisdn, profid, secQn, secAns, tAndC, un,
@@ -1139,7 +1029,7 @@ public class AddUserModule {
 
 		} catch (SQLException | ClassNotFoundException | InstantiationException
 				| IllegalAccessException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 			Notification.show("DB Connection",
 					"Error Establishing DBConnection:  " + e.getMessage(),
@@ -1296,7 +1186,7 @@ public class AddUserModule {
 		dFDoI.setValue(date);
 		dFDoE.setValue(date);
 		optSex.select(null);
-		isReset = true;
+
 		Notification.show("Fields reset.");
 
 		/*
@@ -1325,6 +1215,149 @@ public class AddUserModule {
 		 * arrLAllFields.add(dFDoB); arrLAllFields.add(dFDoI);
 		 * arrLAllFields.add(dFDoE); arrLAllFields.add(optSex);
 		 */
+
+	}
+
+	private void addValidators() {
+
+		// tFBAcc.addValidator(new NoNull());
+		// tFBAcc.validate();
+		tFFN.setRequired(false);
+		tFMN.setRequired(false);
+		tFLN.setRequired(false);
+		tFOcc.setRequired(false);
+		// tFEmp.setRequired(false);
+		tFUN.setRequired(false);
+		tFMSISDN.setRequired(false);
+		// tFBAcc.setRequired(false);
+		tFAccEmail.setRequired(false);
+		// tFClrNo.setRequired(false);
+		// tFSecAns.setRequired(false);
+		// tFPMNo.setRequired(false);
+		// tFPANo.setRequired(false);
+		// tFPEmail.setRequired(false);
+		// tFPostalCode.setRequired(false);
+		tFStreet.setRequired(false);
+		tFCity.setRequired(false);
+		// tFProv.setRequired(false);
+		// tFSMNo.setRequired(false);
+		// tFSANo.setRequired(false);
+		// tFSEmail.setRequired(false);
+		// tFIssuer.setRequired(false);
+		tFIDNo.setRequired(false);
+
+		// chcTAndC.setRequired(false);
+		// comboPref.setRequired(false);
+
+		// comboSuff.setRequired(false);
+		comboState.setRequired(false);
+		comboLG.setRequired(false);
+		comboCountry.setRequired(false);
+		comboLang.setRequired(false);
+		// comboBDomain.setRequired(false);
+		// comboBID.setRequired(false);
+		// comboCur.setRequired(false);
+		// comboSecQn.setRequired(false);
+		comboProfile.setRequired(false);
+		comboIDType.setRequired(false);
+
+		// dFDoB.setRequired(false);
+		// dFDoI.setRequired(false);
+		dFDoE.setRequired(false);
+		optSex.setRequired(false);
+
+		tFFN.addValidator(new NoNull());
+		tFMN.addValidator(new NoNull());
+		tFLN.addValidator(new NoNull());
+		tFOcc.addValidator(new NoNull());
+		// tFEmp.addValidator(new NoNull());
+		tFUN.addValidator(new NoNull());
+		tFMSISDN.addValidator(new NoNull());
+		// tFBAcc.addValidator(new NoNull());
+		tFAccEmail.addValidator(new NoNull());
+		// tFClrNo.addValidator(new NoNull());
+		// tFSecAns.addValidator(new NoNull());
+		// tFPMNo.addValidator(new NoNull());
+		// tFPANo.addValidator(new NoNull());
+		// tFPEmail.addValidator(new NoNull());
+		// tFPostalCode.addValidator(new NoNull());
+		tFStreet.addValidator(new NoNull());
+		tFCity.addValidator(new NoNull());
+		// tFProv.addValidator(new NoNull());
+		// tFSMNo.addValidator(new NoNull());
+		// tFSANo.addValidator(new NoNull());
+		// tFSEmail.addValidator(new NoNull());
+		// tFIssuer.addValidator(new NoNull());
+		tFIDNo.addValidator(new NoNull());
+
+		// chcTAndC.addValidator(new NoNull());
+		// comboPref.addValidator(new NoNull());
+
+		// comboSuff.addValidator(new NoNull());
+		comboState.addValidator(new NoNull());
+		comboLG.addValidator(new NoNull());
+		comboCountry.addValidator(new NoNull());
+		comboLang.addValidator(new NoNull());
+		// comboBDomain.addValidator(new NoNull());
+		// comboBID.addValidator(new NoNull());
+		// comboCur.addValidator(new NoNull());
+		// comboSecQn.addValidator(new NoNull());
+		comboProfile.addValidator(new NoNull());
+		comboIDType.addValidator(new NoNull());
+
+		// dFDoB.addValidator(new NoNull());
+		// dFDoI.addValidator(new NoNull());
+		dFDoE.addValidator(new NoNull());
+		optSex.addValidator(new NoNull());
+		isValidatorAdded = true;
+
+	}
+
+	private void validate() {
+
+		tFFN.validate();
+		tFMN.validate();
+		tFLN.validate();
+		tFOcc.validate();
+		tFEmp.validate();
+		tFUN.validate();
+		tFMSISDN.validate();
+		tFBAcc.validate();
+		tFAccEmail.validate();
+		tFClrNo.validate();
+		tFSecAns.validate();
+		tFPMNo.validate();
+		tFPANo.validate();
+		tFPEmail.validate();
+		tFPostalCode.validate();
+		tFStreet.validate();
+		tFCity.validate();
+		tFProv.validate();
+		tFSMNo.validate();
+		tFSANo.validate();
+		tFSEmail.validate();
+		tFIssuer.validate();
+		tFIDNo.validate();
+
+		chcTAndC.validate();
+		comboPref.validate();
+
+		comboSuff.validate();
+		comboState.validate();
+		comboLG.validate();
+		comboCountry.validate();
+		comboLang.validate();
+		comboBDomain.validate();
+		comboBID.validate();
+		comboCur.validate();
+		comboSecQn.validate();
+		comboProfile.validate();
+		comboIDType.validate();
+
+		dFDoB.validate();
+		dFDoI.validate();
+		dFDoE.validate();
+		optSex.validate();
 
 	}
 

@@ -87,7 +87,7 @@ public class Reportform extends VerticalLayout {
 
 		comboF = new ComboBox("Filter by: ");
 
-		Button btnReload = new Button("Refresh");
+		Button btnReload = new Button("Reload");
 		cF.addComponent(btnReload);
 		cF.setSpacing(true);
 
