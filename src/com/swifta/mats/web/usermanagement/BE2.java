@@ -20,6 +20,8 @@ import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.data.Validator;
+import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.data.util.filter.Compare;
 import com.vaadin.server.FontAwesome;
@@ -62,6 +64,7 @@ public class BE2 {
 	private int rowCount;
 	private int chkCount;
 	private boolean isSingleChange = false;
+	private boolean isValidatorAdded = false;
 	PagedTableCustom tb;
 
 	ArrayList<String> arrLBulkIDs;
@@ -303,6 +306,11 @@ public class BE2 {
 	private void showActivateUserContainer(final ArrayList<String> arrLBulkIDs,
 			final String[] arrID, Button btn) {
 
+		if (btn.getCaption().equals("R")) {
+			showResetPINContainer(arrLBulkIDs, arrID, btn);
+			return;
+		}
+
 		isPopupShowing = true;
 		isSent = false;
 
@@ -428,7 +436,6 @@ public class BE2 {
 				// TODO Please remember to update id.in the for loop.
 
 				String currency = tFCurrency.getValue();
-				String ret = "No response";
 				if (arrLBulkIDs != null)
 					for (String id : arrLBulkIDs) {
 
@@ -448,8 +455,13 @@ public class BE2 {
 
 				if (strResponse != null && strResponse.equals(strSxs)) {
 					strResponse = "Activation successful!";
-					btnActivate.setVisible(false);
-					btnActivate.setEnabled(false);
+					// btnActivate.setVisible(false);
+					// btnActivate.setEnabled(false);
+					btnActivate.setIcon(null);
+					btnActivate.setCaption("R");
+					btnActivate.setStyleName("btn_link");
+					btnActivate.setDescription("Reset PIN");
+
 				}
 
 				NotifCustom.show("Activation", strResponse);
@@ -1176,8 +1188,20 @@ public class BE2 {
 		// Notification.show(status);
 
 		if (status.equals("ACTIVE")) {
-			btnActivate.setVisible(false);
+			// btnActivate.setVisible(false);
 			// btnActivate.setEnabled(false);
+			// btnActivate.setStyleName("btn_link btn_a");
+			btnActivate.setIcon(null);
+			btnActivate.setCaption("R");
+			btnActivate.setStyleName("btn_link");
+			btnActivate.setDescription("Reset PIN");
+
+			// btnActivate.setIcon(null);
+			// btnActivate.removeStyleName(ValoTheme.BUTTON_ICON_ONLY);
+
+			// btnActivate.setStyleName("btn_link");
+			// btnActivate.setCaption("R");
+
 		}
 		// actionsC.addComponent(btnMoreActions);
 
@@ -1396,4 +1420,283 @@ public class BE2 {
 		}
 
 	}
+
+	private void showResetPINContainer(final ArrayList<String> arrLBulkIDs,
+			final String[] arrID, Button btn) {
+
+		isPopupShowing = true;
+		isSent = false;
+		isValidatorAdded = false;
+
+		String username = null;
+		if (arrID != null) {
+			username = arrID[3] + "'s Account";
+		} else {
+			username = "Selected Accounts";
+		}
+		/*
+		 * StringBuilder builderDesc = null; if (arrLBulkIDs != null) for
+		 * (String id : arrLBulkIDs) builderDesc.append(id);
+		 */
+
+		final Window popup = new Window("Reset PIN for " + username);
+		popup.setStyleName("w_delete_user");
+		popup.setIcon(FontAwesome.KEY);
+
+		popup.center();
+
+		VerticalLayout cDeletePrompt = new VerticalLayout();
+		cDeletePrompt.setSpacing(true);
+		// cDeletePrompt.setMargin(true);
+
+		Label lbActivationPrompt = new Label(
+				"Please enter and confirm PIN for " + username);
+		lbActivationPrompt.setWidth("200px");
+
+		VerticalLayout frmDeleteReason = new VerticalLayout();
+		frmDeleteReason.setSizeUndefined();
+		frmDeleteReason.setSpacing(true);
+		frmDeleteReason.setMargin(true);
+		cDeletePrompt.addComponent(frmDeleteReason);
+
+		final PasswordField tFPIN = new PasswordField("Enter PIN");
+		final PasswordField tFPINConf = new PasswordField("Confirm PIN");
+
+		tFPIN.setRequired(true);
+		tFPINConf.setRequired(true);
+		tFPIN.setMaxLength(30);
+		tFPINConf.setMaxLength(30);
+
+		tFPIN.addValueChangeListener(new ValueChangeListener() {
+
+			private static final long serialVersionUID = -2549609367159498845L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				tFPIN.setComponentError(null);
+				tFPINConf.setComponentError(null);
+
+			}
+
+		});
+
+		tFPINConf.addValueChangeListener(new ValueChangeListener() {
+
+			private static final long serialVersionUID = -2549609367159498845L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				tFPIN.setComponentError(null);
+				tFPINConf.setComponentError(null);
+
+			}
+
+		});
+
+		final TextField tFInitUser = new TextField("Initiating User");
+		tFInitUser.setValue(UI.getCurrent().getSession().getAttribute("user")
+				.toString());
+		tFInitUser.setReadOnly(true);
+		tFInitUser.setEnabled(false);
+		tFInitUser.setRequired(true);
+
+		final TextField tFUserRID = new TextField("User Resource ID");
+		tFUserRID.setRequired(true);
+		tFUserRID.setValue(arrID[3]);
+		tFUserRID.setEnabled(false);
+
+		frmDeleteReason.addComponent(lbActivationPrompt);
+		frmDeleteReason.setComponentAlignment(lbActivationPrompt,
+				Alignment.TOP_LEFT);
+		// frmDeleteReason.addComponent(tFBID);
+		// frmDeleteReason.addComponent(tFCurrency);
+		// frmDeleteReason.addComponent(tFSecAns);
+
+		frmDeleteReason.addComponent(tFUserRID);
+
+		frmDeleteReason.addComponent(tFPIN);
+		frmDeleteReason.addComponent(tFPINConf);
+
+		frmDeleteReason.addComponent(tFInitUser);
+
+		VerticalLayout cPopupBtns = new VerticalLayout();
+		cPopupBtns.setSizeUndefined();
+		cPopupBtns.setSpacing(true);
+
+		Button btnCancel = new Button("Cancel");
+		final Button btnActivate = new Button("Reset PIN");
+		btnActivate.setIcon(FontAwesome.KEY);
+		cPopupBtns.addComponent(btnActivate);
+		cPopupBtns.addComponent(btnCancel);
+		frmDeleteReason.addComponent(cPopupBtns);
+		cDeletePrompt.setComponentAlignment(frmDeleteReason,
+				Alignment.MIDDLE_CENTER);
+		/*
+		 * cDeletePrompt .setComponentAlignment(cPopupBtns,
+		 * Alignment.BOTTOM_CENTER);
+		 */
+		popup.setContent(cDeletePrompt);
+		UI.getCurrent().addWindow(popup);
+		btnCancel.addClickListener(new Button.ClickListener() {
+
+			private static final long serialVersionUID = -9071850366625898895L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				popup.close();
+
+			}
+		});
+
+		btnActivate.addClickListener(new Button.ClickListener() {
+
+			private static final long serialVersionUID = -6318666715385643538L;
+			String strSxs = new String(
+					"ACCOUNT_HOLDER_ACCOUNT_ACTIVATION_SUCCESSFUL");
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+
+				/*
+				 * String bankdomainid, String currency, String IDnumber, String
+				 * resourceid, String SecurityAns, String firstPin, String
+				 * confirmPin
+				 */
+
+				if (isSent)
+					return;
+				// if (ums == null)
+				// ums = new UserManagementService();
+
+				String strResponse = null;
+				// StringBuilder builderDesc = null;
+				// Notification.show(String.valueOf(arrLBulkIDs.get(0)));
+
+				if (!isValidatorAdded) {
+					tFPIN.setRequired(false);
+					tFPINConf.setRequired(false);
+					tFPIN.addValidator(new PINMatch(tFPIN, tFPINConf));
+					tFPINConf.addValidator(new PINMatch(tFPIN, tFPINConf));
+					isValidatorAdded = true;
+				}
+				try {
+					tFPIN.validate();
+				} catch (InvalidValueException e) {
+					tFPINConf.setComponentError(null);
+					Notification.show("PIN Error!",
+							Notification.Type.ERROR_MESSAGE);
+					return;
+				}
+
+				try {
+					tFPINConf.validate();
+				} catch (InvalidValueException e) {
+					tFPIN.setComponentError(null);
+					Notification.show("PIN Error!",
+							Notification.Type.ERROR_MESSAGE);
+					return;
+				}
+
+				String userresourceid = tFUserRID.getValue();
+				String inituser = tFInitUser.getValue();
+				String newPIN = tFPIN.getValue();
+				// String SecurityAns = tFSecAns.getValue();
+
+				// TODO Please remember to update id.in the for loop.
+
+				// String currency = tFCurrency.getValue();
+				if (arrLBulkIDs != null)
+					for (String id : arrLBulkIDs) {
+
+						try {
+							strResponse = UserManagementService
+									.passwordResetByAdmin(inituser,
+											userresourceid, newPIN);
+
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+							NotifCustom.show("Activation", e.getMessage());
+						}
+					}
+				isSent = true;
+
+				if (strResponse != null && strResponse.equals(strSxs)) {
+					strResponse = "Activation successful!";
+					// btnActivate.setVisible(false);
+					// btnActivate.setEnabled(false);
+					btnActivate.setIcon(null);
+					btnActivate.setCaption("R");
+					btnActivate.setStyleName("btn_link");
+					btnActivate.setDescription("Reset PIN");
+
+				}
+
+				if (strResponse == null || strResponse.trim().isEmpty()) {
+					strResponse = "Invalid PIN! (Only 4-30 No. of characters).";
+					Notification.show(strResponse,
+							Notification.Type.ERROR_MESSAGE);
+					isSent = false;
+					return;
+				}
+
+				NotifCustom.show("Activation", strResponse);
+				/*
+				 * 
+				 * TODO on positive response, update the table.
+				 */
+
+				popup.close();
+
+			}
+		});
+
+		popup.addCloseListener(new CloseListener() {
+			private static final long serialVersionUID = 3911244162638119820L;
+
+			@Override
+			public void windowClose(CloseEvent e) {
+				isPopupShowing = false;
+			}
+
+		});
+
+	}
+
+	private class PINMatch implements Validator {
+
+		PasswordField tFPIN;
+		PasswordField tFPINConf;
+
+		PINMatch(PasswordField tF1, PasswordField tF2) {
+			tFPIN = tF1;
+			tFPINConf = tF2;
+		}
+
+		private static final long serialVersionUID = 9154387852025910994L;
+
+		@Override
+		public void validate(Object value) throws InvalidValueException {
+
+			if (tFPIN.getValue().isEmpty()) {
+				tFPIN.focus();
+				throw new InvalidValueException("Please enter PIN.");
+
+			}
+
+			if (tFPINConf.getValue().isEmpty()) {
+				tFPINConf.focus();
+				throw new InvalidValueException("Please comfirm PIN.");
+
+			}
+
+			if (!tFPIN.getValue().trim().equals(tFPINConf.getValue().trim())) {
+				tFPINConf.focus();
+				throw new InvalidValueException("PIN mismatch!");
+
+			}
+		}
+
+	}
+
 }
