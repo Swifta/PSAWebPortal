@@ -19,6 +19,9 @@ import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.data.util.filter.And;
 import com.vaadin.data.util.filter.Compare;
+import com.vaadin.event.ItemClickEvent;
+import com.vaadin.event.ItemClickEvent.ItemClickListener;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -29,7 +32,11 @@ import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.CloseEvent;
+import com.vaadin.ui.Window.CloseListener;
 
 public class Reportform extends VerticalLayout {
 
@@ -40,6 +47,7 @@ public class Reportform extends VerticalLayout {
 	VerticalLayout searchform = new VerticalLayout();
 
 	PagedTableCustom table = new PagedTableCustom();
+
 	HorizontalLayout pnUserSearchResults;
 	HorizontalLayout pnUserSearchResults2;
 
@@ -48,6 +56,7 @@ public class Reportform extends VerticalLayout {
 	ComboBox comboF;
 	ComboBox comboVal;
 	IndexedContainer ds;
+	private boolean isPopupShowing = false;
 
 	// PagedTableContainerCustom container = new
 	// PagedTableContainerCustom(contain);
@@ -182,6 +191,18 @@ public class Reportform extends VerticalLayout {
 		table.setWidth("100%");
 		table.setHeightUndefined();
 		table.setPageLength(0);
+		table.setSelectable(true);
+		table.setImmediate(true);
+
+		table.addItemClickListener(new ItemClickListener() {
+			private static final long serialVersionUID = 5064674940597899639L;
+
+			@Override
+			public void itemClick(ItemClickEvent event) {
+				showDetailsPop();
+			}
+
+		});
 
 		// table.setEditable(true);
 		// table.setSelectable(true);
@@ -528,6 +549,7 @@ public class Reportform extends VerticalLayout {
 				table.setPageLength(x);
 
 				table.setContainerDataSource(container);
+				table.setSelectable(true);
 
 			} catch (SQLException | InstantiationException
 					| IllegalAccessException | ClassNotFoundException e) {
@@ -661,6 +683,7 @@ public class Reportform extends VerticalLayout {
 					itemId = container2.addItem();
 
 					trItem = container2.getItem(itemId);
+
 					Property<String> tdPropertyserial = trItem
 							.getItemProperty("S/N");
 
@@ -706,7 +729,7 @@ public class Reportform extends VerticalLayout {
 				}
 
 				table.setPageLength(x);
-
+				table.setSelectable(true);
 				table.setContainerDataSource(container2);
 
 			} catch (SQLException | ClassNotFoundException
@@ -836,6 +859,7 @@ public class Reportform extends VerticalLayout {
 				table.setPageLength(x);
 
 				table.setContainerDataSource(container3);
+				table.setSelectable(true);
 
 			} catch (SQLException | ClassNotFoundException
 					| InstantiationException | IllegalAccessException e) {
@@ -1048,6 +1072,103 @@ public class Reportform extends VerticalLayout {
 			comboF.addItem(s);
 		comboF.select(null);
 		addFilter(ds);
+
+	}
+
+	private void showDetailsPop() {
+
+		isPopupShowing = true;
+
+		String username = "any txn.";
+		table.setSelectable(false);
+		table.setEnabled(false);
+
+		final Window popup = new Window(username + "'s details.");
+		popup.setStyleName("w_delete_user");
+		popup.setIcon(FontAwesome.KEY);
+
+		popup.center();
+
+		VerticalLayout cDeletePrompt = new VerticalLayout();
+		cDeletePrompt.setSpacing(true);
+		// cDeletePrompt.setMargin(true);
+
+		Label lbActivationPrompt = new Label();
+		lbActivationPrompt.setWidth("200px");
+		lbActivationPrompt.setCaption("Showing Details of " + username);
+
+		FormLayout frmDeleteReason = new FormLayout();
+		frmDeleteReason.setSizeUndefined();
+		frmDeleteReason.setSpacing(true);
+		frmDeleteReason.setMargin(true);
+		cDeletePrompt.addComponent(frmDeleteReason);
+
+		final Label lb1 = new Label();
+		lb1.setCaption("Transaction ID");
+		lb1.setValue("1231");
+
+		final Label lb2 = new Label();
+		lb2.setCaption("Transation Type");
+		lb2.setValue("CASH_OUT");
+
+		final Label lb3 = new Label();
+		lb3.setCaption("Sender");
+		lb3.setValue("TeasyMobile");
+
+		final Label lb4 = new Label();
+		lb4.setCaption("Status");
+		lb4.setValue("Failed");
+
+		frmDeleteReason.addComponent(lbActivationPrompt);
+		frmDeleteReason.setComponentAlignment(lbActivationPrompt,
+				Alignment.TOP_LEFT);
+
+		frmDeleteReason.addComponent(lb1);
+
+		frmDeleteReason.addComponent(lb2);
+		frmDeleteReason.addComponent(lb3);
+
+		frmDeleteReason.addComponent(lb4);
+
+		VerticalLayout cPopupBtns = new VerticalLayout();
+		cPopupBtns.setSizeUndefined();
+		cPopupBtns.setSpacing(true);
+
+		Button btnCancel = new Button("Close");
+
+		cPopupBtns.addComponent(btnCancel);
+		frmDeleteReason.addComponent(cPopupBtns);
+		cDeletePrompt.setComponentAlignment(frmDeleteReason,
+				Alignment.MIDDLE_CENTER);
+		/*
+		 * cDeletePrompt .setComponentAlignment(cPopupBtns,
+		 * Alignment.BOTTOM_CENTER);
+		 */
+		popup.setContent(cDeletePrompt);
+
+		UI.getCurrent().addWindow(popup);
+		btnCancel.addClickListener(new Button.ClickListener() {
+
+			private static final long serialVersionUID = -9071850366625898895L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				popup.close();
+
+			}
+		});
+
+		popup.addCloseListener(new CloseListener() {
+			private static final long serialVersionUID = 3911244162638119820L;
+
+			@Override
+			public void windowClose(CloseEvent e) {
+				isPopupShowing = false;
+				table.setSelectable(true);
+				table.setEnabled(true);
+			}
+
+		});
 
 	}
 }
