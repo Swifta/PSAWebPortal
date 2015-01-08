@@ -306,7 +306,9 @@ public class BE2 {
 	private void showActivateUserContainer(final ArrayList<String> arrLBulkIDs,
 			final String[] arrID, Button btn) {
 
-		if (btn.getCaption().equals("R")) {
+		String cap = btn.getCaption();
+
+		if (cap != null && cap.equals("R")) {
 			showResetPINContainer(arrLBulkIDs, arrID, btn);
 			return;
 		}
