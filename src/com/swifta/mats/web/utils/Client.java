@@ -9,11 +9,11 @@ public class Client {
 
 	public static void main(String args[]) throws Exception {
 
-		// String result = Client.passreset();
-		//
-		// System.out.println(result);
+		String result = Client.passreset();
 
-		Client.sql();
+		System.out.println(result);
+
+		// Client.sql();
 
 	}
 
@@ -165,7 +165,7 @@ public class Client {
 	}
 
 	public static String passreset() throws AxisFault {
-		return UserManagementService.passwordResetByAdmin("admin", "modupe",
-				"134");
+		return UserManagementService.passwordResetByAdmin("admin", "olumide",
+				"1345");
 	}
 }
