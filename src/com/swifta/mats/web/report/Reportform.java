@@ -12,6 +12,7 @@ import java.util.HashSet;
 import com.swifta.mats.web.usermanagement.PagedTableCustom;
 import com.vaadin.addon.tableexport.ExcelExport;
 import com.vaadin.data.Container.Filter;
+import com.vaadin.data.Container.Indexed;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -57,6 +58,8 @@ public class Reportform extends VerticalLayout {
 	ComboBox comboVal;
 	IndexedContainer ds;
 	private boolean isPopupShowing = false;
+	private boolean isTxnReport = false;
+	ComboBox reportType;
 
 	// PagedTableContainerCustom container = new
 	// PagedTableContainerCustom(contain);
@@ -76,7 +79,7 @@ public class Reportform extends VerticalLayout {
 
 		// container2.addContainerProperty("Account Type", String.class, "");
 		setMargin(true);
-		final ComboBox reportType = new ComboBox("Search by Report Type");
+		reportType = new ComboBox("Search by Report Type");
 		Button export = new Button("Export result");
 
 		Button Add = new Button("Add");
@@ -199,7 +202,8 @@ public class Reportform extends VerticalLayout {
 
 			@Override
 			public void itemClick(ItemClickEvent event) {
-				showDetailsPop();
+
+				showDetailsPop(event.getItem());
 			}
 
 		});
@@ -563,6 +567,7 @@ public class Reportform extends VerticalLayout {
 			// searchform.removeAllComponents();
 			// searchform.addComponent(FloatManagementForm());
 		} else if (selectedId.equalsIgnoreCase("Transaction Report")) {
+
 			IndexedContainer container2 = new IndexedContainer();
 			container2.addContainerProperty("S/N", String.class, "");
 			container2.addContainerProperty("Transaction ID", String.class, "");
@@ -1075,53 +1080,83 @@ public class Reportform extends VerticalLayout {
 
 	}
 
-	private void showDetailsPop() {
+	@SuppressWarnings("unchecked")
+	private void showDetailsPop(Item row) {
+		if (!reportType.getValue().toString().equals("Transaction Report"))
+			return;
 
 		isPopupShowing = true;
 
-		String username = "any txn.";
 		table.setSelectable(false);
 		table.setEnabled(false);
 
-		final Window popup = new Window(username + "'s details.");
+		final Window popup = new Window("Transaction Details.");
 		popup.setStyleName("w_delete_user");
 		popup.setIcon(FontAwesome.KEY);
 
 		popup.center();
+
+		Indexed container = table.getContainerDataSource();
+
+		Property<Object> p = row.getItemProperty("Transaction ID");
+		String txnID = p.getValue().toString();
 
 		VerticalLayout cDeletePrompt = new VerticalLayout();
 		cDeletePrompt.setSpacing(true);
 		// cDeletePrompt.setMargin(true);
 
 		Label lbActivationPrompt = new Label();
-		lbActivationPrompt.setWidth("200px");
-		lbActivationPrompt.setCaption("Showing Details of " + username);
+		lbActivationPrompt.setStyleName("label_txn_d");
+		lbActivationPrompt.setWidth("250px");
+		lbActivationPrompt.setValue("Showing Details of Transaction of ID: "
+				+ txnID);
+
+		HorizontalLayout cLbA = new HorizontalLayout();
+		cLbA.setWidth("100%");
+		cLbA.addComponent(lbActivationPrompt);
+		cLbA.setComponentAlignment(lbActivationPrompt, Alignment.TOP_CENTER);
 
 		FormLayout frmDeleteReason = new FormLayout();
 		frmDeleteReason.setSizeUndefined();
 		frmDeleteReason.setSpacing(true);
 		frmDeleteReason.setMargin(true);
+		cDeletePrompt.addComponent(cLbA);
 		cDeletePrompt.addComponent(frmDeleteReason);
 
+		p = row.getItemProperty("Transaction Type");
+		String txnT = p.getValue().toString();
+
+		p = row.getItemProperty("Sender");
+		String sender = p.getValue().toString();
+
+		p = row.getItemProperty("Status");
+		String status = p.getValue().toString();
+
+		p = row.getItemProperty("Transaction Date");
+		String date = p.getValue().toString();
+
 		final Label lb1 = new Label();
-		lb1.setCaption("Transaction ID");
-		lb1.setValue("1231");
+		lb1.setCaption("Transaction ID: ");
+		lb1.setValue(txnID);
 
 		final Label lb2 = new Label();
-		lb2.setCaption("Transation Type");
-		lb2.setValue("CASH_OUT");
+		lb2.setCaption("Transation Type: ");
+		lb2.setValue(txnT);
 
 		final Label lb3 = new Label();
-		lb3.setCaption("Sender");
-		lb3.setValue("TeasyMobile");
+		lb3.setCaption("Sender: ");
+		lb3.setValue(sender);
 
 		final Label lb4 = new Label();
-		lb4.setCaption("Status");
-		lb4.setValue("Failed");
+		lb4.setCaption("Status: ");
+		lb4.setValue(status);
 
-		frmDeleteReason.addComponent(lbActivationPrompt);
-		frmDeleteReason.setComponentAlignment(lbActivationPrompt,
-				Alignment.TOP_LEFT);
+		final Label lb5 = new Label();
+		lb5.setCaption("Date: ");
+		lb5.setValue(date);
+
+		// frmDeleteReason.addComponent(cLbA);
+		cLbA.setStyleName("x_y_z_me");
 
 		frmDeleteReason.addComponent(lb1);
 
@@ -1129,6 +1164,7 @@ public class Reportform extends VerticalLayout {
 		frmDeleteReason.addComponent(lb3);
 
 		frmDeleteReason.addComponent(lb4);
+		frmDeleteReason.addComponent(lb5);
 
 		VerticalLayout cPopupBtns = new VerticalLayout();
 		cPopupBtns.setSizeUndefined();
