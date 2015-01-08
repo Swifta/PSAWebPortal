@@ -12,7 +12,6 @@ import java.util.HashSet;
 import com.swifta.mats.web.usermanagement.PagedTableCustom;
 import com.vaadin.addon.tableexport.ExcelExport;
 import com.vaadin.data.Container.Filter;
-import com.vaadin.data.Container.Indexed;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -1095,8 +1094,6 @@ public class Reportform extends VerticalLayout {
 		popup.setIcon(FontAwesome.KEY);
 
 		popup.center();
-
-		Indexed container = table.getContainerDataSource();
 
 		Property<Object> p = row.getItemProperty("Transaction ID");
 		String txnID = p.getValue().toString();
