@@ -11,11 +11,15 @@ import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.server.CustomizedSystemMessages;
 import com.vaadin.server.ServiceException;
 import com.vaadin.server.SessionDestroyEvent;
 import com.vaadin.server.SessionDestroyListener;
 import com.vaadin.server.SessionInitEvent;
 import com.vaadin.server.SessionInitListener;
+import com.vaadin.server.SystemMessages;
+import com.vaadin.server.SystemMessagesInfo;
+import com.vaadin.server.SystemMessagesProvider;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.UI;
@@ -35,17 +39,19 @@ public class MatsWebPortalUI extends UI {
 		protected void servletInitialized() throws ServletException {
 			super.servletInitialized();
 			getService().addSessionDestroyListener(this);
-			/*
-			 * getService().setSystemMessagesProvider( new
-			 * SystemMessagesProvider() {
-			 * 
-			 * @Override public SystemMessages getSystemMessages(
-			 * SystemMessagesInfo systemMessagesInfo) { CustomizedSystemMessages
-			 * msg = new CustomizedSystemMessages();
-			 * msg.setSessionExpiredNotificationEnabled(false); return msg; }
-			 * 
-			 * });
-			 */
+
+			getService().setSystemMessagesProvider(
+					new SystemMessagesProvider() {
+
+						@Override
+						public SystemMessages getSystemMessages(
+								SystemMessagesInfo systemMessagesInfo) {
+							CustomizedSystemMessages msg = new CustomizedSystemMessages();
+							msg.setSessionExpiredNotificationEnabled(false);
+							return msg;
+						}
+
+					});
 
 		}
 
