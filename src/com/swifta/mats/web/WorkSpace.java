@@ -338,11 +338,8 @@ public class WorkSpace extends VerticalLayout implements View,
 			@Override
 			public void buttonClick(ClickEvent event) {
 				UI.getCurrent().getSession().setAttribute("user", null);
-				// UI.getCurrent().getSession().setAttribute(ManageUserModule.SESSION_UMANAGE,
-				// null);
-				// UI.getCurrent().getSession().setAttribute(WorkSpaceManageUser.SESSION_WORK_AREA,
-				// null);
 				UI.getCurrent().getNavigator().navigateTo(WORK_SPACE);
+				getSession().close();
 
 			}
 		});

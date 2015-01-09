@@ -1443,6 +1443,7 @@ public class BE2 {
 		 */
 
 		final Window popup = new Window("Reset PIN for " + username);
+
 		popup.setStyleName("w_delete_user");
 		popup.setIcon(FontAwesome.KEY);
 
