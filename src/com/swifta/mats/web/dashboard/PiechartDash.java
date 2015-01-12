@@ -61,12 +61,12 @@ public class PiechartDash {
 
 		DataSeries series = new DataSeries();
 
-		Iterator<Entry<String, Double>> itr = BarChartDash.hm.entrySet()
+		Iterator<Entry<String, Float>> itr = BarChartDash.hm.entrySet()
 				.iterator();
 
 		while (itr.hasNext()) {
-			Entry<String, Double> e = itr.next();
-			series.add(new DataSeriesItem(e.getKey(), e.getValue()));
+			Entry<String, Float> e = itr.next();
+			series.add(new DataSeriesItem(e.getKey(), Math.round(e.getValue())));
 		}
 		// series.add(new DataSeriesItem("Cash out", 32));
 		// DataSeriesItem chrome = new DataSeriesItem("Airtime", 18);
@@ -80,5 +80,4 @@ public class PiechartDash {
 
 		return chart;
 	}
-
 }

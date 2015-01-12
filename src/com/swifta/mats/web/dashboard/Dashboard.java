@@ -8,7 +8,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map.Entry;
 
 import com.vaadin.data.Item;
@@ -16,11 +15,12 @@ import com.vaadin.data.Property;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Flash;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 
 public class Dashboard {
 
-	public static HashMap<String, Double> hm = null;
+	public static HashMap<String, Float> hm = null;
 	public static IndexedContainer otb = null;
 
 	// public static HashMap<String, Double> hm
@@ -54,12 +54,12 @@ public class Dashboard {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static HashMap<String, Double> getChartData() {
+	public static HashMap<String, Float> getChartData() {
 		IndexedContainer originalTb = new IndexedContainer();
 		originalTb.addContainerProperty("Transaction Type", String.class, null);
 		originalTb.addContainerProperty("Fees Account", String.class, null);
 		originalTb.addContainerProperty("DoT", Long.class, null);
-		HashMap<String, Double> hm = new HashMap<>();
+		HashMap<String, Float> hm = new HashMap<>();
 		String Uname = "psatestuser";
 		String Pword = "psatest_2015";
 		int x = 0;
@@ -82,75 +82,80 @@ public class Dashboard {
 			// rs = stmt
 			// .executeQuery("select txn.userresourceid as 'Username', txnt.name as 'Transaction Type', CAST(txn.lastupdate AS DATE) as 'Timestamp', format(acct.openingbalance /100,2) as 'Opening Balance', format(acct.closingbalance / 100,2) as 'Closing Balance', format(acct.amount / 100 , 2) as 'Amount',accts.name as 'Account Type'  from transactions txn join accounttransactions acct on txn.transactionid = acct.transactionid join transactiontypes txnt on txnt.transactiontypeid = txn.transactiontypeid join accounttypes accts on accts.accounttypeid = acct.accounttypeid   join accountholders ah on ah.username = txn.userresourceid  order by ah.username, txn.lastupdate");
 
-			String sql = "select txn.transactionid as 'Transaction ID', tvo.fromamount as 'Amount', fromah.username as 'MM Operator', toah.username as 'To',txnt.name as 'Transaction Type', CAST(txn.lastupdate AS DATE) as 'DoT', txnst.transactionstatusname as 'Status' from transactions txn join transactionvalueoperations tvo on tvo.transactionid = txn.transactionid join transactionstatus txnst on txnst.transactionstatusid = txn.transactionstatusid join transactiontypes txnt on txnt.transactiontypeid = txn.transactiontypeid join accountholders ah on ah.username = txn.userresourceid join accountholders fromah on fromah.accountholderid = tvo.fromaccountholderuserid join accountholders toah on toah.accountholderid = tvo.toaccountholderresourceid   order by tvo.transactionid, ah.username, txn.lastupdate";
+			StringBuilder trxnsql = new StringBuilder();
+			trxnsql.append("SELECT txn.transactionid AS 'Transaction ID', txnt.name AS 'Transaction Type',");
+			trxnsql.append("txn.lastupdate AS 'DoT', txn.userresourceid as 'MM Operator', txnst.transactionstatusname AS 'Status' ");
+			trxnsql.append("FROM transactions txn, transactionstatus txnst, transactiontypes txnt WHERE txnst.transactionstatusid = txn.transactionstatusid ");
+			trxnsql.append("AND txnt.transactiontypeid = txn.transactiontypeid ");
+			trxnsql.append("ORDER BY txn.transactionid , txn.lastupdate;");
+
+			String sql = trxnsql.toString();
 			ResultSet rs = stmt.executeQuery(sql);
+
+			String fidTxtype = "Transaction Type";
+			Object objr = new Object();
+			Item r = null;
+			Property<String> ptType = null;
+			Property<String> pfAcc = null;
+			Property<Long> pDoT = null;
+			String tType = "";
+			String fAcc = "";
+			long fDoT = 0L;
+			String transactiontype = "";
 
 			while (rs.next()) {
 				x = x + 1;
-				Object objr = originalTb.addItem();
-				Item r = originalTb.getItem(objr);
-				Property<String> ptType = r.getItemProperty("Transaction Type");
-				Property<String> pfAcc = r.getItemProperty("Fees Account");
-				Property<Long> pDoT = r.getItemProperty("DoT");
+				objr = originalTb.addItem();
+				r = originalTb.getItem(objr);
+				ptType = r.getItemProperty("Transaction Type");
+				pfAcc = r.getItemProperty("Fees Account");
+				pDoT = r.getItemProperty("DoT");
 
-				String tType = rs.getString("Transaction Type");
-				String fAcc = rs.getString("MM Operator");
-				long fDoT = rs.getDate("DoT").getTime();
+				tType = rs.getString("Transaction Type");
+				fAcc = rs.getString("MM Operator");
+				fDoT = rs.getDate("DoT").getTime();
 
 				ptType.setValue(tType);
 				pfAcc.setValue(fAcc);
 				pDoT.setValue(fDoT);
 
-				String fidTxtype = "Transaction Type";
-
-				String transactiontype = rs.getString(fidTxtype);
-				if (!hm.containsKey(fidTxtype)) {
-					hm.put(transactiontype, 1.0);
+				transactiontype = rs.getString(fidTxtype);
+				if (!hm.containsKey(transactiontype)) {
+					hm.put(transactiontype, 1F);
 				} else {
-					hm.put(transactiontype, hm.get(fidTxtype) + 1);
+					hm.put(transactiontype, hm.get(transactiontype) + 1);
 				}
 			}
 
 			otb = originalTb;
 
-			List<?> rows = originalTb.getItemIds();
-			Iterator<?> rItr = rows.iterator();
-
-			while (rItr.hasNext()) {
-				Item r = originalTb.getItem(rItr.next());
-				Property<?> p = r.getItemProperty("Transaction Type");
-
-			}
-
-			Double total = 0.0;
-			Iterator<Entry<String, Double>> itr = hm.entrySet().iterator();
+			Float total = 0F;
+			Iterator<Entry<String, Float>> itr = hm.entrySet().iterator();
 			while (itr.hasNext()) {
-				Entry<String, Double> e = itr.next();
+				Entry<String, Float> e = itr.next();
 				total = total + e.getValue();
 			}
 
-			// HashMap<String, Double> nhm = new HashMap<>(hm.size(), 0.75F);
-
-			/*
-			 * while (itr.hasNext()) { Entry<String, Double> e = itr.next();
-			 * nhm.put(e.getKey(), ((e.getValue() / total) * 100)); }
-			 */
+			Notification.show(hm.size() + " ");
 
 			itr = hm.entrySet().iterator();
+			int t = otb.size();
 
 			while (itr.hasNext()) {
-				Entry<String, Double> e = itr.next();
-				hm.put(e.getKey(), (e.getValue() / total) * 100);
+				Entry<String, Float> e = itr.next();
+				hm.put(e.getKey(), ((e.getValue() / t) * 100));
+
 			}
+
+			// itr = hm.entrySet().iterator();
 
 		} catch (SQLException | ClassNotFoundException | InstantiationException
 				| IllegalAccessException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 			// Notification.show("Error Establishing DBConnection = " + e);
 		}
 		return hm;
 
 	}
-
 }

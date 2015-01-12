@@ -1,5 +1,6 @@
 package com.swifta.mats.web;
 
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -53,6 +54,7 @@ public class WorkSpace extends VerticalLayout implements View,
 	VerticalLayout dashboard3;
 	private Embedded emb;
 	private Button btnLogout;
+	private boolean isCreteriaChanged = false;
 	Label la = new Label("Filter by: ");
 	ComboBox comboGF = new ComboBox("Please select...");
 	DateField dat = new DateField();
@@ -81,6 +83,7 @@ public class WorkSpace extends VerticalLayout implements View,
 			public void valueChange(ValueChangeEvent event) {
 				dat.setComponentError(null);
 				dat2.setComponentError(null);
+				isCreteriaChanged = true;
 
 			}
 
@@ -94,6 +97,7 @@ public class WorkSpace extends VerticalLayout implements View,
 			public void valueChange(ValueChangeEvent event) {
 				dat.setComponentError(null);
 				dat2.setComponentError(null);
+				isCreteriaChanged = true;
 
 			}
 
@@ -187,9 +191,14 @@ public class WorkSpace extends VerticalLayout implements View,
 			@SuppressWarnings("unchecked")
 			@Override
 			public void buttonClick(ClickEvent event) {
-				Object cat = comboGF.getValue();
-				if (cat == null || cat.toString().equals(dCat))
+
+				if (!isCreteriaChanged)
 					return;
+				else
+					isCreteriaChanged = false;
+				Object cat = comboGF.getValue();
+				// if (cat == null || cat.toString().equals(dCat))
+				// return;
 				if (Dashboard.otb == null || Dashboard.otb.size() == 0)
 					return;
 
@@ -202,7 +211,7 @@ public class WorkSpace extends VerticalLayout implements View,
 				if (start != null && end != null) {
 
 					dat2.validate();
-
+					Dashboard.otb.removeAllContainerFilters();
 					dfilter = new And(
 							new GreaterOrEqual("DoT", start.getTime()),
 							new LessOrEqual("DoT", end.getTime()));
@@ -212,57 +221,63 @@ public class WorkSpace extends VerticalLayout implements View,
 				Iterator<Integer> itr = (Iterator<Integer>) Dashboard.otb
 						.getItemIds().iterator();
 
-				HashMap<String, Integer> hm = new HashMap<>();
+				HashMap<String, Float> hm = new HashMap<>();
 
 				while (itr.hasNext()) {
 					int rid = itr.next();
 					Item r = Dashboard.otb.getItem(rid);
-					Property<?> f = r.getItemProperty(cat);
-					String param = f.getValue().toString();
+					Property<String> f = r.getItemProperty(cat.toString());
+					String param = f.getValue();
 					if (!hm.containsKey(param)) {
-						hm.put(param, 1);
+						hm.put(param, 1F);
 					} else {
 						hm.put(param, hm.get(param) + 1);
 					}
 				}
 
-				Integer t = 0;
-				Iterator<Entry<String, Integer>> itrx = (Iterator<Entry<String, Integer>>) hm
-						.entrySet().iterator();
+				Float t = 0F;
+				Iterator<Entry<String, Float>> itrx = hm.entrySet().iterator();
 				while (itrx.hasNext()) {
-					Entry<String, Integer> e = (Entry<String, Integer>) itrx
-							.next();
+					Entry<String, Float> e = itrx.next();
 					t = t + e.getValue();
-				}
-
-				DataSeries series = new DataSeries();
-
-				Iterator<Entry<String, Integer>> itrSet = hm.entrySet()
-						.iterator();
-				while (itrSet.hasNext()) {
-					Entry<String, Integer> e = (Entry<String, Integer>) itrSet
-							.next();
-
-					series.add(new DataSeriesItem(e.getKey(), e.getValue()));
-
 				}
 
 				itrx = hm.entrySet().iterator();
 				while (itrx.hasNext()) {
-					Entry<String, Integer> e = (Entry<String, Integer>) itrx
-							.next();
-					hm.put(e.getKey(), ((e.getValue() * 100) / t));
+					Entry<String, Float> e = itrx.next();
+					hm.put(e.getKey(), (e.getValue() / t) * 100);
 				}
+
+				DataSeries series = new DataSeries();
+
+				Iterator<Entry<String, Float>> itrSet = hm.entrySet()
+						.iterator();
+				while (itrSet.hasNext()) {
+					Entry<String, Float> e = itrSet.next();
+
+					DataSeriesItem item = new DataSeriesItem(e.getKey(), Math
+							.round(e.getValue()));
+
+					series.add(item);
+
+				}
+
+				itrx = hm.entrySet().iterator();
 
 				Set<String> types = hm.keySet();
 				String[] type = new String[types.size()];
 				types.toArray(type);
 
-				Collection<Integer> vals = hm.values();
-				Integer[] val = new Integer[vals.size()];
+				Collection<Float> vals = hm.values();
+				Float[] val = new Float[vals.size()];
 				vals.toArray(val);
 
+				for (int i = 0; i < val.length; i++)
+					val[i] = Float.valueOf(BigDecimal.valueOf(val[i])
+							.setScale(2, BigDecimal.ROUND_UP).toString());
+
 				PiechartDash.conf.setSeries(series);
+
 				pieChart.drawChart();
 				bar.xAxis.setCategories(type);
 				bar.serie.setData(val);
@@ -349,6 +364,8 @@ public class WorkSpace extends VerticalLayout implements View,
 
 			@Override
 			public void valueChange(ValueChangeEvent event) {
+
+				isCreteriaChanged = true;
 
 			}
 

@@ -1,5 +1,6 @@
 package com.swifta.mats.web.dashboard;
 
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
@@ -16,12 +17,11 @@ import com.vaadin.addon.charts.model.Title;
 import com.vaadin.addon.charts.model.Tooltip;
 import com.vaadin.addon.charts.model.XAxis;
 import com.vaadin.addon.charts.model.YAxis;
-import com.vaadin.addon.charts.model.style.SolidColor;
 import com.vaadin.addon.charts.model.style.Style;
 import com.vaadin.ui.Component;
 
 public class BarChartDash {
-	public static HashMap<String, Double> hm;
+	public static HashMap<String, Float> hm;
 	public XAxis xAxis;
 	public ListSeries serie;
 
@@ -73,17 +73,18 @@ public class BarChartDash {
 				+ "+ Highcharts.numberFormat(this.y, 1) +' percent'");
 		conf.setTooltip(tooltip);
 
-		Collection<Double> sper = hm.values();
-		Double[] tper = new Double[stxns.size()];
+		Collection<Float> sper = hm.values();
+		Float[] tper = new Float[stxns.size()];
 		sper.toArray(tper);
+		for (int i = 0; i < tper.length; i++)
+			tper[i] = Float.valueOf(BigDecimal.valueOf(tper[i])
+					.setScale(2, BigDecimal.ROUND_UP).toString());
 
 		serie = new ListSeries("Percentage", tper);
 
 		Labels dataLabels = new Labels();
 		dataLabels.setEnabled(true);
 		dataLabels.setRotation(-90);
-		dataLabels.setColor(new SolidColor(255, 255, 255));
-		dataLabels.setAlign(HorizontalAlign.RIGHT);
 		dataLabels.setX(4);
 		dataLabels.setY(10);
 		dataLabels.setFormatter("this.y");
