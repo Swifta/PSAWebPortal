@@ -78,7 +78,7 @@ public class BarChartDash {
 		sper.toArray(tper);
 		for (int i = 0; i < tper.length; i++)
 			tper[i] = Float.valueOf(BigDecimal.valueOf(tper[i])
-					.setScale(2, BigDecimal.ROUND_UP).toString());
+					.setScale(1, BigDecimal.ROUND_UP).toString());
 
 		serie = new ListSeries("Percentage", tper);
 

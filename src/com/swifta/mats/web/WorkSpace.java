@@ -273,7 +273,7 @@ public class WorkSpace extends VerticalLayout implements View,
 
 				for (int i = 0; i < val.length; i++)
 					val[i] = Float.valueOf(BigDecimal.valueOf(val[i])
-							.setScale(2, BigDecimal.ROUND_UP).toString());
+							.setScale(1, BigDecimal.ROUND_UP).toString());
 
 				PiechartDash.conf.setSeries(series);
 

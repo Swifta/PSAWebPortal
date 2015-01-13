@@ -55,7 +55,7 @@ public class PiechartDash {
 		dataLabels.setConnectorColor(new SolidColor(0, 0, 0));
 
 		dataLabels
-				.setFormatter("''+ this.point.name +': '+ Math.floor(this.percentage) +'%'");
+				.setFormatter("''+ this.point.name +': '+ this.percentage.toFixed(1) +'%'");
 
 		// dataLabels.setFormatter("function(){return 1;}");
 

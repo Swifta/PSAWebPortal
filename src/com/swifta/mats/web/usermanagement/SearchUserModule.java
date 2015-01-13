@@ -114,7 +114,7 @@ public class SearchUserModule {
 		// arrLTfCaptions.add("Type of User");
 		arrLTfCaptions.add("Username");
 		arrLTfCaptions.add("MSISDN");
-		arrLTfCaptions.add("E-mail");
+		arrLTfCaptions.add("Email");
 		// arrLTfCaptions.add("Company");
 		// arrLTfCaptions.add("First Name");
 		// arrLTfCaptions.add("Last Name");

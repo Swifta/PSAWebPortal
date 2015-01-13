@@ -15,7 +15,6 @@ import com.vaadin.data.Property;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Flash;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 
 public class Dashboard {
@@ -135,8 +134,6 @@ public class Dashboard {
 				Entry<String, Float> e = itr.next();
 				total = total + e.getValue();
 			}
-
-			Notification.show(hm.size() + " ");
 
 			itr = hm.entrySet().iterator();
 			int t = otb.size();

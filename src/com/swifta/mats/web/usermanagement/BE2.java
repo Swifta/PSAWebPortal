@@ -1404,14 +1404,13 @@ public class BE2 {
 
 		String prof = hmFilter.remove("Profile Type");
 
-		Iterator<Entry<String, String>> itr = hmFilter.entrySet().iterator();
-
 		if (!prof.equals("ALL")) {
 			f = new Compare.Equal("Profile Type", prof);
 			container.addContainerFilter(f);
 		}
 
 		Entry<String, String> e = null;
+		Iterator<Entry<String, String>> itr = hmFilter.entrySet().iterator();
 
 		while (itr.hasNext()) {
 			e = itr.next();
