@@ -151,7 +151,7 @@ public class BE2 {
 
 		addFilters(hmFilter, container);
 
-		lbSearch.setValue("(" + container.size() + ")Match for: "
+		lbSearch.setValue(+container.size() + " Result(s) " + "for: "
 				+ strSearchResultsParams);
 
 		tb = new PagedTableCustom("Results (Summary)");
