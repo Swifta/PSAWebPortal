@@ -199,7 +199,7 @@ public class WorkSpace extends VerticalLayout implements View,
 				Object cat = comboGF.getValue();
 				// if (cat == null || cat.toString().equals(dCat))
 				// return;
-				if (Dashboard.otb == null || Dashboard.otb.size() == 0)
+				if (Dashboard.otb == null)
 					return;
 
 				dCat = cat.toString();
@@ -207,7 +207,6 @@ public class WorkSpace extends VerticalLayout implements View,
 				Date end = dat2.getValue();
 				Filter dfilter = null;
 
-				Dashboard.otb.removeAllContainerFilters();
 				if (start != null && end != null) {
 
 					dat2.validate();

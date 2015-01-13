@@ -10,7 +10,6 @@ import com.vaadin.addon.charts.model.CreditPosition;
 import com.vaadin.addon.charts.model.Credits;
 import com.vaadin.addon.charts.model.Cursor;
 import com.vaadin.addon.charts.model.DataSeries;
-import com.vaadin.addon.charts.model.DataSeriesItem;
 import com.vaadin.addon.charts.model.HorizontalAlign;
 import com.vaadin.addon.charts.model.Labels;
 import com.vaadin.addon.charts.model.PlotOptionsPie;
@@ -34,7 +33,7 @@ public class PiechartDash {
 
 	public static Chart createChart() {
 		Chart chart = new Chart(ChartType.PIE);
-		String user = "Agent 001";
+
 		conf = chart.getConfiguration();
 
 		conf.setTitle("Data Chart ");
@@ -54,19 +53,40 @@ public class PiechartDash {
 		dataLabels.setEnabled(true);
 		dataLabels.setColor(new SolidColor(0, 0, 0));
 		dataLabels.setConnectorColor(new SolidColor(0, 0, 0));
+
 		dataLabels
-				.setFormatter("''+ this.point.name +': '+ this.percentage +' %'");
+				.setFormatter("''+ this.point.name +': '+ Math.floor(this.percentage) +'%'");
+
+		// dataLabels.setFormatter("function(){return 1;}");
+
+		// Formater f = dataLabels.getf
+
+		// Notification.show(dataLabels.getFormatter());
+
+		// dataLabels.setFormatter('function(){return point.y;});
 		plotOptions.setDataLabels(dataLabels);
+		// dataLabels.
 		conf.setPlotOptions(plotOptions);
+		// HTMLLabels leg =conf.getLabels();
 
 		DataSeries series = new DataSeries();
+
+		int max = BarChartDash.hm.keySet().size();
+
+		String[] category = new String[max];
+		Number[] no = new Number[max];
+		BarChartDash.hm.values().toArray(no);
+
+		BarChartDash.hm.keySet().toArray(category);
+		series.setData(category, no);
 
 		Iterator<Entry<String, Float>> itr = BarChartDash.hm.entrySet()
 				.iterator();
 
 		while (itr.hasNext()) {
 			Entry<String, Float> e = itr.next();
-			series.add(new DataSeriesItem(e.getKey(), Math.round(e.getValue())));
+			// series.add(new DataSeriesItem(e.getKey(),
+			// Math.round(e.getValue())));
 		}
 		// series.add(new DataSeriesItem("Cash out", 32));
 		// DataSeriesItem chrome = new DataSeriesItem("Airtime", 18);

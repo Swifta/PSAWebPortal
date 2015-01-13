@@ -2,7 +2,7 @@
     <wb-module deploy-name="MATS_WEB_PORTAL">
         <wb-resource deploy-path="/" source-path="/WebContent" tag="defaultRootSource"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
-        <property name="context-root" value="MATS_WEB_PORTAL"/>
         <property name="java-output-path" value="/MATS_WEB_PORTAL/build/classes"/>
+        <property name="context-root" value="/"/>
     </wb-module>
 </project-modules>
