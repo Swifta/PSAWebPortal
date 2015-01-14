@@ -441,8 +441,8 @@ public class AddUserModule {
 		cLBody.addComponent(tF);
 
 		combo = new ComboBox("Bank Domain");
-		combo.addItem("Stanbic Bank");
-		combo.select("Stanbic Bank");
+		combo.addItem("Heritage Bank");
+		combo.select("Heritage Bank");
 		comboBDomain = combo;
 		cLBody.addComponent(combo);
 
@@ -543,7 +543,6 @@ public class AddUserModule {
 		});
 
 		comboCountry.addValueChangeListener(new ValueChangeListener() {
-
 			private static final long serialVersionUID = -404551290095133508L;
 
 			@Override
