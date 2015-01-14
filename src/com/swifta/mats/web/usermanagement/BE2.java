@@ -1216,7 +1216,6 @@ public class BE2 {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				// Notification.show(String.valueOf(isPopupShowing));
 				if (isPopupShowing)
 					return;
 				String[] arrID = event.getButton().getId().split("_");

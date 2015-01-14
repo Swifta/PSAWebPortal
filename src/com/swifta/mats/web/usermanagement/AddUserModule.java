@@ -33,10 +33,8 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.OptionGroup;
-import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 public class AddUserModule {
@@ -89,6 +87,7 @@ public class AddUserModule {
 	String curC = null;
 	String curState = null;
 	String curLG = null;
+	private Calendar cal = null;
 
 	public AddUserModule() {
 
@@ -128,20 +127,8 @@ public class AddUserModule {
 		return addUserContainer;
 	}
 
-	@SuppressWarnings({ "deprecation", "unchecked" })
 	private VerticalLayout getNewUserContainer() {
 
-		int userID = 0;
-		int subUserID = 0;
-
-		final String strUserType = (String) UI.getCurrent().getSession()
-				.getAttribute(WorkSpaceManageUser.SESSION_WORK_AREA_USER_TYPE);
-
-		if (strUserType
-				.equals(WorkSpaceManageUser.SESSION_VAR_WORK_AREA_DEFAULT_USER_TYPE)) {
-			userID = 6;
-			subUserID = 7;
-		}
 		VerticalLayout cAgentInfo = new VerticalLayout();
 
 		VerticalLayout cBasic = new VerticalLayout();
@@ -222,7 +209,9 @@ public class AddUserModule {
 		cBasic.addComponent(tF);
 
 		PopupDateField dF = new PopupDateField("DoB");
-		dF.setValue(new Date("12/11/88"));
+		Calendar cal = Calendar.getInstance();
+		cal.set(1988, 11, 12);
+		dF.setValue(cal.getTime());
 		dFDoB = dF;
 		cBasic.addComponent(dF);
 
@@ -272,60 +261,49 @@ public class AddUserModule {
 		// Label lbC = new Label("Company");
 		Label lbC = new Label("Identification");
 		lbC.setStyleName("lb_frm_add_user");
-		if (!(strUserType.equals("CCO") || strUserType.equals("BA"))) {
 
-			cCompany.addComponent(lbC);
-			/*
-			 * tF = new TextField("Name"); cCompany.addComponent(tF);
-			 * 
-			 * dF = new PopupDateField("DoR"); cCompany.addComponent(dF);
-			 * 
-			 * tF = new TextField("TIN"); cCompany.addComponent(tF);
-			 * 
-			 * combo = new ComboBox("CoO");
-			 */
-			combo = new ComboBox("ID Type");
-			if (!(strUserType.equals("CCO") || strUserType.equals("BA"))) {
+		combo = new ComboBox("ID Type");
 
-				combo.addItem("Passport Number");
-				combo.addItem("National Registration Identification Number");
-				combo.addItem("Drivers License Number");
-				combo.addItem("Identification Card");
-				combo.addItem("Employer Identification Number");
-				combo.select("Passport Number");
-				comboIDType = combo;
-				comboIDType.setRequired(true);
-				cCompany.addComponent(combo);
-				// combo.setNullSelectionAllowed(false);
+		combo.addItem("Passport Number");
+		combo.addItem("National Registration Identification Number");
+		combo.addItem("Drivers License Number");
+		combo.addItem("Identification Card");
+		combo.addItem("Employer Identification Number");
+		combo.select("Passport Number");
+		comboIDType = combo;
+		comboIDType.setRequired(true);
+		cCompany.addComponent(combo);
 
-				tF = new TextField("ID No.");
-				tF.setValue("001");
-				tFIDNo = tF;
-				tFIDNo.setRequired(true);
-				cCompany.addComponent(tF);
+		tF = new TextField("ID No.");
+		tF.setValue("001");
+		tFIDNo = tF;
+		tFIDNo.setRequired(true);
+		cCompany.addComponent(tF);
 
-				tF = new TextField("Issuer");
-				tFIssuer = tF;
-				tFIssuer.setValue("Republic of Uganda");
-				cCompany.addComponent(tF);
+		tF = new TextField("Issuer");
+		tFIssuer = tF;
+		tFIssuer.setValue("Republic of Uganda");
+		cCompany.addComponent(tF);
 
-				dF = new PopupDateField("Issue Date");
-				dF.setValue(new Date("12/12/12"));
-				dFDoI = dF;
-				cCompany.addComponent(dF);
+		dF = new PopupDateField("Issue Date");
+		// cal = Calendar.getInstance();
+		cal.set(12, 12, 12);
+		dF.setValue(cal.getTime());
+		dFDoI = dF;
+		cCompany.addComponent(dF);
 
-				dF = new PopupDateField("Expiry Date");
-				dF.setValue(new Date("12/12/14"));
-				dFDoE = dF;
-				dFDoE.setRequired(true);
-				dFDoE.setImmediate(true);
+		dF = new PopupDateField("Expiry Date");
+		// cal = Calendar.getInstance();
+		cal.set(14, 12, 12);
+		dF.setValue(cal.getTime());
+		dF.setValue(cal.getTime());
+		dFDoE = dF;
+		dFDoE.setRequired(true);
+		dFDoE.setImmediate(true);
 
-				cCompany.addComponent(dF);
+		cCompany.addComponent(dF);
 
-			}
-
-			cC.addComponent(cCompany);
-		}
+		cC.addComponent(cCompany);
 
 		VerticalLayout pC = new VerticalLayout();
 		lbC = new Label("Primary Contacts");
@@ -681,65 +659,10 @@ public class AddUserModule {
 		cLBody.addComponent(cChk);
 
 		final VerticalLayout cRBody = new VerticalLayout();
-		String strNameCap = null;
-		if (!(strUserType.equals("CCO") || strUserType.equals("BA"))) {
-			// /tF = new TextField("Parent ID");
-			// /cRBody.addComponent(tF);
-			/*
-			 * tF = new TextField("MSISDN"); cRBody.addComponent(tF);
-			 * 
-			 * tF = new TextField("Email"); cRBody.addComponent(tF);
-			 * 
-			 * tF = new TextField("Bank Code ID"); cRBody.addComponent(tF);
-			 * 
-			 * tF = new TextField("Bank Account"); cRBody.addComponent(tF);
-			 * 
-			 * tF = new TextField("Clearing Number"); cRBody.addComponent(tF);
-			 */
-
-			strNameCap = "Username";
-
-		} else {
-			strNameCap = "Username";
-			tF = new TextField("Account ID");
-			cRBody.addComponent(tF);
-		}
-
-		/*
-		 * combo = new ComboBox("Account Type");
-		 * combo.addItem("Commission Account");
-		 * combo.addItem("Ordinary Account"); cRBody.addComponent(combo);
-		 */
+		String strNameCap = "Username";
 
 		tF = new TextField(strNameCap);
 		cRBody.addComponent(tF);
-
-		if (!(strUserType.equals("CCO") || strUserType.equals("BA"))) {
-			/*
-			 * tF = new TextField("MSISDN"); cRBody.addComponent(tF);
-			 * 
-			 * tF = new TextField("Email"); cRBody.addComponent(tF);
-			 * 
-			 * tF = new TextField("Bank Code ID"); cRBody.addComponent(tF);
-			 * 
-			 * tF = new TextField("Bank Account"); cRBody.addComponent(tF);
-			 * 
-			 * tF = new TextField("Clearing Number"); cRBody.addComponent(tF);
-			 */
-			// tF = new TextField("PIN");
-			// cRBody.addComponent(tF);
-
-		} else {
-			strNameCap = "Username";
-			PasswordField pf = new PasswordField("Password");
-			PasswordField rPf = new PasswordField("Re-enter Password");
-
-			cRBody.addComponent(pf);
-			cRBody.addComponent(rPf);
-
-			pf.setInputPrompt("Password");
-			rPf.setInputPrompt("Password");
-		}
 
 		HorizontalLayout cAccBody = new HorizontalLayout();
 		cAccBody.addComponent(cLBody);
@@ -1178,7 +1101,7 @@ public class AddUserModule {
 		comboProfile.select(null);
 		comboIDType.select(null);
 
-		Calendar cal = Calendar.getInstance();
+		cal = Calendar.getInstance();
 		Date date = cal.getTime();
 
 		dFDoB.setValue(date);

@@ -151,52 +151,11 @@ public class UserDetailsModule {
 				// Notification.show(strCurUserType+" +++++++");
 				// For testing purposes, we assume that every first item of each
 				// for category is read-only, hence the isReadOnly = 0
-				int isReadOnlyTf = 0;
-				int isReadOnlyOpt = 1;
-				int isReadOnlyCombo = -1;
 
-				// set TextField(tf) form objects
-				if (arrTfVals != null) {
-					if (strCurUser != null) {
-						String strCurUserAction = (String) UI
-								.getCurrent()
-								.getSession()
-								.getAttribute(
-										WorkSpaceManageProfile.SESSION_WSMP_CUR_ACTION);
-						if (strCurUserAction
-								.equals(WorkSpaceManageProfile.SESSION_VAR_WSMP_AUTH)) {
-							setCurUserTfs(isReadOnlyTf, arrLAllFormFields,
-									arrLAllEditableFields, arrLTfEditableVals);
-						} else {
-							setTfs(isReadOnlyTf, arrLAllFormFields,
-									arrLAllEditableFields, arrLTfEditableVals);
-						}
-
-					} else {
-						setTfs(isReadOnlyTf, arrLAllFormFields,
-								arrLAllEditableFields, arrLTfEditableVals);
-					}
-				}
-
-				// Set OptionGroup(opt) form objects
-				if (arrOptVals != null) {
-
-					setOpts(strTbName, strUID, isReadOnlyOpt,
-							arrLAllFormFields, arrLAllEditableFields,
-							arrLOptEditableVals, mapSlaveFields);
-
-				}
-				// Set ComboBox(combo) form objects
-				if (arrComboVals != null) {
-					setCombos(strTbName, strUID, isReadOnlyCombo,
-							arrLAllFormFields, arrLAllEditableFields,
-							arrLComboEditableVals, mapSlaveFields);
-				}
-				// Set InlineDateField(dF) form objects
-				if (arrDfVals != null) {
-					setDfs(isReadOnlyCombo, arrLAllFormFields,
-							arrLAllEditableFields, arrLDfEditableVals);
-				}
+				setData(strTbName, strUID, strCurUser, arrLAllFormFields,
+						arrLAllEditableFields, arrLTfEditableVals,
+						arrLOptEditableVals, arrLComboEditableVals,
+						arrLDfEditableVals, mapSlaveFields);
 
 				final Button btnEdit = new Button();
 				btnEdit.setId(btnEditId);
@@ -352,7 +311,7 @@ public class UserDetailsModule {
 	}
 
 	public Map<String, String[]> getUDetails(String strTbName, String strUID) {
-		BackEndEmulator bee = new BackEndEmulator();
+		UserDetailsBackEnd bee = new UserDetailsBackEnd();
 		Map<String, String[]> mappedData = bee.getUserPersonalInfo(strTbName,
 				strUID);
 		return mappedData;
@@ -721,27 +680,7 @@ public class UserDetailsModule {
 								btnEditS.setId(strEUname);
 							}
 
-							/*
-							 * TODO commit changes to server
-							 */
-
 						}
-
-						/*
-						 * if(btnEditS.getId().equals(strEPass) ){
-						 * btnCancel.setVisible(true);
-						 * btnCancel.setEnabled(true);
-						 * btnEditS.setIcon(FontAwesome.SAVE);
-						 * btnEditS.setId(strS); }else
-						 * if(btnEditS.getId().equals(strS)){
-						 * disableEditableFields(arrLEf); //btn_link
-						 * btn_repositioned btn_link_invisible
-						 * btnEditS.setIcon(FontAwesome.EDIT);
-						 * btnEditS.setId(strE); btnCancel.setVisible(false);
-						 * btnCancel.setEnabled(false);
-						 * 
-						 * }
-						 */
 
 					}
 				});
@@ -1097,7 +1036,7 @@ public class UserDetailsModule {
 
 		HorizontalLayout cManageAndAddTab = new HorizontalLayout();
 
-		BtnTabLike btnPersonal = new BtnTabLike("Personal", null);
+		BtnTabLike btnPersonal = new BtnTabLike("Basic", null);
 		btnPersonal.setStyleName("btn_tab_like btn_tab_like_active");
 
 		BtnTabLike btnAccount = new BtnTabLike("Account", null);
@@ -1228,6 +1167,7 @@ public class UserDetailsModule {
 				.getAttribute(SESSION_UDM);
 		String strTbName = (String) UI.getCurrent().getSession()
 				.getAttribute(SESSION_UDM_TABLE);
+		// Notification.show(strTbName, Notification.Type.ERROR_MESSAGE);
 		String strUID = (String) UI.getCurrent().getSession()
 				.getAttribute(SESSION_UDM_ID);
 		UI.getCurrent().getSession().getAttribute(SESSION_UDM_UNAME);
@@ -1252,7 +1192,6 @@ public class UserDetailsModule {
 
 		// Notification.show(strTbName);
 		if (strUDM == null) {
-
 			cUDetails = udm.getUserDetailsContainer(strTbName, strUID, hasOp,
 					false);
 			contentC.addComponent(cUDetails);
@@ -1274,6 +1213,60 @@ public class UserDetailsModule {
 
 		return cUDetails;
 
+	}
+
+	private void setData(String strTbName, String strUID, String strCurUser,
+			List<Object> arrLAllFormFields, List<Object> arrLAllEditableFields,
+			ArrayList<String> arrLTfEditableVals,
+			ArrayList<String> arrLOptEditableVals,
+			ArrayList<String> arrLComboEditableVals,
+			ArrayList<String> arrLDfEditableVals,
+			HashMap<String, Object> mapSlaveFields) {
+		int isReadOnlyTf = 0;
+		int isReadOnlyOpt = 1;
+		int isReadOnlyCombo = -1;
+
+		// set TextField(tf) form objects
+		if (arrTfVals != null) {
+			if (strCurUser != null) {
+				String strCurUserAction = (String) UI
+						.getCurrent()
+						.getSession()
+						.getAttribute(
+								WorkSpaceManageProfile.SESSION_WSMP_CUR_ACTION);
+				if (strCurUserAction
+						.equals(WorkSpaceManageProfile.SESSION_VAR_WSMP_AUTH)) {
+					setCurUserTfs(isReadOnlyTf, arrLAllFormFields,
+							arrLAllEditableFields, arrLTfEditableVals);
+				} else {
+					setTfs(isReadOnlyTf, arrLAllFormFields,
+							arrLAllEditableFields, arrLTfEditableVals);
+				}
+
+			} else {
+				setTfs(isReadOnlyTf, arrLAllFormFields, arrLAllEditableFields,
+						arrLTfEditableVals);
+			}
+		}
+
+		// Set OptionGroup(opt) form objects
+		if (arrOptVals != null) {
+
+			setOpts(strTbName, strUID, isReadOnlyOpt, arrLAllFormFields,
+					arrLAllEditableFields, arrLOptEditableVals, mapSlaveFields);
+
+		}
+		// Set ComboBox(combo) form objects
+		if (arrComboVals != null) {
+			setCombos(strTbName, strUID, isReadOnlyCombo, arrLAllFormFields,
+					arrLAllEditableFields, arrLComboEditableVals,
+					mapSlaveFields);
+		}
+		// Set InlineDateField(dF) form objects
+		if (arrDfVals != null) {
+			setDfs(isReadOnlyCombo, arrLAllFormFields, arrLAllEditableFields,
+					arrLDfEditableVals);
+		}
 	}
 
 }
