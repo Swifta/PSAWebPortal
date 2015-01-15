@@ -47,7 +47,7 @@ public class MatsWebPortalUI extends UI {
 						public SystemMessages getSystemMessages(
 								SystemMessagesInfo systemMessagesInfo) {
 							CustomizedSystemMessages msg = new CustomizedSystemMessages();
-							msg.setSessionExpiredNotificationEnabled(true);
+							msg.setSessionExpiredNotificationEnabled(false);
 							msg.setSessionExpiredMessage("Click HERE to login again.");
 							return msg;
 						}

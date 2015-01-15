@@ -55,6 +55,7 @@ public class UserDetailsModule {
 	OptionGroup opt;
 	ComboBox combo;
 	PopupDateField dF;
+
 	public static final String SESSION_UDM = "session_user_details";
 	public static final String SESSION_UDM_LOG = "session_log";
 	public static final String SESSION_UDM_TABLE_LOG = "session_log_table";
@@ -71,6 +72,8 @@ public class UserDetailsModule {
 	public static final String SESSION_VAR_UDM_AUTH = "auth";
 	public static final String SESSION_VAR_UDM_ACC_LOG = "account_change_log";
 	public static final String SESSION_VAR_UDM_ACT_LOG = "activity_log";
+
+	public static final String SESSION_UDM_ACTION_EDIT_DETAILS = "session_udm_action_edit_details";
 
 	// Declaration of data containers...
 
@@ -137,13 +140,22 @@ public class UserDetailsModule {
 	PopupDateField dFDoI;
 	PopupDateField dFDoE;
 
-	OptionGroup optSex;
-	boolean isValidatorAdded = false;
-	boolean isCSelected = false;
-	String curC = null;
-	String curState = null;
-	String curLG = null;
-	Calendar cal = null;
+	private OptionGroup optSex;
+	private boolean isValidatorAdded = false;
+	private boolean isCSelected = false;
+	// private String curC = null;
+
+	private Calendar cal = null;
+	private List<Object> arrLAllFormFields;
+	private List<Object> arrLAllEditableFields;
+	private ArrayList<String> arrLTfEditableVals;
+	private ArrayList<String> arrLOptEditableVals;
+	private ArrayList<String> arrLComboEditableVals;
+	// private ArrayList<String> arrLDfEditableVals;
+	private boolean boolEditStatus = false;
+
+	private Button btnE = null;
+	private Button btnC = null;
 
 	public UserDetailsModule() {
 
@@ -151,6 +163,7 @@ public class UserDetailsModule {
 
 	public HorizontalLayout getDetailsForm(String strTbName, String strUID,
 			boolean hasOp, boolean boolEditStatus) {
+		this.boolEditStatus = boolEditStatus;
 		return setDetailsForm(getUDetails(strTbName, strUID), hasOp,
 				boolEditStatus);
 	}
@@ -182,7 +195,7 @@ public class UserDetailsModule {
 
 			} else {
 
-				List<Object> arrLAllFormFields = new ArrayList<Object>();
+				arrLAllFormFields = new ArrayList<Object>();
 				HashMap<String, Object> mapSlaveFields = new HashMap<String, Object>();
 
 				/*
@@ -208,13 +221,13 @@ public class UserDetailsModule {
 
 				// Holders of editable form components
 
-				final List<Object> arrLAllEditableFields = new ArrayList<Object>();
+				arrLAllEditableFields = new ArrayList<Object>();
 
 				// Holders of editable form components original values to be
 				// used for undoing/resetting the form.
-				final ArrayList<String> arrLTfEditableVals = new ArrayList<String>();
-				final ArrayList<String> arrLOptEditableVals = new ArrayList<String>();
-				final ArrayList<String> arrLComboEditableVals = new ArrayList<String>();
+				arrLTfEditableVals = new ArrayList<String>();
+				arrLOptEditableVals = new ArrayList<String>();
+				arrLComboEditableVals = new ArrayList<String>();
 				final ArrayList<String> arrLDfEditableVals = new ArrayList<String>();
 
 				String strCurUser = (String) UI.getCurrent().getSession()
@@ -222,11 +235,6 @@ public class UserDetailsModule {
 				// Notification.show(strCurUserType+" +++++++");
 				// For testing purposes, we assume that every first item of each
 				// for category is read-only, hence the isReadOnly = 0
-
-				setData(strTbName, strUID, strCurUser, arrLAllFormFields,
-						arrLAllEditableFields, arrLTfEditableVals,
-						arrLOptEditableVals, arrLComboEditableVals,
-						arrLDfEditableVals, mapSlaveFields);
 
 				final Button btnEdit = new Button();
 				btnEdit.setId(btnEditId);
@@ -244,6 +252,9 @@ public class UserDetailsModule {
 				final HorizontalLayout cBtnEditCancel = new HorizontalLayout();
 				cBtnEditCancel.setSizeUndefined();
 				cBtnEditCancel.addComponent(btnEdit);
+
+				btnE = btnEdit;
+				btnC = btnCancel;
 
 				String strCurUserAction = (String) UI
 						.getCurrent()
@@ -278,6 +289,11 @@ public class UserDetailsModule {
 					cUPersonalDetails.addComponent(cBtnEditCancel);
 				}
 
+				setData(strTbName, strUID, strCurUser, arrLAllFormFields,
+						arrLAllEditableFields, arrLTfEditableVals,
+						arrLOptEditableVals, arrLComboEditableVals,
+						arrLDfEditableVals, mapSlaveFields);
+
 				/*
 				 * 
 				 * If edit status is true and has no operations, initiate
@@ -297,37 +313,40 @@ public class UserDetailsModule {
 
 	private void resetForm(List<Object> lAllEditableFields,
 			ArrayList<String> arrLTfVals, ArrayList<String> arrLOptVals,
-			ArrayList<String> arrLComboSelVals, ArrayList<String> arrLDfVals) {
+			ArrayList<String> arrLComboSelVals, ArrayList<String> arrLDfVals,
+			ArrayList<String> arrLEV) {
 
 		int iTf = 0;
 		int iOpt = 0;
 		int iCombo = 0;
 		uDetailsEditStatus = false;
 		// Notification.show(Integer.toString(arrTfVals.length)+" I have");
-		for (Object f : lAllEditableFields) {
-			if (f instanceof TextField) {
+		for (iTf = 0; iTf < lAllEditableFields.size(); iTf++) {
+			if (lAllEditableFields.get(iTf) instanceof TextField) {
 
-				((TextField) f).setValue(arrLTfVals.get(iTf));
-				((TextField) f).setStyleName(ValoTheme.BUTTON_BORDERLESS);
-				((TextField) f).setReadOnly(true);
-				iTf++;
+				((TextField) lAllEditableFields.get(iTf)).setValue(arrLEV
+						.get(iTf));
+				((TextField) lAllEditableFields.get(iTf))
+						.setStyleName(ValoTheme.BUTTON_BORDERLESS);
+				((TextField) lAllEditableFields.get(iTf)).setReadOnly(true);
 
-			} else if (f instanceof OptionGroup) {
+			} else if (lAllEditableFields.get(iTf) instanceof OptionGroup) {
 
-				((OptionGroup) f).setValue(arrLOptVals.get(iOpt));
-				((OptionGroup) f).setReadOnly(true);
-				iOpt++;
+				((OptionGroup) lAllEditableFields.get(iTf)).setValue(arrLEV
+						.get(iTf));
+				((OptionGroup) lAllEditableFields.get(iTf)).setReadOnly(true);
 
-			} else if (f instanceof ComboBox) {
+			} else if (lAllEditableFields.get(iTf) instanceof ComboBox) {
 
-				((ComboBox) f).setValue(arrLComboSelVals.get(iCombo));
-				((ComboBox) f).setReadOnly(true);
-				iCombo++;
+				((ComboBox) lAllEditableFields.get(iTf)).setValue(arrLEV
+						.get(iTf));
+				((ComboBox) lAllEditableFields.get(iTf)).setReadOnly(true);
 
-			} else if (f instanceof PopupDateField) {
+			} else if (lAllEditableFields.get(iTf) instanceof PopupDateField) {
 
 				// ((PopupDateField) f).setValue(new Date(arrLDfVals.get(iDf)));
-				((PopupDateField) f).setReadOnly(true);
+				((PopupDateField) lAllEditableFields.get(iTf))
+						.setReadOnly(true);
 
 			}
 
@@ -362,17 +381,8 @@ public class UserDetailsModule {
 			} else if (f instanceof OptionGroup) {
 				((OptionGroup) f).setReadOnly(false);
 
-				// TODO Values below are dummy. Need to fetch applicable field
-				// values for system users to use when editing.
-				((OptionGroup) f).addItem("Female");
-				((OptionGroup) f).addItem("Male");
-
 			} else if (f instanceof ComboBox) {
 				((ComboBox) f).setReadOnly(false);
-				// TODO Values below are dummy. Need to fetch applicable field
-				// value for system users to choose
-				((ComboBox) f).addItem("Finance Controller");
-				((ComboBox) f).addItem("Customer Care Operator");
 			} else if (f instanceof PopupDateField) {
 				((PopupDateField) f).setReadOnly(false);
 			}
@@ -554,7 +564,10 @@ public class UserDetailsModule {
 				 * Prepare all Editable fields (Entire form) for editing.
 				 */
 				if (event.getButton().getId().equals(btnEditId)) {
-					enableEditableFormFields(arrLAllEditableFields);
+					cUPersonalDetails.removeAllComponents();
+					cUPersonalDetails.addComponent(getEUDContainer());
+					editUserDetails(arrLAllEditableFields, btnEdit, btnCancel,
+							btnSaveId, cBtnEditCancel);
 
 					/*
 					 * By Default, btnCancel is not visible, until btnEdit is
@@ -609,7 +622,7 @@ public class UserDetailsModule {
 
 				resetForm(arrLAllEditableFields, arrLTfEditableVals,
 						arrLOptEditableVals, arrLComboEditableVals,
-						arrLDfEditableVals);
+						arrLDfEditableVals, arrLTfEditableVals);
 				btnEdit.setId(btnEditId);
 				btnEdit.setIcon(FontAwesome.EDIT);
 				btnCancel.setVisible(false);
@@ -706,7 +719,7 @@ public class UserDetailsModule {
 					public void buttonClick(ClickEvent event) {
 
 						resetForm(arrLComboSEditableField, null, null,
-								arrLComboSEditableFieldVal, null);
+								arrLComboSEditableFieldVal, null, null);
 						uDetailsEditStatus = false;
 						btnCancel.setVisible(false);
 						btnCancel.setEnabled(false);
@@ -765,7 +778,7 @@ public class UserDetailsModule {
 
 						strCID = btnCancel.getId();
 						if (strCID.equals(strCPass) || strCID.equals(strCUname)) {
-							resetForm(arrLEf, arrLEfVal, null, null, null);
+							resetForm(arrLEf, arrLEfVal, null, null, null, null);
 							uDetailsEditStatus = false;
 							btnEditS.setIcon(FontAwesome.EDIT);
 							btnCancel.setVisible(false);
@@ -1243,6 +1256,9 @@ public class UserDetailsModule {
 				.getAttribute(SESSION_UDM_ID);
 		UI.getCurrent().getSession().getAttribute(SESSION_UDM_UNAME);
 
+		String strAction = (String) UI.getCurrent().getSession()
+				.getAttribute(SESSION_UDM_ACTION_EDIT_DETAILS);
+
 		/*
 		 * if(strAction.equals(SearchUserModule.ACTION_DETAILS) ||
 		 * strAction.equals(SearchUserModule.ACTION_EDIT) ||
@@ -1261,10 +1277,9 @@ public class UserDetailsModule {
 			hasOp = false;
 		}
 
-		// Notification.show(strTbName);
 		if (strUDM == null) {
 			cUDetails = udm.getUserDetailsContainer(strTbName, strUID, hasOp,
-					false);
+					strAction.equals("edit"));
 			contentC.addComponent(cUDetails);
 			contentC.setComponentAlignment(cUDetails, Alignment.TOP_CENTER);
 			contentC.setExpandRatio(cUDetails, 1.0f);
@@ -1277,8 +1292,9 @@ public class UserDetailsModule {
 						.getAttribute(SESSION_UDM_TABLE_LOG);
 			}
 			udm.cPerAccAuthInfo.removeAllComponents();
+
 			udm.cPerAccAuthInfo.addComponent(udm.getDetailsForm(strTbName,
-					strUID, hasOp, false));
+					strUID, hasOp, strAction.equals("edit")));
 
 		}
 
@@ -1343,19 +1359,21 @@ public class UserDetailsModule {
 
 			return;
 		}
+		if (boolEditStatus)
+			cUPersonalDetails.addComponent(getEUDContainer());
+		else
+			cUPersonalDetails.addComponent(getUDContainer());
 
-		cUPersonalDetails.addComponent(getUDContainer());
 	}
 
 	private VerticalLayout getUDContainer() {
-
-		HashMap<Integer, String> profToID = new HashMap<>();
 
 		String strProf = "MATS_ADMIN_USER_PROFILE";
 
 		VerticalLayout cAgentInfo = new VerticalLayout();
 
 		VerticalLayout cBasic = new VerticalLayout();
+		cBasic.setSpacing(true);
 		// cBasic.setSpacing(true);
 		Label lbB = new Label("General");
 		lbB.setStyleName("lb_frm_add_user");
@@ -1518,6 +1536,7 @@ public class UserDetailsModule {
 		comboIDType.setRequired(true);
 
 		cCompany.addComponent(lbC);
+		cCompany.setSpacing(true);
 
 		addDatum("ID Type", "Passport Number", cCompany);
 
@@ -1559,6 +1578,7 @@ public class UserDetailsModule {
 		cC.addComponent(cCompany);
 
 		VerticalLayout pC = new VerticalLayout();
+		pC.setSpacing(true);
 		lbC = new Label("Primary Contacts");
 		HorizontalLayout cLbc = new HorizontalLayout();
 		cLbc.setSizeUndefined();
@@ -1590,6 +1610,7 @@ public class UserDetailsModule {
 		cC.addComponent(pC);
 
 		VerticalLayout sC = new VerticalLayout();
+		sC.setSpacing(true);
 		lbC = new Label("Secondary Contacts");
 		cLbc = new HorizontalLayout();
 		cLbc.setSizeUndefined();
@@ -1620,6 +1641,7 @@ public class UserDetailsModule {
 		cC.addComponent(sC);
 
 		VerticalLayout physicalC = new VerticalLayout();
+		physicalC.setSpacing(true);
 		lbC = new Label("Physical Address");
 		cLbc = new HorizontalLayout();
 		cLbc.setSizeUndefined();
@@ -1762,6 +1784,9 @@ public class UserDetailsModule {
 		tFFN = tF;
 		tFFN.setRequired(true);
 		tF.setValue("Paul");
+		arrLAllFormFields.add(tF);
+		arrLAllEditableFields.add(tF);
+		arrLTfEditableVals.add(tF.getValue());
 		cBasic.addComponent(tF);
 
 		tF = new TextField("Middle Name");
@@ -1774,6 +1799,9 @@ public class UserDetailsModule {
 		tF.setValue("Kigozi");
 		tFLN = tF;
 		tFLN.setRequired(true);
+		arrLAllFormFields.add(tF);
+		arrLAllEditableFields.add(tF);
+		arrLTfEditableVals.add(tF.getValue());
 		cBasic.addComponent(tF);
 
 		OptionGroup opt = new OptionGroup("Gender");
@@ -1786,6 +1814,9 @@ public class UserDetailsModule {
 		opt.select("MALE");
 		optSex = opt;
 		optSex.setRequired(true);
+		arrLAllFormFields.add(opt);
+		arrLAllEditableFields.add(opt);
+		arrLTfEditableVals.add(opt.getValue().toString());
 		cBasic.addComponent(opt);
 
 		ComboBox combo = new ComboBox("Prefix");
@@ -1796,6 +1827,11 @@ public class UserDetailsModule {
 		combo.addItem("Prof. ");
 		comboPref = combo;
 		comboPref.select("Eng. ");
+
+		arrLAllFormFields.add(combo);
+		arrLAllEditableFields.add(combo);
+		arrLTfEditableVals.add((combo.getValue() == null) ? "" : combo
+				.getValue().toString());
 		cBasic.addComponent(combo);
 
 		combo = new ComboBox("Suffix");
@@ -1805,6 +1841,10 @@ public class UserDetailsModule {
 		combo.addItem("CISA ");
 		combo.select("Ph.D");
 		comboSuff = combo;
+		arrLAllFormFields.add(combo);
+		arrLAllEditableFields.add(combo);
+		arrLTfEditableVals.add((combo.getValue() == null) ? "" : combo
+				.getValue().toString());
 		cBasic.addComponent(combo);
 
 		combo = new ComboBox("Language");
@@ -1817,17 +1857,27 @@ public class UserDetailsModule {
 		combo.setItemCaption(3, "fr");
 		comboLang = combo;
 		comboLang.setRequired(true);
+		arrLAllFormFields.add(combo);
+		arrLAllEditableFields.add(combo);
+		arrLTfEditableVals.add((combo.getValue() == null) ? "" : combo
+				.getValue().toString());
 		cBasic.addComponent(combo);
 
 		tF = new TextField("Occupation");
 		tF.setValue("Software Engineer");
 		tFOcc = tF;
 		tFOcc.setRequired(true);
+		arrLAllFormFields.add(tF);
+		arrLAllEditableFields.add(tF);
+		arrLTfEditableVals.add(tF.getValue());
 		cBasic.addComponent(tF);
 
 		tF = new TextField("Employer");
 		tF.setValue("Swifta");
 		tFEmp = tF;
+		arrLAllFormFields.add(tF);
+		arrLAllEditableFields.add(tF);
+		arrLTfEditableVals.add(tF.getValue());
 		cBasic.addComponent(tF);
 
 		PopupDateField dF = new PopupDateField("DoB");
@@ -1835,6 +1885,9 @@ public class UserDetailsModule {
 		cal.set(1988, 11, 12);
 		dF.setValue(cal.getTime());
 		dFDoB = dF;
+		arrLAllFormFields.add(dF);
+		arrLAllEditableFields.add(dF);
+		arrLTfEditableVals.add(dF.getValue().toString());
 		cBasic.addComponent(dF);
 
 		combo = new ComboBox("Country");
@@ -1847,6 +1900,10 @@ public class UserDetailsModule {
 		comboState = combo;
 		comboState.setRequired(true);
 		comboState.setNullSelectionAllowed(false);
+		arrLAllFormFields.add(combo);
+		arrLAllEditableFields.add(combo);
+		arrLTfEditableVals.add((combo.getValue() == null) ? "" : combo
+				.getValue().toString());
 		cBasic.addComponent(combo);
 
 		combo = new ComboBox("Local Government");
@@ -1855,6 +1912,10 @@ public class UserDetailsModule {
 		// combo.select(1);
 		comboLG = combo;
 		comboLG.setRequired(true);
+		arrLAllFormFields.add(combo);
+		arrLAllEditableFields.add(combo);
+		arrLTfEditableVals.add((combo.getValue() == null) ? "" : combo
+				.getValue().toString());
 		cBasic.addComponent(combo);
 
 		/*
@@ -1894,17 +1955,28 @@ public class UserDetailsModule {
 		combo.select("Passport Number");
 		comboIDType = combo;
 		comboIDType.setRequired(true);
+
+		arrLAllFormFields.add(combo);
+		arrLAllEditableFields.add(combo);
+		arrLTfEditableVals.add((combo.getValue() == null) ? "" : combo
+				.getValue().toString());
 		cCompany.addComponent(combo);
 
 		tF = new TextField("ID No.");
 		tF.setValue("001");
 		tFIDNo = tF;
 		tFIDNo.setRequired(true);
+		arrLAllFormFields.add(tF);
+		arrLAllEditableFields.add(tF);
+		arrLTfEditableVals.add(tF.getValue());
 		cCompany.addComponent(tF);
 
 		tF = new TextField("Issuer");
 		tFIssuer = tF;
 		tFIssuer.setValue("Republic of Uganda");
+		arrLAllFormFields.add(tF);
+		arrLAllEditableFields.add(tF);
+		arrLTfEditableVals.add(tF.getValue());
 		cCompany.addComponent(tF);
 
 		dF = new PopupDateField("Issue Date");
@@ -1912,6 +1984,9 @@ public class UserDetailsModule {
 		cal.set(12, 12, 12);
 		dF.setValue(cal.getTime());
 		dFDoI = dF;
+		arrLAllFormFields.add(dF);
+		arrLAllEditableFields.add(dF);
+		arrLTfEditableVals.add(dF.getValue().toString());
 		cCompany.addComponent(dF);
 
 		dF = new PopupDateField("Expiry Date");
@@ -1922,7 +1997,9 @@ public class UserDetailsModule {
 		dFDoE = dF;
 		dFDoE.setRequired(true);
 		dFDoE.setImmediate(true);
-
+		arrLAllFormFields.add(dF);
+		arrLAllEditableFields.add(dF);
+		arrLTfEditableVals.add(dF.getValue().toString());
 		cCompany.addComponent(dF);
 
 		cC.addComponent(cCompany);
@@ -1937,6 +2014,9 @@ public class UserDetailsModule {
 
 		tF = new TextField("Mobile Phone No.");
 		tF.setValue("+256704191152");
+		arrLAllFormFields.add(tF);
+		arrLAllEditableFields.add(tF);
+		arrLTfEditableVals.add(tF.getValue());
 		tFPMNo = tF;
 
 		pC.addComponent(tF);
@@ -1944,11 +2024,17 @@ public class UserDetailsModule {
 		tF = new TextField("Alt. Phone No.");
 		tF.setValue("+1704191152");
 		tFPANo = tF;
+		arrLAllFormFields.add(tF);
+		arrLAllEditableFields.add(tF);
+		arrLTfEditableVals.add(tF.getValue());
 		pC.addComponent(tF);
 
 		tF = new TextField("Email Address");
 		tF.setValue("pwndz172@gmail.com");
 		tFPEmail = tF;
+		arrLAllFormFields.add(tF);
+		arrLAllEditableFields.add(tF);
+		arrLTfEditableVals.add(tF.getValue());
 		pC.addComponent(tF);
 		cC.addComponent(pC);
 
@@ -1963,16 +2049,25 @@ public class UserDetailsModule {
 		tF = new TextField("Mobile Phone No.");
 		tF.setValue("+256804191152");
 		tFSMNo = tF;
+		arrLAllFormFields.add(tF);
+		arrLAllEditableFields.add(tF);
+		arrLTfEditableVals.add(tF.getValue());
 		sC.addComponent(tF);
 
 		tF = new TextField("Alt. Phone No.");
 		tF.setValue("+1804191152");
 		tFSANo = tF;
+		arrLAllFormFields.add(tF);
+		arrLAllEditableFields.add(tF);
+		arrLTfEditableVals.add(tF.getValue());
 		sC.addComponent(tF);
 
 		tF = new TextField("E-mail Address");
 		tF.setValue("pkigozi@swifta.com");
 		tFSEmail = tF;
+		arrLAllFormFields.add(tF);
+		arrLAllEditableFields.add(tF);
+		arrLTfEditableVals.add(tF.getValue());
 		sC.addComponent(tF);
 
 		cC.addComponent(sC);
@@ -1999,12 +2094,18 @@ public class UserDetailsModule {
 		tF = new TextField("City");
 		tF.setValue("Kampala");
 		tFCity = tF;
+		arrLAllFormFields.add(tF);
+		arrLAllEditableFields.add(tF);
+		arrLTfEditableVals.add(tF.getValue());
 		tFCity.setRequired(true);
 		physicalC.addComponent(tF);
 
 		tF = new TextField("Province");
 		tF.setValue("Central");
 		tFProv = tF;
+		arrLAllFormFields.add(tF);
+		arrLAllEditableFields.add(tF);
+		arrLTfEditableVals.add(tF.getValue());
 		physicalC.addComponent(tF);
 
 		cC.addComponent(physicalC);
@@ -2037,6 +2138,10 @@ public class UserDetailsModule {
 		comboHierarchy.select(1);
 		comboProfile = comboHierarchy;
 		comboProfile.setRequired(true);
+		arrLAllFormFields.add(comboProfile);
+		arrLAllEditableFields.add(comboProfile);
+		arrLTfEditableVals.add((comboProfile.getValue() == null) ? ""
+				: comboProfile.getValue().toString());
 		cAcc.addComponent(comboHierarchy);
 
 		final VerticalLayout cLBody = new VerticalLayout();
@@ -2045,12 +2150,18 @@ public class UserDetailsModule {
 		tF.setValue("Livepwndz");
 		tFUN = tF;
 		tFUN.setRequired(true);
+		arrLAllFormFields.add(tF);
+		arrLAllEditableFields.add(tF);
+		arrLTfEditableVals.add(tF.getValue());
 		cLBody.addComponent(tF);
 
 		tF = new TextField("MSISDN");
 		tF.setValue("+256774191152");
 		tFMSISDN = tF;
 		tFMSISDN.setRequired(true);
+		arrLAllFormFields.add(tF);
+		arrLAllEditableFields.add(tF);
+		arrLTfEditableVals.add(tF.getValue());
 		cLBody.addComponent(tF);
 
 		// / tF = new TextField("PIN");
@@ -2060,23 +2171,38 @@ public class UserDetailsModule {
 		tFAccEmail = tF;
 		tFAccEmail.setRequired(true);
 		tFAccEmail.setValue("ppounds1@gmail.com");
+		arrLAllFormFields.add(tF);
+		arrLAllEditableFields.add(tF);
+		arrLTfEditableVals.add(tF.getValue());
 		cLBody.addComponent(tF);
 
 		combo = new ComboBox("Bank Domain");
 		combo.addItem("Stanbic Bank");
 		combo.select("Stanbic Bank");
 		comboBDomain = combo;
+		arrLAllFormFields.add(combo);
+		arrLAllEditableFields.add(combo);
+		arrLTfEditableVals.add((combo.getValue() == null) ? "" : combo
+				.getValue().toString());
 		cLBody.addComponent(combo);
 
 		combo = new ComboBox("Bank Code ID");
 		combo.addItem("001");
 		combo.select("001");
 		comboBID = combo;
+		arrLAllFormFields.add(combo);
+		arrLAllEditableFields.add(combo);
+		arrLTfEditableVals.add((combo.getValue() == null) ? "" : combo
+				.getValue().toString());
 		cLBody.addComponent(combo);
 
 		tF = new TextField("Bank Account");
 		tF.setValue("00232333452315");
 		tFBAcc = tF;
+
+		arrLAllFormFields.add(tF);
+		arrLAllEditableFields.add(tF);
+		arrLTfEditableVals.add(tF.getValue());
 		// tFBAcc.setValidationVisible(true);
 		// tFBAcc.addValidator(new NoNull());
 		cLBody.addComponent(tF);
@@ -2085,11 +2211,18 @@ public class UserDetailsModule {
 		combo.setItemCaption(1, "US Dollars");
 		combo.select(1);
 		comboCur = combo;
+		arrLAllFormFields.add(combo);
+		arrLAllEditableFields.add(combo);
+		arrLTfEditableVals.add((combo.getValue() == null) ? "" : combo
+				.getValue().toString());
 		cLBody.addComponent(combo);
 
 		tF = new TextField("Clearing Number");
 		tF.setValue("00212");
 		tFClrNo = tF;
+		arrLAllFormFields.add(tF);
+		arrLAllEditableFields.add(tF);
+		arrLTfEditableVals.add(tF.getValue());
 		cLBody.addComponent(tF);
 
 		Label lbAccRec = new Label("Account Recovery");
@@ -2098,7 +2231,7 @@ public class UserDetailsModule {
 		cLbAccRec.setSizeUndefined();
 		cLbAccRec.setMargin(new MarginInfo(true, false, false, false));
 		cLbAccRec.addComponent(lbAccRec);
-		cLBody.addComponent(cLbAccRec);
+		// cLBody.addComponent(cLbAccRec);
 
 		combo = new ComboBox("Security Question");
 		combo.addItem(1);
@@ -2110,12 +2243,19 @@ public class UserDetailsModule {
 		combo.setItemCaption(3, "What was one of your nicknames in school?");
 		combo.select(2);
 		comboSecQn = combo;
-		cLBody.addComponent(combo);
+		arrLAllFormFields.add(combo);
+		arrLAllEditableFields.add(combo);
+		arrLTfEditableVals.add((combo.getValue() == null) ? "" : combo
+				.getValue().toString());
+		// cLBody.addComponent(combo);
 
 		tF = new TextField("Answer");
 		tF.setValue("Mrs. X");
 		tFSecAns = tF;
-		cLBody.addComponent(tF);
+		arrLAllFormFields.add(tF);
+		arrLAllEditableFields.add(tF);
+		arrLTfEditableVals.add(tF.getValue());
+		// cLBody.addComponent(tF);
 
 		CheckBox chk = new CheckBox("I accept the terms" + " and conditons.");
 		chcTAndC = chk;
@@ -2277,12 +2417,15 @@ public class UserDetailsModule {
 		cChk.setSizeUndefined();
 		cChk.setMargin(new MarginInfo(true, false, true, false));
 		cChk.addComponent(chk);
-		cLBody.addComponent(cChk);
+		// cLBody.addComponent(cChk);
 
 		final VerticalLayout cRBody = new VerticalLayout();
 		String strNameCap = "Username";
 
 		tF = new TextField(strNameCap);
+		arrLAllFormFields.add(tF);
+		arrLAllEditableFields.add(tF);
+		arrLTfEditableVals.add(tF.getValue());
 		cRBody.addComponent(tF);
 
 		HorizontalLayout cAccBody = new HorizontalLayout();
@@ -2297,55 +2440,21 @@ public class UserDetailsModule {
 		cC.setMargin(new MarginInfo(false, true, false, true));
 		cAgentInfo.addComponent(cBAndCAndAcc);
 
-		Button btnSave = new Button("Save");
-		btnSave.setIcon(FontAwesome.SAVE);
-		btnSave.setStyleName("btn_link");
+		Button btnSave = btnE;
+		// btnSave.setIcon(FontAwesome.SAVE);
+		// btnSave.setStyleName("btn_link");
 
-		Button btnReset = new Button("Reset");
-		btnReset.setIcon(FontAwesome.UNDO);
-		btnReset.setStyleName("btn_link");
+		Button btnReset = btnC;
+		btnReset.setVisible(true);
+		// btnReset.setIcon(FontAwesome.UNDO);
+		// btnReset.setStyleName("btn_link");
 		HorizontalLayout cBtnSR = new HorizontalLayout();
 		cBtnSR.addComponent(btnSave);
 		cBtnSR.addComponent(btnReset);
 
+		// cBtnEditCancel
+
 		cAcc.addComponent(cBtnSR);
-
-		// if (comboHierarchy != null) {
-
-		/*
-		 * comboHierarchy.addValueChangeListener(new ValueChangeListener() {
-		 * private static final long serialVersionUID = 6060653158010946535L;
-		 * 
-		 * @Override public void valueChange(ValueChangeEvent event) { String
-		 * strHierarchy = (String) event.getProperty() .getValue(); if
-		 * (strHierarchy == null) return;
-		 * 
-		 * if (strHierarchy.equals("Sub " + strUserType)) {
-		 * cRBody.setStyleName("c_body_visible");
-		 * cLBody.setStyleName("c_body_invisible");
-		 * 
-		 * for (int i = 0; i < cRBody.getComponentCount(); i++) {
-		 * cRBody.getComponent(i).setEnabled(true); }
-		 * 
-		 * for (int i = 0; i < cLBody.getComponentCount(); i++) {
-		 * cLBody.getComponent(i).setEnabled(false); }
-		 * 
-		 * } else if (strHierarchy.equals("Parent " + strUserType)) {
-		 * cRBody.setStyleName("c_body_invisible");
-		 * cLBody.setStyleName("c_body_visible");
-		 * 
-		 * for (int i = 0; i < cLBody.getComponentCount(); i++) {
-		 * cLBody.getComponent(i).setEnabled(true); }
-		 * 
-		 * for (int i = 0; i < cRBody.getComponentCount(); i++) {
-		 * cRBody.getComponent(i).setEnabled(false); } } }
-		 * 
-		 * });
-		 */
-		// } else {
-		// cLBody.setStyleName("c_body_invisible");
-		// cRBody.setStyleName("c_body_visible");
-		// }
 
 		btnSave.addClickListener(new Button.ClickListener() {
 
@@ -2805,6 +2914,7 @@ public class UserDetailsModule {
 	private void addDatum(String cap, String val, Object container) {
 
 		Label lb = new Label();
+		lb.setImmediate(true);
 		lb.setStyleName("label_ud");
 		lb.setContentMode(ContentMode.HTML);
 		lb.setValue("<span class = 'label_cap_custom_ud'> " + cap

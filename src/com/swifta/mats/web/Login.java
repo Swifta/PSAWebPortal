@@ -225,7 +225,6 @@ public class Login extends VerticalLayout implements View {
 			 */
 			private static final long serialVersionUID = 6400633218319264865L;
 
-			@SuppressWarnings("unused")
 			@Override
 			public void buttonClick(ClickEvent event) {
 				LoginService loginService = new LoginService();
