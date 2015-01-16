@@ -153,6 +153,7 @@ public class UserDetailsModule {
 	private ArrayList<String> arrLComboEditableVals;
 	// private ArrayList<String> arrLDfEditableVals;
 	private boolean boolEditStatus = false;
+	private HorizontalLayout cBtnEditCancel;
 
 	private Button btnE = null;
 	private Button btnC = null;
@@ -216,8 +217,8 @@ public class UserDetailsModule {
 				arrComboVals = mappedData.get("arrComboVals");
 				arrDfVals = mappedData.get("arrDfVals");
 
-				final String btnEditId = strUID + "_edit";
-				final String btnSaveId = strUID + "_save";
+				final String btnEditId = "edit";
+				final String btnSaveId = "save";
 
 				// Holders of editable form components
 
@@ -249,7 +250,7 @@ public class UserDetailsModule {
 				btnCancel.setStyleName("btn_link");
 				btnCancel.setVisible(false);
 
-				final HorizontalLayout cBtnEditCancel = new HorizontalLayout();
+				cBtnEditCancel = new HorizontalLayout();
 				cBtnEditCancel.setSizeUndefined();
 				cBtnEditCancel.addComponent(btnEdit);
 
@@ -1258,17 +1259,6 @@ public class UserDetailsModule {
 
 		String strAction = (String) UI.getCurrent().getSession()
 				.getAttribute(SESSION_UDM_ACTION_EDIT_DETAILS);
-
-		/*
-		 * if(strAction.equals(SearchUserModule.ACTION_DETAILS) ||
-		 * strAction.equals(SearchUserModule.ACTION_EDIT) ||
-		 * strAction.equals(SearchUserModule.ACTION_MORE)){
-		 * 
-		 * if(strAction.equals(SearchUserModule.ACTION_DETAILS)){ }else
-		 * if(strAction.equals(SearchUserModule.ACTION_EDIT)){
-		 * if(strTbName.equals("account") || strTbName.equals("auth")){ }else{ }
-		 * }else if(strAction.equals(SearchUserModule.ACTION_MORE)){ }
-		 */
 		boolean hasOp = false;
 
 		if (strTbName.equals("account") || strTbName.equals("auth")) {
@@ -1763,6 +1753,9 @@ public class UserDetailsModule {
 
 	private VerticalLayout getEUDContainer() {
 
+		if (cBtnEditCancel != null)
+			cBtnEditCancel.setVisible(false);
+
 		HashMap<Integer, String> profToID = new HashMap<>();
 
 		profToID.put(1, "MATS_ADMIN_USER_PROFILE");
@@ -1774,6 +1767,7 @@ public class UserDetailsModule {
 		profToID.put(15, "MATS_SERVICE_PROVIDER_USER_PROFILE");
 
 		VerticalLayout cAgentInfo = new VerticalLayout();
+		cAgentInfo.setMargin(new MarginInfo(true, false, false, false));
 
 		VerticalLayout cBasic = new VerticalLayout();
 		Label lbB = new Label("Basic");
@@ -2440,192 +2434,106 @@ public class UserDetailsModule {
 		cC.setMargin(new MarginInfo(false, true, false, true));
 		cAgentInfo.addComponent(cBAndCAndAcc);
 
-		Button btnSave = btnE;
-		// btnSave.setIcon(FontAwesome.SAVE);
-		// btnSave.setStyleName("btn_link");
+		final String btnSaveId = "save";
+		final String btnEditId = "edit";
 
-		Button btnReset = btnC;
-		btnReset.setVisible(true);
-		// btnReset.setIcon(FontAwesome.UNDO);
-		// btnReset.setStyleName("btn_link");
-		HorizontalLayout cBtnSR = new HorizontalLayout();
-		cBtnSR.addComponent(btnSave);
-		cBtnSR.addComponent(btnReset);
+		final Button btnEdit = new Button();
+		btnEdit.setIcon(FontAwesome.SAVE);
+		btnEdit.setId(btnSaveId);
+		btnEdit.setStyleName("btn_link");
+
+		final Button btnCancel = new Button();
+		btnCancel.setVisible(true);
+		btnCancel.setIcon(FontAwesome.UNDO);
+		btnCancel.setStyleName("btn_link");
+
+		final HorizontalLayout cBtnSR = new HorizontalLayout();
+		cBtnSR.addComponent(btnEdit);
+		cBtnSR.addComponent(btnCancel);
 
 		// cBtnEditCancel
 
 		cAcc.addComponent(cBtnSR);
 
-		btnSave.addClickListener(new Button.ClickListener() {
+		btnEdit.addClickListener(new Button.ClickListener() {
 
 			private static final long serialVersionUID = -935880570210949227L;
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				UserManagementService ums = new UserManagementService();
-				String strResponse = "";
 
-				String idtype = "";
+				Notification.show(event.getButton().getId());
 
-				try {
+				/*
+				 * Prepare all Editable fields (Entire form) for editing.
+				 */
+				if (event.getButton().getId().equals(btnEditId)) {
 
-					try {
-						if (!isValidatorAdded)
-							addValidators();
-						validate();
+					/*
+					 * By Default, btnCancel is not visible, until btnEdit is
+					 * clicked. Only until then is it added and visible.
+					 */
 
-					} catch (InvalidValueException e) {
-						Notification.show("Message: ", e.getMessage(),
-								Notification.Type.ERROR_MESSAGE);
-						return;
+					if (!btnCancel.isVisible()) {
+						event.getButton().setId(btnSaveId);
+						event.getButton().setIcon(FontAwesome.SAVE);
+						btnCancel.setVisible(true);
+						cBtnSR.addComponent(btnCancel);
 					}
 
-					String bacc = (tFBAcc.getValue() == null) ? "" : tFBAcc
-							.getValue().toString();
-					int bid = (comboBID.getValue() == null) ? 0 : Integer
-							.valueOf(comboBID.getValue().toString());
-					String bd = (comboBDomain.getValue() == null) ? ""
-							: comboBDomain.getValue().toString();
-					String clrno = (tFClrNo.getValue() == null) ? "" : tFClrNo
-							.getValue().toString();
-					String cur = (comboCur.getValue() == null) ? "" : comboCur
-							.getValue().toString();
-					String accEmail = (tFAccEmail.getValue() == null) ? ""
-							: tFAccEmail.getValue().toString();
-					String msisdn = (tFMSISDN.getValue() == null) ? ""
-							: tFMSISDN.getValue().toString();
-					int profid = (comboProfile.getValue() == null) ? 0
-							: Integer.valueOf(comboProfile.getValue()
-									.toString());
-					String secQn = (comboSecQn.getValue() == null) ? ""
-							: comboSecQn.getValue().toString();
-					String secAns = (tFSecAns.getValue() == null) ? ""
-							: tFSecAns.getValue().toString();
-					String tAndC = (chcTAndC.getValue() == null) ? ""
-							: chcTAndC.getValue().toString();
-					String un = (tFUN.getValue() == null) ? "" : tFUN
-							.getValue().toString();
-					int country = (comboCountry.getValue() == null) ? 0
-							: Integer.valueOf(comboCountry.getValue()
-									.toString());
-					Date dob = (dFDoB.getValue() == null) ? new Date()
-							: (Date) dFDoB.getValue();
-					String employer = (tFEmp.getValue() == null) ? "" : tFEmp
-							.getValue().toString();
-					String fn = (tFFN.getValue() == null) ? "" : tFFN
-							.getValue().toString();
-					String gender = (optSex.getValue() == null) ? "" : optSex
-							.getItemCaption(optSex.getValue()).toString();
-					int lang = (comboLang.getValue() == null) ? 0 : Integer
-							.valueOf(comboLang.getValue().toString());
-					String ln = (tFLN.getValue() == null) ? "" : tFLN
-							.getValue().toString();
-					int lgid = (comboLG.getValue() == null) ? 0 : Integer
-							.valueOf(comboLG.getValue().toString());
+					enableEditableFormFields(arrLAllEditableFields);
 
-					String mn = (tFMN.getValue() == null) ? "" : tFMN
-							.getValue().toString();
-					String occ = (tFOcc.getValue() == null) ? "" : tFOcc
-							.getValue().toString();
-					String pref = (comboPref.getValue() == null) ? ""
-							: comboPref.getValue().toString();
-					int stateid = (comboState.getValue() == null) ? 0 : Integer
-							.valueOf(comboState.getValue().toString());
-					String suff = (comboSuff.getValue() == null) ? ""
-							: comboSuff.getValue().toString();
-					String city = (tFCity.getValue() == null) ? "" : tFCity
-							.getValue().toString();
-					String pcode = (tFPostalCode.getValue() == null) ? ""
-							: tFPostalCode.getValue().toString();
-					String str = (tFStreet.getValue() == null) ? "" : tFStreet
-							.getValue().toString();
-					String prov = (tFProv.getValue() == null) ? "" : tFProv
-							.getValue().toString();
-					Date doe = (dFDoE.getValue() == null) ? new Date()
-							: (Date) dFDoE.getValue();
-					String idno = (tFIDNo.getValue() == null) ? "" : tFIDNo
-							.getValue().toString();
+				} else {
+					if (event.getButton().getId().equals(btnSaveId)) {
+						/*
+						 * 
+						 * 
+						 * 
+						 * 
+						 * commit (save) changes i.e, send changes back to the
+						 * server.
+						 */
 
-					Date doi = (dFDoI.getValue() == null) ? new Date()
-							: (Date) dFDoI.getValue();
+						try {
 
-					String issuer = (tFIssuer.getValue() == null) ? ""
-							: tFIssuer.getValue().toString();
-					String pem = (tFPEmail.getValue() == null) ? "" : tFPEmail
-							.getValue().toString();
-					String pmno = (tFPMNo.getValue() == null) ? "" : tFPMNo
-							.getValue().toString();
-
-					String pamno = (tFPANo.getValue() == null) ? "" : tFPANo
-							.getValue().toString();
-					String sem = (tFSEmail.getValue() == null) ? "" : tFSEmail
-							.getValue().toString();
-					String smno = (tFSMNo.getValue() == null) ? "" : tFSMNo
-							.getValue().toString();
-					String samno = (tFSANo.getValue() == null) ? "" : tFSANo
-							.getValue().toString();
-
-					// IdentificationType idtype =
-					// ProvisioningStub.IdentificationType.Factory
-					// .fromValue(comboIDType.getValue().toString());
-					if (comboIDType.getValue() != null)
-						if (comboIDType.getValue().toString()
-								.equals("Passport Number")) {
-							idtype = ProvisioningStub.IdentificationType.PASSP
-									.toString();
-							System.out.println("idtype>>>>>1 " + idtype);
-						} else if (comboIDType
-								.getValue()
-								.toString()
-								.equals("National Registration Identification Number")) {
-							idtype = ProvisioningStub.IdentificationType.NRIN
-									.toString();
-							System.out.println("idtype>>>>>2 " + idtype);
-						} else if (comboIDType.getValue().toString()
-								.equals("Drivers License Number")) {
-							idtype = ProvisioningStub.IdentificationType.DRLCS
-									.toString();
-							System.out.println("idtype>>>>>3 " + idtype);
-						} else if (comboIDType.getValue().toString()
-								.equals("Identification Card")) {
-							idtype = ProvisioningStub.IdentificationType.IDCD
-									.toString();
-							System.out.println("idtype>>>>>4 " + idtype);
-						} else if (comboIDType.getValue().toString()
-								.equals("Employer Identification Number")) {
-							idtype = ProvisioningStub.IdentificationType.EMID
-									.toString();
+							validateAndSave();
+						} catch (Exception e) {
+							return;
 						}
 
-						else
-							idtype = "";
+						// Remove undo button (btnCancel)
+						btnCancel.setVisible(false);
 
-					System.out.println("idtype>>>>> " + idtype);
+						// Reset all Editable fields to readOnly after saving to
+						// the server
+						disableEditableFields(arrLAllEditableFields);
 
-					System.out.println("idtype>>>>> "
-							+ ProvisioningStub.IdentificationType.PASSP
-									.toString());
+						// Reset btnEdit id to btnIdEdit and caption(icon) to
+						// FontAwesome.EDIT
+						btnEdit.setId(btnEditId);
+						btnEdit.setIcon(FontAwesome.EDIT);
 
-					strResponse = ums.registerUser(bacc, bid, bd, clrno, cur,
-							accEmail, msisdn, profid, secQn, secAns, tAndC, un,
-							country, dob, employer, fn, gender, lang, ln, lgid,
-							mn, occ, pref, stateid, suff, city, pcode, str,
-							prov, doe, idno, idtype, doi, issuer, pem, pmno,
-							pamno, sem, smno, samno);
+						// Reset Edit status to false
+						uDetailsEditStatus = false;
 
-				} catch (Exception e) {
-					e.printStackTrace();
-					Notification.show("Response: ", e.getMessage(),
-							Notification.Type.ERROR_MESSAGE);
-					return;
+					}
 				}
 
-				if (strResponse.contains("completed")
-						&& strResponse.contains("successful"))
-					NotifCustom.show("Message: ", strResponse);
-				else
-					Notification.show("Response: " + strResponse,
-							Notification.Type.ERROR_MESSAGE);
+			}
+		});
+
+		btnCancel.addClickListener(new Button.ClickListener() {
+
+			private static final long serialVersionUID = -8179030387969880920L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				resetForm(arrLAllEditableFields, arrLTfEditableVals,
+						arrLOptEditableVals, arrLComboEditableVals, null,
+						arrLTfEditableVals);
+				btnEdit.setId(btnEditId);
+				btnEdit.setIcon(FontAwesome.EDIT);
+				btnCancel.setVisible(false);
 
 			}
 		});
@@ -2924,6 +2832,168 @@ public class UserDetailsModule {
 			((HorizontalLayout) container).addComponent(lb);
 		else
 			((VerticalLayout) container).addComponent(lb);
+
+	}
+
+	private void validateAndSave() {
+
+		String strResponse = "";
+		String idtype = "";
+		UserManagementService ums = new UserManagementService();
+
+		try {
+
+			try {
+				if (!isValidatorAdded)
+					addValidators();
+				validate();
+
+			} catch (InvalidValueException e) {
+				Notification.show("Message: ", e.getMessage(),
+						Notification.Type.ERROR_MESSAGE);
+				return;
+			}
+
+			String bacc = (tFBAcc.getValue() == null) ? "" : tFBAcc.getValue()
+					.toString();
+			int bid = (comboBID.getValue() == null) ? 0 : Integer
+					.valueOf(comboBID.getValue().toString());
+			String bd = (comboBDomain.getValue() == null) ? "" : comboBDomain
+					.getValue().toString();
+			String clrno = (tFClrNo.getValue() == null) ? "" : tFClrNo
+					.getValue().toString();
+			String cur = (comboCur.getValue() == null) ? "" : comboCur
+					.getValue().toString();
+			String accEmail = (tFAccEmail.getValue() == null) ? "" : tFAccEmail
+					.getValue().toString();
+			String msisdn = (tFMSISDN.getValue() == null) ? "" : tFMSISDN
+					.getValue().toString();
+			int profid = (comboProfile.getValue() == null) ? 0 : Integer
+					.valueOf(comboProfile.getValue().toString());
+			String secQn = (comboSecQn.getValue() == null) ? "" : comboSecQn
+					.getValue().toString();
+			String secAns = (tFSecAns.getValue() == null) ? "" : tFSecAns
+					.getValue().toString();
+			String tAndC = (chcTAndC.getValue() == null) ? "" : chcTAndC
+					.getValue().toString();
+			String un = (tFUN.getValue() == null) ? "" : tFUN.getValue()
+					.toString();
+			int country = (comboCountry.getValue() == null) ? 0 : Integer
+					.valueOf(comboCountry.getValue().toString());
+			Date dob = (dFDoB.getValue() == null) ? new Date() : (Date) dFDoB
+					.getValue();
+			String employer = (tFEmp.getValue() == null) ? "" : tFEmp
+					.getValue().toString();
+			String fn = (tFFN.getValue() == null) ? "" : tFFN.getValue()
+					.toString();
+			String gender = (optSex.getValue() == null) ? "" : optSex
+					.getItemCaption(optSex.getValue()).toString();
+			int lang = (comboLang.getValue() == null) ? 0 : Integer
+					.valueOf(comboLang.getValue().toString());
+			String ln = (tFLN.getValue() == null) ? "" : tFLN.getValue()
+					.toString();
+			int lgid = (comboLG.getValue() == null) ? 0 : Integer
+					.valueOf(comboLG.getValue().toString());
+
+			String mn = (tFMN.getValue() == null) ? "" : tFMN.getValue()
+					.toString();
+			String occ = (tFOcc.getValue() == null) ? "" : tFOcc.getValue()
+					.toString();
+			String pref = (comboPref.getValue() == null) ? "" : comboPref
+					.getValue().toString();
+			int stateid = (comboState.getValue() == null) ? 0 : Integer
+					.valueOf(comboState.getValue().toString());
+			String suff = (comboSuff.getValue() == null) ? "" : comboSuff
+					.getValue().toString();
+			String city = (tFCity.getValue() == null) ? "" : tFCity.getValue()
+					.toString();
+			String pcode = (tFPostalCode.getValue() == null) ? ""
+					: tFPostalCode.getValue().toString();
+			String str = (tFStreet.getValue() == null) ? "" : tFStreet
+					.getValue().toString();
+			String prov = (tFProv.getValue() == null) ? "" : tFProv.getValue()
+					.toString();
+			Date doe = (dFDoE.getValue() == null) ? new Date() : (Date) dFDoE
+					.getValue();
+			String idno = (tFIDNo.getValue() == null) ? "" : tFIDNo.getValue()
+					.toString();
+
+			Date doi = (dFDoI.getValue() == null) ? new Date() : (Date) dFDoI
+					.getValue();
+
+			String issuer = (tFIssuer.getValue() == null) ? "" : tFIssuer
+					.getValue().toString();
+			String pem = (tFPEmail.getValue() == null) ? "" : tFPEmail
+					.getValue().toString();
+			String pmno = (tFPMNo.getValue() == null) ? "" : tFPMNo.getValue()
+					.toString();
+
+			String pamno = (tFPANo.getValue() == null) ? "" : tFPANo.getValue()
+					.toString();
+			String sem = (tFSEmail.getValue() == null) ? "" : tFSEmail
+					.getValue().toString();
+			String smno = (tFSMNo.getValue() == null) ? "" : tFSMNo.getValue()
+					.toString();
+			String samno = (tFSANo.getValue() == null) ? "" : tFSANo.getValue()
+					.toString();
+
+			// IdentificationType idtype =
+			// ProvisioningStub.IdentificationType.Factory
+			// .fromValue(comboIDType.getValue().toString());
+
+			if (comboIDType.getValue() != null)
+				if (comboIDType.getValue().toString().equals("Passport Number")) {
+					idtype = ProvisioningStub.IdentificationType.PASSP
+							.toString();
+					System.out.println("idtype>>>>>1 " + idtype);
+				} else if (comboIDType.getValue().toString()
+						.equals("National Registration Identification Number")) {
+					idtype = ProvisioningStub.IdentificationType.NRIN
+							.toString();
+					System.out.println("idtype>>>>>2 " + idtype);
+				} else if (comboIDType.getValue().toString()
+						.equals("Drivers License Number")) {
+					idtype = ProvisioningStub.IdentificationType.DRLCS
+							.toString();
+					System.out.println("idtype>>>>>3 " + idtype);
+				} else if (comboIDType.getValue().toString()
+						.equals("Identification Card")) {
+					idtype = ProvisioningStub.IdentificationType.IDCD
+							.toString();
+					System.out.println("idtype>>>>>4 " + idtype);
+				} else if (comboIDType.getValue().toString()
+						.equals("Employer Identification Number")) {
+					idtype = ProvisioningStub.IdentificationType.EMID
+							.toString();
+				}
+
+				else
+					idtype = "";
+
+			System.out.println("idtype>>>>> " + idtype);
+
+			System.out.println("idtype>>>>> "
+					+ ProvisioningStub.IdentificationType.PASSP.toString());
+
+			strResponse = ums.registerUser(bacc, bid, bd, clrno, cur, accEmail,
+					msisdn, profid, secQn, secAns, tAndC, un, country, dob,
+					employer, fn, gender, lang, ln, lgid, mn, occ, pref,
+					stateid, suff, city, pcode, str, prov, doe, idno, idtype,
+					doi, issuer, pem, pmno, pamno, sem, smno, samno);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			Notification.show("Response: ", e.getMessage(),
+					Notification.Type.ERROR_MESSAGE);
+			return;
+		}
+
+		if (strResponse.contains("completed")
+				&& strResponse.contains("successful"))
+			NotifCustom.show("Message: ", strResponse);
+		else
+			Notification.show("Response: " + strResponse,
+					Notification.Type.ERROR_MESSAGE);
 
 	}
 
