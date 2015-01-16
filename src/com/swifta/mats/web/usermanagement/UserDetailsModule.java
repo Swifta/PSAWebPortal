@@ -2462,8 +2462,6 @@ public class UserDetailsModule {
 			@Override
 			public void buttonClick(ClickEvent event) {
 
-				Notification.show(event.getButton().getId());
-
 				/*
 				 * Prepare all Editable fields (Entire form) for editing.
 				 */
@@ -2497,7 +2495,13 @@ public class UserDetailsModule {
 						try {
 
 							validateAndSave();
+							// cUPersonalDetails.removeAllComponents();
+							// cUPersonalDetails.addComponent(getUDContainer());
+							// Notification.show("Details successfully saved.",
+							// Notification.Type.WARNING_MESSAGE);
+
 						} catch (Exception e) {
+							Notification.show("Hello");
 							return;
 						}
 
@@ -2506,7 +2510,7 @@ public class UserDetailsModule {
 
 						// Reset all Editable fields to readOnly after saving to
 						// the server
-						disableEditableFields(arrLAllEditableFields);
+						// disableEditableFields(arrLAllEditableFields);
 
 						// Reset btnEdit id to btnIdEdit and caption(icon) to
 						// FontAwesome.EDIT
@@ -2849,9 +2853,7 @@ public class UserDetailsModule {
 				validate();
 
 			} catch (InvalidValueException e) {
-				Notification.show("Message: ", e.getMessage(),
-						Notification.Type.ERROR_MESSAGE);
-				return;
+				throw new InvalidValueException(e.getMessage());
 			}
 
 			String bacc = (tFBAcc.getValue() == null) ? "" : tFBAcc.getValue()
