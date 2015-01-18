@@ -419,7 +419,11 @@ public class UserManagementService {
 			sender.setOptions(options);
 			OMElement result = sender.sendReceive(updateCredentialByAdmin);
 
-			return result.getFirstElement().getText().toString();
+			OMElement firstelement = result.getFirstElement();
+
+			statusMessage = firstelement.getFirstElement().getText();
+
+			return statusMessage;
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

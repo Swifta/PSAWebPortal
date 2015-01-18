@@ -13,7 +13,7 @@ public class Client {
 
 		System.out.println(result);
 
-		// Client.sql();
+		Client.sql();
 
 	}
 
@@ -152,16 +152,16 @@ public class Client {
 	}
 
 	public static void sql() {
-		StringBuilder trxnsql = new StringBuilder();
-		trxnsql.append("select  txn.transactionid as 'Transaction ID', rolejoin.amount as 'Amount', rolejoin.sender as 'Sender', rolejoin.send_onbehalf_of as 'send_onbehalf_of',");
-		trxnsql.append("rolejoin.receiver as 'Receiver', rolejoin.received_onbehalf_of as 'received_onbehalf_of',txnt.name as 'Transaction Type', txn.lastupdate as 'Timestamp', txnst.transactionstatusname as 'Status'");
-		trxnsql.append(" from transactions txn, (select transactionid as transactionid, operatorid as sender, operatorid as send_onbehalf_of, dealerid as receiver, dealerid as received_onbehalf_of,");
-		trxnsql.append("amount as amount from cashtransactions union select transactionid as transactionid,initiatinguserresourceid as sender, realuserresourceid as onbehalf_of_sender,");
-		trxnsql.append("toreceivinguserresource as receiver, (select username from accountholders where accountholderid = torealaccountholderresourceid) as onbehalf_of_receiver, toamount as amount from transactionvalueoperations) rolejoin,");
-		trxnsql.append("transactionstatus txnst, transactiontypes txnt where rolejoin.transactionid = txn.transactionid and txnst.transactionstatusid = txn.transactionstatusid");
-		trxnsql.append(" and txnt.transactiontypeid = txn.transactiontypeid order by rolejoin.transactionid, txn.lastupdate;");
+		StringBuilder agentsql = new StringBuilder();
 
-		System.out.println(trxnsql.toString());
+		agentsql.append("select ach.username, tbl1.cashbalance, tbl2.evaluebalance from accountholders ach,(select actxns.userresourceid as cashacctid,sum(actxns.closingbalance) - sum(actxns.openingbalance) as cashbalance");
+		agentsql.append(" from accounttransactions actxns, transactions trx,accounts acts where actxns.transactionid = trx.transactionid and trx.transactionstatusid = 1");
+		agentsql.append(" and actxns.accountresourceid = acts.accountid and acts.profileid = 12 group by actxns.userresourceid) tbl1,");
+		agentsql.append("(select actxns.userresourceid as evalueacctid,sum(actxns.closingbalance) - sum(actxns.openingbalance) as evaluebalance");
+		agentsql.append(" from accounttransactions actxns, transactions trx,accounts acts where actxns.transactionid = trx.transactionid and trx.transactionstatusid = 1");
+		agentsql.append(" and actxns.accountresourceid = acts.accountid and acts.profileid = 5 group by actxns.userresourceid) tbl2 where ach.accountholderid = tbl1.cashacctid and tbl1.cashacctid = tbl2.evalueacctid");
+
+		System.out.println(agentsql.toString());
 	}
 
 	public static String passreset() throws AxisFault {
