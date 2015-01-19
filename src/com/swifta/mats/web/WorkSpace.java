@@ -35,7 +35,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
-import com.vaadin.ui.Embedded;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -52,7 +51,6 @@ public class WorkSpace extends VerticalLayout implements View,
 	VerticalLayout cwsmu;
 	VerticalLayout cwsmp;
 	VerticalLayout dashboard3;
-	private Embedded emb;
 	private Button btnLogout;
 	private boolean isCreteriaChanged = false;
 	Label la = new Label("Filter by: ");
@@ -128,6 +126,7 @@ public class WorkSpace extends VerticalLayout implements View,
 
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void enter(ViewChangeEvent event) {
 		// Notification.show("In WorkSpace");
@@ -159,7 +158,6 @@ public class WorkSpace extends VerticalLayout implements View,
 		VerticalLayout dashboard1 = new VerticalLayout();
 		dashboard1.setImmediate(true);
 		dashboard1.setCaption("Test1");
-		Dashboard dash = new Dashboard();
 		PiechartDash pie = new PiechartDash();
 		pi = new HorizontalLayout();
 		HorizontalLayout lut = new HorizontalLayout();
