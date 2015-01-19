@@ -154,9 +154,7 @@ public class UserDetailsModule {
 	// private ArrayList<String> arrLDfEditableVals;
 	private boolean boolEditStatus = false;
 	private HorizontalLayout cBtnEditCancel;
-
-	private Button btnE = null;
-	private Button btnC = null;
+	UserDetailsBackEnd bee;
 
 	public UserDetailsModule() {
 
@@ -254,9 +252,6 @@ public class UserDetailsModule {
 				cBtnEditCancel.setSizeUndefined();
 				cBtnEditCancel.addComponent(btnEdit);
 
-				btnE = btnEdit;
-				btnC = btnCancel;
-
 				String strCurUserAction = (String) UI
 						.getCurrent()
 						.getSession()
@@ -318,8 +313,6 @@ public class UserDetailsModule {
 			ArrayList<String> arrLEV) {
 
 		int iTf = 0;
-		int iOpt = 0;
-		int iCombo = 0;
 		uDetailsEditStatus = false;
 		// Notification.show(Integer.toString(arrTfVals.length)+" I have");
 		for (iTf = 0; iTf < lAllEditableFields.size(); iTf++) {
@@ -393,7 +386,7 @@ public class UserDetailsModule {
 	}
 
 	public Map<String, String[]> getUDetails(String strTbName, String strUID) {
-		UserDetailsBackEnd bee = new UserDetailsBackEnd();
+		bee = new UserDetailsBackEnd();
 		Map<String, String[]> mappedData = bee.getUserPersonalInfo(strTbName,
 				strUID);
 		return mappedData;
@@ -1075,9 +1068,14 @@ public class UserDetailsModule {
 		String strCHeader;
 
 		if (boolEditStatus) {
-			strCHeader = "Edit Details of Livepwndz";
+			strCHeader = "Edit Details of "
+					+ UI.getCurrent().getSession()
+							.getAttribute(UserDetailsModule.SESSION_UDM_UNAME);
 		} else {
-			strCHeader = "Showing Details of Livepwndz";
+			strCHeader = "Showing Details of "
+					+ UI.getCurrent().getSession()
+							.getAttribute(UserDetailsModule.SESSION_UDM_UNAME);
+
 		}
 
 		Label lbCHeader = new Label(strCHeader);
@@ -1125,17 +1123,17 @@ public class UserDetailsModule {
 		btnPersonal.setStyleName("btn_tab_like btn_tab_like_active");
 
 		BtnTabLike btnAccount = new BtnTabLike("Account", null);
-		BtnTabLike btnAuth = new BtnTabLike("Authentication", null);
+		// BtnTabLike btnAuth = new BtnTabLike("Authentication", null);
 		BtnTabLike btnLog = new BtnTabLike("Log", null);
 		cManageAndAddTab.addComponent(btnPersonal);
 		cManageAndAddTab.addComponent(btnAccount);
-		cManageAndAddTab.addComponent(btnAuth);
+		// cManageAndAddTab.addComponent(btnAuth);
 		cManageAndAddTab.addComponent(btnLog);
 
 		final ArrayList<BtnTabLike> arrLTabBtns = new ArrayList<BtnTabLike>();
 		arrLTabBtns.add(btnPersonal);
 		arrLTabBtns.add(btnAccount);
-		arrLTabBtns.add(btnAuth);
+		// arrLTabBtns.add(btnAuth);
 		arrLTabBtns.add(btnLog);
 
 		btnPersonal.setEnabled(false);
@@ -1161,11 +1159,11 @@ public class UserDetailsModule {
 						ManageUserModule.SESSION_VAR_UMANAGE_USER_ACTIONS,
 						SESSION_VAR_UDM_ACC, null }));
 
-		btnAuth.addClickListener(new BtnTabLikeClickListener(false, false,
-				arrLSubTabs, arrLTabBtns, null, null, "account_change_log",
-				"001", hasOp, boolEditStatus, arrSessions, new String[] {
-						ManageUserModule.SESSION_VAR_UMANAGE_USER_ACTIONS,
-						SESSION_VAR_UDM_AUTH, null }));
+		// btnAuth.addClickListener(new BtnTabLikeClickListener(false, false,
+		// arrLSubTabs, arrLTabBtns, null, null, "account_change_log",
+		// "001", hasOp, boolEditStatus, arrSessions, new String[] {
+		// ManageUserModule.SESSION_VAR_UMANAGE_USER_ACTIONS,
+		// SESSION_VAR_UDM_AUTH, null }));
 
 		cManageUserMenu.addComponent(cManageAndAddTab);
 		cManageUserMenu.addComponent(cManUserSubMenu);
@@ -1261,11 +1259,10 @@ public class UserDetailsModule {
 				.getAttribute(SESSION_UDM_ACTION_EDIT_DETAILS);
 		boolean hasOp = false;
 
-		if (strTbName.equals("account") || strTbName.equals("auth")) {
-			hasOp = true;
-		} else {
-			hasOp = false;
-		}
+		/*
+		 * if (strTbName.equals("account") || strTbName.equals("auth")) { hasOp
+		 * = true; } else { hasOp = false; }
+		 */
 
 		if (strUDM == null) {
 			cUDetails = udm.getUserDetailsContainer(strTbName, strUID, hasOp,
@@ -1299,68 +1296,28 @@ public class UserDetailsModule {
 			ArrayList<String> arrLComboEditableVals,
 			ArrayList<String> arrLDfEditableVals,
 			HashMap<String, Object> mapSlaveFields) {
-		if (!strTbName.equals("personal")) {
-			int isReadOnlyTf = 0;
-			int isReadOnlyOpt = 1;
-			int isReadOnlyCombo = -1;
 
-			// set TextField(tf) form objects
-			if (arrTfVals != null) {
-				if (strCurUser != null) {
-					String strCurUserAction = (String) UI
-							.getCurrent()
-							.getSession()
-							.getAttribute(
-									WorkSpaceManageProfile.SESSION_WSMP_CUR_ACTION);
-					if (strCurUserAction
-							.equals(WorkSpaceManageProfile.SESSION_VAR_WSMP_AUTH)) {
-						setCurUserTfs(isReadOnlyTf, arrLAllFormFields,
-								arrLAllEditableFields, arrLTfEditableVals);
-					} else {
-						setTfs(isReadOnlyTf, arrLAllFormFields,
-								arrLAllEditableFields, arrLTfEditableVals);
-					}
-
-				} else {
-					setTfs(isReadOnlyTf, arrLAllFormFields,
-							arrLAllEditableFields, arrLTfEditableVals);
-				}
-			}
-
-			// Set OptionGroup(opt) form objects
-			if (arrOptVals != null) {
-
-				setOpts(strTbName, strUID, isReadOnlyOpt, arrLAllFormFields,
-						arrLAllEditableFields, arrLOptEditableVals,
-						mapSlaveFields);
-
-			}
-			// Set ComboBox(combo) form objects
-			if (arrComboVals != null) {
-				setCombos(strTbName, strUID, isReadOnlyCombo,
-						arrLAllFormFields, arrLAllEditableFields,
-						arrLComboEditableVals, mapSlaveFields);
-			} //
-				// Set InlineDateField(dF) form objects
-			if (arrDfVals != null) {
-				setDfs(isReadOnlyCombo, arrLAllFormFields,
-						arrLAllEditableFields, arrLDfEditableVals);
-			}
-
-			return;
-		}
 		if (boolEditStatus)
 			cUPersonalDetails.addComponent(getEUDContainer());
 		else
-			cUPersonalDetails.addComponent(getUDContainer());
+			cUPersonalDetails.addComponent(getUDContainer(strTbName));
 
 	}
 
-	private VerticalLayout getUDContainer() {
+	private VerticalLayout getUDContainer(String strTbName) {
 
-		String strProf = "MATS_ADMIN_USER_PROFILE";
+		Map<String, String> hm = bee.getUD(""
+				+ UI.getCurrent().getSession()
+						.getAttribute(UserDetailsModule.SESSION_UDM_UNAME));
+
+		if (strTbName.equals("account")) {
+			return getADC(strTbName, hm);
+		}
+
+		String strProf = hm.get("Profile Type");
 
 		VerticalLayout cAgentInfo = new VerticalLayout();
+		cAgentInfo.setMargin(new MarginInfo(true, false, false, false));
 
 		VerticalLayout cBasic = new VerticalLayout();
 		cBasic.setSpacing(true);
@@ -1368,17 +1325,17 @@ public class UserDetailsModule {
 		Label lbB = new Label("General");
 		lbB.setStyleName("lb_frm_add_user");
 		cBasic.addComponent(lbB);
-
-		TextField tF = new TextField("First Name");
+		String cap = "First Name";
+		TextField tF = new TextField(cap);
 		tFFN = tF;
 		tFFN.setRequired(true);
-		tF.setValue("Paul");
+		tF.setValue(hm.get(cap));
 
-		addDatum("Username", "Livepwndz", cBasic);
+		addDatum("Username", hm.get("Username"), cBasic);
 		addDatum("Profile", strProf, cBasic);
 
-		addDatum("Full Name", "Mr. Paul Pwndz Kigozi", cBasic);
-		addDatum("First Name", "Paul", cBasic);
+		addDatum("Full Name", hm.get("Full Name"), cBasic);
+		addDatum("First Name", hm.get("First Name"), cBasic);
 
 		// cBasic.addComponent(tF);
 
@@ -1387,7 +1344,7 @@ public class UserDetailsModule {
 		tF.setValue("Pwndz");
 		tFMN = tF;
 		tFMN.setRequired(true);
-		addDatum("Middle Name", "Pwndz", cBasic);
+		addDatum("Middle Name", hm.get("Middle Name"), cBasic);
 		// cBasic.addComponent(lb);
 
 		tF = new TextField("Last Name");
@@ -1395,7 +1352,7 @@ public class UserDetailsModule {
 		tFLN = tF;
 		tFLN.setRequired(true);
 
-		addDatum("Last Name", "Kigozi", cBasic);
+		addDatum("Last Name", hm.get("Last Name"), cBasic);
 
 		OptionGroup opt = new OptionGroup("Gender");
 
@@ -1408,7 +1365,7 @@ public class UserDetailsModule {
 		optSex = opt;
 		optSex.setRequired(true);
 
-		addDatum("Gender", "Male", cBasic);
+		addDatum("Gender", hm.get("Gender"), cBasic);
 
 		ComboBox combo = new ComboBox("Prefix");
 		combo.addItem("Mr. ");
@@ -1452,7 +1409,7 @@ public class UserDetailsModule {
 		tFOcc = tF;
 		tFOcc.setRequired(true);
 
-		addDatum("Occupation", "Software Engineer", cBasic);
+		addDatum("Occupation", hm.get("Occupation"), cBasic);
 
 		// cBasic.addComponent(lb);
 		// cBasic.addComponent(tF);
@@ -1461,7 +1418,7 @@ public class UserDetailsModule {
 		tF.setValue("Swifta");
 		tFEmp = tF;
 
-		addDatum("Employer", "Swifta", cBasic);
+		addDatum("Employer", hm.get("Employer"), cBasic);
 
 		// cBasic.addComponent(lb);
 		// cBasic.addComponent(tF);
@@ -1472,7 +1429,7 @@ public class UserDetailsModule {
 		dF.setValue(cal.getTime());
 		dFDoB = dF;
 
-		addDatum("DoB", "12/11/1988", cBasic);
+		addDatum("Date of Birth", hm.get("Date of Birth"), cBasic);
 		// cBasic.addComponent(dF);
 
 		combo = new ComboBox("Country");
@@ -1481,7 +1438,7 @@ public class UserDetailsModule {
 		comboCountry.setRequired(true);
 
 		// cBasic.addComponent(combo);
-		addDatum("Country", "Uganda", cBasic);
+		addDatum("Country", hm.get("Country"), cBasic);
 
 		combo = new ComboBox("State");
 		comboState = combo;
@@ -1489,7 +1446,7 @@ public class UserDetailsModule {
 		comboState.setNullSelectionAllowed(false);
 
 		// cBasic.addComponent(combo);
-		addDatum("State", "Central", cBasic);
+		addDatum("State", hm.get("State"), cBasic);
 
 		combo = new ComboBox("Local Government");
 
@@ -1501,7 +1458,7 @@ public class UserDetailsModule {
 
 		// cBasic.addComponent(lb);
 
-		addDatum("Local Government", "KCCA", cBasic);
+		addDatum("Local Government", hm.get("Local Government"), cBasic);
 
 		VerticalLayout cC = new VerticalLayout();
 
@@ -1528,14 +1485,14 @@ public class UserDetailsModule {
 		cCompany.addComponent(lbC);
 		cCompany.setSpacing(true);
 
-		addDatum("ID Type", "Passport Number", cCompany);
+		addDatum("ID Type", hm.get("ID Type"), cCompany);
 
 		tF = new TextField("ID No.");
 		tF.setValue("001");
 		tFIDNo = tF;
 		tFIDNo.setRequired(true);
 
-		addDatum("ID No.", "001", cCompany);
+		addDatum("ID No.", hm.get("ID No."), cCompany);
 		// cCompany.addComponent(lb);
 
 		tF = new TextField("Issuer");
@@ -1543,7 +1500,7 @@ public class UserDetailsModule {
 		tFIssuer.setValue("Republic of Uganda");
 
 		// cCompany.addComponent(tF);
-		addDatum("Issuer", "Republic of Uganda", cCompany);
+		addDatum("Issuer", hm.get("Issuer"), cCompany);
 
 		dF = new PopupDateField("Issue Date");
 		// cal = Calendar.getInstance();
@@ -1552,7 +1509,7 @@ public class UserDetailsModule {
 		dFDoI = dF;
 		// cCompany.addComponent(dF);
 
-		addDatum("Issue Date", "12/12/12", cCompany);
+		addDatum("Issue Date", hm.get("Issue Date"), cCompany);
 
 		dF = new PopupDateField("Expiry Date");
 		// cal = Calendar.getInstance();
@@ -1564,7 +1521,7 @@ public class UserDetailsModule {
 		dFDoE.setImmediate(true);
 
 		// cCompany.addComponent(dF);
-		addDatum("Expirty Date", "12/12/16", cCompany);
+		addDatum("Expiry Date", hm.get("Expiry Date"), cCompany);
 		cC.addComponent(cCompany);
 
 		VerticalLayout pC = new VerticalLayout();
@@ -1581,21 +1538,21 @@ public class UserDetailsModule {
 		tFPMNo = tF;
 
 		// pC.addComponent(tF);
-		addDatum("Mobile Phone No.", "+256704191152", pC);
+		addDatum("Mobile Phone No.", hm.get("P-Mobile Phone No."), pC);
 
 		tF = new TextField("Alt. Phone No.");
 		tF.setValue("+1704191152");
 		tFPANo = tF;
 		// pC.addComponent(tF);
 
-		addDatum("Alt. Phone No.", "+1704191152", pC);
+		addDatum("Alt. Phone No.", hm.get("P-Alt. Phone No."), pC);
 
 		tF = new TextField("Email Address");
 		tF.setValue("pwndz172@gmail.com");
 		tFPEmail = tF;
 		// pC.addComponent(tF);
 
-		addDatum("Email Address", "pwndz172@gmail.com", pC);
+		addDatum("Email Address", hm.get("Email"), pC);
 
 		cC.addComponent(pC);
 
@@ -1613,20 +1570,22 @@ public class UserDetailsModule {
 		tFSMNo = tF;
 		// sC.addComponent(tF);
 
-		addDatum("Mobile Phone No.", "+256704191152", sC);
+		addDatum("Mobile Phone No.", hm.get("S-Mobile Phone No."), sC);
 
 		tF = new TextField("Alt. Phone No.");
 		tF.setValue("+1804191152");
 		tFSANo = tF;
+
 		// sC.addComponent(tF);
-		addDatum("Alt. Phone No.", "+1704191152", sC);
+
+		addDatum("Alt. Phone No.", hm.get("S-Alt. Phone No."), sC);
 
 		tF = new TextField("E-mail Address");
 		tF.setValue("pkigozi@swifta.com");
 		tFSEmail = tF;
 		// sC.addComponent(tF);
 
-		addDatum("Email Address", "pkigozi@swifta.com", sC);
+		addDatum("Email Address", hm.get("Email"), sC);
 
 		cC.addComponent(sC);
 
@@ -1645,30 +1604,31 @@ public class UserDetailsModule {
 		tFStreet.setRequired(true);
 		// physicalC.addComponent(tF);
 
-		addDatum("Street", "Yusuf Lule Rd.", physicalC);
+		addDatum("Street", hm.get("Street"), physicalC);
 
 		tF = new TextField("Postal Code");
 		tF.setValue("23");
 		tFPostalCode = tF;
 		// physicalC.addComponent(tF);
 
-		addDatum("Postal Code", "23", physicalC);
+		addDatum("Postal Code", hm.get("Postal Code"), physicalC);
 
 		tF = new TextField("City");
 		tF.setValue("Kampala");
 		tFCity = tF;
 		tFCity.setRequired(true);
 		// physicalC.addComponent(tF);
-		addDatum("City", "Kampala", physicalC);
+		addDatum("City", hm.get("City"), physicalC);
 
 		tF = new TextField("Province");
 		tF.setValue("Central");
 		tFProv = tF;
 		// physicalC.addComponent(tF);
 
-		addDatum("Province", "Central", physicalC);
+		addDatum("Province", hm.get("Province"), physicalC);
 
 		cC.addComponent(physicalC);
+		cC.addComponent(cBtnEditCancel);
 
 		// TODO Need to copy this for accounts
 
@@ -1749,6 +1709,104 @@ public class UserDetailsModule {
 		cAgentInfo.addComponent(cBAndCAndAcc);
 
 		return cAgentInfo;
+	}
+
+	private VerticalLayout getADC(String strTbName, Map<String, String> hm) {
+
+		// Notification.show(strTbName);
+
+		VerticalLayout cAgentInfo = new VerticalLayout();
+		cAgentInfo.setMargin(new MarginInfo(true, false, false, false));
+
+		VerticalLayout cAcc = new VerticalLayout();
+		Label lbAcc = new Label("Account");
+		lbAcc.setStyleName("lb_frm_add_user");
+		cAcc.addComponent(lbAcc);
+		ComboBox comboHierarchy = null;
+
+		comboHierarchy = new ComboBox("Profile");
+
+		final VerticalLayout cLBody = new VerticalLayout();
+
+		comboHierarchy.addItem(1);
+		comboHierarchy.setItemCaption(1, "MATS_ADMIN_USER_PROFILE");
+		comboHierarchy.select(1);
+		comboProfile = comboHierarchy;
+		comboProfile.setRequired(true);
+		// cAcc.addComponent(comboHierarchy);
+
+		addDatum("Profile", hm.get("Profile Type"), cLBody);
+
+		TextField tF = new TextField("Username");
+		tF.setValue("Livepwndz");
+		tFUN = tF;
+		tFUN.setRequired(true); // cLBody.addComponent(tF);
+
+		addDatum("Username", "Livepwndz", cLBody);
+
+		tF = new TextField("MSISDN");
+		tF.setValue("+256774191152");
+		tFMSISDN = tF;
+		tFMSISDN.setRequired(true); // cLBody.addComponent(tF);
+
+		addDatum("MSISDN", hm.get("MSISDN"), cLBody);
+
+		tF = new TextField("PIN"); // / cLBody.addComponent(tF);
+
+		tF = new TextField("Email");
+		tFAccEmail = tF;
+		tFAccEmail.setRequired(true);
+		tFAccEmail.setValue("ppounds1@gmail.com"); //
+		// cLBody.addComponent(tF);
+		addDatum("Email", hm.get("Email"), cLBody);
+
+		combo = new ComboBox("Bank Domain");
+		combo.addItem("Stanbic Bank");
+		combo.select("Stanbic Bank");
+		comboBDomain = combo; //
+		// cLBody.addComponent(combo);
+		addDatum("Bank Domain", hm.get("Bank"), cLBody);
+
+		combo = new ComboBox("Bank Code ID");
+		combo.addItem("001");
+		combo.select("001");
+		comboBID = combo; // cLBody.addComponent(combo);
+		addDatum("Bank Code ID", hm.get("Bank Code"), cLBody);
+
+		tF = new TextField("Bank Account");
+		tF.setValue("00232333452315");
+		tFBAcc = tF; // tFBAcc.setValidationVisible(true); //
+		tFBAcc.addValidator(new NoNull()); // cLBody.addComponent(tF);
+		addDatum("Bank Account", hm.get("Bank Account"), cLBody);
+
+		combo.addItem(1);
+		combo.setItemCaption(1, "US Dollars");
+		combo.select(1);
+		comboCur = combo; // cLBody.addComponent(combo);
+
+		addDatum("Currency", hm.get("Currency"), cLBody);
+
+		tF = new TextField("Clearing Number");
+		tF.setValue("00212");
+		tFClrNo = tF; // cLBody.addComponent(tF);
+		addDatum("Clearing No. ", hm.get("Clearing No."), cLBody);
+
+		String strNameCap = "Username";
+
+		tF = new TextField(strNameCap);
+
+		HorizontalLayout cAccBody = new HorizontalLayout();
+		cAccBody.addComponent(cLBody);
+
+		cLBody.setStyleName("c_body_visible");
+
+		cAcc.addComponent(cAccBody);
+		cAgentInfo.addComponent(cAcc);
+
+		// cBAndCAndAcc.addComponent(cAcc);
+
+		return cAgentInfo;
+
 	}
 
 	private VerticalLayout getEUDContainer() {
@@ -2501,7 +2559,7 @@ public class UserDetailsModule {
 							// Notification.Type.WARNING_MESSAGE);
 
 						} catch (Exception e) {
-							Notification.show("Hello");
+							// Notification.show("Hello");
 							return;
 						}
 

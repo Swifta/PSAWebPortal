@@ -74,10 +74,6 @@ public class MatsWebPortalUI extends UI {
 		getNavigator().addView(Login.LOGIN, Login.class);
 		getNavigator().addView(WorkSpace.WORK_SPACE, WorkSpace.class);
 
-		// getNavigator().addView(WorkSpaceManageUser.WORK_AREA,
-		// WorkSpaceManageUser.class);
-
-		// Setting Default Sessions and Session Variable
 		UI.getCurrent()
 				.getSession()
 				.setAttribute(WorkSpaceManageUser.SESSION_WORK_AREA,
