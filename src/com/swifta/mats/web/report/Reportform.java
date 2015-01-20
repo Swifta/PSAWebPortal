@@ -6,6 +6,8 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -16,9 +18,12 @@ import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.data.Validator;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.data.util.filter.And;
 import com.vaadin.data.util.filter.Compare;
+import com.vaadin.data.util.filter.Compare.GreaterOrEqual;
+import com.vaadin.data.util.filter.Compare.LessOrEqual;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.server.FontAwesome;
@@ -32,6 +37,7 @@ import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -59,6 +65,9 @@ public class Reportform extends VerticalLayout {
 	private boolean isPopupShowing = false;
 	private boolean isTxnReport = false;
 	ComboBox reportType;
+	boolean isCriteriaChanged = false;
+	private PopupDateField dat = new PopupDateField("From: ");
+	private PopupDateField dat2 = new PopupDateField("To: ");
 
 	// PagedTableContainerCustom container = new
 	// PagedTableContainerCustom(contain);
@@ -66,6 +75,29 @@ public class Reportform extends VerticalLayout {
 	// contain2);
 	// PagedTableContainerCustom container3 = new PagedTableContainerCustom(
 	// contain3);
+
+	private class ValidateRange implements Validator {
+		private static final long serialVersionUID = -5454180295673067279L;
+		DateField start;
+		DateField end;
+
+		ValidateRange(DateField dat, DateField dat2) {
+			this.start = dat;
+			this.end = dat2;
+		}
+
+		@Override
+		public void validate(Object value) throws InvalidValueException {
+			Date s = start.getValue();
+			Date e = end.getValue();
+
+			if (s != null && e != null)
+				if (s.compareTo(e) > 0) {
+					throw new InvalidValueException("Invalid date range");
+				}
+		}
+
+	}
 
 	public void reportformat() {
 		// Float Management
@@ -93,6 +125,14 @@ public class Reportform extends VerticalLayout {
 		reportType.setInputPrompt("Select Report Type");
 
 		VerticalLayout cF = new VerticalLayout();
+		HorizontalLayout cD = new HorizontalLayout();
+		cD.setSpacing(true);
+		cF.addComponent(cD);
+		// dat.setDateFormat("mm-dd-yy");
+
+		cD.addComponent(dat);
+		cD.addComponent(dat2);
+
 		final HorizontalLayout cByAndVal = new HorizontalLayout();
 		cF.addComponent(cByAndVal);
 
@@ -111,6 +151,58 @@ public class Reportform extends VerticalLayout {
 		comboVal = new ComboBox("Select " + comboF.getValue());
 		cByAndVal.addComponent(comboVal);
 		comboVal.setVisible(false);
+
+		dat.addValidator(new ValidateRange(dat, dat2));
+		dat2.addValidator(new ValidateRange(dat, dat2));
+		dat.addValueChangeListener(new ValueChangeListener() {
+
+			private static final long serialVersionUID = -1020854682753361028L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				dat.setComponentError(null);
+				dat2.setComponentError(null);
+				isCriteriaChanged = true;
+
+			}
+
+		});
+
+		dat2.addValueChangeListener(new ValueChangeListener() {
+
+			private static final long serialVersionUID = -1020854682753361028L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				dat.setComponentError(null);
+				dat2.setComponentError(null);
+				isCriteriaChanged = true;
+				try {
+					dat2.validate();
+
+					Date start = dat.getValue();
+					Date end = dat2.getValue();
+					Filter dfilter = null;
+
+					if (start != null && end != null) {
+
+						ds.removeAllContainerFilters();
+						dfilter = new And(new GreaterOrEqual("Date", start),
+								new LessOrEqual("Date", end));
+						ds.addContainerFilter(dfilter);
+					}
+
+				} catch (Exception e) {
+
+					Notification.show("Error occured",
+							Notification.Type.ERROR_MESSAGE);
+					e.printStackTrace();
+
+				}
+
+			}
+
+		});
 
 		comboF.addValueChangeListener(new ValueChangeListener() {
 			private static final long serialVersionUID = 4792221698725213906L;
@@ -145,15 +237,12 @@ public class Reportform extends VerticalLayout {
 			 */
 			private static final long serialVersionUID = 1L;
 
-			@SuppressWarnings("unchecked")
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				if (reportType.getValue() == null)
 					return;
 				loadData(reportType.getValue());
 			}
-			// searchform.removeAllComponents();
-			// searchform.addComponent(SettlementForm());
 
 		});
 
@@ -178,6 +267,9 @@ public class Reportform extends VerticalLayout {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
+
+				if (table == null || table.size() == 0)
+					return;
 
 				ExcelExport excelExport = new ExcelExport(table);
 				excelExport.setReportTitle("PSA Report");
@@ -443,11 +535,10 @@ public class Reportform extends VerticalLayout {
 			// String.class, "");
 			// container
 			// .addContainerProperty("Agent ID", String.class, "");
+			container.addContainerProperty("Agent ID", String.class, "");
 			container.addContainerProperty("Dealer ID", String.class, "");
-			container.addContainerProperty("Dealer's Cash Balance (\u20A6)",
-					String.class, "");
-			container.addContainerProperty("Dealer's E-value Balance (\u20A6)",
-					String.class, "");
+			container.addContainerProperty("Amount (\u20A6)", String.class, "");
+			container.addContainerProperty("Date", Date.class, "");
 
 			String Uname = "psatestuser";
 			String Pword = "psatest_2015";
@@ -475,12 +566,12 @@ public class Reportform extends VerticalLayout {
 
 				StringBuilder agentsql = new StringBuilder();
 
-				agentsql.append("select ach.username, tbl1.cashbalance, tbl2.evaluebalance from accountholders ach,(select actxns.userresourceid as cashacctid,sum(actxns.closingbalance) - sum(actxns.openingbalance) as cashbalance");
-				agentsql.append(" from accounttransactions actxns, transactions trx,accounts acts where actxns.transactionid = trx.transactionid and trx.transactionstatusid = 1");
-				agentsql.append(" and actxns.accountresourceid = acts.accountid and acts.profileid = 12 group by actxns.userresourceid) tbl1,");
-				agentsql.append("(select actxns.userresourceid as evalueacctid,sum(actxns.closingbalance) - sum(actxns.openingbalance) as evaluebalance");
-				agentsql.append(" from accounttransactions actxns, transactions trx,accounts acts where actxns.transactionid = trx.transactionid and trx.transactionstatusid = 1");
-				agentsql.append(" and actxns.accountresourceid = acts.accountid and acts.profileid = 5 group by actxns.userresourceid) tbl2 where ach.accountholderid = tbl1.cashacctid and tbl1.cashacctid = tbl2.evalueacctid");
+				agentsql.append("select cast(tbl1.datecreated as DATE) as 'date', ctrs.operatorid as aid, ach.username as did, tbl1.cashbalance as ");
+				agentsql.append(" amount from accountholders ach,( select actxns.userresourceid as cashacctid, ");
+				agentsql.append(" sum(actxns.closingbalance) - sum(actxns.openingbalance) as cashbalance, actxns.datecreated ");
+				agentsql.append("as datecreated, acts.profileid as profileid, actxns.transactionid as transactionid from");
+				agentsql.append(" accounttransactions actxns, transactions trx,accounts acts where actxns.transactionid = trx.transactionid and trx.transactionstatusid = 1 and trx.transactiontypeid=1 and  actxns.accountresourceid = acts.accountid and ");
+				agentsql.append(" acts.profileid = 12 group by CAST(actxns.datecreated as DATE),actxns.userresourceid) tbl1 join cashtransactions ctrs on ctrs.transactionid = tbl1.transactionid where ach.profileid = 11 and tbl1.cashacctid = ach.accountholderid");
 
 				// rs = stmt
 				// .executeQuery("SELECT count(amount) as 'transactioncount',operatorid,format(sum(amount / 100),2) as 'amount',CAST(createdon as DATE) as 'created',dealerid FROM cashtransactions group by operatorid,CAST(createdon as DATE),dealerid order by created,operatorid");
@@ -503,18 +594,40 @@ public class Reportform extends VerticalLayout {
 					// .getItemProperty("Agent ID");
 					Property<String> tdPropertydealerid = trItem
 							.getItemProperty("Dealer ID");
-					Property<String> tdPropertycashamount = trItem
-							.getItemProperty("Dealer's Cash Balance (\u20A6)");
+					Property<String> tdPropertyagentid = trItem
+							.getItemProperty("Agent ID");
 					Property<String> tdPropertyevalueamount = trItem
-							.getItemProperty("Dealer's E-value Balance (\u20A6)");
+							.getItemProperty("Amount (\u20A6)");
+
+					Property<Date> tdPropertydate = trItem
+							.getItemProperty("Date");
 
 					// String agentid = rs.getString("operatorid");
-					String cashamount = rs.getString("cashbalance");
-					String evalueamount = rs.getString("evaluebalance");
+					String aid = rs.getString("aid");
+					String did = rs.getString("did");
 					// String createdon = rs.getString("created");
 					// String transactionstatusid = rs
 					// .getString("transactionstatusid");
-					String dealerid = rs.getString("username");
+					String amt = rs.getString("amount");
+
+					// Calendar cal = Calendar.getIns
+
+					String d = rs.getString("date");
+					// Notification.show(date);
+					String[] arrD = d.split("-");
+					Calendar cal = Calendar.getInstance();
+					cal.set(Calendar.HOUR_OF_DAY, 0);
+					cal.set(Calendar.MINUTE, 0);
+					cal.set(Calendar.SECOND, 0);
+					cal.set(Calendar.MILLISECOND, 0);
+					cal.set(Integer.valueOf(arrD[0]), Integer.valueOf(arrD[1]),
+							Integer.valueOf(arrD[2]));
+
+					// cal.set
+
+					Date date = cal.getTime();
+
+					// date.get
 
 					// if (!ht.containsKey("Agent ID")) {
 					// HashSet<String> arrL = new HashSet<>();
@@ -526,18 +639,29 @@ public class Reportform extends VerticalLayout {
 
 					if (!ht.containsKey("Dealer ID")) {
 						HashSet<String> arrL = new HashSet<>();
-						arrL.add(dealerid);
+						arrL.add(did);
 						ht.put("Dealer ID", arrL);
 					} else {
-						ht.get("Dealer ID").add(dealerid);
+						ht.get("Dealer ID").add(did);
 					}
+
+					if (!ht.containsKey("Agent ID")) {
+						HashSet<String> arrL = new HashSet<>();
+						arrL.add(aid);
+						ht.put("Agent ID", arrL);
+					} else {
+						ht.get("Agent ID").add(aid);
+					}
+
+					// DateFormat.
 
 					tdPropertyserial.setValue(String.valueOf(x));
 					// tdPropertytransactiondate.setValue(createdon);
 					// tdPropertyagentid.setValue(agentid);
-					tdPropertydealerid.setValue(dealerid);
-					tdPropertycashamount.setValue(cashamount);
-					tdPropertyevalueamount.setValue(evalueamount);
+					tdPropertydealerid.setValue(did);
+					tdPropertyagentid.setValue(aid);
+					tdPropertyevalueamount.setValue(amt);
+					tdPropertydate.setValue(date);
 
 				}
 				conn.close();
