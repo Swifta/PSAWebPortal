@@ -1727,6 +1727,7 @@ public class UserDetailsModule {
 		comboHierarchy = new ComboBox("Profile");
 
 		final VerticalLayout cLBody = new VerticalLayout();
+		cLBody.setSpacing(true);
 
 		comboHierarchy.addItem(1);
 		comboHierarchy.setItemCaption(1, "MATS_ADMIN_USER_PROFILE");
@@ -1742,7 +1743,7 @@ public class UserDetailsModule {
 		tFUN = tF;
 		tFUN.setRequired(true); // cLBody.addComponent(tF);
 
-		addDatum("Username", "Livepwndz", cLBody);
+		addDatum("Username", hm.get("Username"), cLBody);
 
 		tF = new TextField("MSISDN");
 		tF.setValue("+256774191152");
@@ -1797,6 +1798,7 @@ public class UserDetailsModule {
 
 		HorizontalLayout cAccBody = new HorizontalLayout();
 		cAccBody.addComponent(cLBody);
+		cLBody.addComponent(cBtnEditCancel);
 
 		cLBody.setStyleName("c_body_visible");
 
