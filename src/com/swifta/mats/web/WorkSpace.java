@@ -52,7 +52,7 @@ public class WorkSpace extends VerticalLayout implements View,
 	VerticalLayout cwsmp;
 	VerticalLayout dashboard3;
 	private Button btnLogout;
-	private boolean isCreteriaChanged = false;
+	private boolean isCriteriaChanged = false;
 	Label la = new Label("Filter by: ");
 	ComboBox comboGF = new ComboBox("Please select...");
 	DateField dat = new DateField();
@@ -81,7 +81,7 @@ public class WorkSpace extends VerticalLayout implements View,
 			public void valueChange(ValueChangeEvent event) {
 				dat.setComponentError(null);
 				dat2.setComponentError(null);
-				isCreteriaChanged = true;
+				isCriteriaChanged = true;
 
 			}
 
@@ -95,7 +95,7 @@ public class WorkSpace extends VerticalLayout implements View,
 			public void valueChange(ValueChangeEvent event) {
 				dat.setComponentError(null);
 				dat2.setComponentError(null);
-				isCreteriaChanged = true;
+				isCriteriaChanged = true;
 
 			}
 
@@ -190,10 +190,10 @@ public class WorkSpace extends VerticalLayout implements View,
 			@Override
 			public void buttonClick(ClickEvent event) {
 
-				if (!isCreteriaChanged)
+				if (!isCriteriaChanged)
 					return;
 				else
-					isCreteriaChanged = false;
+					isCriteriaChanged = false;
 				Object cat = comboGF.getValue();
 				// if (cat == null || cat.toString().equals(dCat))
 				// return;
@@ -362,7 +362,7 @@ public class WorkSpace extends VerticalLayout implements View,
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 
-				isCreteriaChanged = true;
+				isCriteriaChanged = true;
 
 			}
 
