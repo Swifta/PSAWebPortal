@@ -6,6 +6,8 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -52,7 +54,25 @@ public class Reportform extends VerticalLayout {
 	private static final long serialVersionUID = 252829471857525213L;
 	VerticalLayout searchform = new VerticalLayout();
 
-	PagedTableCustom table = new PagedTableCustom();
+	PagedTableCustom table = new PagedTableCustom() {
+
+		private static final long serialVersionUID = 1257822354631333070L;
+
+		@Override
+		protected String formatPropertyValue(Object rowId, Object colId,
+				Property<?> property) {
+			Object v = property.getValue();
+			if (v instanceof Date) {
+				Date dateValue = (Date) v;
+				Calendar cal = Calendar.getInstance();
+				cal.setTime(dateValue);
+				return (cal.get(Calendar.MONTH) + 1 + "/"
+						+ cal.get(Calendar.DATE) + "/" + cal.get(Calendar.YEAR));
+			}
+			return super.formatPropertyValue(rowId, colId, property);
+		}
+
+	};
 
 	HorizontalLayout pnUserSearchResults;
 	HorizontalLayout pnUserSearchResults2;
@@ -68,6 +88,7 @@ public class Reportform extends VerticalLayout {
 	boolean isCriteriaChanged = false;
 	private PopupDateField dat = new PopupDateField("From: ");
 	private PopupDateField dat2 = new PopupDateField("To: ");
+	HorizontalLayout cD;
 
 	// PagedTableContainerCustom container = new
 	// PagedTableContainerCustom(contain);
@@ -125,8 +146,9 @@ public class Reportform extends VerticalLayout {
 		reportType.setInputPrompt("Select Report Type");
 
 		VerticalLayout cF = new VerticalLayout();
-		HorizontalLayout cD = new HorizontalLayout();
+		cD = new HorizontalLayout();
 		cD.setSpacing(true);
+		cD.setVisible(false);
 		cF.addComponent(cD);
 		// dat.setDateFormat("mm-dd-yy");
 
@@ -184,12 +206,20 @@ public class Reportform extends VerticalLayout {
 					Date end = dat2.getValue();
 					Filter dfilter = null;
 
+					// Notification.show(start.get);
+
 					if (start != null && end != null) {
 
 						ds.removeAllContainerFilters();
 						dfilter = new And(new GreaterOrEqual("Date", start),
 								new LessOrEqual("Date", end));
 						ds.addContainerFilter(dfilter);
+						table.setContainerDataSource(ds);
+						int t = ds.size();
+						if (t > 30)
+							t = 30;
+						table.setPageLength(t);
+
 					}
 
 				} catch (Exception e) {
@@ -540,6 +570,8 @@ public class Reportform extends VerticalLayout {
 			container.addContainerProperty("Amount (\u20A6)", String.class, "");
 			container.addContainerProperty("Date", Date.class, "");
 
+			ds = container;
+
 			String Uname = "psatestuser";
 			String Pword = "psatest_2015";
 			String drivers = "com.mysql.jdbc.Driver";
@@ -577,6 +609,8 @@ public class Reportform extends VerticalLayout {
 				// .executeQuery("SELECT count(amount) as 'transactioncount',operatorid,format(sum(amount / 100),2) as 'amount',CAST(createdon as DATE) as 'created',dealerid FROM cashtransactions group by operatorid,CAST(createdon as DATE),dealerid order by created,operatorid");
 				rs = stmt.executeQuery(agentsql.toString());
 
+				cD.setVisible(true);
+
 				while (rs.next()) {
 					x = x + 1;
 
@@ -613,19 +647,15 @@ public class Reportform extends VerticalLayout {
 					// Calendar cal = Calendar.getIns
 
 					String d = rs.getString("date");
-					// Notification.show(date);
-					String[] arrD = d.split("-");
-					Calendar cal = Calendar.getInstance();
-					cal.set(Calendar.HOUR_OF_DAY, 0);
-					cal.set(Calendar.MINUTE, 0);
-					cal.set(Calendar.SECOND, 0);
-					cal.set(Calendar.MILLISECOND, 0);
-					cal.set(Integer.valueOf(arrD[0]), Integer.valueOf(arrD[1]),
-							Integer.valueOf(arrD[2]));
 
-					// cal.set
+					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+					Date date = null;
+					try {
+						date = sdf.parse(d);
+					} catch (ParseException e) {
 
-					Date date = cal.getTime();
+						e.printStackTrace();
+					}
 
 					// date.get
 
@@ -706,8 +736,7 @@ public class Reportform extends VerticalLayout {
 			// container2.addContainerProperty("Received_on_behalf_of",
 			// String.class, "");
 			container2.addContainerProperty("Status", String.class, "");
-			container2.addContainerProperty("Transaction Date", String.class,
-					"");
+			container2.addContainerProperty("Date", Date.class, "");
 
 			searchform.removeAllComponents();
 			searchform.addComponent(Transactions());
@@ -764,6 +793,8 @@ public class Reportform extends VerticalLayout {
 
 				rs = stmt.executeQuery(trxnsql.toString());
 				// .executeQuery("select txn.userresourceid as 'Username', txnt.name as 'Transaction Type', CAST(txn.lastupdate AS DATE) as 'Timestamp', format(acct.openingbalance /100,2) as 'Opening Balance', format(acct.closingbalance / 100,2) as 'Closing Balance', format(acct.amount / 100 , 2) as 'Amount',accts.name as 'Account Type'  from transactions txn join accounttransactions acct on txn.transactionid = acct.transactionid join transactiontypes txnt on txnt.transactiontypeid = txn.transactiontypeid join accounttypes accts on accts.accounttypeid = acct.accounttypeid   join accountholders ah on ah.username = txn.userresourceid  order by ah.username, txn.lastupdate");
+				cD.setVisible(true);
+
 				while (rs.next()) {
 					x = x + 1;
 
@@ -781,6 +812,17 @@ public class Reportform extends VerticalLayout {
 
 					// String fida = "Commission Account";
 					// String fido = "Fees Account";
+
+					String d = createdon;
+
+					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+					Date date = null;
+					try {
+						date = sdf.parse(d);
+					} catch (ParseException e) {
+
+						e.printStackTrace();
+					}
 
 					if (!ht.containsKey("Transaction Type")) {
 						HashSet<String> arrL = new HashSet<>();
@@ -815,8 +857,8 @@ public class Reportform extends VerticalLayout {
 					Property<String> tdPropertyserial = trItem
 							.getItemProperty("S/N");
 
-					Property<String> tdPropertytransactiondate = trItem
-							.getItemProperty("Transaction Date");
+					Property<Date> tdPropertytransactiondate = trItem
+							.getItemProperty("Date");
 					Property<String> tdPropertytransactionid = trItem
 							.getItemProperty("Transaction ID");
 					Property<String> tdPropertytransactiontype = trItem
@@ -837,7 +879,7 @@ public class Reportform extends VerticalLayout {
 
 					tdPropertyserial.setValue(String.valueOf(x));
 					tdPropertytransactionid.setValue(transactionID);
-					tdPropertytransactiondate.setValue(createdon);
+					tdPropertytransactiondate.setValue(date);
 					tdPropertytransactiontype.setValue(transactiontype);
 					// tdPropertyamount.setValue(amount);
 					tdPropertysender.setValue(sender);
@@ -877,8 +919,7 @@ public class Reportform extends VerticalLayout {
 			container3.addContainerProperty("S/N", String.class, "");
 			// container3.addContainerProperty("Name", String.class,
 			// "");
-			container3.addContainerProperty("Transaction Date", String.class,
-					"");
+			container3.addContainerProperty("Date", Date.class, "");
 			container3.addContainerProperty("Transaction Type", String.class,
 					"");
 			container3.addContainerProperty("Transaction Count", String.class,
@@ -926,6 +967,7 @@ public class Reportform extends VerticalLayout {
 						.append(" and txnst.transactionstatusid = txn.transactionstatusid and txnt.transactiontypeid = txn.transactiontypeid group by txnt.name,txnst.transactionstatusname,CAST(txn.lastupdate AS DATE)");
 
 				rs = stmt.executeQuery(summarysql.toString());
+				cD.setVisible(true);
 				while (rs.next()) {
 					x = x + 1;
 
@@ -939,6 +981,17 @@ public class Reportform extends VerticalLayout {
 					System.out.println(amount);
 					System.out.println(createdon);
 					// String name = rs.getString("Username");
+
+					String d = createdon;
+
+					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+					Date date = null;
+					try {
+						date = sdf.parse(d);
+					} catch (ParseException e) {
+
+						e.printStackTrace();
+					}
 
 					if (!ht.containsKey("Transaction Type")) {
 						HashSet<String> arrL = new HashSet<>();
@@ -956,8 +1009,8 @@ public class Reportform extends VerticalLayout {
 							.getItemProperty("S/N");
 					// Property<String> tdPropertyname = trItem
 					// .getItemProperty("Name");
-					Property<String> tdPropertytransactiondate = trItem
-							.getItemProperty("Transaction Date");
+					Property<Date> tdPropertytransactiondate = trItem
+							.getItemProperty("Date");
 					Property<String> tdPropertytransactiontype = trItem
 							.getItemProperty("Transaction Type");
 					Property<String> tdPropertytransactioncount = trItem
@@ -969,7 +1022,7 @@ public class Reportform extends VerticalLayout {
 
 					// tdPropertyname.setValue(name);
 					tdPropertyserial.setValue(String.valueOf(x));
-					tdPropertytransactiondate.setValue(createdon);
+					tdPropertytransactiondate.setValue(date);
 					tdPropertytransactiontype.setValue(transactiontype);
 					tdPropertyamount.setValue(amount);
 					tdPropertytransactioncount.setValue(nooftransactions);
@@ -1060,6 +1113,8 @@ public class Reportform extends VerticalLayout {
 				Item trItem;
 				rs2 = stmt2
 						.executeQuery("select txn.userresourceid as 'Username', txnt.name as 'Transaction Type', txn.lastupdate as 'Timestamp', acct.openingbalance as 'Opening Balance', acct.closingbalance as 'Closing Balance', acct.amount as 'Amount',accts.name as 'Account Type'  from transactions txn join accounttransactions acct on txn.transactionid = acct.transactionid join transactiontypes txnt on txnt.transactiontypeid = txn.transactiontypeid join accounttypes accts on accts.accounttypeid = acct.accounttypeid   join accountholders ah on ah.username = txn.userresourceid group by txn.userresourceid order by txn.lastupdate");
+				cD.setVisible(false);
+
 				while (rs2.next()) {
 					agent.addItem(rs2.getString("Username"));
 					agent.setNullSelectionAllowed(false);
