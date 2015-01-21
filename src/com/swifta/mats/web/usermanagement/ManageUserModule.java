@@ -16,7 +16,7 @@ public class ManageUserModule {
 	public static final String SESSION_VAR_UMANAGE_USER_ACTIONS = "user_actions";
 
 	HorizontalLayout cPerAccAuthInfo;
-	UserDetailsModule udm;
+
 	private static final String btnIDAddUser = "add_user";
 	private static final String strBtnIDAgent = "agent";
 	private static final String strBtnIDMerchant = "merchant";

@@ -150,7 +150,8 @@ public class WorkSpaceManageUser {
 				String strUDM = (String) UI.getCurrent().getSession()
 						.getAttribute(UserDetailsModule.SESSION_UDM);
 				if (strUDM == null) {
-					udm = new UserDetailsModule();
+					if (udm == null)
+						udm = new UserDetailsModule();
 					cuDetails = udm.udmModifier(contentC, udm);
 					UI.getCurrent()
 							.getSession()
@@ -159,6 +160,7 @@ public class WorkSpaceManageUser {
 
 				} else {
 					cuDetails = udm.udmModifier(contentC, udm);
+
 				}
 
 				return;

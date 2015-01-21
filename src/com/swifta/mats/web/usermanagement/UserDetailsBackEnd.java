@@ -46,7 +46,7 @@ public class UserDetailsBackEnd {
 			Statement stmt = conn.createStatement();
 
 			ResultSet rs = stmt.executeQuery(sql);
-			int x = 0;
+
 			if (rs.next()) {
 				hm.put("Username", rs.getString("un"));
 				hm.put("Gender", rs.getString("gender"));
@@ -78,24 +78,6 @@ public class UserDetailsBackEnd {
 						hm.get("First Name") + " " + hm.get("Last Name"));
 
 			}
-
-			while (rs.next()) {
-				x++;
-				// String id = rs.getString("id");
-				// String sn = String.valueOf(x);
-				// String un = rs.getString("un");
-				// String prof = rs.getString("prof");
-				// String msisdn = rs.getString("msisdn");
-				// String email = rs.getString("email");
-				// String fn = rs.getString("fn");
-
-				// String ln = rs.getString("ln");
-
-				// String status = rs.getString("status");
-
-			}
-
-			// Notification.show(x + "", Notification.Type.ERROR_MESSAGE);
 
 		} catch (SQLException | ClassNotFoundException | InstantiationException
 				| IllegalAccessException e) {

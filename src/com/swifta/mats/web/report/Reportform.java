@@ -26,6 +26,8 @@ import com.vaadin.data.util.filter.And;
 import com.vaadin.data.util.filter.Compare;
 import com.vaadin.data.util.filter.Compare.GreaterOrEqual;
 import com.vaadin.data.util.filter.Compare.LessOrEqual;
+import com.vaadin.event.FieldEvents.FocusEvent;
+import com.vaadin.event.FieldEvents.FocusListener;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.server.FontAwesome;
@@ -89,6 +91,8 @@ public class Reportform extends VerticalLayout {
 	private PopupDateField dat = new PopupDateField("From: ");
 	private PopupDateField dat2 = new PopupDateField("To: ");
 	HorizontalLayout cD;
+	Filter cFilter;
+	Filter dFilter;
 
 	// PagedTableContainerCustom container = new
 	// PagedTableContainerCustom(contain);
@@ -111,11 +115,12 @@ public class Reportform extends VerticalLayout {
 		public void validate(Object value) throws InvalidValueException {
 			Date s = start.getValue();
 			Date e = end.getValue();
+			if (s == null || e == null)
+				return;
 
-			if (s != null && e != null)
-				if (s.compareTo(e) > 0) {
-					throw new InvalidValueException("Invalid date range");
-				}
+			if (s.compareTo(e) > 0) {
+				throw new InvalidValueException("Invalid date range");
+			}
 		}
 
 	}
@@ -149,7 +154,7 @@ public class Reportform extends VerticalLayout {
 		cD = new HorizontalLayout();
 		cD.setSpacing(true);
 		cD.setVisible(false);
-		cF.addComponent(cD);
+
 		// dat.setDateFormat("mm-dd-yy");
 
 		cD.addComponent(dat);
@@ -157,6 +162,8 @@ public class Reportform extends VerticalLayout {
 
 		final HorizontalLayout cByAndVal = new HorizontalLayout();
 		cF.addComponent(cByAndVal);
+
+		cF.addComponent(cD);
 
 		comboF = new ComboBox("Filter by: ");
 
@@ -196,39 +203,30 @@ public class Reportform extends VerticalLayout {
 
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-				dat.setComponentError(null);
-				dat2.setComponentError(null);
-				isCriteriaChanged = true;
-				try {
-					dat2.validate();
+				// addDFilters();
+			}
 
-					Date start = dat.getValue();
-					Date end = dat2.getValue();
-					Filter dfilter = null;
+		});
 
-					// Notification.show(start.get);
+		dat2.addFocusListener(new FocusListener() {
 
-					if (start != null && end != null) {
+			@Override
+			public void focus(FocusEvent event) {
+				if (dat2.getValue() == null || dat.getValue() == null)
+					return;
+				addDFilters();
 
-						ds.removeAllContainerFilters();
-						dfilter = new And(new GreaterOrEqual("Date", start),
-								new LessOrEqual("Date", end));
-						ds.addContainerFilter(dfilter);
-						table.setContainerDataSource(ds);
-						int t = ds.size();
-						if (t > 30)
-							t = 30;
-						table.setPageLength(t);
+			}
 
-					}
+		});
 
-				} catch (Exception e) {
+		dat.addFocusListener(new FocusListener() {
 
-					Notification.show("Error occured",
-							Notification.Type.ERROR_MESSAGE);
-					e.printStackTrace();
-
-				}
+			@Override
+			public void focus(FocusEvent event) {
+				if (dat2.getValue() == null || dat.getValue() == null)
+					return;
+				addDFilters();
 
 			}
 
@@ -518,14 +516,17 @@ public class Reportform extends VerticalLayout {
 
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-				if (ds == null || ds.size() == 0)
+				if (ds == null)
 					return;
 				ds.removeAllContainerFilters();
 				if (comboVal.getValue() != null && comboF.getValue() != null) {
-					Filter filter = new And(new Compare.Equal(comboF.getValue()
+					cFilter = new And(new Compare.Equal(comboF.getValue()
 							.toString(), comboVal.getValue()));
-					ds.addContainerFilter(filter);
+					ds.addContainerFilter(cFilter);
 				}
+
+				dat.setValue(null);
+				dat2.setValue(null);
 
 				table.setPageLength(15);
 				table.setContainerDataSource(ds);
@@ -1382,5 +1383,40 @@ public class Reportform extends VerticalLayout {
 
 		});
 
+	}
+
+	public void addDFilters() {
+		dat.setComponentError(null);
+		dat2.setComponentError(null);
+		isCriteriaChanged = true;
+		try {
+			dat2.validate();
+
+			Date start = dat.getValue();
+			Date end = dat2.getValue();
+
+			// Notification.show(start.get);
+
+			if (start != null && end != null) {
+
+				ds.removeContainerFilter(dFilter);
+
+				dFilter = new And(new GreaterOrEqual("Date", start),
+						new LessOrEqual("Date", end));
+				ds.addContainerFilter(dFilter);
+				table.setContainerDataSource(ds);
+				int t = ds.size();
+				if (t > 30)
+					t = 30;
+				table.setPageLength(t);
+
+			}
+
+		} catch (Exception e) {
+
+			Notification.show("Error occured", Notification.Type.ERROR_MESSAGE);
+			e.printStackTrace();
+
+		}
 	}
 }

@@ -1306,9 +1306,11 @@ public class UserDetailsModule {
 
 	private VerticalLayout getUDContainer(String strTbName) {
 
-		Map<String, String> hm = bee.getUD(""
-				+ UI.getCurrent().getSession()
-						.getAttribute(UserDetailsModule.SESSION_UDM_UNAME));
+		Object tbn = UI.getCurrent().getSession()
+				.getAttribute(UserDetailsModule.SESSION_UDM_UNAME);
+
+		Map<String, String> hm = bee.getUD((tbn != null) ? tbn.toString()
+				: null);
 
 		if (strTbName.equals("account")) {
 			return getADC(strTbName, hm);
