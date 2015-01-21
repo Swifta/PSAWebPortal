@@ -13,7 +13,7 @@ public class Client {
 
 		System.out.println(result);
 
-		Client.sql();
+		// Client.sql();
 
 	}
 
