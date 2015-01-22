@@ -299,9 +299,26 @@ public class Reportform extends VerticalLayout {
 				if (table == null || table.size() == 0)
 					return;
 
+				Calendar cal = Calendar.getInstance();
+
+				SimpleDateFormat sdf = new SimpleDateFormat(
+						"dd-MM-yyyy_HH.mm.ss");
+
+				StringBuilder builder = new StringBuilder();
+				builder.append(table.getCaption());
+				builder.append("_");
+				builder.append(sdf.format(cal.getTime()));
+				/*
+				 * .append(cal.get(Calendar.DATE)); builder.append("-");
+				 * builder.append(cal.get(Calendar.MONTH)); builder.append("-");
+				 * builder.append(cal.get(Calendar.YEAR)); builder.append("_");
+				 * builder.append(cal.get(Calendar.HOUR)); builder.append(".");
+				 * builder.append(cal.get(Calendar.MINUTE));
+				 */
+
 				ExcelExport excelExport = new ExcelExport(table);
-				excelExport.setReportTitle("PSA Report");
-				excelExport.setExportFileName("PSA.xls");
+				excelExport.setReportTitle(table.getCaption());
+				excelExport.setExportFileName(builder.toString());
 				excelExport.setDisplayTotals(false);
 				excelExport.export();
 
@@ -554,11 +571,13 @@ public class Reportform extends VerticalLayout {
 			ht.clear();
 		}
 
+		table.setCaption(selectedId);
 		if (selectedId.equalsIgnoreCase("Float Management Report")) {
 
 			IndexedContainer container = new IndexedContainer();
 
 			container.addContainerProperty("S/N", String.class, "");
+			container.addContainerProperty("Date", Date.class, "");
 			// container.addContainerProperty("Transaction ID",
 			// String.class, "");
 
@@ -568,8 +587,8 @@ public class Reportform extends VerticalLayout {
 			// .addContainerProperty("Agent ID", String.class, "");
 			container.addContainerProperty("Agent ID", String.class, "");
 			container.addContainerProperty("Dealer ID", String.class, "");
+			container.addContainerProperty("Full Name", String.class, "");
 			container.addContainerProperty("Amount (\u20A6)", String.class, "");
-			container.addContainerProperty("Date", Date.class, "");
 
 			ds = container;
 
@@ -599,12 +618,12 @@ public class Reportform extends VerticalLayout {
 
 				StringBuilder agentsql = new StringBuilder();
 
-				agentsql.append("select cast(tbl1.datecreated as DATE) as 'date', ctrs.operatorid as aid, ach.username as did, tbl1.cashbalance as ");
-				agentsql.append(" amount from accountholders ach,( select actxns.userresourceid as cashacctid, ");
+				agentsql.append("select cast(tbl1.datecreated as DATE) as 'date', ctrs.operatorid as aid, ach.username as did, concat(achd.firstname,' ',achd.lastname) as fullname, tbl1.cashbalance as ");
+				agentsql.append(" amount from accountholders ach, accountholderdetails achd, ( select actxns.userresourceid as cashacctid, ");
 				agentsql.append(" sum(actxns.closingbalance) - sum(actxns.openingbalance) as cashbalance, actxns.datecreated ");
 				agentsql.append("as datecreated, acts.profileid as profileid, actxns.transactionid as transactionid from");
 				agentsql.append(" accounttransactions actxns, transactions trx,accounts acts where actxns.transactionid = trx.transactionid and trx.transactionstatusid = 1 and trx.transactiontypeid=1 and  actxns.accountresourceid = acts.accountid and ");
-				agentsql.append(" acts.profileid = 12 group by CAST(actxns.datecreated as DATE),actxns.userresourceid) tbl1 join cashtransactions ctrs on ctrs.transactionid = tbl1.transactionid where ach.profileid = 11 and tbl1.cashacctid = ach.accountholderid");
+				agentsql.append(" acts.profileid = 12 group by CAST(actxns.datecreated as DATE),actxns.userresourceid) tbl1 join cashtransactions ctrs on ctrs.transactionid = tbl1.transactionid where ach.profileid = 11 and tbl1.cashacctid = ach.accountholderid and achd.accountdetailsid = ach.accountholderdetailid");
 
 				// rs = stmt
 				// .executeQuery("SELECT count(amount) as 'transactioncount',operatorid,format(sum(amount / 100),2) as 'amount',CAST(createdon as DATE) as 'created',dealerid FROM cashtransactions group by operatorid,CAST(createdon as DATE),dealerid order by created,operatorid");
@@ -637,6 +656,9 @@ public class Reportform extends VerticalLayout {
 					Property<Date> tdPropertydate = trItem
 							.getItemProperty("Date");
 
+					Property<String> tdPropertyfullname = trItem
+							.getItemProperty("Full Name");
+
 					// String agentid = rs.getString("operatorid");
 					String aid = rs.getString("aid");
 					String did = rs.getString("did");
@@ -644,6 +666,7 @@ public class Reportform extends VerticalLayout {
 					// String transactionstatusid = rs
 					// .getString("transactionstatusid");
 					String amt = rs.getString("amount");
+					String fullname = rs.getString("fullname");
 
 					// Calendar cal = Calendar.getIns
 
@@ -693,6 +716,7 @@ public class Reportform extends VerticalLayout {
 					tdPropertyagentid.setValue(aid);
 					tdPropertyevalueamount.setValue(amt);
 					tdPropertydate.setValue(date);
+					tdPropertyfullname.setValue(fullname);
 
 				}
 				conn.close();
@@ -1309,7 +1333,7 @@ public class Reportform extends VerticalLayout {
 		p = row.getItemProperty("Status");
 		String status = p.getValue().toString();
 
-		p = row.getItemProperty("Transaction Date");
+		p = row.getItemProperty("Date");
 		String date = p.getValue().toString();
 
 		final Label lb1 = new Label();
