@@ -170,7 +170,7 @@ public class UserDetailsModule {
 	private HorizontalLayout setDetailsForm(Map<String, String[]> mappedData,
 			boolean hasOp, boolean boolEditStatus) {
 		cDetailsAndOperations = new HorizontalLayout();
-		cDetailsAndOperations.setSizeFull();
+		cDetailsAndOperations.setSizeUndefined();
 
 		// Notification.show(Boolean.toString(hasOp));
 
@@ -178,11 +178,19 @@ public class UserDetailsModule {
 		cUPersonalDetails.setMargin(true);
 		cUPersonalDetails.setSpacing(false);
 		cUPersonalDetails.setStyleName("frm_details_personal_info");
-		cUPersonalDetails.setSizeFull();
+		cUPersonalDetails.setSizeUndefined();
 		cDetailsAndOperations.addComponent(cUPersonalDetails);
 
 		if (mappedData.size() == 0) {
-			cUPersonalDetails.addComponent(new Label(" NO Data Available!"));
+
+			cUDetails = new VerticalLayout();
+			cUDetails.setMargin(new MarginInfo(false, true, true, true));
+
+			cUDetails.setStyleName("c_u_details");
+			cUDetails.setSizeUndefined();
+			cUDetails.addComponent(new Label(" NO Data Available!"));
+
+			cUPersonalDetails.addComponent(cUDetails);
 			uDetailsEditStatus = false;
 		} else {
 
@@ -1081,25 +1089,25 @@ public class UserDetailsModule {
 		Label lbCHeader = new Label(strCHeader);
 		lbCHeader.setStyleName("label_c_header");
 		lbCHeader.setSizeUndefined();
+		cCHeader.addComponent(lbCHeader);
 
 		cPerAccAuthInfo = new HorizontalLayout();
 		cPerAccAuthInfo.setStyleName("c_per_acc_auth_info");
-		cPerAccAuthInfo.setSizeFull();
+		cPerAccAuthInfo.setSizeUndefined();
 
-		VerticalLayout cTabLike = new VerticalLayout();
-		cTabLike.setSizeUndefined();
+		VerticalLayout cTabLike = null;
 
 		cTabLike = getManageUserMenu(false, boolEditStatus, hasOp, null);
+		cTabLike.setSizeUndefined();
 
-		cCHeader.addComponent(lbCHeader);
 		cCHeader.addComponent(cTabLike);
-
 		cUDetails.addComponent(cCHeader);
-		cUDetails.setComponentAlignment(cCHeader, Alignment.TOP_LEFT);
+		cUDetails.setComponentAlignment(cCHeader, Alignment.MIDDLE_CENTER);
 
 		cUDetails.addComponent(cPerAccAuthInfo);
-		cUDetails.setComponentAlignment(cPerAccAuthInfo, Alignment.TOP_LEFT);
-		cUDetails.setExpandRatio(cPerAccAuthInfo, 1.0f);
+		cUDetails.setComponentAlignment(cPerAccAuthInfo,
+				Alignment.MIDDLE_CENTER);
+		// cUDetails.setExpandRatio(cPerAccAuthInfo, 1.0f);
 
 		HorizontalLayout cUDetailsAndOperations = getDetailsForm(strTbName,
 				strUID, hasOp, boolEditStatus);
@@ -1297,10 +1305,20 @@ public class UserDetailsModule {
 			ArrayList<String> arrLDfEditableVals,
 			HashMap<String, Object> mapSlaveFields) {
 
-		if (boolEditStatus)
-			cUPersonalDetails.addComponent(getEUDContainer());
-		else
-			cUPersonalDetails.addComponent(getUDContainer(strTbName));
+		if (boolEditStatus) {
+			VerticalLayout c = getEUDContainer();
+			cUPersonalDetails.addComponent(c);
+			// cUPersonalDetails.setComponentAlignment(c,
+			// Alignment.MIDDLE_CENTER);
+
+		} else {
+
+			VerticalLayout c = getUDContainer(strTbName);
+			cUPersonalDetails.addComponent(c);
+			// cUPersonalDetails.setComponentAlignment(c,
+			// Alignment.MIDDLE_CENTER);
+
+		}
 
 	}
 
@@ -1319,10 +1337,12 @@ public class UserDetailsModule {
 		String strProf = hm.get("Profile Type");
 
 		VerticalLayout cAgentInfo = new VerticalLayout();
-		cAgentInfo.setMargin(new MarginInfo(true, false, false, false));
+		cAgentInfo.setMargin(new MarginInfo(true, true, true, true));
+		cAgentInfo.setStyleName("c_details_test");
+		cAgentInfo.setSizeUndefined();
 
 		VerticalLayout cBasic = new VerticalLayout();
-		cBasic.setSpacing(true);
+		// cBasic.setSpacing(true);
 		// cBasic.setSpacing(true);
 		Label lbB = new Label("General");
 		lbB.setStyleName("lb_frm_add_user");
@@ -1485,7 +1505,7 @@ public class UserDetailsModule {
 		comboIDType.setRequired(true);
 
 		cCompany.addComponent(lbC);
-		cCompany.setSpacing(true);
+		// cCompany.setSpacing(true);
 
 		addDatum("ID Type", hm.get("ID Type"), cCompany);
 
@@ -1527,7 +1547,7 @@ public class UserDetailsModule {
 		cC.addComponent(cCompany);
 
 		VerticalLayout pC = new VerticalLayout();
-		pC.setSpacing(true);
+		// pC.setSpacing(true);
 		lbC = new Label("Primary Contacts");
 		HorizontalLayout cLbc = new HorizontalLayout();
 		cLbc.setSizeUndefined();
@@ -1559,7 +1579,7 @@ public class UserDetailsModule {
 		cC.addComponent(pC);
 
 		VerticalLayout sC = new VerticalLayout();
-		sC.setSpacing(true);
+		// sC.setSpacing(true);
 		lbC = new Label("Secondary Contacts");
 		cLbc = new HorizontalLayout();
 		cLbc.setSizeUndefined();
@@ -1592,7 +1612,7 @@ public class UserDetailsModule {
 		cC.addComponent(sC);
 
 		VerticalLayout physicalC = new VerticalLayout();
-		physicalC.setSpacing(true);
+		// physicalC.setSpacing(true);
 		lbC = new Label("Physical Address");
 		cLbc = new HorizontalLayout();
 		cLbc.setSizeUndefined();
@@ -1718,7 +1738,9 @@ public class UserDetailsModule {
 		// Notification.show(strTbName);
 
 		VerticalLayout cAgentInfo = new VerticalLayout();
-		cAgentInfo.setMargin(new MarginInfo(true, false, false, false));
+		cAgentInfo.setMargin(new MarginInfo(true, true, true, true));
+		cAgentInfo.setStyleName("c_details_test");
+		cAgentInfo.setSizeUndefined();
 
 		VerticalLayout cAcc = new VerticalLayout();
 		Label lbAcc = new Label("Account");
@@ -1729,7 +1751,7 @@ public class UserDetailsModule {
 		comboHierarchy = new ComboBox("Profile");
 
 		final VerticalLayout cLBody = new VerticalLayout();
-		cLBody.setSpacing(true);
+		// cLBody.setSpacing(true);
 
 		comboHierarchy.addItem(1);
 		comboHierarchy.setItemCaption(1, "MATS_ADMIN_USER_PROFILE");
@@ -1829,8 +1851,9 @@ public class UserDetailsModule {
 		profToID.put(15, "MATS_SERVICE_PROVIDER_USER_PROFILE");
 
 		VerticalLayout cAgentInfo = new VerticalLayout();
-		cAgentInfo.setMargin(new MarginInfo(true, false, false, false));
-
+		cAgentInfo.setMargin(new MarginInfo(true, true, true, true));
+		cAgentInfo.setStyleName("c_details_test");
+		cAgentInfo.setSizeUndefined();
 		VerticalLayout cBasic = new VerticalLayout();
 		Label lbB = new Label("Basic");
 		lbB.setStyleName("lb_frm_add_user");

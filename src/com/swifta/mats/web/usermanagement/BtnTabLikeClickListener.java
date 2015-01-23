@@ -53,11 +53,14 @@ public class BtnTabLikeClickListener implements Button.ClickListener {
 	@Override
 	public void buttonClick(ClickEvent event) {
 		curBtn = (BtnTabLike) event.getButton();
+
 		modifyMenuContent();
+
 	}
 
 	private void setActiveTab(BtnTabLike curBtn,
 			ArrayList<BtnTabLike> arrLTabBtns) {
+
 		curBtn.setStyleName("btn_tab_like btn_tab_like_active");
 		for (BtnTabLike btn : arrLTabBtns) {
 			if (!curBtn.equals(btn)) {
@@ -70,7 +73,7 @@ public class BtnTabLikeClickListener implements Button.ClickListener {
 
 	}
 
-	public void selectActiveUserType() {
+	private void selectActiveUserType() {
 
 		if (BtnTabLike.btnTabPrev == null)
 			return;
@@ -85,8 +88,6 @@ public class BtnTabLikeClickListener implements Button.ClickListener {
 		} else {
 			strCurBtnCap = BtnTabLike.btnTabCur.getCaption();
 		}
-
-		// Notification.show(BtnTabLike.btnTabCur.getCaption());
 
 		BtnTabLike btn = null;
 

@@ -20,6 +20,7 @@ import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.ThemeResource;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -246,6 +247,8 @@ public class Login extends VerticalLayout implements View {
 						logger.info("---------------After getting session in Login");
 						UI.getCurrent().getNavigator()
 								.navigateTo(WorkSpace.WORK_SPACE);
+						VaadinSession.getCurrent().getSession()
+								.setMaxInactiveInterval(300);
 						logger.info("---------------after getting navigator to workspace:::Login");
 
 					} else {

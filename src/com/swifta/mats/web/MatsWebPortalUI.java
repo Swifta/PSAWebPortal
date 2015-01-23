@@ -51,7 +51,7 @@ public class MatsWebPortalUI extends UI {
 	@Override
 	protected void init(VaadinRequest request) {
 		new Navigator(this, this);
-		// setContent(new WorkSpace());
+
 		getNavigator().addView(Login.LOGIN, Login.class);
 		getNavigator().addView(WorkSpace.WORK_SPACE, WorkSpace.class);
 		setContent(new Login());
@@ -65,8 +65,6 @@ public class MatsWebPortalUI extends UI {
 				.setAttribute(ManageUserModule.SESSION_UMANAGE,
 						ManageUserModule.SESSION_VAR_UMANAGE_SEARCH);
 
-		VaadinSession.getCurrent().getSession().setMaxInactiveInterval(60);
-
 		getNavigator().addViewChangeListener(new ViewChangeListener() {
 
 			@Override
@@ -79,6 +77,8 @@ public class MatsWebPortalUI extends UI {
 					return false;
 				} else if (!isLoggedIn && !isLoginView) {
 					getNavigator().navigateTo(Login.LOGIN);
+					VaadinSession.getCurrent().getSession()
+							.setMaxInactiveInterval(-1);
 					return false;
 				}
 				return true;

@@ -593,6 +593,9 @@ ul.empty li{
 
 .c_c_header{
 	//background: #00F;
+	//margin-top: -40px;
+	z-index: 999;
+	//margin-left: -250px;
 }
 
 
@@ -697,11 +700,11 @@ ul.empty li{
 	//width: 100px important;
 	//border-right: 1px solid #DDD;
 	//border-radius: 10px;
-	margin-right: 50px;
+	//margin-right: 50px;
 }
 .frm_details_personal_info .v-formlayout-contentcell{
 	//background: #F00;
-	min-width: 100%;
+	//min-width: 100%;
 }
 
 .frm_details_personal_info .v-datefield, .frm_details_personal_info .v-filterselect, .frm_details_personal_info .v-textfield{
@@ -840,11 +843,12 @@ ul.empty li{
 
 .c_u_manage_menu{
 	//border-right: 1px solid #C5C5C5;
-	//background: #00F;
+	//background: #0F0;
 	//position: fixed;
 	margin: 5px 0 0 5px;
-	z-index: 999;
+	z-index: 99;
 	padding: 0;
+	
 	
 }
 
@@ -877,6 +881,7 @@ ul.empty li{
 
 .c_sub_menu_visible{
 	display: block;
+	//background: #00F;
 }
 
 .search_results_header {
@@ -1040,7 +1045,7 @@ ul.empty li{
 	padding: 10px 30px 2px 10px;
 	display: inline-block;
 	text-align: right;
-	float: right;
+	//float: right;
 	//width: 100%;
 	
 }
@@ -1048,14 +1053,22 @@ ul.empty li{
 .label_cap_custom_ud{
 	background: #FAFAFA;
 	padding: 10px 10px 2px 10px;
-	float: left;
+	//float: left;
 }
 
 .label_ud{
 	border-bottom: 2px #FFF inset;
 	min-width: 100%;
 	background: #FFF;
-	padding-top: 20px;
+	padding-top: 10px;
+}
+
+.c_details_test{
+ 	background: #FFF;
+}
+
+.frm_details_personal_info{
+	//background: #F0F;
 }
 
 

@@ -73,6 +73,7 @@ public class WorkSpace extends VerticalLayout implements View,
 		wsmp = new WorkSpaceManageProfile();
 		dat.addValidator(new ValidateRange(dat, dat2));
 		dat2.addValidator(new ValidateRange(dat, dat2));
+
 		dat.addValueChangeListener(new ValueChangeListener() {
 
 			private static final long serialVersionUID = -1020854682753361028L;
