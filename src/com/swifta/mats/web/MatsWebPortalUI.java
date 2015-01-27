@@ -73,12 +73,14 @@ public class MatsWebPortalUI extends UI {
 						.getAttribute("user") != null;
 				boolean isLoginView = event.getNewView() instanceof Login;
 
+				if (isLoginView)
+					VaadinSession.getCurrent().getSession()
+							.setMaxInactiveInterval(3600);
+
 				if (isLoggedIn && isLoginView) {
 					return false;
 				} else if (!isLoggedIn && !isLoginView) {
 					getNavigator().navigateTo(Login.LOGIN);
-					VaadinSession.getCurrent().getSession()
-							.setMaxInactiveInterval(-1);
 					return false;
 				}
 				return true;

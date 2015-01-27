@@ -271,7 +271,7 @@ public class UserDetailsModule {
 						btnEdit.setVisible(false);
 					} else {
 						btnEdit.setVisible(true);
-						btnEdit.setEnabled(true);
+						btnEdit.setEnabled(false);
 					}
 				}
 
@@ -483,7 +483,7 @@ public class UserDetailsModule {
 						ecbsf.btnEditS.setIcon(FontAwesome.SAVE);
 						ecbsf.btnEditS.setVisible(true);
 						ecbsf.btnCancel.setVisible(true);
-						ecbsf.btnEditS.setEnabled(true);
+						ecbsf.btnEditS.setEnabled(false);
 						ecbsf.btnCancel.setEnabled(true);
 						uDetailsEditStatus = true;
 
@@ -1044,7 +1044,7 @@ public class UserDetailsModule {
 				ecbsf = new EditCancelBtnsSingleField(cTf, true, arrLEf,
 						arrLEfVal);
 				ecbsf.btnEditS.setVisible(true);
-				ecbsf.btnEditS.setEnabled(true);
+				ecbsf.btnEditS.setEnabled(false);
 
 				if (arrTfCaptions[iTf].equals("Username")) {
 					ecbsf.btnEditS.setId("cur_user_btn_id_edit_uname");

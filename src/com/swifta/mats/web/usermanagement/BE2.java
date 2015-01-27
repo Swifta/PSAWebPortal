@@ -1185,14 +1185,12 @@ public class BE2 {
 		actionsC.addComponent(btnDetails);
 		actionsC.addComponent(btnEdit);
 		actionsC.addComponent(btnDelete);
-
-		// Notification.show(ACCOUNTSTATUS.ACTIVE + " : This.");
-		// Notification.show(status);
+		btnEdit.setEnabled(false);
+		btnDelete.setEnabled(false);
+		btnDelete.setVisible(false);
 
 		if (status.equals("ACTIVE")) {
-			// btnActivate.setVisible(false);
-			// btnActivate.setEnabled(false);
-			// btnActivate.setStyleName("btn_link btn_a");
+
 			btnActivate.setIcon(null);
 			btnActivate.setCaption("R");
 			btnActivate.setStyleName("btn_link");

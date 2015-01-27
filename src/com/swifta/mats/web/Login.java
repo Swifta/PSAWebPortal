@@ -245,10 +245,11 @@ public class Login extends VerticalLayout implements View {
 						UI.getCurrent().getSession()
 								.setAttribute("user", tfUsername.getValue());
 						logger.info("---------------After getting session in Login");
+						VaadinSession.getCurrent().getSession()
+								.setMaxInactiveInterval(120);
 						UI.getCurrent().getNavigator()
 								.navigateTo(WorkSpace.WORK_SPACE);
-						VaadinSession.getCurrent().getSession()
-								.setMaxInactiveInterval(300);
+
 						logger.info("---------------after getting navigator to workspace:::Login");
 
 					} else {
