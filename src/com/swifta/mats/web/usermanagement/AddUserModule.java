@@ -23,12 +23,14 @@ import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.event.FieldEvents.FocusEvent;
 import com.vaadin.event.FieldEvents.FocusListener;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Embedded;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
@@ -130,6 +132,30 @@ public class AddUserModule {
 	private VerticalLayout getNewUserContainer() {
 
 		VerticalLayout cAgentInfo = new VerticalLayout();
+
+		Embedded emb = new Embedded(null, new ThemeResource(
+				"img/add_user_small.png"));
+		emb.setDescription("add new user");
+		emb.setStyleName("search_user_img");
+		emb.setSizeUndefined();
+
+		Label lbSearch = new Label("Add New User... ");
+
+		// Label lbSearch = new Label("Search " + strUserType + " by: ");
+		lbSearch.setSizeUndefined();
+		lbSearch.setStyleName("label_search_user");
+		lbSearch.setSizeUndefined();
+
+		HorizontalLayout header = new HorizontalLayout();
+		header.setHeightUndefined();
+		header.setMargin(false);
+		header.setSpacing(true);
+		header.addComponent(emb);
+		header.addComponent(lbSearch);
+		header.setStyleName("search_user_header");
+
+		cAgentInfo.addComponent(header);
+		cAgentInfo.setComponentAlignment(header, Alignment.TOP_CENTER);
 
 		VerticalLayout cBasic = new VerticalLayout();
 		Label lbB = new Label("Basic");

@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.swifta.mats.web.usermanagement.UserDetailsModule;
 import com.swifta.mats.web.utils.CommissionService;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ServiceCommission;
@@ -39,7 +38,7 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 public class FeesAndCommModule {
-	UserDetailsModule udm;
+	// UserDetailsModule udm;
 	HorizontalLayout udc;
 	private ArrayList<VerticalLayout> cArrLItemContent;
 	private ArrayList<FieldGroup> arrLRangeFG;
@@ -65,7 +64,7 @@ public class FeesAndCommModule {
 	boolean isReset = false;
 
 	public FeesAndCommModule() {
-		udm = new UserDetailsModule();
+
 		comboOp = new ComboBox("Operator");
 		comboOp.addItem(7);
 		comboOp.setItemCaption(7, "TeasyMobile");

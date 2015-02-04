@@ -5,17 +5,10 @@ import java.util.logging.Logger;
 import org.apache.axis2.AxisFault;
 
 import com.swifta.mats.web.utils.LoginService;
-import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Validator;
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.util.PropertysetItem;
-import com.vaadin.data.util.filter.And;
-import com.vaadin.data.util.filter.Compare;
-import com.vaadin.data.util.sqlcontainer.SQLContainer;
-import com.vaadin.data.util.sqlcontainer.connection.JDBCConnectionPool;
-import com.vaadin.data.util.sqlcontainer.connection.SimpleJDBCConnectionPool;
-import com.vaadin.data.util.sqlcontainer.query.TableQuery;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -27,7 +20,6 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
@@ -36,18 +28,14 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Reindeer;
 
 public class Login extends VerticalLayout implements View {
-	/**
-	 * 
-	 * 
-	 */
 	private static final Logger logger = Logger
 			.getLogger(Login.class.getName());
 	private static final long serialVersionUID = 4197831781197091062L;
 	public static final String LOGIN = "login";
+
 	private TextField tfUsername;
 	private PasswordField tfPassword;
 	private Button btnLogin;
-	private Label userLogin = new Label();
 	private Label lPrompt;
 	private Label lWelcome;
 	private final FieldGroup fg;
@@ -64,17 +52,11 @@ public class Login extends VerticalLayout implements View {
 		panelLogin.setStyleName("panel_login");
 		VerticalLayout panelLoginContent = new VerticalLayout();
 		panelLoginContent.setStyleName("panel_login_content");
-		// VerticalLayout hLayout = new VerticalLayout();
 		VerticalLayout logoContainer = new VerticalLayout();
 		logoContainer.setSizeUndefined();
 		logoContainer.setStyleName("logo_and_slogan_container");
-		// logoAndSloganContainer.setMargin(true);
 		ThemeResource rLogo = new ThemeResource("img/logon.png");
-		// System.out.println(rLogo.toString());
 		Embedded emb = new Embedded(null, rLogo);
-		// emb.setWidth("100px");
-		// emb.setHeight("100px");
-		emb.setSizeUndefined();
 		emb.setDescription("MATS Logo");
 		logoContainer.addComponent(emb);
 		logoContainer.setComponentAlignment(emb, Alignment.MIDDLE_CENTER);
@@ -90,9 +72,6 @@ public class Login extends VerticalLayout implements View {
 		loginLabelContainer.addComponent(lWelcome);
 		loginLabelContainer.addComponent(lPrompt);
 
-		// panelLoginContent.addComponent(logoAndSloganContainer);
-		// panelLoginContent.setComponentAlignment(logoAndSloganContainer,
-		// Alignment.MIDDLE_CENTER);
 		VerticalLayout panelLoginAndLogoAndSloganContainer = new VerticalLayout();
 		panelLoginAndLogoAndSloganContainer.setSizeUndefined();
 		panelLoginAndLogoAndSloganContainer.setMargin(true);
@@ -111,8 +90,6 @@ public class Login extends VerticalLayout implements View {
 		panelLoginAndLogoAndSloganContainer.addComponent(panelLogin);
 		panelLoginAndLogoAndSloganContainer.setComponentAlignment(panelLogin,
 				Alignment.MIDDLE_CENTER);
-		// VerticalLayout versionAndCopyrightContainer = new VerticalLayout();
-		// versionAndCopyrightContainer.setSizeFull();
 
 		Label lbVersion = new Label("MATS Platform v.1.0");
 		Label lbCopyright = new Label(
@@ -120,14 +97,9 @@ public class Login extends VerticalLayout implements View {
 		lbVersion.setStyleName("label_version");
 		lbCopyright.setStyleName("label_copyright");
 
-		// versionAndCopyrightContainer.addComponent(lbVersion);
-		// versionAndCopyrightContainer.addComponent(lbCopyright);
-
 		HorizontalLayout copyrightContainer = new HorizontalLayout();
 		copyrightContainer.setSizeUndefined();
 		copyrightContainer.addComponent(lbCopyright);
-		// copyrightContainer.setComponentAlignment(lbCopyright,
-		// Alignment.MIDDLE_CENTER);
 
 		HorizontalLayout versionContainer = new HorizontalLayout();
 		versionContainer.setSizeUndefined();
@@ -203,12 +175,12 @@ public class Login extends VerticalLayout implements View {
 		panelLoginContent.addComponent(tfUsername);
 		panelLoginContent.addComponent(tfPassword);
 		panelLoginContent.addComponent(btnLogin);
-		panelLoginContent.addComponent(userLogin);
+		// panelLoginContent.addComponent(userLogin);
 		panelLogin.setContent(panelLoginContent);
 		panelLoginContent.setComponentAlignment(btnLogin,
 				Alignment.BOTTOM_RIGHT);
-		panelLoginContent.setComponentAlignment(userLogin,
-				Alignment.BOTTOM_CENTER);
+		// panelLoginContent.setComponentAlignment(userLogin,
+		// Alignment.BOTTOM_CENTER);
 		// hLayout.setComponentAlignment(btnLogin, Alignment.);
 		// panelLogin.
 
@@ -232,7 +204,6 @@ public class Login extends VerticalLayout implements View {
 				try {
 					fg.commit();
 				} catch (Exception e) {
-					Notification.show("Invalid value");
 					return;
 				}
 				logger.info("---------------Before validating the username and password"
@@ -246,20 +217,36 @@ public class Login extends VerticalLayout implements View {
 								.setAttribute("user", tfUsername.getValue());
 						logger.info("---------------After getting session in Login");
 						VaadinSession.getCurrent().getSession()
-								.setMaxInactiveInterval(120);
+								.setMaxInactiveInterval(1800);
+						// mx//UI.getCurrent().getNavigator()
+						// mx//.navigateTo(WorkSpace.WORK_SPACE);
 						UI.getCurrent().getNavigator()
-								.navigateTo(WorkSpace.WORK_SPACE);
+								.navigateTo(Main.WS);
 
 						logger.info("---------------after getting navigator to workspace:::Login");
 
 					} else {
-						userLogin.setValue("Invalid Credentials");
-						userLogin.setStyleName("errorlogin");
+
+						lPrompt.setValue("Invalid Username or Password.");
+						tfUsername.focus();
+						lPrompt.setStyleName("label_login_prompt_err");
+						lWelcome.setValue("Oops...");
+						// lWelcome.setStyleName("label_welcome_err");
+						// userLogin.setValue("Invalid Credentials");
+						// userLogin.setStyleName("errorlogin");
 						logger.info("---------------The authentication FAILED!!!!!!!!!!!!!!");
+
 					}
 				} catch (AxisFault e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
+					lPrompt.setValue("Error in connection!");
+					tfUsername.focus();
+					lPrompt.setStyleName("label_login_prompt_err");
+					lWelcome.setValue("Oops...");
+					tfUsername.setValue(null);
+					tfPassword.setValue(null);
+
 				}
 				// }
 
@@ -268,58 +255,10 @@ public class Login extends VerticalLayout implements View {
 
 	}
 
-	private boolean validCredentials() {
-		// tfUsername.addValidator(new Validator.());
-		String username = tfUsername.getValue();
-		System.out.println(username);
-		String password = tfPassword.getValue();
-		String dbUser = "admin";
-		String dbPass = "sameboy";
-		String db = "mats";
-		String table = "users";
-		String dbDriver = "com.mysql.jdbc.Driver";
-		String dbUrl = "jdbc:mysql://localhost:3306/" + db;
-		try {
-
-			JDBCConnectionPool pool = new SimpleJDBCConnectionPool(dbDriver,
-					dbUrl, dbUser, dbPass);
-			TableQuery tableQ = new TableQuery(table, pool);
-			// FreeformQuery ffq = new FreeformQuery(table, pool);
-			// SQLContainer tableFFQ = new SQLContainer(ffq);
-
-			SQLContainer container = new SQLContainer(tableQ);
-
-			// Filter filterUser = new And(new SimpleStringFilter("Username",
-			// username, false, false), new SimpleStringFilter("Password",
-			// password, false, false));
-
-			// Filter filterUser = new SimpleStringFilter("", username, false,
-			// true);
-			Filter filter = new And(new Compare.Equal("Username", username),
-					new Compare.Equal("Password", password));
-
-			// /container.removeAllContainerFilters();
-			container.addContainerFilter(filter);
-			if (container.size() != 1) {
-				lPrompt.setValue("Invalid Username or Password.");
-				tfUsername.focus();
-				lPrompt.setStyleName("label_login_prompt_err");
-				lWelcome.setValue("Oops..");
-				lWelcome.setStyleName("label_welcome_err");
-
-				return false;
-			}
-			return true;
-
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-			return false;
-		}
-
-	}
-
 	@Override
 	public void enter(ViewChangeEvent event) {
+		tfUsername.setValue(null);
+		tfPassword.setValue(null);
 
 	}
 

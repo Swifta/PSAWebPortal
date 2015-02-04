@@ -1,8 +1,10 @@
 package com.swifta.mats.web.usermanagement;
 
-import com.swifta.mats.web.WorkSpace;
-import com.swifta.mats.web.accountprofile.WorkSpaceManageProfile;
+import com.vaadin.server.Page;
+import com.vaadin.server.Page.UriFragmentChangedEvent;
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.UI;
@@ -24,6 +26,7 @@ public class WorkSpaceManageUser {
 	VerticalLayout cParentLayout;
 	VerticalLayout cuDetails;
 	VerticalLayout mm;
+	private VerticalLayout auf;
 	SearchUserModule sum;
 	String curSessionUManage;
 
@@ -39,19 +42,17 @@ public class WorkSpaceManageUser {
 	public final static String SESSION_WORK_AREA = "session_work_area";
 	public final static String SESSION_VAR_WORK_AREA_ADD_USER = "add_user";
 	public final static String SESSION_VAR_WORK_AREA_MANAGE_USER = "manage_user";
-	private boolean wsmuInitStatus = false;
+	HorizontalLayout csman = new HorizontalLayout();
+	HorizontalLayout caddman = new HorizontalLayout();
+	FormLayout cs;
 
 	public WorkSpaceManageUser() {
 		setCoreUI();
+		addModifier();
+
 	}
 
-	public void setCoreUI() {
-		UI.getCurrent()
-				.getSession()
-				.setAttribute(SESSION_WORK_AREA_USER_TYPE,
-						SESSION_VAR_WORK_AREA_DEFAULT_USER_TYPE);
-		// UI.getCurrent().getSession().setAttribute(SESSION_WORK_AREA,
-		// SESSION_VAR_WORK_AREA_MANAGE_USER);
+	private void setCoreUI() {
 
 		cParentLayout = new VerticalLayout();
 
@@ -60,114 +61,155 @@ public class WorkSpaceManageUser {
 		contentC.setHeightUndefined();
 		contentC.setStyleName("content_c");
 
-		aum = new AddUserModule();
-		mum = new ManageUserModule();
 		sum = new SearchUserModule();
-		mm = mum.getManageUserMenu(wsmuInitStatus, false, false, aum);
+		mm = getManageUserMenu(false);
 		mm.setSizeUndefined();
+		cs = sum.getSearchForm("x");
+		csman.addComponent(cs);
+		csman.setSizeFull();
+		csman.setComponentAlignment(cs, Alignment.TOP_CENTER);
+
+		contentC.addComponent(csman);
+
+		contentC.setSizeFull();
 
 		cParentLayout.addComponent(mm);
 		cParentLayout.setComponentAlignment(mm, Alignment.TOP_CENTER);
 		cParentLayout.addComponent(contentC);
+
 	}
 
 	public VerticalLayout getWorkSpaceManageUser() {
-		String curSessionUManage = (String) UI.getCurrent().getSession()
-				.getAttribute(ManageUserModule.SESSION_UMANAGE);
-		searchC = (FormLayout) sum.sumModifier(curSessionUManage, contentC);
 		return cParentLayout;
 
 	}
 
-	public void wsmuModifier() {
+	private VerticalLayout getManageUserMenu(boolean boolEditStatus) {
 
-		String curSessionWorkArea = (String) UI.getCurrent().getSession()
-				.getAttribute(WorkSpaceManageUser.SESSION_WORK_AREA);
-		// Notification.show("Yes, I mind: "+(String)UI.getCurrent().getSession().getAttribute(WorkSpaceManageProfile.SESSION_WSMP));
+		VerticalLayout cManageUserMenu = new VerticalLayout();
+		cManageUserMenu.setStyleName("c_u_manage_menu");
+		cManageUserMenu.setSizeUndefined();
 
-		if ((String) UI.getCurrent().getSession()
-				.getAttribute(WorkSpaceManageProfile.SESSION_WSMP) != null) {
-			if (WorkSpace.wsmp != null)
-				WorkSpace.wsmp.wsmpModifier();
-			return;
+		HorizontalLayout cManageAndAddTab = new HorizontalLayout();
 
-		}
+		final BtnTabLike btnManUser = new BtnTabLike("Manage", "man");
+		btnManUser.setStyleName("btn_tab_like btn_tab_like_active");
 
-		if (curSessionWorkArea != null
-				&& curSessionWorkArea.equals(SESSION_VAR_WORK_AREA_ADD_USER)) {
-			contentC.removeAllComponents();
-			uf = aum.aumModifier(contentC);
-			return;
+		final BtnTabLike btnAddUser = new BtnTabLike("Add New", "add");
+		cManageAndAddTab.addComponent(btnManUser);
+		cManageAndAddTab.addComponent(btnAddUser);
+		btnManUser.setEnabled(false);
+		cManageUserMenu.addComponent(cManageAndAddTab);
 
-		} else if (curSessionWorkArea != null
-				&& curSessionWorkArea.equals(SESSION_VAR_WORK_AREA_MANAGE_USER)) {
-			String curSessionUManage = (String) UI.getCurrent().getSession()
-					.getAttribute(ManageUserModule.SESSION_UMANAGE);
-			if (curSessionUManage != null
-					&& curSessionUManage
-							.equals(ManageUserModule.SESSION_VAR_UMANAGE_SEARCH)) {
+		btnManUser.addClickListener(new Button.ClickListener() {
 
-				String strSessionSearch = (String) UI
-						.getCurrent()
-						.getSession()
-						.getAttribute(
-								WorkSpaceManageUser.SESSION_WORK_AREA_USER_TYPE);
-				if (strSessionSearch != null) {
-					if (searchC != null)
-						contentC.removeComponent(searchC);
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
 
-					if (uf != null)
-						contentC.removeComponent(uf);
+			@Override
+			public void buttonClick(ClickEvent event) {
+				btnAddUser.setEnabled(true);
+				btnManUser.setEnabled(false);
+				btnManUser.setStyleName("btn_tab_like btn_tab_like_active");
+				btnAddUser.setStyleName("btn_tab_like");
+				caddman = (HorizontalLayout) contentC.getComponent(0);
+				contentC.replaceComponent(caddman, csman);
 
-					if (cuDetails != null)
-						contentC.removeComponent(cuDetails);
-
-					if (searchResultsC != null)
-						contentC.removeComponent(searchResultsC);
-					searchC = (FormLayout) sum.sumModifier(curSessionUManage,
-							contentC);
-					return;
-
-				}
-
-			} else if (curSessionUManage != null
-					&& curSessionUManage
-							.equals(ManageUserModule.SESSION_VAR_UMANAGE_SEARCH_RESULTS)) {
-				if (cuDetails != null) {
-					contentC.removeComponent(cuDetails);
-				}
-				searchResultsC = (VerticalLayout) sum.sumModifier(
-						curSessionUManage, contentC);
-				return;
-
-			} else if (curSessionUManage != null
-					&& curSessionUManage
-							.equals(ManageUserModule.SESSION_VAR_UMANAGE_USER_ACTIONS)) {
-
-				if (searchResultsC != null) {
-					contentC.removeComponent(searchResultsC);
-				}
-				String strUDM = (String) UI.getCurrent().getSession()
-						.getAttribute(UserDetailsModule.SESSION_UDM);
-				if (strUDM == null) {
-					if (udm == null)
-						udm = new UserDetailsModule();
-					cuDetails = udm.udmModifier(contentC, udm);
-					UI.getCurrent()
-							.getSession()
-							.setAttribute(UserDetailsModule.SESSION_UDM,
-									"active");
-
-				} else {
-					cuDetails = udm.udmModifier(contentC, udm);
-
-				}
-
-				return;
 			}
+		});
 
-		}
+		btnAddUser.addClickListener(new Button.ClickListener() {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				btnAddUser.setEnabled(false);
+				btnManUser.setEnabled(true);
+				btnAddUser.setStyleName("btn_tab_like btn_tab_like_active");
+				btnManUser.setStyleName("btn_tab_like");
+
+				csman = (HorizontalLayout) contentC.getComponent(0);
+				contentC.replaceComponent(csman, caddman);
+
+				if (aum == null) {
+					aum = new AddUserModule();
+					auf = aum.getAddUserForm();
+					caddman.addComponent(auf);
+					caddman.setSizeFull();
+					caddman.setComponentAlignment(auf, Alignment.TOP_CENTER);
+				}
+
+			}
+		});
+
+		return cManageUserMenu;
 
 	}
 
+	private void addModifier() {
+		UI.getCurrent()
+				.getPage()
+				.addUriFragmentChangedListener(
+						new Page.UriFragmentChangedListener() {
+
+							private static final long serialVersionUID = 1L;
+
+							@Override
+							public void uriFragmentChanged(
+									UriFragmentChangedEvent event) {
+
+								modifier(UI.getCurrent().getPage()
+										.getUriFragment());
+							}
+						});
+	}
+
+	private void modifier(String frag) {
+
+		String param = frag.substring(frag.indexOf('?') + 1);
+		if (param == null)
+			return;
+
+		String aParam[] = param.split("&");
+		if (aParam.length < 2)
+			return;
+		String action = aParam[0].split("=")[1];
+
+		StringBuilder strb = new StringBuilder();
+		for (int i = 1; i < aParam.length; i++) {
+			strb.append(aParam[i]);
+			strb.append("&");
+		}
+
+		switch (action) {
+		case "search": {
+			csman.setComponentAlignment(cs, Alignment.TOP_LEFT);
+			VerticalLayout csr = sum.getSearchResults(strb.toString());
+			csman.addComponent(csr);
+			csman.setExpandRatio(csr, 1.0f);
+			csman.setStyleName("csman");
+			csman.removeComponent(cs);
+			break;
+		}
+		case "search_results": {
+			csman.removeAllComponents();
+			VerticalLayout csr = sum.getSearchResults(strb.toString());
+			csman.addComponent(csr);
+			csman.setExpandRatio(csr, 1.0f);
+			break;
+		}
+		case "filter_search_results": {
+
+			sum.addFilters(strb.toString());
+			break;
+		}
+		}
+
+	}
 }

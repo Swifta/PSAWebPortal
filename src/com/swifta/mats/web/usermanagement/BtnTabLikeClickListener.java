@@ -2,7 +2,6 @@ package com.swifta.mats.web.usermanagement;
 
 import java.util.ArrayList;
 
-import com.swifta.mats.web.WorkSpace;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -14,7 +13,6 @@ import com.vaadin.ui.Window;
 
 public class BtnTabLikeClickListener implements Button.ClickListener {
 	private ArrayList<BtnTabLike> arrLTabBtns;
-	// private HorizontalLayout hTabContainer;
 	private Window popup;
 	private VerticalLayout cPopupMsg;
 	private String[] arrSessions;
@@ -197,8 +195,8 @@ public class BtnTabLikeClickListener implements Button.ClickListener {
 					.setAttribute(arrSessions[i], arrSessionVars[i]);
 		}
 
-		if (WorkSpace.wsmu != null)
-			WorkSpace.wsmu.wsmuModifier();
+		// if (WorkSpace.wsmu != null)
+		// WorkSpace.wsmu.wsmuModifier();
 
 	}
 

@@ -6,17 +6,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import com.swifta.mats.web.WorkSpace;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.ThemeResource;
-import com.vaadin.shared.ui.MarginInfo;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
@@ -24,48 +20,17 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 public class SearchUserModule {
-	public static final String tbUsers = "user";
-	public static final String SESSION_USER_ACTION = "session_action";
-	public static final String SESSION_USER_TABLE = "users_table";
-	public static final String SESSION_USER_TABLE_ROW_ID = "tb_rw_id";
-	public static final String ACTION_DETAILS = "details";
-	public static final String ACTION_EDIT = "edit";
-	public static final String ACTION_LINK = "link";
-	public static final String ACTION_DELETE = "delete";
-	public static final String ACTION_MORE = "moreActions";
 
-	public static final String SESSION_SEARCH_USER = "search_user";
-	public static final String SESSION_VAR_SEARCH_USER_DEFAULT = "agent";
-	public static final String SESSION_SEARCH_USER_PARAM = "search_user_param";
 	ArrayList<Object> arrLTfs;
-	/*
-	 * public static final String SESSION_VAR_SEARCH_USER = "merchant"; public
-	 * static final String SESSION_VAR_SEARCH_USER = "agent"; public static
-	 * final String SESSION_VAR_SEARCH_USER = "agent"; public static final
-	 * String SESSION_VAR_SEARCH_USER = "agent"; public static final String
-	 * SESSION_VAR_SEARCH_USER = "agent"; public static final String
-	 * SESSION_VAR_SEARCH_USER = "agent";
-	 */
-
-	private FormLayout searchC;
-	private VerticalLayout searchResultsC;
+	boolean isSearchURL = false;
+	String curURL = null;
 
 	Window popup;
 	private Map<Integer, String> profToID;
+	private BE2 be;
 
 	public SearchUserModule() {
 
-		/*
-		 * profToID = new HashMap<>(); profToID.put(0, "ALL"); profToID.put(1,
-		 * "BACK OFFICE"); profToID.put(2, "SERVICE PROVIDER"); profToID.put(3,
-		 * "FINANCIAL CONTROLLER"); profToID.put(4, "CUSTOMER CARE");
-		 * profToID.put(5, "MOBILE MONEY"); profToID.put(6, "SUPER AGENT");
-		 * profToID.put(7, "SUB AGENT"); profToID.put(8, "DEPOSIT ONLY");
-		 * profToID.put(9, "DEPOSIT & WITHDRAW"); profToID.put(10,
-		 * "WITHDRAW ONLY"); profToID.put(11, "DEALER"); profToID.put(12,
-		 * "CASH"); profToID.put(13, "MATS ACCOUNT"); profToID.put(14,
-		 * "MATS USER");
-		 */
 		profToID = new HashMap<>();
 		profToID.put(0, "ALL");
 		profToID.put(1, "MATS_ADMIN_USER_PROFILE");
@@ -76,6 +41,13 @@ public class SearchUserModule {
 		profToID.put(11, "MATS_DEALER_USER_PROFILE");
 		profToID.put(15, "MATS_SERVICE_PROVIDER_USER_PROFILE");
 
+	}
+
+	public void addFilters(String strParams) {
+
+		if (be == null)
+			be = new BE2();
+		be.addFilters(strParams);
 	}
 
 	public FormLayout getSearchForm(String strUserType) {
@@ -127,12 +99,18 @@ public class SearchUserModule {
 		searchForm.addComponent(btnSearch);
 
 		btnSearch.setIcon(FontAwesome.SEARCH);
+		isSearchURL = false;
 
 		btnSearch.addClickListener(new Button.ClickListener() {
 			private static final long serialVersionUID = -5894920456172825127L;
 
 			@Override
 			public void buttonClick(ClickEvent event) {
+
+				if (!isSearchURL) {
+					curURL = UI.getCurrent().getPage().getUriFragment();
+					isSearchURL = true;
+				}
 				StringBuilder strBuilder = new StringBuilder();
 
 				for (Object tF : arrLTfs) {
@@ -155,30 +133,18 @@ public class SearchUserModule {
 				String strParams = strBuilder.toString();
 
 				UI.getCurrent()
-						.getSession()
-						.setAttribute(
-								ManageUserModule.SESSION_VAR_UMANAGE_SEARCH,
-								null);
-				UI.getCurrent().getSession()
-						.setAttribute(UserDetailsModule.SESSION_UDM, null);
-				UI.getCurrent()
-						.getSession()
-						.setAttribute(
-								ManageUserModule.SESSION_UMANAGE,
-								ManageUserModule.SESSION_VAR_UMANAGE_SEARCH_RESULTS);
-				UI.getCurrent().getSession()
-						.setAttribute(SESSION_SEARCH_USER_PARAM, strParams);
+						.getPage()
+						.setUriFragment(curURL + "/?action=search&" + strParams);
 
-				if (WorkSpace.wsmu != null)
-					WorkSpace.wsmu.wsmuModifier();
 			}
 		});
 
 		return searchForm;
 	}
 
-	private VerticalLayout getSearchResults(String strSearchParams) {
-		BE2 be = new BE2();
+	public VerticalLayout getSearchResults(String strSearchParams) {
+		if (be == null)
+			be = new BE2();
 		return be.queryBackEnd(strSearchParams);
 	}
 
@@ -209,61 +175,6 @@ public class SearchUserModule {
 			searchForm.addComponent(tF);
 		}
 		return arrLTfs;
-	}
-
-	public Object sumModifier(String strSessionSearch, HorizontalLayout contentC) {
-
-		String strUserType = (String) UI.getCurrent().getSession()
-				.getAttribute(WorkSpaceManageUser.SESSION_WORK_AREA_USER_TYPE);
-
-		if (strSessionSearch
-				.equals(ManageUserModule.SESSION_VAR_UMANAGE_SEARCH)) {
-
-			if (searchC != null) {
-				contentC.removeComponent(searchC);
-			}
-
-			searchC = getSearchForm(strUserType);
-			contentC.addComponent(searchC);
-
-			searchC.removeStyleName("c_search_user");
-			contentC.setComponentAlignment(searchC, Alignment.MIDDLE_CENTER);
-			contentC.setSizeFull();
-			contentC.setSpacing(false);
-			contentC.setMargin(true);
-			return searchC;
-
-		} else if (strSessionSearch
-				.equals(ManageUserModule.SESSION_VAR_UMANAGE_SEARCH_RESULTS)) {
-			searchC.setSizeUndefined();
-			searchC.setStyleName("c_search_user");
-			contentC.setComponentAlignment(searchC, Alignment.TOP_RIGHT);
-
-			String strSessionSearchParam = (String) UI.getCurrent()
-					.getSession()
-					.getAttribute(SearchUserModule.SESSION_SEARCH_USER_PARAM);
-			if (strSessionSearchParam != null) {
-
-				if (searchResultsC != null) {
-					contentC.removeComponent(searchResultsC);
-				}
-				searchResultsC = getSearchResults(strSessionSearchParam);
-				contentC.addComponent(searchResultsC);
-				searchResultsC.setSizeUndefined();
-				// searchResultsC.setStyleName("s_r_c");
-				contentC.setComponentAlignment(searchResultsC,
-						Alignment.TOP_LEFT);
-				contentC.setSizeUndefined();
-				contentC.setMargin(new MarginInfo(true, false, true, false));
-				contentC.setSpacing(false);
-
-			}
-
-			return searchResultsC;
-		}
-
-		return null;
-
 	}
 
 }

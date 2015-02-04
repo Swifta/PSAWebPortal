@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import com.swifta.mats.web.accountprofile.WorkSpaceManageProfile;
 import com.swifta.mats.web.utils.UserManagementService;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub;
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -47,9 +46,17 @@ import com.vaadin.ui.themes.ValoTheme;
 
 public class UserDetailsModule {
 	public static boolean uDetailsEditStatus = false;
-	FormLayout cUPersonalDetails;
-	VerticalLayout cUDetails;
-	HorizontalLayout cDetailsAndOperations;
+	private FormLayout cUPersonalDetails;
+	private VerticalLayout cUDetails;
+	private HorizontalLayout cDetailsAndOperations;
+	HorizontalLayout cP;
+	HorizontalLayout cA;
+	HorizontalLayout prevL;
+	private boolean isfromsub = false;
+
+	HorizontalLayout cLP;
+	HorizontalLayout cLA;
+
 	// Declaration of form fields
 	TextField tfGen;
 	OptionGroup opt;
@@ -155,24 +162,15 @@ public class UserDetailsModule {
 	private boolean boolEditStatus = false;
 	private HorizontalLayout cBtnEditCancel;
 	UserDetailsBackEnd bee;
+	private Map<String, String> hm;
 
 	public UserDetailsModule() {
 
 	}
 
-	public HorizontalLayout getDetailsForm(String strTbName, String strUID,
-			boolean hasOp, boolean boolEditStatus) {
-		this.boolEditStatus = boolEditStatus;
-		return setDetailsForm(getUDetails(strTbName, strUID), hasOp,
-				boolEditStatus);
-	}
-
-	private HorizontalLayout setDetailsForm(Map<String, String[]> mappedData,
-			boolean hasOp, boolean boolEditStatus) {
+	private HorizontalLayout setDetailsForm(String strUID, String strAction) {
 		cDetailsAndOperations = new HorizontalLayout();
 		cDetailsAndOperations.setSizeUndefined();
-
-		// Notification.show(Boolean.toString(hasOp));
 
 		cUPersonalDetails = new FormLayout();
 		cUPersonalDetails.setMargin(true);
@@ -181,137 +179,51 @@ public class UserDetailsModule {
 		cUPersonalDetails.setSizeUndefined();
 		cDetailsAndOperations.addComponent(cUPersonalDetails);
 
-		if (mappedData.size() == 0) {
+		/*
+		 * TODO Do not Delete brother.
+		 * 
+		 * cUDetails = new VerticalLayout(); cUDetails.setMargin(new
+		 * MarginInfo(false, true, true, true));
+		 * 
+		 * cUDetails.setStyleName("c_u_details"); cUDetails.setSizeUndefined();
+		 * cUDetails.addComponent(new Label(" NO Data Available!"));
+		 * 
+		 * cUPersonalDetails.addComponent(cUDetails); uDetailsEditStatus =
+		 * false;
+		 */
 
-			cUDetails = new VerticalLayout();
-			cUDetails.setMargin(new MarginInfo(false, true, true, true));
+		arrLAllFormFields = new ArrayList<Object>();
 
-			cUDetails.setStyleName("c_u_details");
-			cUDetails.setSizeUndefined();
-			cUDetails.addComponent(new Label(" NO Data Available!"));
+		final String btnEditId = "edit";
 
-			cUPersonalDetails.addComponent(cUDetails);
-			uDetailsEditStatus = false;
-		} else {
+		// Holders of editable form components
 
-			String strTbName = mappedData.get("arrTbName")[0];
-			String strUID = mappedData.get("arrUID")[0];
-			if (strTbName.equals("activity_log")
-					|| strTbName.equals("account_change_log")) {
-				// TODO fetch specified table log
+		arrLAllEditableFields = new ArrayList<Object>();
 
-			} else {
+		// Holders of editable form components original values to be
+		// used for undoing/resetting the form.
+		arrLTfEditableVals = new ArrayList<String>();
+		arrLOptEditableVals = new ArrayList<String>();
+		arrLComboEditableVals = new ArrayList<String>();
 
-				arrLAllFormFields = new ArrayList<Object>();
-				HashMap<String, Object> mapSlaveFields = new HashMap<String, Object>();
+		final Button btnEdit = new Button();
+		btnEdit.setId(btnEditId);
+		btnEdit.setIcon(FontAwesome.EDIT);
+		btnEdit.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
+		btnEdit.setStyleName("btn_link");
 
-				/*
-				 * TODO
-				 * 
-				 * Fetched data
-				 */
+		final Button btnCancel = new Button();
+		btnCancel.setId(btnEditId);
+		btnCancel.setIcon(FontAwesome.UNDO);
+		btnCancel.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
+		btnCancel.setStyleName("btn_link");
+		btnCancel.setVisible(false);
 
-				// Set Data
+		cBtnEditCancel = new HorizontalLayout();
+		cBtnEditCancel.setSizeUndefined();
+		cBtnEditCancel.addComponent(btnEdit);
 
-				arrTfCaptions = mappedData.get("arrTfCaptions");
-				arrOptCaptions = mappedData.get("arrOptCaptions");
-				arrComboCaptions = mappedData.get("arrComboCaptions");
-				arrDfCaptions = mappedData.get("arrDfCaptions");
-
-				arrTfVals = mappedData.get("arrTfVals");
-				arrOptVals = mappedData.get("arrOptVals");
-				arrComboVals = mappedData.get("arrComboVals");
-				arrDfVals = mappedData.get("arrDfVals");
-
-				final String btnEditId = "edit";
-				final String btnSaveId = "save";
-
-				// Holders of editable form components
-
-				arrLAllEditableFields = new ArrayList<Object>();
-
-				// Holders of editable form components original values to be
-				// used for undoing/resetting the form.
-				arrLTfEditableVals = new ArrayList<String>();
-				arrLOptEditableVals = new ArrayList<String>();
-				arrLComboEditableVals = new ArrayList<String>();
-				final ArrayList<String> arrLDfEditableVals = new ArrayList<String>();
-
-				String strCurUser = (String) UI.getCurrent().getSession()
-						.getAttribute(WorkSpaceManageProfile.SESSION_WSMP);
-				// Notification.show(strCurUserType+" +++++++");
-				// For testing purposes, we assume that every first item of each
-				// for category is read-only, hence the isReadOnly = 0
-
-				final Button btnEdit = new Button();
-				btnEdit.setId(btnEditId);
-				btnEdit.setIcon(FontAwesome.EDIT);
-				btnEdit.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
-				btnEdit.setStyleName("btn_link");
-
-				final Button btnCancel = new Button();
-				btnCancel.setId(btnEditId);
-				btnCancel.setIcon(FontAwesome.UNDO);
-				btnCancel.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
-				btnCancel.setStyleName("btn_link");
-				btnCancel.setVisible(false);
-
-				cBtnEditCancel = new HorizontalLayout();
-				cBtnEditCancel.setSizeUndefined();
-				cBtnEditCancel.addComponent(btnEdit);
-
-				String strCurUserAction = (String) UI
-						.getCurrent()
-						.getSession()
-						.getAttribute(
-								WorkSpaceManageProfile.SESSION_WSMP_CUR_ACTION);
-				if (strCurUserAction != null) {
-					if (strCurUserAction
-							.equals(WorkSpaceManageProfile.SESSION_VAR_WSMP_AUTH)) {
-						btnEdit.setVisible(false);
-					} else {
-						btnEdit.setVisible(true);
-						btnEdit.setEnabled(false);
-					}
-				}
-
-				if (hasOp) {
-					ecbsf = new EditCancelBtnsSingleField(cUPersonalDetails,
-							false);
-					cDetailsAndOperations.addComponent(getOpForm(strTbName,
-							strUID, mapSlaveFields));
-					btnEdit.setVisible(false);
-					btnEdit.setEnabled(false);
-					ecbsf.btnEditS.setVisible(false);
-
-				} else {
-					wrapperEditCancelBtnsClickListener(btnEdit, btnCancel,
-							btnEditId, btnSaveId, arrLAllEditableFields,
-							cBtnEditCancel, arrLTfEditableVals,
-							arrLOptEditableVals, arrLComboEditableVals,
-							arrLDfEditableVals);
-					cUPersonalDetails.addComponent(cBtnEditCancel);
-				}
-
-				setData(strTbName, strUID, strCurUser, arrLAllFormFields,
-						arrLAllEditableFields, arrLTfEditableVals,
-						arrLOptEditableVals, arrLComboEditableVals,
-						arrLDfEditableVals, mapSlaveFields);
-
-				/*
-				 * 
-				 * If edit status is true and has no operations, initiate
-				 * editUserDetails
-				 */
-				if (boolEditStatus && !hasOp) {
-					editUserDetails(arrLAllEditableFields, btnEdit, btnCancel,
-							btnSaveId, cBtnEditCancel);
-				}
-
-			}
-
-		}
-
+		setData(strUID, strAction);
 		return cDetailsAndOperations;
 	}
 
@@ -393,127 +305,6 @@ public class UserDetailsModule {
 
 	}
 
-	public Map<String, String[]> getUDetails(String strTbName, String strUID) {
-		bee = new UserDetailsBackEnd();
-		Map<String, String[]> mappedData = bee.getUserPersonalInfo(strTbName,
-				strUID);
-		return mappedData;
-	}
-
-	private void setTfs(int isReadOnlyTf, List<Object> arrLAllFormFields,
-			List<Object> arrLTfEditable, ArrayList<String> arrLTfEditableVals) {
-		for (int iTf = 0; iTf < arrTfVals.length; iTf++) {
-			tfGen = new TextField();
-			tfGen.setCaption(arrTfCaptions[iTf]);
-			tfGen.setValue(arrTfVals[iTf]);
-			tfGen.setStyleName(ValoTheme.TEXTFIELD_BORDERLESS);
-			tfGen.setReadOnly(true);
-			tfGen.setDescription(arrTfVals[iTf]);
-			tfGen.setWidth("100%");
-			arrLAllFormFields.add(tfGen);
-
-			cUPersonalDetails.addComponent(tfGen);
-			if (iTf != isReadOnlyTf) {
-				arrLTfEditable.add(tfGen);
-				arrLTfEditableVals.add(arrTfVals[iTf]);
-			}
-		}
-
-	}
-
-	private void setOpts(String strTbName, String strUID, int isReadOnlyOpt,
-			List<Object> lAllFormFields, List<Object> arrLOptEditable,
-			ArrayList<String> arrLOptEditableVals,
-			HashMap<String, Object> mapSlaveFields) {
-		for (int iOpt = 0; iOpt < arrOptVals.length; iOpt++) {
-			opt = new OptionGroup();
-			opt.setCaption(arrOptCaptions[iOpt]);
-			opt.addItem(arrOptVals[iOpt]);
-			opt.select(arrOptVals[iOpt]);
-			opt.setReadOnly(true);
-			opt.setId("opt_" + strTbName + "_" + strUID + "_"
-					+ arrOptCaptions[iOpt]);
-			if (iOpt != isReadOnlyOpt) {
-				arrLOptEditable.add(opt);
-				arrLOptEditableVals.add(arrOptVals[iOpt]);
-			}
-			if (strTbName.equals("account")
-					&& arrOptCaptions[iOpt].equals("Status")) {
-				strOptSEditableFieldVal = arrOptVals[iOpt];
-				optSEditableField = opt;
-				mapSlaveFields.put(arrOptCaptions[iOpt], opt);
-
-			}
-
-			cUPersonalDetails.addComponent(opt);
-		}
-	}
-
-	private void setCombos(String strTbName, String strUID,
-			int isReadOnlyCombo, List<Object> lAllFormFields,
-			List<Object> arrLComboEditable,
-			ArrayList<String> arrLComboEditableVals,
-			HashMap<String, Object> mapSlaveFields) {
-		for (int iCombo = 0; iCombo < arrComboVals.length; iCombo++) {
-			combo = new ComboBox();
-			combo.setCaption(arrComboCaptions[iCombo]);
-			combo.addItem(arrComboVals[iCombo]);
-			combo.select(arrComboVals[iCombo]);
-			combo.setReadOnly(true);
-			lAllFormFields.add(combo);
-			if (iCombo != isReadOnlyCombo) {
-				arrLComboEditable.add(combo);
-				arrLComboEditableVals.add(arrComboVals[iCombo]);
-			}
-
-			if (strTbName.equals("account")
-					&& arrComboCaptions[iCombo].equals("Type")) {
-				arrLComboSEditableField.add(combo);
-				arrLComboSEditableFieldVal.add(arrComboVals[iCombo]);
-
-				mapSlaveFields.put(arrComboCaptions[iCombo], combo);
-
-				combo.addValueChangeListener(new ValueChangeListener() {
-					private static final long serialVersionUID = -2182355729919041184L;
-
-					@Override
-					public void valueChange(ValueChangeEvent event) {
-						if (ecbsf == null)
-							return;
-						ecbsf.btnEditS.setIcon(FontAwesome.SAVE);
-						ecbsf.btnEditS.setVisible(true);
-						ecbsf.btnCancel.setVisible(true);
-						ecbsf.btnEditS.setEnabled(false);
-						ecbsf.btnCancel.setEnabled(true);
-						uDetailsEditStatus = true;
-
-					}
-
-				});
-
-			}
-
-			cUPersonalDetails.addComponent(combo);
-		}
-	}
-
-	@SuppressWarnings("deprecation")
-	private void setDfs(int isReadOnlyCombo, List<Object> lAllFormFields,
-			List<Object> arrLDfEditable, ArrayList<String> arrLDfEditableVals) {
-		for (int iDf = 0; iDf < arrDfVals.length; iDf++) {
-			dF = new PopupDateField();
-			dF.setCaption(arrDfCaptions[iDf]);
-			dF.setValue(new Date(arrDfVals[iDf]));
-			dF.setReadOnly(true);
-			lAllFormFields.add(dF);
-			if (iDf != isReadOnlyCombo) {
-				arrLDfEditable.add(dF);
-				arrLDfEditableVals.add(arrDfVals[iDf]);
-			}
-			cUPersonalDetails.addComponent(dF);
-		}
-	}
-
 	private void editUserDetails(List<Object> arrLAllEditableFields,
 			Button btnEdit, Button btnCancel, String btnSaveId,
 			HorizontalLayout cBtnEditCancel) {
@@ -529,109 +320,6 @@ public class UserDetailsModule {
 			btnCancel.setVisible(true);
 			cBtnEditCancel.addComponent(btnCancel);
 		}
-	}
-
-	public FormLayout getOpForm(String strTbName, String strUID,
-			HashMap<String, Object> mapSlaveFields) {
-
-		String strUserType = (String) UI.getCurrent().getSession()
-				.getAttribute(WorkSpaceManageUser.SESSION_WORK_AREA_USER_TYPE);
-		// Notification.show(strUserType);
-		if (strUserType
-				.equals(WorkSpaceManageUser.SESSION_VAR_WORK_AREA_DEFAULT_USER_TYPE)) {
-			return getAgentOpForm(strTbName, strUID, mapSlaveFields);
-		} else {
-			// Notification.show("Nothing.");
-			return new FormLayout();
-		}
-
-	}
-
-	private void wrapperEditCancelBtnsClickListener(final Button btnEdit,
-			final Button btnCancel, final String btnEditId,
-			final String btnSaveId, final List<Object> arrLAllEditableFields,
-			final HorizontalLayout cBtnEditCancel,
-			final ArrayList<String> arrLTfEditableVals,
-			final ArrayList<String> arrLOptEditableVals,
-			final ArrayList<String> arrLComboEditableVals,
-			final ArrayList<String> arrLDfEditableVals) {
-		btnEdit.addClickListener(new Button.ClickListener() {
-
-			private static final long serialVersionUID = -6544444429248747390L;
-
-			@Override
-			public void buttonClick(ClickEvent event) {
-
-				/*
-				 * Prepare all Editable fields (Entire form) for editing.
-				 */
-				if (event.getButton().getId().equals(btnEditId)) {
-					cUPersonalDetails.removeAllComponents();
-					cUPersonalDetails.addComponent(getEUDContainer());
-					editUserDetails(arrLAllEditableFields, btnEdit, btnCancel,
-							btnSaveId, cBtnEditCancel);
-
-					/*
-					 * By Default, btnCancel is not visible, until btnEdit is
-					 * clicked. Only until then is it added and visible.
-					 */
-
-					if (!btnCancel.isVisible()) {
-						event.getButton().setId(btnSaveId);
-						event.getButton().setIcon(FontAwesome.SAVE);
-						btnCancel.setVisible(true);
-						cBtnEditCancel.addComponent(btnCancel);
-					}
-
-				} else {
-					if (event.getButton().getId().equals(btnSaveId)) {
-						/*
-						 * 
-						 * 
-						 * 
-						 * 
-						 * TODO commit (save) changes i.e, send changes back to
-						 * the server.
-						 */
-
-						// Remove undo button (btnCancel)
-						btnCancel.setVisible(false);
-
-						// Reset all Editable fields to readOnly after saving to
-						// the server
-						disableEditableFields(arrLAllEditableFields);
-
-						// Reset btnEdit id to btnIdEdit and caption(icon) to
-						// FontAwesome.EDIT
-						btnEdit.setId(btnEditId);
-						btnEdit.setIcon(FontAwesome.EDIT);
-
-						// Reset Edit status to false
-						uDetailsEditStatus = false;
-
-					}
-				}
-
-			}
-		});
-
-		btnCancel.addClickListener(new Button.ClickListener() {
-
-			private static final long serialVersionUID = 7719883177456399112L;
-
-			@Override
-			public void buttonClick(ClickEvent event) {
-
-				resetForm(arrLAllEditableFields, arrLTfEditableVals,
-						arrLOptEditableVals, arrLComboEditableVals,
-						arrLDfEditableVals, arrLTfEditableVals);
-				btnEdit.setId(btnEditId);
-				btnEdit.setIcon(FontAwesome.EDIT);
-				btnCancel.setVisible(false);
-
-			}
-		});
-
 	}
 
 	private class EditCancelBtnsSingleField {
@@ -1061,8 +749,8 @@ public class UserDetailsModule {
 
 	}
 
-	public VerticalLayout getUserDetailsContainer(String strTbName,
-			String strUID, boolean hasOp, boolean boolEditStatus) {
+	public VerticalLayout getUserDetailsContainer(String strUID,
+			String strAction) {
 		cUDetails = new VerticalLayout();
 		cUDetails.setMargin(new MarginInfo(false, true, true, true));
 
@@ -1076,13 +764,9 @@ public class UserDetailsModule {
 		String strCHeader;
 
 		if (boolEditStatus) {
-			strCHeader = "Edit Details of "
-					+ UI.getCurrent().getSession()
-							.getAttribute(UserDetailsModule.SESSION_UDM_UNAME);
+			strCHeader = "Edit Details of " + strUID;
 		} else {
-			strCHeader = "Showing Details of "
-					+ UI.getCurrent().getSession()
-							.getAttribute(UserDetailsModule.SESSION_UDM_UNAME);
+			strCHeader = "Showing Details of " + strUID;
 
 		}
 
@@ -1097,7 +781,7 @@ public class UserDetailsModule {
 
 		VerticalLayout cTabLike = null;
 
-		cTabLike = getManageUserMenu(false, boolEditStatus, hasOp, null);
+		cTabLike = getManageUserMenu();
 		cTabLike.setSizeUndefined();
 
 		cCHeader.addComponent(cTabLike);
@@ -1109,8 +793,11 @@ public class UserDetailsModule {
 				Alignment.MIDDLE_CENTER);
 		// cUDetails.setExpandRatio(cPerAccAuthInfo, 1.0f);
 
-		HorizontalLayout cUDetailsAndOperations = getDetailsForm(strTbName,
-				strUID, hasOp, boolEditStatus);
+		HorizontalLayout cUDetailsAndOperations = setDetailsForm(strUID,
+
+		strAction);
+
+		cP = cUDetailsAndOperations;
 		cPerAccAuthInfo.addComponent(cUDetailsAndOperations);
 
 		UI.getCurrent().getSession().setAttribute(SESSION_UDM, null);
@@ -1118,8 +805,7 @@ public class UserDetailsModule {
 		return cUDetails;
 	}
 
-	private VerticalLayout getManageUserMenu(boolean boolAddHeaderStatus,
-			boolean boolEditStatus, boolean hasOp, Object aum) {
+	private VerticalLayout getManageUserMenu() {
 
 		VerticalLayout cManageUserMenu = new VerticalLayout();
 		cManageUserMenu.setStyleName("c_u_manage_menu");
@@ -1127,60 +813,120 @@ public class UserDetailsModule {
 
 		HorizontalLayout cManageAndAddTab = new HorizontalLayout();
 
-		BtnTabLike btnPersonal = new BtnTabLike("Basic", null);
+		final BtnTabLike btnPersonal = new BtnTabLike("Basic", null);
 		btnPersonal.setStyleName("btn_tab_like btn_tab_like_active");
+		btnPersonal.setEnabled(false);
 
-		BtnTabLike btnAccount = new BtnTabLike("Account", null);
+		final BtnTabLike btnAccount = new BtnTabLike("Account", null);
 		// BtnTabLike btnAuth = new BtnTabLike("Authentication", null);
-		BtnTabLike btnLog = new BtnTabLike("Log", null);
+		final BtnTabLike btnLog = new BtnTabLike("Log", null);
 		cManageAndAddTab.addComponent(btnPersonal);
 		cManageAndAddTab.addComponent(btnAccount);
 		// cManageAndAddTab.addComponent(btnAuth);
 		cManageAndAddTab.addComponent(btnLog);
 
-		final ArrayList<BtnTabLike> arrLTabBtns = new ArrayList<BtnTabLike>();
-		arrLTabBtns.add(btnPersonal);
-		arrLTabBtns.add(btnAccount);
 		// arrLTabBtns.add(btnAuth);
-		arrLTabBtns.add(btnLog);
 
 		btnPersonal.setEnabled(false);
 
 		ArrayList<HorizontalLayout> arrLSubTabs = new ArrayList<HorizontalLayout>();
 
-		HorizontalLayout cManUserSubMenu = new HorizontalLayout();
+		final HorizontalLayout cManUserSubMenu = getAddUserSubMenu(btnLog,
+				btnPersonal, btnAccount);
 
 		arrLSubTabs.add(cManUserSubMenu);
 
-		String[] arrSessions = new String[] { ManageUserModule.SESSION_UMANAGE,
-				SESSION_UDM_TABLE, SESSION_UDM_IS_LOG };
+		/*
+		 * ..,.,xzxzxzxzxzxzxzxzxzxzxz btnPersonal.addClickListener(new
+		 * BtnTabLikeClickListener(false, false, arrLSubTabs, arrLTabBtns, null,
+		 * null, "account_change_log", "001", hasOp, boolEditStatus,
+		 * arrSessions, new String[] {
+		 * ManageUserModule.SESSION_VAR_UMANAGE_USER_ACTIONS,
+		 * SESSION_VAR_UDM_PER, null }));
+		 */
 
-		btnPersonal.addClickListener(new BtnTabLikeClickListener(false, false,
-				arrLSubTabs, arrLTabBtns, null, null, "account_change_log",
-				"001", hasOp, boolEditStatus, arrSessions, new String[] {
-						ManageUserModule.SESSION_VAR_UMANAGE_USER_ACTIONS,
-						SESSION_VAR_UDM_PER, null }));
-
-		btnAccount.addClickListener(new BtnTabLikeClickListener(false, false,
-				arrLSubTabs, arrLTabBtns, null, null, "account_change_log",
-				"001", hasOp, boolEditStatus, arrSessions, new String[] {
-						ManageUserModule.SESSION_VAR_UMANAGE_USER_ACTIONS,
-						SESSION_VAR_UDM_ACC, null }));
-
-		// btnAuth.addClickListener(new BtnTabLikeClickListener(false, false,
-		// arrLSubTabs, arrLTabBtns, null, null, "account_change_log",
-		// "001", hasOp, boolEditStatus, arrSessions, new String[] {
-		// ManageUserModule.SESSION_VAR_UMANAGE_USER_ACTIONS,
-		// SESSION_VAR_UDM_AUTH, null }));
+		/*
+		 * zxzxzxzxzxzxzxzxzxzzxzxxzxzxzx btnAccount.addClickListener(new
+		 * BtnTabLikeClickListener(false, false, arrLSubTabs, arrLTabBtns, null,
+		 * null, "account_change_log", "001", hasOp, boolEditStatus,
+		 * arrSessions, new String[] {
+		 * ManageUserModule.SESSION_VAR_UMANAGE_USER_ACTIONS,
+		 * SESSION_VAR_UDM_ACC, null }));
+		 */
 
 		cManageUserMenu.addComponent(cManageAndAddTab);
 		cManageUserMenu.addComponent(cManUserSubMenu);
 
+		btnPersonal.addClickListener(new Button.ClickListener() {
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+
+				btnPersonal.setEnabled(false);
+				btnPersonal.setStyleName("btn_tab_like btn_tab_like_active");
+
+				btnAccount.setEnabled(true);
+				btnAccount.setStyleName("btn_tab_like");
+
+				if (!isfromsub) {
+					cA = (HorizontalLayout) cPerAccAuthInfo.getComponent(0);
+					cPerAccAuthInfo.replaceComponent(cA, cP);
+
+					return;
+				} else {
+					prevL = (HorizontalLayout) cPerAccAuthInfo.getComponent(0);
+					cPerAccAuthInfo.replaceComponent(prevL, cP);
+
+					btnLog.setEnabled(true);
+					btnLog.setStyleName("btn_tab_like");
+					cManUserSubMenu.setStyleName("c_sub_menu_invisible");
+					isfromsub = false;
+					return;
+				}
+
+			}
+		});
+
+		btnAccount.addClickListener(new Button.ClickListener() {
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				btnAccount.setEnabled(false);
+				btnAccount.setStyleName("btn_tab_like btn_tab_like_active");
+
+				btnPersonal.setEnabled(true);
+				btnPersonal.setStyleName("btn_tab_like");
+				if (!isfromsub) {
+					if (cA == null)
+						cA = getADC();
+
+					cP = (HorizontalLayout) cPerAccAuthInfo.getComponent(0);
+					cPerAccAuthInfo.replaceComponent(cP, cA);
+
+				} else {
+					if (cA == null)
+						cA = getADC();
+					prevL = (HorizontalLayout) cPerAccAuthInfo.getComponent(0);
+					cPerAccAuthInfo.replaceComponent(prevL, cA);
+
+					isfromsub = false;
+					btnLog.setEnabled(true);
+					btnLog.setStyleName("btn_tab_like");
+					cManUserSubMenu.setStyleName("c_sub_menu_invisible");
+					return;
+				}
+
+			}
+		});
+
 		String strManBtnPref = "man";
 
-		cManUserSubMenu = getAddUserSubMenu(btnLog, strManBtnPref, arrLTabBtns,
-				cManUserSubMenu, arrLSubTabs, hasOp, boolEditStatus, null,
-				null, null);
+		/*
+		 * zzxzxzxzzzxzxxzxzxxzxzzx cManUserSubMenu = getAddUserSubMenu(btnLog,
+		 * strManBtnPref, arrLTabBtns, cManUserSubMenu, arrLSubTabs, hasOp,
+		 * boolEditStatus, null, null, null);
+		 */
+
 		cManUserSubMenu.setSizeUndefined();
 
 		BtnTabLike.btnPrevMenuState = BtnTabLike.btnTabCur;
@@ -1189,150 +935,166 @@ public class UserDetailsModule {
 
 	}
 
-	private HorizontalLayout getAddUserSubMenu(BtnTabLike btnAddUser,
-			String strBtnPref, ArrayList<BtnTabLike> arrLTabBtns,
-			HorizontalLayout cAddUserSubMenu,
-			ArrayList<HorizontalLayout> arrLAddUserSubTabs, boolean hasOp,
-			boolean boolEditStatus, Object aum, String strSessionVar,
-			String strSessionSub) {
-
+	private HorizontalLayout getAddUserSubMenu(final BtnTabLike btnAddUser,
+			final BtnTabLike btnPersonal, final BtnTabLike btnAccount) {
+		final HorizontalLayout cAddUserSubMenu = new HorizontalLayout();
 		cAddUserSubMenu.setStyleName("c_sub_menu_invisible");
 		cAddUserSubMenu.setSizeUndefined();
 
-		BtnTabLike btnAct = new BtnTabLike("Account Activity Log", null);
+		final BtnTabLike btnAct = new BtnTabLike("Account Activity Log", null);
 
-		BtnTabLike btnAcc = new BtnTabLike("Account Change Log", null);
+		final BtnTabLike btnAcc = new BtnTabLike("Account Change Log", null);
 
 		btnAct.setStyleName("btn_tab_like btn_tab_like_active");
 		btnAct.setEnabled(false);
-		BtnTabLike.btnTabCur = btnAct;
 
 		cAddUserSubMenu.addComponent(btnAct);
 		cAddUserSubMenu.addComponent(btnAcc);
 
-		final ArrayList<BtnTabLike> arrLSubTabBtns = new ArrayList<BtnTabLike>();
-		arrLSubTabBtns.add(btnAct);
-		arrLSubTabBtns.add(btnAcc);
-
-		/*
-		 * String[] arrSessions = new String[]{
-		 * ManageUserModule.SESSION_UMANAGE, SESSION_UDM_TABLE, SESSION_UDM_LOG
-		 * };
-		 */
-
-		String[] arrSessions = new String[] { ManageUserModule.SESSION_UMANAGE,
-				SESSION_UDM_TABLE_LOG, SESSION_UDM_IS_LOG };
-
-		btnAct.addClickListener(new BtnTabLikeClickListener(false, false,
-				arrLAddUserSubTabs, arrLSubTabBtns, null, aum,
-				"account_change_log", "001", hasOp, boolEditStatus,
-				arrSessions, new String[] {
-						ManageUserModule.SESSION_VAR_UMANAGE_USER_ACTIONS,
-						SESSION_VAR_UDM_ACT_LOG, SESSION_VAR_UDM_IS_LOG_TRUE }));
-
-		btnAcc.addClickListener(new BtnTabLikeClickListener(false, false,
-				arrLAddUserSubTabs, arrLSubTabBtns, null, aum,
-				"account_change_log", "001", hasOp, boolEditStatus,
-				arrSessions, new String[] {
-						ManageUserModule.SESSION_VAR_UMANAGE_USER_ACTIONS,
-						SESSION_VAR_UDM_ACC_LOG, SESSION_VAR_UDM_IS_LOG_TRUE }));
-
-		btnAddUser.addClickListener(new BtnTabLikeClickListener(false, true,
-				arrLAddUserSubTabs, arrLTabBtns, cAddUserSubMenu, aum,
-				"activity_log", "001", hasOp, boolEditStatus, new String[] {
-						ManageUserModule.SESSION_UMANAGE, SESSION_UDM_IS_LOG },
-				new String[] {
-						ManageUserModule.SESSION_VAR_UMANAGE_USER_ACTIONS,
-						SESSION_VAR_UDM_IS_LOG_TRUE }));
-
 		UI.getCurrent().getSession()
 				.setAttribute(SESSION_UDM_TABLE_LOG, SESSION_VAR_UDM_ACT_LOG);
+
+		btnAddUser.addClickListener(new Button.ClickListener() {
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				cAddUserSubMenu.setStyleName("c_sub_menu_visible");
+				isfromsub = true;
+				btnAddUser.setEnabled(false);
+				btnAddUser.setStyleName("btn_tab_like btn_tab_like_active");
+
+				HorizontalLayout p = (HorizontalLayout) cPerAccAuthInfo
+						.getComponent(0);
+
+				if (!btnPersonal.isEnabled()) {
+					btnPersonal.setEnabled(true);
+					btnPersonal.setStyleName("btn_tab_like");
+
+					cP = p;
+					if (cLP == null && prevL == null) {
+						btnAct.setEnabled(false);
+						btnAct.setStyleName("btn_tab_like btn_tab_like_active");
+
+						btnAcc.setEnabled(true);
+						btnAcc.setStyleName("btn_tab_like");
+
+						cLP = getAccLog();
+						cPerAccAuthInfo.replaceComponent(p, cLP);
+					} else {
+						cPerAccAuthInfo.replaceComponent(p, prevL);
+					}
+					return;
+				} else if (!btnAccount.isEnabled()) {
+
+					btnAccount.setEnabled(true);
+					btnAccount.setStyleName("btn_tab_like");
+					cA = p;
+					if (cLP == null && prevL == null) {
+						btnAct.setEnabled(false);
+						btnAct.setStyleName("btn_tab_like btn_tab_like_active");
+
+						btnAcc.setEnabled(true);
+						btnAcc.setStyleName("btn_tab_like");
+
+						cLP = getActLog();
+						cPerAccAuthInfo.replaceComponent(p, cLP);
+					} else {
+						cPerAccAuthInfo.replaceComponent(p, prevL);
+					}
+					return;
+
+				}
+
+			}
+		});
+
+		btnAcc.addClickListener(new Button.ClickListener() {
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+
+				btnAcc.setEnabled(false);
+				btnAcc.setStyleName("btn_tab_like btn_tab_like_active");
+
+				btnAct.setEnabled(true);
+				btnAct.setStyleName("btn_tab_like");
+
+				cLA = (HorizontalLayout) cPerAccAuthInfo.getComponent(0);
+				cPerAccAuthInfo.replaceComponent(cLA, cLP);
+
+			}
+		});
+
+		btnAct.addClickListener(new Button.ClickListener() {
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+
+				btnAct.setEnabled(false);
+				btnAct.setStyleName("btn_tab_like btn_tab_like_active");
+
+				btnAcc.setEnabled(true);
+				btnAcc.setStyleName("btn_tab_like");
+				if (cLA == null)
+					cLA = getActLog();
+
+				cLP = (HorizontalLayout) cPerAccAuthInfo.getComponent(0);
+				cPerAccAuthInfo.replaceComponent(cLP, cLA);
+
+			}
+		});
 
 		return cAddUserSubMenu;
 	}
 
-	public VerticalLayout udmModifier(HorizontalLayout contentC,
-			UserDetailsModule udm) {
-
-		String strUDM = (String) UI.getCurrent().getSession()
-				.getAttribute(SESSION_UDM);
-		String strTbName = (String) UI.getCurrent().getSession()
-				.getAttribute(SESSION_UDM_TABLE);
-		// Notification.show(strTbName, Notification.Type.ERROR_MESSAGE);
-		String strUID = (String) UI.getCurrent().getSession()
-				.getAttribute(SESSION_UDM_ID);
-		UI.getCurrent().getSession().getAttribute(SESSION_UDM_UNAME);
-
-		String strAction = (String) UI.getCurrent().getSession()
-				.getAttribute(SESSION_UDM_ACTION_EDIT_DETAILS);
-		boolean hasOp = false;
-
-		/*
-		 * if (strTbName.equals("account") || strTbName.equals("auth")) { hasOp
-		 * = true; } else { hasOp = false; }
-		 */
-
-		if (strUDM == null) {
-			cUDetails = udm.getUserDetailsContainer(strTbName, strUID, hasOp,
-					strAction.equals("edit"));
-			contentC.addComponent(cUDetails);
-			contentC.setComponentAlignment(cUDetails, Alignment.TOP_CENTER);
-			contentC.setExpandRatio(cUDetails, 1.0f);
-			contentC.setSizeFull();
-			contentC.setMargin(new MarginInfo(true, false, true, false));
-			contentC.setSpacing(false);
-		} else {
-			if (UI.getCurrent().getSession().getAttribute(SESSION_UDM_IS_LOG) != null) {
-				strTbName = (String) UI.getCurrent().getSession()
-						.getAttribute(SESSION_UDM_TABLE_LOG);
-			}
-			udm.cPerAccAuthInfo.removeAllComponents();
-
-			udm.cPerAccAuthInfo.addComponent(udm.getDetailsForm(strTbName,
-					strUID, hasOp, strAction.equals("edit")));
-
-		}
-
-		return cUDetails;
-
+	private HorizontalLayout getAccLog() {
+		HorizontalLayout c = new HorizontalLayout();
+		c.setSizeFull();
+		Label lb = new Label("No Data Available!");
+		c.addComponent(lb);
+		c.setMargin(true);
+		c.setComponentAlignment(lb, Alignment.MIDDLE_CENTER);
+		return c;
 	}
 
-	private void setData(String strTbName, String strUID, String strCurUser,
-			List<Object> arrLAllFormFields, List<Object> arrLAllEditableFields,
-			ArrayList<String> arrLTfEditableVals,
-			ArrayList<String> arrLOptEditableVals,
-			ArrayList<String> arrLComboEditableVals,
-			ArrayList<String> arrLDfEditableVals,
-			HashMap<String, Object> mapSlaveFields) {
+	private HorizontalLayout getActLog() {
+		HorizontalLayout c = new HorizontalLayout();
+		c.setSizeFull();
+		Label lb = new Label("No Data Available!");
+		c.addComponent(lb);
+		c.setComponentAlignment(lb, Alignment.MIDDLE_CENTER);
+		c.setMargin(true);
+		return c;
+	}
 
-		if (boolEditStatus) {
+	private void setData(String strUID, String strAction) {
+		if (strAction.equals("view_details")) {
+			VerticalLayout c = getUDContainer(strUID);
+			cUPersonalDetails.addComponent(c);
+		} else {
 			VerticalLayout c = getEUDContainer();
 			cUPersonalDetails.addComponent(c);
-			// cUPersonalDetails.setComponentAlignment(c,
-			// Alignment.MIDDLE_CENTER);
-
-		} else {
-
-			VerticalLayout c = getUDContainer(strTbName);
-			cUPersonalDetails.addComponent(c);
-			// cUPersonalDetails.setComponentAlignment(c,
-			// Alignment.MIDDLE_CENTER);
 
 		}
 
 	}
 
-	private VerticalLayout getUDContainer(String strTbName) {
+	private VerticalLayout getUDContainer(String strUID) {
 
-		Object tbn = UI.getCurrent().getSession()
-				.getAttribute(UserDetailsModule.SESSION_UDM_UNAME);
+		// Object tbn = UI.getCurrent().getSession()
+		// .getAttribute(UserDetailsModule.SESSION_UDM_UNAME);
 
-		Map<String, String> hm = bee.getUD((tbn != null) ? tbn.toString()
-				: null);
+		if (bee == null)
+			bee = new UserDetailsBackEnd();
 
-		if (strTbName.equals("account")) {
-			return getADC(strTbName, hm);
-		}
+		hm = bee.getUD(strUID);
+
+		// /////////////////////////////////////////////////////////----------Important------------for
+		// account
+
+		// if (strTbName.equals("account")) {
+		// return getADC(strUID, hm);
+		// }
 
 		String strProf = hm.get("Profile Type");
 
@@ -1733,7 +1495,7 @@ public class UserDetailsModule {
 		return cAgentInfo;
 	}
 
-	private VerticalLayout getADC(String strTbName, Map<String, String> hm) {
+	private HorizontalLayout getADC() {
 
 		// Notification.show(strTbName);
 
@@ -1830,8 +1592,10 @@ public class UserDetailsModule {
 		cAgentInfo.addComponent(cAcc);
 
 		// cBAndCAndAcc.addComponent(cAcc);
+		HorizontalLayout c = new HorizontalLayout();
+		c.addComponent(cAgentInfo);
 
-		return cAgentInfo;
+		return c;
 
 	}
 
