@@ -64,13 +64,17 @@ public class WorkSpace extends VerticalLayout implements View,
 
 	private static final long serialVersionUID = 4370608410523325533L;
 
-	public static final String WORK_SPACE = "";
+	public static final String WORK_SPACE = "main";
 	VerticalLayout dashboard6 = new VerticalLayout();
 	TabSheet tabsheet1 = new TabSheet();
 
 	public WorkSpace() {
 		wsmu = new WorkSpaceManageUser();
 		wsmp = new WorkSpaceManageProfile();
+
+	}
+
+	private void d() {
 		dat.addValidator(new ValidateRange(dat, dat2));
 		dat2.addValidator(new ValidateRange(dat, dat2));
 
@@ -102,6 +106,148 @@ public class WorkSpace extends VerticalLayout implements View,
 
 		});
 
+		// Tab1 Dashboard
+		VerticalLayout dashboard1 = new VerticalLayout();
+		dashboard1.setImmediate(true);
+		dashboard1.setCaption("Test1");
+		PiechartDash pie = new PiechartDash();
+		pi = new HorizontalLayout();
+		HorizontalLayout lut = new HorizontalLayout();
+		FormLayout former = new FormLayout();
+		final BarChartDash bar = new BarChartDash();
+
+		dat.setCaption("Start Date");
+		dat2.setCaption("End Date");
+		comboGF.addItem("Transaction Type");
+		comboGF.addItem("Fees Account");
+
+		former.addComponent(la);
+		former.addComponent(comboGF);
+		former.addComponent(dat);
+		former.addComponent(dat2);
+		former.addComponent(filter);
+		former.setWidth("100px");
+		final Chart barChart = (Chart) bar.getChart();
+		final Chart pieChart = (Chart) pie.getChart();
+		pi.addComponent(pieChart);
+		pi.addComponent(barChart);
+
+		dCat = "Transaction Type";
+
+		filter.addClickListener(new Button.ClickListener() {
+
+			private static final long serialVersionUID = 7867132630286287368L;
+
+			@SuppressWarnings("unchecked")
+			@Override
+			public void buttonClick(ClickEvent event) {
+
+				if (!isCriteriaChanged)
+					return;
+				else
+					isCriteriaChanged = false;
+				Object cat = comboGF.getValue();
+				// if (cat == null || cat.toString().equals(dCat))
+				// return;
+				if (cat == null)
+					return;
+
+				if (Dashboard.otb == null)
+					return;
+
+				dCat = cat.toString();
+				Date start = dat.getValue();
+				Date end = dat2.getValue();
+				Filter dfilter = null;
+
+				if (start != null && end != null) {
+
+					dat2.validate();
+					Dashboard.otb.removeAllContainerFilters();
+					dfilter = new And(
+							new GreaterOrEqual("DoT", start.getTime()),
+							new LessOrEqual("DoT", end.getTime()));
+					Dashboard.otb.addContainerFilter(dfilter);
+				}
+
+				Iterator<Integer> itr = (Iterator<Integer>) Dashboard.otb
+						.getItemIds().iterator();
+
+				HashMap<String, Float> hm = new HashMap<>();
+
+				while (itr.hasNext()) {
+					int rid = itr.next();
+					Item r = Dashboard.otb.getItem(rid);
+					Property<String> f = r.getItemProperty(cat.toString());
+					String param = f.getValue();
+					if (!hm.containsKey(param)) {
+						hm.put(param, 1F);
+					} else {
+						hm.put(param, hm.get(param) + 1);
+					}
+				}
+
+				Float t = 0F;
+				Iterator<Entry<String, Float>> itrx = hm.entrySet().iterator();
+				while (itrx.hasNext()) {
+					Entry<String, Float> e = itrx.next();
+					t = t + e.getValue();
+				}
+
+				itrx = hm.entrySet().iterator();
+				while (itrx.hasNext()) {
+					Entry<String, Float> e = itrx.next();
+					hm.put(e.getKey(), (e.getValue() / t) * 100);
+				}
+
+				DataSeries series = new DataSeries();
+
+				Iterator<Entry<String, Float>> itrSet = hm.entrySet()
+						.iterator();
+				while (itrSet.hasNext()) {
+					Entry<String, Float> e = itrSet.next();
+
+					DataSeriesItem item = new DataSeriesItem(e.getKey(), Math
+							.round(e.getValue()));
+
+					series.add(item);
+
+				}
+
+				itrx = hm.entrySet().iterator();
+
+				Set<String> types = hm.keySet();
+				String[] type = new String[types.size()];
+				types.toArray(type);
+
+				Collection<Float> vals = hm.values();
+				Float[] val = new Float[vals.size()];
+				vals.toArray(val);
+
+				for (int i = 0; i < val.length; i++)
+					val[i] = Float.valueOf(BigDecimal.valueOf(val[i])
+							.setScale(1, BigDecimal.ROUND_UP).toString());
+
+				PiechartDash.conf.setSeries(series);
+
+				pieChart.drawChart();
+				bar.xAxis.setCategories(type);
+				bar.serie.setData(val);
+				barChart.drawChart();
+
+			}
+		});
+
+		lut.setSizeFull();
+		lut.addComponent(former);
+		lut.addComponent(pi);
+		// lut.addComponent(bar.getChart());
+		lut.setExpandRatio(former, 2);
+		lut.setExpandRatio(pi, 6);
+
+		// dashboard1.addComponent(former, 0);
+		dashboard1.addComponent(lut);
+
 	}
 
 	private class ValidateRange implements Validator {
@@ -130,10 +276,8 @@ public class WorkSpace extends VerticalLayout implements View,
 	@SuppressWarnings("deprecation")
 	@Override
 	public void enter(ViewChangeEvent event) {
-		// Notification.show("In WorkSpace");
-		// setSizeFull();
+
 		setMargin(true);
-		// setStyleName("parent_layout");
 
 		btnLogout = new Button("Logout");
 
@@ -198,6 +342,9 @@ public class WorkSpace extends VerticalLayout implements View,
 				Object cat = comboGF.getValue();
 				// if (cat == null || cat.toString().equals(dCat))
 				// return;
+				if (cat == null)
+					return;
+
 				if (Dashboard.otb == null)
 					return;
 
@@ -307,6 +454,7 @@ public class WorkSpace extends VerticalLayout implements View,
 
 		cwsmu = wsmu.getWorkSpaceManageUser();
 		tabsheet1.addTab(cwsmu, "User Management", null);
+		// tabsheet1.addT
 
 		// VerticalLayout dashboard4 = new VerticalLayout();
 		// dashboard4.setImmediate(true);
@@ -351,7 +499,7 @@ public class WorkSpace extends VerticalLayout implements View,
 			@Override
 			public void buttonClick(ClickEvent event) {
 				UI.getCurrent().getSession().setAttribute("user", null);
-				UI.getCurrent().getNavigator().navigateTo(WORK_SPACE);
+				UI.getCurrent().getNavigator().navigateTo(Login.LOGIN);
 				getSession().close();
 
 			}

@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import com.swifta.mats.web.utils.UserManagementService;
 import com.vaadin.data.Container.Filter;
@@ -24,6 +25,7 @@ import com.vaadin.data.Validator;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.data.util.filter.Compare;
+import com.vaadin.event.MouseEvents.ClickListener;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
@@ -32,6 +34,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Embedded;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -61,7 +64,6 @@ public class BE2 {
 	private boolean isPopupShowing;
 	private boolean isSent = false;
 	UserManagementService ums;
-	private int rowCount;
 	private int chkCount;
 	private boolean isSingleChange = false;
 	private boolean isValidatorAdded = false;
@@ -73,11 +75,16 @@ public class BE2 {
 	HashMap<String, Integer> hm;
 	HashMap<String, String> hmFilter;
 	IndexedContainer container;
+	private String curURL = null;
+	private boolean isSearchURL = false;
+	ArrayList<Object> arrLTfs;
+	public Window upop;
 
 	BE2() {
 		icDelete = new ThemeResource("img/ic_delete_small.png");
 		isPopupShowing = false;
 		hm = new HashMap<>();
+		hm.put("ALL", 0);
 		hm.put("MATS_ADMIN_USER_PROFILE", 1);
 		hm.put("MATS_FINANCIAL_CONTROLLER_USER_PROFILE", 3);
 		hm.put("MATS_CUSTOMER_CARE_USER_PROFILE", 4);
@@ -89,15 +96,15 @@ public class BE2 {
 	}
 
 	public VerticalLayout queryBackEnd(String strSearchParams) {
-		rowCount = 0;
+
 		if (container == null)
 			container = getTable();
 		hmFilter = new HashMap<>();
 		VerticalLayout searchResultsContainer = new VerticalLayout();
-		searchResultsContainer.setSizeUndefined();
+		searchResultsContainer.setSizeFull();
 		searchResultsContainer.setSpacing(true);
 		searchResultsContainer
-				.setMargin(new MarginInfo(false, true, true, true));
+				.setMargin(new MarginInfo(true, true, true, true));
 
 		String[] arrAllParams = strSearchParams.split("&");
 
@@ -128,7 +135,7 @@ public class BE2 {
 		} else {
 			strSearchResultsParams = strBuilder.toString();
 		}
-		// Notification.show(Integer.toString(strSearchResultsParams.length()));
+
 		strSearchResultsParams = strBuilder.toString();
 		if (strSearchResultsParams.length() == 0) {
 			strSearchResultsParams = "Nothing.";
@@ -139,30 +146,35 @@ public class BE2 {
 		lbSearch.setStyleName("label_search_user");
 		lbSearch.setSizeUndefined();
 
-		VerticalLayout searchUserHeader = new VerticalLayout();
+		HorizontalLayout searchUserHeader = new HorizontalLayout();
 		searchUserHeader.setHeightUndefined();
 		searchUserHeader.setWidthUndefined();
 		searchUserHeader.setMargin(false);
 		searchUserHeader.setSpacing(true);
 		// searchUserHeader.addComponent(emb);
-		searchUserHeader.addComponent(lbSearch);
+		// searchUserHeader.addComponent(lbSearch);
+		HorizontalLayout sf = getSearchForm();
+
+		searchUserHeader.addComponent(sf);
+		searchUserHeader.setComponentAlignment(sf, Alignment.TOP_CENTER);
+		searchUserHeader.setWidth("100%");
+
 		searchUserHeader.setStyleName("search_results_header");
 		searchResultsContainer.addComponent(searchUserHeader);
 
-		addFilters(hmFilter, container);
+		addFilters();
 
 		lbSearch.setValue(+container.size() + " Result(s) " + "for: "
 				+ strSearchResultsParams);
 
 		tb = new PagedTableCustom("Results (Summary)");
 
-		tb.setContainerDataSource(container);
 		tb.setColumnIcon(" ", FontAwesome.CHECK_SQUARE_O);
-		tb.setWidth("900px");
+		tb.setWidth("100%");
 		tb.setSelectable(true);
+		tb.setContainerDataSource(container);
 
 		int t = tb.size();
-		rowCount = t;
 
 		if (t > 30) {
 			t = 30;
@@ -170,27 +182,11 @@ public class BE2 {
 
 		tb.setPageLength(t);
 
-		// HorizontalLayout ctb = new HorizontalLayout();
-		// ctb.setSizeUndefined();
-		// ctb.addComponent(tb);
-		// ctb.setWidth(width);
-		// tb.setWidth("800px");
-		// Panel panel = new Panel();
-		// panel.setWidth("800");
-		// panel.setContent(tb);
-		// panel.sets
-		// ctb.setWidth(width);
-		// ctb.setStyleName("tb_s_r");
-
-		// HorizontalLayout upperControls = getControls(tb);
-		// HorizontalLayout lowerControls = upperControls;
 		searchResultsContainer.addComponent(getBulkActionsC());
-		searchResultsContainer.addComponent(getControls(tb));
+		searchResultsContainer.addComponent(getControls());
 		searchResultsContainer.addComponent(tb);
-		searchResultsContainer.addComponent(getControls(tb));
+		searchResultsContainer.addComponent(getControls());
 		searchResultsContainer.addComponent(getBulkActionsC());
-
-		// searchResultsContainer.setStyleName("s_r_c");
 
 		return searchResultsContainer;
 	}
@@ -208,6 +204,7 @@ public class BE2 {
 		}
 
 		final Window popup = new Window("Delete " + username);
+		popup.setModal(true);
 		popup.setStyleName("w_delete_user");
 		ThemeResource r = new ThemeResource("img/ic_delete_small.png");
 		popup.setIcon(r);
@@ -328,6 +325,7 @@ public class BE2 {
 		 */
 
 		final Window popup = new Window("Activate " + username);
+		popup.setModal(true);
 		popup.setStyleName("w_delete_user");
 		popup.setIcon(FontAwesome.KEY);
 
@@ -427,8 +425,6 @@ public class BE2 {
 					ums = new UserManagementService();
 
 				String strResponse = null;
-				// StringBuilder builderDesc = null;
-				// Notification.show(String.valueOf(arrLBulkIDs.get(0)));
 
 				String userresourceid = tFUserRID.getValue();
 				String bankdomainid = tFBID.getValue();
@@ -495,6 +491,7 @@ public class BE2 {
 		String username = arrID[3];
 		final Window popup = new Window("Set Parent Account ID of " + username
 				+ "'s Account");
+		popup.setModal(true);
 		popup.setStyleName("w_delete_user");
 		// popup.setIcon(FontAwesome.KEY);
 
@@ -591,7 +588,6 @@ public class BE2 {
 					e.printStackTrace();
 				}
 
-				// Notification.show(strResponse);
 				NotifCustom.show("Set Parent", strResponse);
 				/*
 				 * 
@@ -630,6 +626,7 @@ public class BE2 {
 
 		final Window popup = new Window("Set Default Account for " + username
 				+ "'s Account");
+		popup.setModal(true);
 		popup.setStyleName("w_delete_user");
 		// popup.setIcon(FontAwesome.KEY);
 
@@ -728,7 +725,6 @@ public class BE2 {
 					e.printStackTrace();
 				}
 
-				// Notification.show(strResponse);
 				NotifCustom.show("Set Default", strResponse);
 				/*
 				 * 
@@ -752,8 +748,6 @@ public class BE2 {
 	}
 
 	private void showLinkUserContainer(String[] arrID) {
-		// for (String s : arrID)
-		// Notification.show(s);
 
 		isPopupShowing = true;
 		isSent = false;
@@ -766,6 +760,7 @@ public class BE2 {
 		 */
 		String userProfID = "7";
 		final Window popup = new Window("Link " + username + "'s Account");
+		popup.setModal(true);
 		popup.setStyleName("w_delete_user");
 		popup.setIcon(FontAwesome.LINK);
 
@@ -913,7 +908,7 @@ public class BE2 {
 		});
 	}
 
-	private HorizontalLayout getControls(final PagedTableCustom tb) {
+	private HorizontalLayout getControls() {
 		HorizontalLayout pnUserSearchResults = tb.createControls();
 		pnUserSearchResults.setSizeFull();
 		pnUserSearchResults.setMargin(false);
@@ -953,7 +948,10 @@ public class BE2 {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				tb.setPageLength(rowCount);
+				int t = tb.size();
+				if (t > 30)
+					t = 30;
+				tb.setPageLength(t);
 				chkCount = 0;
 				isSingleChange = true;
 				for (CheckBox c : arrLChkBulk)
@@ -967,7 +965,10 @@ public class BE2 {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				tb.setPageLength(rowCount);
+				int t = tb.size();
+				if (t > 30)
+					t = 30;
+				tb.setPageLength(t);
 				chkCount = 0;
 				isSingleChange = true;
 				for (CheckBox c : arrLChkBulk)
@@ -993,8 +994,8 @@ public class BE2 {
 		return pnUserSearchResults;
 	}
 
-	private VerticalLayout getBulkActionsC() {
-		VerticalLayout actionBulkC = new VerticalLayout();
+	private HorizontalLayout getBulkActionsC() {
+		HorizontalLayout actionBulkC = new HorizontalLayout();
 		actionBulkC.setWidth("100%");
 		actionBulkC.setStyleName("c_action_bulk");
 
@@ -1012,12 +1013,24 @@ public class BE2 {
 		btnBulkOk.setEnabled(false);
 		HorizontalLayout cBulk = new HorizontalLayout();
 		cBulk.setSizeUndefined();
-		cBulk.addComponent(comboBulk);
-		cBulk.addComponent(btnBulkOk);
-		cBulk.setComponentAlignment(btnBulkOk, Alignment.BOTTOM_RIGHT);
 
-		actionBulkC.addComponent(chkAll);
+		HorizontalLayout cchkAll = new HorizontalLayout();
+		cchkAll.setHeight("100%");
+		cchkAll.addComponent(chkAll);
+		cchkAll.setComponentAlignment(chkAll, Alignment.MIDDLE_RIGHT);
+
+		HorizontalLayout cbtnBulkOk = new HorizontalLayout();
+		cbtnBulkOk.setHeight("100%");
+		cbtnBulkOk.addComponent(btnBulkOk);
+		cbtnBulkOk.setComponentAlignment(btnBulkOk, Alignment.BOTTOM_RIGHT);
+
+		cBulk.addComponent(cchkAll);
+		cBulk.addComponent(comboBulk);
+		cBulk.addComponent(cbtnBulkOk);
+		cBulk.setSpacing(true);
+
 		actionBulkC.addComponent(cBulk);
+		actionBulkC.setComponentAlignment(cBulk, Alignment.MIDDLE_CENTER);
 
 		btnBulkOk.addClickListener(new Button.ClickListener() {
 
@@ -1095,7 +1108,7 @@ public class BE2 {
 	private void addRow(IndexedContainer container, String sn, String strUID,
 			String strUname, String strFname, String strLname, String strProf,
 			String status, String email, String msisdn) {
-		rowCount++;
+
 		actionsC = new HorizontalLayout();
 		actionsC.setSizeUndefined();
 		actionsC.setStyleName("c_actions");
@@ -1205,7 +1218,22 @@ public class BE2 {
 		}
 		// actionsC.addComponent(btnMoreActions);
 
-		btnDetails.addClickListener(new BtnActionsClickListener(false, null));
+		btnDetails.addClickListener(new Button.ClickListener() {
+
+			private static final long serialVersionUID = 7670596957858236065L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+
+				if (isPopupShowing)
+					return;
+				String[] arrID = event.getButton().getId().split("_");
+				arrLBulkIDs = new ArrayList<>();
+				arrLBulkIDs.add(arrID[2]);
+				showUserDetailsContainer(arrLBulkIDs, arrID);
+
+			}
+		});
 		btnEdit.addClickListener(new BtnActionsClickListener(false, null));
 
 		btnDelete.addClickListener(new Button.ClickListener() {
@@ -1230,7 +1258,7 @@ public class BE2 {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				// Notification.show(String.valueOf(isPopupShowing));
+
 				if (isPopupShowing)
 					return;
 				String[] arrID = event.getButton().getId().split("_");
@@ -1261,7 +1289,7 @@ public class BE2 {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				// Notification.show(String.valueOf(isPopupShowing));
+
 				if (isPopupShowing)
 					return;
 				String[] arrID = event.getButton().getId().split("_");
@@ -1393,8 +1421,8 @@ public class BE2 {
 		return container;
 	}
 
-	private void addFilters(HashMap<String, String> hmFilter,
-			IndexedContainer container) {
+	private void addFilters() {
+
 		container.removeAllContainerFilters();
 
 		Filter f = null;
@@ -1412,8 +1440,6 @@ public class BE2 {
 		while (itr.hasNext()) {
 			e = itr.next();
 			f = new Compare.Equal(e.getKey(), e.getValue());
-			// NotifCustom.show("Field: ", e.getKey());
-			// NotifCustom.show("Value: ", e.getValue());
 			container.addContainerFilter(f);
 
 		}
@@ -1439,7 +1465,7 @@ public class BE2 {
 		 */
 
 		final Window popup = new Window("Reset PIN for " + username);
-
+		popup.setModal(true);
 		popup.setStyleName("w_delete_user");
 		popup.setIcon(FontAwesome.KEY);
 
@@ -1565,12 +1591,8 @@ public class BE2 {
 
 				if (isSent)
 					return;
-				// if (ums == null)
-				// ums = new UserManagementService();
 
 				String strResponse = null;
-				// StringBuilder builderDesc = null;
-				// Notification.show(String.valueOf(arrLBulkIDs.get(0)));
 
 				if (!isValidatorAdded) {
 					tFPIN.setRequired(false);
@@ -1696,6 +1718,273 @@ public class BE2 {
 
 			}
 		}
+
+	}
+
+	private void showUserDetailsContainer(final ArrayList<String> arrLBulkIDs,
+			final String[] arrID) {
+
+		isPopupShowing = true;
+		isSent = false;
+		String username = null;
+		if (arrID != null) {
+			username = arrID[3] + "'s Account";
+		} else {
+			username = "Selected Accounts";
+		}
+
+		final Window popup = new Window("Details of " + username);
+		popup.setModal(true);
+		popup.setStyleName("w_delete_user");
+
+		popup.addClickListener(new ClickListener() {
+
+			@Override
+			public void click(com.vaadin.event.MouseEvents.ClickEvent event) {
+				popup.center();
+
+			}
+
+		});
+
+		popup.setIcon(FontAwesome.ALIGN_JUSTIFY);
+
+		popup.center();
+
+		VerticalLayout cDeletePrompt = new VerticalLayout();
+		cDeletePrompt.setSpacing(true);
+		cDeletePrompt.setMargin(true);
+
+		FormLayout frmDeleteReason = new FormLayout();
+		frmDeleteReason.setSizeUndefined();
+		frmDeleteReason.setSpacing(true);
+		frmDeleteReason.setMargin(true);
+
+		VerticalLayout cPopupBtns = new VerticalLayout();
+		cPopupBtns.setSizeUndefined();
+		cPopupBtns.setSpacing(true);
+
+		UserDetailsModule udm = new UserDetailsModule();
+		VerticalLayout cUD = udm.getUserDetailsContainer(arrID[3],
+				"view_details");
+
+		cDeletePrompt.addComponent(cUD);
+		cDeletePrompt.setComponentAlignment(cUD, Alignment.MIDDLE_CENTER);
+
+		popup.setContent(cDeletePrompt);
+		popup.setSizeUndefined();
+
+		UI.getCurrent().addWindow(popup);
+
+		popup.addCloseListener(new CloseListener() {
+			private static final long serialVersionUID = 3911244162638119820L;
+
+			@Override
+			public void windowClose(CloseEvent e) {
+				isPopupShowing = false;
+			}
+
+		});
+
+	}
+
+	private HorizontalLayout getSearchForm() {
+
+		HorizontalLayout searchForm = new HorizontalLayout();
+		searchForm.setSizeUndefined();
+		searchForm.setSpacing(true);
+		searchForm.setMargin(false);
+		searchForm.setStyleName("search_user_form");
+
+		Embedded emb = new Embedded(null, new ThemeResource(
+				"img/search_user_icon.png"));
+		emb.setDescription("Search users");
+		emb.setStyleName("search_user_img");
+		emb.setSizeUndefined();
+
+		// Label lbSearch = new Label("Search " + "Users" + " by: ");
+
+		Label lbSearch = new Label("Search / Filter " + "Users" + " by: ");
+		lbSearch.setSizeUndefined();
+		lbSearch.setStyleName("label_s_rx");
+		lbSearch.setSizeUndefined();
+
+		VerticalLayout searchUserHeader = new VerticalLayout();
+		searchUserHeader.setHeightUndefined();
+		searchUserHeader.setMargin(false);
+		searchUserHeader.setSpacing(true);
+		// searchUserHeader.addComponent(emb);
+		searchUserHeader.addComponent(lbSearch);
+		searchUserHeader.setStyleName("search_user_header");
+
+		ArrayList<String> arrLTfCaptions = new ArrayList<String>();
+
+		// arrLTfCaptions.add("ID");
+		// arrLTfCaptions.add(strUserType + " ID");
+		// arrLTfCaptions.add("Type of User");
+		arrLTfCaptions.add("Username");
+		arrLTfCaptions.add("MSISDN");
+		arrLTfCaptions.add("Email");
+		// arrLTfCaptions.add("Company");
+		// arrLTfCaptions.add("First Name");
+		// arrLTfCaptions.add("Last Name");
+		// arrLTfCaptions.add("Others");
+
+		searchForm.addComponent(searchUserHeader);
+		arrLTfs = addTfs(arrLTfCaptions, searchForm);
+
+		Button btnSearch = new Button();
+		Button btnFilter = new Button("Filter");
+
+		searchForm.addComponent(btnFilter);
+		btnSearch.setEnabled(false);
+
+		searchForm.addComponent(btnSearch);
+		btnSearch.setStyleName("btn_s_rx");
+		btnFilter.setStyleName("btn_s_rx");
+
+		btnSearch.setIcon(FontAwesome.SEARCH);
+		isSearchURL = false;
+
+		btnFilter.addClickListener(new Button.ClickListener() {
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				if (!isSearchURL) {
+					curURL = UI.getCurrent().getPage().getUriFragment();
+					curURL = curURL.substring(0, curURL.indexOf('?'));
+					isSearchURL = true;
+				}
+				StringBuilder strBuilder = new StringBuilder();
+
+				for (Object tF : arrLTfs) {
+					if (tF instanceof TextField) {
+
+						strBuilder.append(((TextField) tF).getCaption());
+						strBuilder.append("=");
+						strBuilder.append(((TextField) tF).getValue());
+						strBuilder.append("&");
+					} else {
+						ComboBox combo = (ComboBox) tF;
+						String strProf = combo.getItemCaption(combo.getValue());
+						strBuilder.append(combo.getCaption());
+						strBuilder.append("=");
+						strBuilder.append(strProf);
+						strBuilder.append("&");
+					}
+				}
+
+				String strParams = strBuilder.toString();
+
+				UI.getCurrent()
+						.getPage()
+						.setUriFragment(
+								curURL + "?action=filter_search_results&"
+										+ strParams);
+
+			}
+		});
+
+		btnSearch.addClickListener(new Button.ClickListener() {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = -5583145375977087274L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+
+				if (!isSearchURL) {
+					curURL = UI.getCurrent().getPage().getUriFragment();
+					curURL = curURL.substring(0, curURL.indexOf('?'));
+					isSearchURL = true;
+				}
+				StringBuilder strBuilder = new StringBuilder();
+
+				for (Object tF : arrLTfs) {
+					if (tF instanceof TextField) {
+
+						strBuilder.append(((TextField) tF).getCaption());
+						strBuilder.append("=");
+						strBuilder.append(((TextField) tF).getValue());
+						strBuilder.append("&");
+					} else {
+						ComboBox combo = (ComboBox) tF;
+						String strProf = combo.getItemCaption(combo.getValue());
+						strBuilder.append(combo.getCaption());
+						strBuilder.append("=");
+						strBuilder.append(strProf);
+						strBuilder.append("&");
+					}
+				}
+
+				String strSearchParams = strBuilder.toString();
+
+				UI.getCurrent()
+						.getPage()
+						.setUriFragment(
+								curURL + "?action=search_results&"
+										+ strSearchParams);
+
+			}
+		});
+
+		return searchForm;
+	}
+
+	private ArrayList<Object> addTfs(ArrayList<String> arrLTfCaptions,
+			HorizontalLayout searchForm) {
+
+		ArrayList<Object> arrLTfs = new ArrayList<Object>();
+		TextField tF;
+
+		ComboBox comboProfile = new ComboBox("Profile Type");
+		comboProfile.setNullSelectionAllowed(false);
+
+		Set<Entry<String, Integer>> set = hm.entrySet();
+
+		for (Entry<String, Integer> e : set) {
+			comboProfile.addItem(e.getValue());
+			comboProfile.setItemCaption(e.getValue(), e.getKey());
+		}
+
+		comboProfile.select(0);
+
+		arrLTfs.add(comboProfile);
+		searchForm.addComponent(comboProfile);
+
+		for (String tFCaption : arrLTfCaptions) {
+			tF = new TextField(tFCaption);
+			arrLTfs.add(tF);
+
+			searchForm.addComponent(tF);
+		}
+		return arrLTfs;
+	}
+
+	public void addFilters(String strParams) {
+
+		String[] arrAllParams = strParams.split("&");
+		hmFilter.clear();
+		String[] arrP = null;
+		for (String strParam : arrAllParams) {
+			arrP = strParam.split("=");
+			if (arrP.length == 2) {
+				hmFilter.put(arrP[0], arrP[1]);
+			}
+		}
+
+		addFilters();
+		tb.setContainerDataSource(container);
+
+		int t = container.size();
+
+		if (t > 30) {
+			t = 30;
+		}
+
+		tb.setPageLength(t);
 
 	}
 

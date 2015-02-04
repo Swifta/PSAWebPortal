@@ -106,7 +106,7 @@
 
 .label_login_prompt_err{
 	color: #F00;
-	font-style: italic;
+	//font-style: italic;
 	font-size: 12px;
 }
 .tble{
@@ -577,6 +577,7 @@ ul.empty li{
 
 .c_action_bulk{
 	//padding: 10px;
+	//background: #FF0;
 }
 
 .c_actions{
@@ -760,6 +761,12 @@ ul.empty li{
 	color: #197DE1;
 	opacity: 1 !important;
 	
+	
+}
+
+.btn_tab_like > span{
+	border: none;
+	font-weight: 300;
 }
 
 .btn_tab_like_active:active{
@@ -791,6 +798,15 @@ ul.empty li{
 	background-image: none;
 	cursor: pointer !important;
 	
+}
+
+
+.btn_tab_like:active{
+	//background: #F0F !important;
+	border-left: none !important;
+	border-right: none !important;
+	border-bottom: none !important;
+	border-top: none !important;
 }
 
 .btn_tab_like{
@@ -1069,6 +1085,85 @@ ul.empty li{
 
 .frm_details_personal_info{
 	//background: #F0F;
+}
+
+.c_menu_x{
+	border-bottom: 1px solid #197DE1 !important;
+}
+
+.v-menubar { 
+ 	border-left: none !important;
+ 	border-right: none !important;
+ 	border: none !important;
+ 	box-shadow: none !important;
+ 	border-style: none !important;
+ 	background-image: none !important;
+}
+
+.v-menubar{
+	border: none !important;
+	border-left: none !important;
+ 	border-right: none !important;
+ 	border-left: none !important;
+ 	border-right: none !important;
+ 	border: none !important;
+ 	border-style: none !important;
+ 	background-image: none !important;
+ 	
+}
+
+.v-menubar:active {
+	border: none !important;
+}
+
+.v-menubar:after{
+	opacity: 0;
+}
+
+.v-menubar:focus {
+	border: none !important;
+	
+}
+
+
+.v-menubar-submenu {
+ }
+.v-menubar-menuitem { 
+	border: none !important;
+ 	font-weight: 300 !important;
+ 	background-image: none !important;
+ 	border-width: 0px !important;
+ 	border-style: none !important;
+}
+.v-menubar-menuitem-caption {
+ 	border: none;
+ 	font-weight: 300;
+ }
+.v-menubar-menuitem:focus {
+	color: #197DE1;
+	border-bottom: 1px solid #197DE1;
+ }
+.v-menubar-submenu-indicator { }
+
+.m_active{
+	color: #197DE1 !important;
+	border-bottom: 1px solid #197DE1 !important;
+}
+
+.csman{
+	//background: #F0F;
+}
+
+.label_s_rx{
+	margin-top: 12px;
+	padding: 10px;
+	background: #FFF;
+}
+
+.btn_s_rx{
+	margin-top: 25px;
+	//padding: 10px;
+	background: #FFF;
 }
 
 

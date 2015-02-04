@@ -39,7 +39,7 @@ public class PagedTableCustom extends PagedTable {
 
 	public PagedTableCustom(int rowCount, String caption) {
 		super(caption);
-		setPageLength(rowCount);
+		// setPageLength(rowCount);
 		addStyleName("pagedtable");
 
 	}
@@ -103,7 +103,7 @@ public class PagedTableCustom extends PagedTable {
 						.getProperty().getValue())));
 			}
 		});
-		itemsPerPageSelect.select(getPageLength());
+		// itemsPerPageSelect.select(getPageLength());
 		Label pageLabel = new Label("Page:&nbsp;", ContentMode.HTML);
 		final TextField currentPageTextField = new TextField();
 		currentPageTextField.setValue(String.valueOf(getCurrentPage()));

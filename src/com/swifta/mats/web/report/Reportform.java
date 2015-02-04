@@ -545,7 +545,6 @@ public class Reportform extends VerticalLayout {
 				dat.setValue(null);
 				dat2.setValue(null);
 
-				table.setPageLength(15);
 				table.setContainerDataSource(ds);
 				int t = table.size();
 				if (t > 30) {

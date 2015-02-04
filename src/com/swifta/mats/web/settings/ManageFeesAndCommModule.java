@@ -32,20 +32,15 @@ public class ManageFeesAndCommModule {
 
 		BtnTabLike btnExistingFAndComm = new BtnTabLike("Existing", null);
 		btnExisting = btnExistingFAndComm;
-		// BtnTabLike btnAuth = new BtnTabLike("Authentication", null);
-		// BtnTabLike btnLog = new BtnTabLike("Log", null);
+
 		cManageAndAddTab.addComponent(btnPersonal);
 		cManageAndAddTab.addComponent(btnAccount);
 		cManageAndAddTab.addComponent(btnExistingFAndComm);
-		// cManageAndAddTab.addComponent(btnAuth);
-		// cManageAndAddTab.addComponent(btnLog);
 
 		final ArrayList<BtnTabLike> arrLTabBtns = new ArrayList<BtnTabLike>();
 		arrLTabBtns.add(btnPersonal);
 		arrLTabBtns.add(btnAccount);
 		arrLTabBtns.add(btnExistingFAndComm);
-		// arrLTabBtns.add(btnAuth);
-		// arrLTabBtns.add(btnLog);
 
 		btnPersonal.setEnabled(false);
 
@@ -61,12 +56,6 @@ public class ManageFeesAndCommModule {
 						WorkSpaceManageFeesAndComm.SESSION_WSMP_CUR_ACTION,
 						WorkSpaceManageFeesAndComm.SESSION_VAR_WSMP_PERSONAL);
 
-		/*
-		 * String[] arrSessions = new String[]{
-		 * ManageUserModule.SESSION_UMANAGE, SESSION_UDM_TABLE,
-		 * SESSION_UDM_IS_LOG};
-		 */
-
 		String[] arrSessions = new String[] {
 				WorkSpaceManageFeesAndComm.SESSION_WSMP_CUR_ACTION,
 				WorkSpaceManageFeesAndComm.SESSION_UDM_IS_LOG };
@@ -74,11 +63,7 @@ public class ManageFeesAndCommModule {
 		btnPersonal.addClickListener(new BtnTabLikeClickListener(false, false,
 				arrLSubTabs, arrLTabBtns, null, null, "account_change_log",
 				"001", hasOp, boolEditStatus, arrSessions,
-				/*
-				 * new
-				 * String[]{ManageUserModule.SESSION_VAR_UMANAGE_USER_ACTIONS,
-				 * SESSION_VAR_UDM_PER, SESSION_VAR_UDM_IS_LOG_FALSE}));
-				 */
+
 				new String[] {
 						WorkSpaceManageFeesAndComm.SESSION_VAR_WSMP_PERSONAL,
 						null }));

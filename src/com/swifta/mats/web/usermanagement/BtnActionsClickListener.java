@@ -2,7 +2,6 @@ package com.swifta.mats.web.usermanagement;
 
 import java.util.List;
 
-import com.swifta.mats.web.WorkSpace;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.UI;
@@ -43,8 +42,8 @@ public class BtnActionsClickListener implements ClickListener {
 		// Notification.show(arrID[2]);
 		// Notification.show(arrID[2]);
 		// Notification.show(arrID[4]);
-		if (WorkSpace.wsmu != null)
-			WorkSpace.wsmu.wsmuModifier();
+		// if (WorkSpace.wsmu != null)
+		// WorkSpace.wsmu.wsmuModifier();
 
 	}
 
