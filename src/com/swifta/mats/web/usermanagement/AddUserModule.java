@@ -937,8 +937,8 @@ public class AddUserModule {
 	private HashMap<Integer, String> getCountries() {
 		HashMap<Integer, String> c = new HashMap<>();
 		String qx = "SELECT countryname as cname, countryid as cid FROM psadatasourcetest.country;";
-		String Uname = "psatestuser";
-		String Pword = "psatest_2015";
+		String Uname = "psaproduser";
+		String Pword = "psaproduser@2015";
 		String drivers = "com.mysql.jdbc.Driver";
 		try {
 			Class<?> driver_class = Class.forName(drivers);
@@ -977,8 +977,8 @@ public class AddUserModule {
 		HashMap<Integer, String> s = new HashMap<>();
 		String qx = "SELECT state as s, countrystateid as sid FROM psadatasourcetest.countrystate where countryid = "
 				+ cid + ";";
-		String Uname = "psatestuser";
-		String Pword = "psatest_2015";
+		String Uname = "psaproduser";
+		String Pword = "psaproduser@2015";
 		String drivers = "com.mysql.jdbc.Driver";
 		try {
 			Class<?> driver_class = Class.forName(drivers);
@@ -1018,8 +1018,8 @@ public class AddUserModule {
 		// = 1
 		String qx = "SELECT countrystatelgaid as lgid, lganame as lg FROM psadatasourcetest.countrystatelga where countrystateid = "
 				+ sid + ";";
-		String Uname = "psatestuser";
-		String Pword = "psatest_2015";
+		String Uname = "psaproduser";
+		String Pword = "psaproduser@2015";
 		String drivers = "com.mysql.jdbc.Driver";
 		try {
 			Class<?> driver_class = Class.forName(drivers);

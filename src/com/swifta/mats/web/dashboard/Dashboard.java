@@ -59,8 +59,8 @@ public class Dashboard {
 		originalTb.addContainerProperty("Fees Account", String.class, null);
 		originalTb.addContainerProperty("DoT", Long.class, null);
 		HashMap<String, Float> hm = new HashMap<>();
-		String Uname = "psatestuser";
-		String Pword = "psatest_2015";
+		String Uname = "psaproduser";
+		String Pword = "psaproduser@2015";
 		int x = 0;
 
 		Connection conn;

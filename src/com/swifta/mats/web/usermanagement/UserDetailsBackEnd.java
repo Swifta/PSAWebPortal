@@ -26,8 +26,8 @@ public class UserDetailsBackEnd {
 
 		HashMap<String, String> hm = new HashMap<>();
 
-		String Uname = "psatestuser";
-		String Pword = "psatest_2015";
+		String Uname = "psaproduser";
+		String Pword = "psaproduser@2015";
 		String drivers = "com.mysql.jdbc.Driver";
 		try {
 			Class<?> driver_class = Class.forName(drivers);
