@@ -769,8 +769,8 @@ public class Reportform extends VerticalLayout {
 				return;
 			}
 
-			String Uname = "psatestuser";
-			String Pword = "psatest_2015";
+			String Uname = "psaproduser";
+			String Pword = "psaproduser@2015";
 			String drivers = "com.mysql.jdbc.Driver";
 			try {
 
@@ -958,8 +958,8 @@ public class Reportform extends VerticalLayout {
 				return;
 			}
 
-			String Uname = "psatestuser";
-			String Pword = "psatest_2015";
+			String Uname = "psaproduser";
+			String Pword = "psaproduser@2015";
 			String drivers = "com.mysql.jdbc.Driver";
 			try {
 
@@ -1115,8 +1115,8 @@ public class Reportform extends VerticalLayout {
 			}
 
 			ds = feesCommissionContainer;
-			String Uname = "psatestuser";
-			String Pword = "psatest_2015";
+			String Uname = "psaproduser";
+			String Pword = "psaproduser@2015";
 			String drivers = "com.mysql.jdbc.Driver";
 			try {
 
