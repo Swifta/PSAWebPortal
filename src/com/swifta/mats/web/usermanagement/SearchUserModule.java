@@ -17,15 +17,13 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 
 public class SearchUserModule {
 
-	ArrayList<Object> arrLTfs;
-	boolean isSearchURL = false;
-	String curURL = null;
+	private ArrayList<Object> arrLTfs;
+	private boolean isSearchURL = false;
+	private String curURL = null;
 
-	Window popup;
 	private Map<Integer, String> profToID;
 	private BE2 be;
 
@@ -132,9 +130,12 @@ public class SearchUserModule {
 
 				String strParams = strBuilder.toString();
 
-				UI.getCurrent()
-						.getPage()
-						.setUriFragment(curURL + "/?action=search&" + strParams);
+				String url = curURL + "/?action=search&" + strParams;
+
+				if (WorkSpaceManageUser.prevSearchFrag.contains(url))
+					WorkSpaceManageUser.prevSearchFrag.remove(url);
+
+				UI.getCurrent().getPage().setUriFragment(url);
 
 			}
 		});

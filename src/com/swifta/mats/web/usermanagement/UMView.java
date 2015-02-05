@@ -25,7 +25,6 @@ public class UMView extends VerticalLayout implements View {
 	String id = null;
 
 	public UMView(TabSheet ts) {
-
 		ts = MatsWebPortalUI.ts;
 		ts.setSelectedTab(2);
 		this.ts = ts;

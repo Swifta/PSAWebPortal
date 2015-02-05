@@ -5,8 +5,6 @@ import java.util.HashMap;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 
-import com.swifta.mats.web.usermanagement.ManageUserModule;
-import com.swifta.mats.web.usermanagement.WorkSpaceManageUser;
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
@@ -75,11 +73,6 @@ public class MatsWebPortalUI extends UI {
 		getNavigator().addView(Main.WS, Main.class);
 
 		getNavigator().setErrorProvider(new ErrorVIEW());
-		getSession().setAttribute(WorkSpaceManageUser.SESSION_WORK_AREA,
-				WorkSpaceManageUser.SESSION_VAR_WORK_AREA_MANAGE_USER);
-
-		getSession().setAttribute(ManageUserModule.SESSION_UMANAGE,
-				ManageUserModule.SESSION_VAR_UMANAGE_SEARCH);
 
 		getNavigator().addViewChangeListener(new ViewChangeListener() {
 

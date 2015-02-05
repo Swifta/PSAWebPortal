@@ -86,27 +86,11 @@ public class AddUserModule {
 	private OptionGroup optSex;
 	private boolean isValidatorAdded = false;
 	boolean isCSelected = false;
-	String curC = null;
-	String curState = null;
-	String curLG = null;
 	private Calendar cal = null;
 
 	public AddUserModule() {
 
 		profToID = new HashMap<>();
-		/*
-		 * profToID.put(1, "BACK OFFICE");
-		 * 
-		 * profToID.put(2, "SERVICE PROVIDER"); profToID.put(3,
-		 * "FINANCIAL CONTROLLER"); profToID.put(4, "CUSTOMER CARE");
-		 * profToID.put(5, "MOBILE MONEY"); profToID.put(6, "SUPER AGENT");
-		 * profToID.put(7, "SUB AGENT"); profToID.put(8, "DEPOSIT ONLY");
-		 * profToID.put(9, "DEPOSIT & WITHDRAW"); profToID.put(10,
-		 * "WITHDRAW ONLY"); profToID.put(11, "DEALER"); profToID.put(12,
-		 * "CASH"); profToID.put(13, "MATS ACCOUNT"); profToID.put(14,
-		 * "MATS USER");
-		 */
-
 		profToID.put(1, "MATS_ADMIN_USER_PROFILE");
 		profToID.put(3, "MATS_FINANCIAL_CONTROLLER_USER_PROFILE");
 		profToID.put(4, "MATS_CUSTOMER_CARE_USER_PROFILE");

@@ -1,5 +1,7 @@
 package com.swifta.mats.web.usermanagement;
 
+import java.util.ArrayList;
+
 import com.vaadin.server.Page;
 import com.vaadin.server.Page.UriFragmentChangedEvent;
 import com.vaadin.ui.Alignment;
@@ -15,36 +17,20 @@ public class WorkSpaceManageUser {
 	 * 
 	 */
 
-	public static final String WORK_AREA = "";
-	HorizontalLayout contentC;
-	VerticalLayout uf;
-	FormLayout searchC;
-	VerticalLayout searchResultsC;
-	AddUserModule aum;
-	ManageUserModule mum;
-	UserDetailsModule udm;
-	VerticalLayout cParentLayout;
-	VerticalLayout cuDetails;
-	VerticalLayout mm;
+	private HorizontalLayout contentC;
+
+	private AddUserModule aum;
+
+	private VerticalLayout cParentLayout;
+
+	private VerticalLayout mm;
 	private VerticalLayout auf;
-	SearchUserModule sum;
-	String curSessionUManage;
+	private SearchUserModule sum;
 
-	// static final String WORK_AREA = "work_area";
-	public final static String SESSION_WORK_AREA_USER_TYPE = "user_type";
-	public final static String SESSION_VAR_WORK_AREA_DEFAULT_USER_TYPE = "Agent";
-	public final static String SESSION_VAR_WORK_AREA_USER_MERCHANT = "Merchant";
-	public final static String SESSION_VAR_WORK_AREA_USER_DEALER = "Dealer";
-	public final static String SESSION_VAR_WORK_AREA_USER_PARTNER = "Partner";
-	public final static String SESSION_VAR_WORK_AREA_USER_BA = "BA";
-	public final static String SESSION_VAR_WORK_AREA_USER_CCO = "CCO";
-
-	public final static String SESSION_WORK_AREA = "session_work_area";
-	public final static String SESSION_VAR_WORK_AREA_ADD_USER = "add_user";
-	public final static String SESSION_VAR_WORK_AREA_MANAGE_USER = "manage_user";
-	HorizontalLayout csman = new HorizontalLayout();
-	HorizontalLayout caddman = new HorizontalLayout();
-	FormLayout cs;
+	private HorizontalLayout csman = new HorizontalLayout();
+	private HorizontalLayout caddman = new HorizontalLayout();
+	private FormLayout cs;
+	public static ArrayList<String> prevSearchFrag = new ArrayList<>();
 
 	public WorkSpaceManageUser() {
 		setCoreUI();
@@ -186,29 +172,32 @@ public class WorkSpaceManageUser {
 			strb.append(aParam[i]);
 			strb.append("&");
 		}
+		if (!prevSearchFrag.contains(frag)) {
+			switch (action) {
+			case "search": {
 
-		switch (action) {
-		case "search": {
-			csman.setComponentAlignment(cs, Alignment.TOP_LEFT);
-			VerticalLayout csr = sum.getSearchResults(strb.toString());
-			csman.addComponent(csr);
-			csman.setExpandRatio(csr, 1.0f);
-			csman.setStyleName("csman");
-			csman.removeComponent(cs);
-			break;
-		}
-		case "search_results": {
-			csman.removeAllComponents();
-			VerticalLayout csr = sum.getSearchResults(strb.toString());
-			csman.addComponent(csr);
-			csman.setExpandRatio(csr, 1.0f);
-			break;
-		}
-		case "filter_search_results": {
+				VerticalLayout csr = sum.getSearchResults(strb.toString());
+				csman.addComponent(csr);
+				csman.setExpandRatio(csr, 1.0f);
+				csman.setStyleName("csman");
+				cs.setVisible(false);
+				break;
+			}
+			case "search_results": {
+				csman.removeAllComponents();
+				VerticalLayout csr = sum.getSearchResults(strb.toString());
+				csman.addComponent(csr);
+				csman.setExpandRatio(csr, 1.0f);
+				break;
+			}
+			case "filter_search_results": {
 
-			sum.addFilters(strb.toString());
-			break;
-		}
+				sum.addFilters(strb.toString());
+				break;
+			}
+			}
+
+			prevSearchFrag.add(frag);
 		}
 
 	}

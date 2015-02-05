@@ -67,14 +67,14 @@ public class BE2 {
 	private int chkCount;
 	private boolean isSingleChange = false;
 	private boolean isValidatorAdded = false;
-	PagedTableCustom tb;
+	private PagedTableCustom tb;
 
-	ArrayList<String> arrLBulkIDs;
+	private ArrayList<String> arrLBulkIDs;
 
-	ThemeResource icDelete;
-	HashMap<String, Integer> hm;
-	HashMap<String, String> hmFilter;
-	IndexedContainer container;
+	private ThemeResource icDelete;
+	private HashMap<String, Integer> hm;
+	private HashMap<String, String> hmFilter;
+	private IndexedContainer container;
 	private String curURL = null;
 	private boolean isSearchURL = false;
 	ArrayList<Object> arrLTfs;
@@ -752,13 +752,13 @@ public class BE2 {
 		isPopupShowing = true;
 		isSent = false;
 		String username = arrID[3];
-		String userID = arrID[2];
+
 		/*
 		 * TODO ensure that userProfID is retrieved from user data (Table).
 		 * However, for now we shall assume all Linked users are sub Agents.
 		 * However, they could be Super Agents or something.
 		 */
-		String userProfID = "7";
+
 		final Window popup = new Window("Link " + username + "'s Account");
 		popup.setModal(true);
 		popup.setStyleName("w_delete_user");
@@ -1092,6 +1092,7 @@ public class BE2 {
 					Collection<?> arrLCurItemIDs = tb.getVisibleItemIds();
 					for (Object ids : arrLCurItemIDs) {
 						Item row = tb.getItem(ids);
+						@SuppressWarnings("unchecked")
 						Property<CheckBox> col = (row.getItemProperty(" "));
 						CheckBox curChk = col.getValue();
 						curChk.setValue(isChecked);
@@ -1234,7 +1235,6 @@ public class BE2 {
 
 			}
 		});
-		btnEdit.addClickListener(new BtnActionsClickListener(false, null));
 
 		btnDelete.addClickListener(new Button.ClickListener() {
 
@@ -1410,12 +1410,15 @@ public class BE2 {
 			}
 
 		} catch (SQLException | ClassNotFoundException | InstantiationException
-				| IllegalAccessException e) {
+				| IllegalAccessException | IllegalStateException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			Notification.show("DB Connection",
-					"Error Establishing DBConnection:  " + e.getMessage(),
-					Notification.Type.ERROR_MESSAGE);
+			if (!(e instanceof IllegalStateException)) {
+				Notification.show("DB Connection",
+						"Error Establishing DBConnection:  " + e.getMessage(),
+						Notification.Type.ERROR_MESSAGE);
+			}
+
 		}
 
 		return container;
@@ -1739,6 +1742,11 @@ public class BE2 {
 
 		popup.addClickListener(new ClickListener() {
 
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 2042510651880289410L;
+
 			@Override
 			public void click(com.vaadin.event.MouseEvents.ClickEvent event) {
 				popup.center();
@@ -1848,11 +1856,17 @@ public class BE2 {
 
 		btnFilter.addClickListener(new Button.ClickListener() {
 
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = -7024000758308491011L;
+
 			@Override
 			public void buttonClick(ClickEvent event) {
 				if (!isSearchURL) {
 					curURL = UI.getCurrent().getPage().getUriFragment();
-					curURL = curURL.substring(0, curURL.indexOf('?'));
+					if (curURL.indexOf('?') != -1)
+						curURL = curURL.substring(0, curURL.indexOf('?'));
 					isSearchURL = true;
 				}
 				StringBuilder strBuilder = new StringBuilder();
@@ -1876,11 +1890,13 @@ public class BE2 {
 
 				String strParams = strBuilder.toString();
 
-				UI.getCurrent()
-						.getPage()
-						.setUriFragment(
-								curURL + "?action=filter_search_results&"
-										+ strParams);
+				String url = curURL + "?action=filter_search_results&"
+						+ strParams;
+
+				if (WorkSpaceManageUser.prevSearchFrag.contains(url))
+					WorkSpaceManageUser.prevSearchFrag.remove(url);
+
+				UI.getCurrent().getPage().setUriFragment(url);
 
 			}
 		});
@@ -1897,7 +1913,8 @@ public class BE2 {
 
 				if (!isSearchURL) {
 					curURL = UI.getCurrent().getPage().getUriFragment();
-					curURL = curURL.substring(0, curURL.indexOf('?'));
+					if (curURL.indexOf('?') != -1)
+						curURL = curURL.substring(0, curURL.indexOf('?'));
 					isSearchURL = true;
 				}
 				StringBuilder strBuilder = new StringBuilder();
@@ -1920,12 +1937,13 @@ public class BE2 {
 				}
 
 				String strSearchParams = strBuilder.toString();
+				String url = curURL + "?action=search_results&"
+						+ strSearchParams;
 
-				UI.getCurrent()
-						.getPage()
-						.setUriFragment(
-								curURL + "?action=search_results&"
-										+ strSearchParams);
+				if (WorkSpaceManageUser.prevSearchFrag.contains(url))
+					WorkSpaceManageUser.prevSearchFrag.remove(url);
+
+				UI.getCurrent().getPage().setUriFragment(url);
 
 			}
 		});

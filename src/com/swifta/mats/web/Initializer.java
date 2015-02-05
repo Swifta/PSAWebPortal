@@ -76,8 +76,7 @@ public class Initializer {
 				case "ds":
 				case "ds_init": {
 
-					UI.getCurrent().getNavigator()
-							.navigateTo(Main.WS);
+					UI.getCurrent().getNavigator().navigateTo(Main.WS);
 
 					break;
 				}
@@ -126,8 +125,7 @@ public class Initializer {
 				default: {
 
 					if (UI.getCurrent().getSession().getAttribute("user") != null)
-						UI.getCurrent().getNavigator()
-								.navigateTo(Main.WS);
+						UI.getCurrent().getNavigator().navigateTo(Main.WS);
 					else
 						UI.getCurrent().getNavigator().navigateTo(Login.LOGIN);
 

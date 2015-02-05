@@ -1,37 +1,9 @@
 package com.swifta.mats.web.usermanagement;
 
-import java.util.ArrayList;
-
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 
 public class ManageUserModule {
-
-	public static final String DEFAULT_UMANAGE_SESSION_VAR = null;
-	public static final String SESSION_UMANAGE = "umanage_session";
-	public static final String SESSION_VAR_UMANAGE_SEARCH = "search_user";
-	public static final String SESSION_VAR_UMANAGE_SEARCH_RESULTS = "search_results";
-	public static final String SESSION_VAR_UMANAGE_USER_ACTIONS = "user_actions";
-
-	HorizontalLayout cPerAccAuthInfo;
-
-	private static final String btnIDAddUser = "add_user";
-	private static final String strBtnIDAgent = "agent";
-	private static final String strBtnIDMerchant = "merchant";
-	private static final String strBtnIDDealer = "dealer";
-	private static final String strBtnIDPartner = "partner";
-	private static final String strBtnIDBA = "ba";
-	private static final String strBtnIDCCO = "cco";
-	private static final String btnIDManageUser = "manage_user";
-
-	// private FormLayout uDetailsForm;
-	ArrayList<BtnTabLike> arrLTabBtns;
-	Window popup;
-	VerticalLayout cPopupMsg;
-
-	// private TextField tfUname;
 
 	public ManageUserModule() {
 	}
@@ -45,16 +17,10 @@ public class ManageUserModule {
 
 		HorizontalLayout cManageAndAddTab = new HorizontalLayout();
 
-		BtnTabLike btnManUser = new BtnTabLike("Manage", btnIDManageUser);
+		BtnTabLike btnManUser = new BtnTabLike("Manage", null);
 		btnManUser.setStyleName("btn_tab_like btn_tab_like_active");
 
-		UI.getCurrent()
-				.getSession()
-				.setAttribute(
-						WorkSpaceManageUser.SESSION_WORK_AREA_USER_TYPE,
-						WorkSpaceManageUser.SESSION_VAR_WORK_AREA_DEFAULT_USER_TYPE);
-
-		BtnTabLike btnAddUser = new BtnTabLike("Add New", btnIDAddUser);
+		BtnTabLike btnAddUser = new BtnTabLike("Add New", null);
 		cManageAndAddTab.addComponent(btnManUser);
 		cManageAndAddTab.addComponent(btnAddUser);
 
