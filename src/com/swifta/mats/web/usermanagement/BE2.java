@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import com.swifta.mats.web.MatsWebPortalUI;
 import com.swifta.mats.web.utils.UserManagementService;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
@@ -1379,10 +1380,8 @@ public class BE2 {
 			Driver driver = (Driver) driver_class.newInstance();
 			DriverManager.registerDriver(driver);
 
-			Connection conn = DriverManager
-					.getConnection(
-							"jdbc:mysql://gomintdb.caabwbnfnavv.us-east-1.rds.amazonaws.com:3306/psadatasourcetest",
-							Uname, Pword);
+			Connection conn = DriverManager.getConnection(
+					MatsWebPortalUI.dbconn, Uname, Pword);
 
 			String qx = "SELECT acth.username as un, acth.msisdn as msisdn, acth.email as email,pf.profilename as prof, acths.accountholderstatusname as status,acthd.firstname as fn ,acthd.lastname as ln,id.identificationnumber as id,ad.streetaddress as street from accountholders acth, accountholderdetails acthd, accountholderstatus acths, identificationattribute id, address ad, profiles pf where acth.accountholderdetailid = acthd.accountdetailsid and acth.accountholderstatusid = acths.accountholderstatusid and acthd.identificationid = id.identificationattrid and acthd.addressid = ad.addressid and pf.profileid = acth.profileid and pf.profiletypeid = 1;";
 

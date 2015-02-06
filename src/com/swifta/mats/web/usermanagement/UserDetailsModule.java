@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import com.swifta.mats.web.MatsWebPortalUI;
 import com.swifta.mats.web.utils.UserManagementService;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub;
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -1862,18 +1863,16 @@ public class UserDetailsModule {
 	private HashMap<Integer, String> getCountries() {
 		HashMap<Integer, String> c = new HashMap<>();
 		String qx = "SELECT countryname as cname, countryid as cid FROM psadatasourcetest.country;";
-		String Uname = "psatestuser";
-		String Pword = "psatest_2015";
+		String Uname = "psaproduser";
+		String Pword = "psaproduser@2015";
 		String drivers = "com.mysql.jdbc.Driver";
 		try {
 			Class<?> driver_class = Class.forName(drivers);
 			Driver driver = (Driver) driver_class.newInstance();
 			DriverManager.registerDriver(driver);
 
-			Connection conn = DriverManager
-					.getConnection(
-							"jdbc:mysql://gomintdb.caabwbnfnavv.us-east-1.rds.amazonaws.com:3306/psadatasourcetest",
-							Uname, Pword);
+			Connection conn = DriverManager.getConnection(
+					MatsWebPortalUI.dbconn, Uname, Pword);
 
 			Statement stmt = conn.createStatement();
 
@@ -2070,10 +2069,9 @@ public class UserDetailsModule {
 			Driver driver = (Driver) driver_class.newInstance();
 			DriverManager.registerDriver(driver);
 
-			Connection conn = DriverManager
-					.getConnection(
-							"jdbc:mysql://gomintdb.caabwbnfnavv.us-east-1.rds.amazonaws.com:3306/psadatasourcetest",
-							Uname, Pword);
+			Connection conn = DriverManager.getConnection(
+					"jdbc:mysql://173.194.251.79:3306/psadatasource", Uname,
+					Pword);
 
 			Statement stmt = conn.createStatement();
 
@@ -2110,10 +2108,9 @@ public class UserDetailsModule {
 			Driver driver = (Driver) driver_class.newInstance();
 			DriverManager.registerDriver(driver);
 
-			Connection conn = DriverManager
-					.getConnection(
-							"jdbc:mysql://gomintdb.caabwbnfnavv.us-east-1.rds.amazonaws.com:3306/psadatasourcetest",
-							Uname, Pword);
+			Connection conn = DriverManager.getConnection(
+					"jdbc:mysql://173.194.251.79:3306/psadatasource", Uname,
+					Pword);
 
 			Statement stmt = conn.createStatement();
 

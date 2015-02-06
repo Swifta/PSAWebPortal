@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import com.swifta.mats.web.MatsWebPortalUI;
 import com.swifta.mats.web.utils.UserManagementService;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub;
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -936,7 +937,7 @@ public class AddUserModule {
 
 	private HashMap<Integer, String> getCountries() {
 		HashMap<Integer, String> c = new HashMap<>();
-		String qx = "SELECT countryname as cname, countryid as cid FROM psadatasourcetest.country;";
+		String qx = "SELECT countryname as cname, countryid as cid FROM psadatasource.country;";
 		String Uname = "psaproduser";
 		String Pword = "psaproduser@2015";
 		String drivers = "com.mysql.jdbc.Driver";
@@ -945,10 +946,8 @@ public class AddUserModule {
 			Driver driver = (Driver) driver_class.newInstance();
 			DriverManager.registerDriver(driver);
 
-			Connection conn = DriverManager
-					.getConnection(
-							"jdbc:mysql://gomintdb.caabwbnfnavv.us-east-1.rds.amazonaws.com:3306/psadatasourcetest",
-							Uname, Pword);
+			Connection conn = DriverManager.getConnection(
+					MatsWebPortalUI.dbconn, Uname, Pword);
 
 			Statement stmt = conn.createStatement();
 
@@ -975,7 +974,7 @@ public class AddUserModule {
 	private HashMap<Integer, String> getStates(int cid) {
 
 		HashMap<Integer, String> s = new HashMap<>();
-		String qx = "SELECT state as s, countrystateid as sid FROM psadatasourcetest.countrystate where countryid = "
+		String qx = "SELECT state as s, countrystateid as sid FROM psadatasource.countrystate where countryid = "
 				+ cid + ";";
 		String Uname = "psaproduser";
 		String Pword = "psaproduser@2015";
@@ -985,10 +984,8 @@ public class AddUserModule {
 			Driver driver = (Driver) driver_class.newInstance();
 			DriverManager.registerDriver(driver);
 
-			Connection conn = DriverManager
-					.getConnection(
-							"jdbc:mysql://gomintdb.caabwbnfnavv.us-east-1.rds.amazonaws.com:3306/psadatasourcetest",
-							Uname, Pword);
+			Connection conn = DriverManager.getConnection(
+					MatsWebPortalUI.dbconn, Uname, Pword);
 
 			Statement stmt = conn.createStatement();
 
@@ -1016,7 +1013,7 @@ public class AddUserModule {
 
 		HashMap<Integer, String> s = new HashMap<>();
 		// = 1
-		String qx = "SELECT countrystatelgaid as lgid, lganame as lg FROM psadatasourcetest.countrystatelga where countrystateid = "
+		String qx = "SELECT countrystatelgaid as lgid, lganame as lg FROM psadatasource.countrystatelga where countrystateid = "
 				+ sid + ";";
 		String Uname = "psaproduser";
 		String Pword = "psaproduser@2015";
@@ -1026,10 +1023,8 @@ public class AddUserModule {
 			Driver driver = (Driver) driver_class.newInstance();
 			DriverManager.registerDriver(driver);
 
-			Connection conn = DriverManager
-					.getConnection(
-							"jdbc:mysql://gomintdb.caabwbnfnavv.us-east-1.rds.amazonaws.com:3306/psadatasourcetest",
-							Uname, Pword);
+			Connection conn = DriverManager.getConnection(
+					MatsWebPortalUI.dbconn, Uname, Pword);
 
 			Statement stmt = conn.createStatement();
 

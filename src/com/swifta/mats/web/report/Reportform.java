@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import com.swifta.mats.web.MatsWebPortalUI;
 import com.swifta.mats.web.usermanagement.PagedTableCustom;
 import com.vaadin.addon.tableexport.ExcelExport;
 import com.vaadin.data.Container.Filter;
@@ -600,10 +601,8 @@ public class Reportform extends VerticalLayout {
 				Driver driver = (Driver) driver_class.newInstance();
 				DriverManager.registerDriver(driver);
 
-				Connection conn = DriverManager
-						.getConnection(
-								"jdbc:mysql://gomintdb.caabwbnfnavv.us-east-1.rds.amazonaws.com:3306/psadatasourcetest",
-								Uname, Pword);
+				Connection conn = DriverManager.getConnection(
+						MatsWebPortalUI.dbconn, Uname, Pword);
 
 				Statement stmt = conn.createStatement();
 				ResultSet rs;
@@ -680,16 +679,6 @@ public class Reportform extends VerticalLayout {
 						e.printStackTrace();
 					}
 
-					// date.get
-
-					// if (!ht.containsKey("Agent ID")) {
-					// HashSet<String> arrL = new HashSet<>();
-					// arrL.add(agentid);
-					// ht.put("Agent ID", arrL);
-					// } else {
-					// ht.get("Agent ID").add(agentid);
-					// }
-
 					if (!ht.containsKey("Dealer ID")) {
 						HashSet<String> arrL = new HashSet<>();
 						arrL.add(did);
@@ -750,9 +739,14 @@ public class Reportform extends VerticalLayout {
 			container2.addContainerProperty("Transaction ID", String.class, "");
 			container2.addContainerProperty("Transaction Type", String.class,
 					"");
-			// container2
-			// .addContainerProperty("Amount (\u20A6)", String.class, "");
+
+			// container2.addContainerProperty("Amount", String.class, "");
+
+			container2
+					.addContainerProperty("Amount (\u20A6)", String.class, "");
 			container2.addContainerProperty("Sender", String.class, "");
+			container2.addContainerProperty("Receiver", String.class, "");
+
 			// container2.addContainerProperty("Sent_on_behalf_of",
 			// String.class,
 			// "");
@@ -778,26 +772,16 @@ public class Reportform extends VerticalLayout {
 				Driver driver = (Driver) driver_class.newInstance();
 				DriverManager.registerDriver(driver);
 
-				Connection conn = DriverManager
-						.getConnection(
-								"jdbc:mysql://gomintdb.caabwbnfnavv.us-east-1.rds.amazonaws.com:3306/psadatasourcetest",
-								Uname, Pword);
+				Connection conn = DriverManager.getConnection(
+						MatsWebPortalUI.dbconn, Uname, Pword);
 
 				Statement stmt = conn.createStatement();
-				Statement stmt2 = conn.createStatement();
-				ResultSet rs, rs2;
+
+				ResultSet rs;
 				int x = 0;
 				Object itemId;
 				Item trItem;
-				rs2 = stmt2
-						.executeQuery("select txn.userresourceid as 'Username', txnt.name as 'Transaction Type', txn.lastupdate as 'Timestamp', acct.openingbalance as 'Opening Balance', acct.closingbalance as 'Closing Balance', acct.amount as 'Amount',accts.name as 'Account Type'  from transactions txn join accounttransactions acct on txn.transactionid = acct.transactionid join transactiontypes txnt on txnt.transactiontypeid = txn.transactiontypeid join accounttypes accts on accts.accounttypeid = acct.accounttypeid   join accountholders ah on ah.username = txn.userresourceid group by txn.userresourceid order by txn.lastupdate");
-				while (rs2.next()) {
-					agent.addItem(rs2.getString("Username"));
-					agent.setNullSelectionAllowed(false);
-					agent.setTextInputAllowed(false);
-					agent.setInputPrompt("Select");
 
-				}
 				// String sql =
 				// "select txn.transactionid as 'Transaction ID', tvo.fromamount as 'Amount', fromah.username as 'From', toah.username as 'To',txnt.name as 'Transaction Type', CAST(txn.lastupdate AS DATE) as 'Timestamp', txnst.transactionstatusname as 'Status' from transactions txn join transactionvalueoperations tvo on tvo.transactionid = txn.transactionid join transactionstatus txnst on txnst.transactionstatusid = txn.transactionstatusid join transactiontypes txnt on txnt.transactiontypeid = txn.transactiontypeid join accountholders ah on ah.username = txn.userresourceid join accountholders fromah on fromah.accountholderid = tvo.fromaccountholderuserid join accountholders toah on toah.accountholderid = tvo.toaccountholderresourceid   order by tvo.transactionid, ah.username, txn.lastupdate";
 				StringBuilder trxnsql = new StringBuilder();
@@ -808,12 +792,43 @@ public class Reportform extends VerticalLayout {
 				// trxnsql.append("toreceivinguserresource as receiver, (select username from accountholders where accountholderid = torealaccountholderresourceid) as onbehalf_of_receiver, toamount as amount from transactionvalueoperations) rolejoin,");
 				// trxnsql.append("transactionstatus txnst, transactiontypes txnt where rolejoin.transactionid = txn.transactionid and txnst.transactionstatusid = txn.transactionstatusid");
 				// trxnsql.append(" and txnt.transactiontypeid = txn.transactiontypeid order by rolejoin.transactionid, txn.lastupdate;");
+				trxnsql.append("SELECT txn.transactionid AS 'Transaction ID',"
+						+ " txn.lastupdate AS 'Timestamps'"
+						+ ",'N/A' as 'Amount',txn.userresourceid as 'Sender',"
+						+ "'N/A' as 'Reciever',txnt.name AS 'Transaction Type',"
+						+ " txnst.transactionstatusname AS 'Status' FROM transactions txn,"
+						+ " transactionstatus txnst, transactiontypes txnt"
+						+ " WHERE txnst.transactionstatusid = txn.transactionstatusid AND txnt.transactiontypeid = txn.transactiontypeid and txn.transactionid not in (select txn1.transactionid from accounttransactions txn1 group by txn1.transactionid) "
+						+ "UNION"
+						+ " SELECT txn.transactionid AS 'Transaction ID',"
+						+ " txn.lastupdate AS 'Timestamps',(actxn.amount * -1) as 'Amount',"
+						+ " acth.username as 'Sender',txn.userresourceid as 'Reciever',"
+						+ "txnt.name AS 'Transaction Type',"
+						+ " txnst.transactionstatusname AS 'Status' "
+						+ "FROM transactions txn,  transactionstatus txnst,"
+						+ " transactiontypes txnt,accounttransactions actxn"
+						+ " join accountholders acth on acth.accountholderid = actxn.userresourceid"
+						+ " WHERE txnst.transactionstatusid "
+						+ "= txn.transactionstatusid AND txnt.transactiontypeid = txn.transactiontypeid"
+						+ " and actxn.amount < 0 and actxn.transactionid = txn.transactionid"
+						+ " and txnt.name = 'DEPOSIT' group by actxn.transactionid"
+						+ " UNION SELECT txn.transactionid AS 'Transaction ID',"
+						+ " txn.lastupdate AS 'Timestamps',(actxn.amount * -1) as 'Amount',"
+						+ " txn.userresourceid as 'Sender','N/A' as 'Reciever',"
+						+ "txnt.name AS 'Transaction Type', "
+						+ "txnst.transactionstatusname AS 'Status'"
+						+ " FROM transactions txn, transactionstatus txnst,"
+						+ " transactiontypes txnt,accounttransactions actxn"
+						+ " WHERE txnst.transactionstatusid = txn.transactionstatusid"
+						+ " AND txnt.transactiontypeid = txn.transactiontypeid "
+						+ "and actxn.amount < 0 and actxn.transactionid = txn.transactionid "
+						+ "and txnt.name <> 'DEPOSIT' and txn.transactionid not in (select extpay.transactionid from externalpaymentreference extpay group by extpay.transactionid) ORDER BY 'Transaction ID',Timestamps;");
 
-				trxnsql.append("SELECT txn.transactionid AS 'Transaction ID', txnt.name AS 'Transaction Type',");
-				trxnsql.append("txn.lastupdate AS 'Timestamp', txn.userresourceid as 'Sender', txnst.transactionstatusname AS 'Status' ");
-				trxnsql.append("FROM transactions txn, transactionstatus txnst, transactiontypes txnt WHERE txnst.transactionstatusid = txn.transactionstatusid ");
-				trxnsql.append("AND txnt.transactiontypeid = txn.transactiontypeid ");
-				trxnsql.append("ORDER BY txn.transactionid , txn.lastupdate;");
+				// trxnsql.append("SELECT txn.transactionid AS 'Transaction ID', txnt.name AS 'Transaction Type',");
+				// trxnsql.append("txn.lastupdate AS 'Timestamp', txn.userresourceid as 'Sender', txnst.transactionstatusname AS 'Status' ");
+				// trxnsql.append("FROM transactions txn, transactionstatus txnst, transactiontypes txnt WHERE txnst.transactionstatusid = txn.transactionstatusid ");
+				// trxnsql.append("AND txnt.transactiontypeid = txn.transactiontypeid ");
+				// trxnsql.append("ORDER BY txn.transactionid , txn.lastupdate;");
 
 				rs = stmt.executeQuery(trxnsql.toString());
 				// .executeQuery("select txn.userresourceid as 'Username', txnt.name as 'Transaction Type', CAST(txn.lastupdate AS DATE) as 'Timestamp', format(acct.openingbalance /100,2) as 'Opening Balance', format(acct.closingbalance / 100,2) as 'Closing Balance', format(acct.amount / 100 , 2) as 'Amount',accts.name as 'Account Type'  from transactions txn join accounttransactions acct on txn.transactionid = acct.transactionid join transactiontypes txnt on txnt.transactiontypeid = txn.transactiontypeid join accounttypes accts on accts.accounttypeid = acct.accounttypeid   join accountholders ah on ah.username = txn.userresourceid  order by ah.username, txn.lastupdate");
@@ -827,16 +842,9 @@ public class Reportform extends VerticalLayout {
 					String createdon = rs.getString("Timestamp");
 					String transactionID = rs.getString("Transaction ID");
 					String sender = rs.getString("Sender");
-					// String send_onbehalf_of =
-					// rs.getString("send_onbehalf_of");
-					// String receiver = rs.getString("Receiver");
-					// String received_onbehalf_of = rs
-					// .getString("received_onbehalf_of");
 					String status = rs.getString("Status");
-
-					// String fida = "Commission Account";
-					// String fido = "Fees Account";
-
+					String amount = rs.getString("Amount");
+					String receiver = rs.getString("Receiver");
 					String d = createdon;
 
 					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -864,16 +872,6 @@ public class Reportform extends VerticalLayout {
 						ht.get("Status").add(status);
 					}
 
-					System.out
-							.println("-----------------------Print Data :::\nTransaction Type : "
-									+ transactiontype
-									+ "\nTimestamp : "
-									+ createdon
-									+ "\nTransaction ID : "
-									+ transactionID
-									+ "\nFrom : "
-									+ sender
-									+ "\nStatus : " + status);
 					itemId = container2.addItem();
 
 					trItem = container2.getItem(itemId);
@@ -885,6 +883,11 @@ public class Reportform extends VerticalLayout {
 							.getItemProperty("Date");
 					Property<String> tdPropertytransactionid = trItem
 							.getItemProperty("Transaction ID");
+					Property<String> tdPropertyamount = trItem
+							.getItemProperty("Amount (\u20A6)");
+
+					Property<String> tdPropertyreceiver = trItem
+							.getItemProperty("Receiver");
 					Property<String> tdPropertytransactiontype = trItem
 							.getItemProperty("Transaction Type");
 					// Property<String> tdPropertyamount = trItem
@@ -907,9 +910,9 @@ public class Reportform extends VerticalLayout {
 					tdPropertytransactiontype.setValue(transactiontype);
 					// tdPropertyamount.setValue(amount);
 					tdPropertysender.setValue(sender);
-					// tdPropertysenderonbehalfof.setValue(send_onbehalf_of);
-					// tdPropertyreceiver.setValue(receiver);
-					// tdPropertyreceiveronbehalfof.setValue(received_onbehalf_of);
+					tdPropertyamount.setValue(amount);
+					tdPropertyreceiver.setValue(receiver);
+
 					tdPropertystatus.setValue(status);
 
 				}
@@ -946,11 +949,12 @@ public class Reportform extends VerticalLayout {
 			container3.addContainerProperty("Date", Date.class, "");
 			container3.addContainerProperty("Transaction Type", String.class,
 					"");
-			container3.addContainerProperty("Transaction Count", String.class,
-					"");
-			container3.addContainerProperty(
-					"Sum of Transaction Amount (\u20A6)", String.class, "");
-			container3.addContainerProperty("Status", String.class, "");
+			// container3.addContainerProperty("Transaction Count",
+			// String.class,
+			// "");
+			container3
+					.addContainerProperty("Amount (\u20A6)", String.class, "");
+			// container3.addContainerProperty("Status", String.class, "");
 
 			ds = container3;
 
@@ -967,10 +971,8 @@ public class Reportform extends VerticalLayout {
 				Driver driver = (Driver) driver_class.newInstance();
 				DriverManager.registerDriver(driver);
 
-				Connection conn = DriverManager
-						.getConnection(
-								"jdbc:mysql://gomintdb.caabwbnfnavv.us-east-1.rds.amazonaws.com:3306/psadatasourcetest",
-								Uname, Pword);
+				Connection conn = DriverManager.getConnection(
+						MatsWebPortalUI.dbconn, Uname, Pword);
 
 				Statement stmt = conn.createStatement();
 				ResultSet rs;
@@ -979,16 +981,26 @@ public class Reportform extends VerticalLayout {
 				Item trItem;
 
 				StringBuilder summarysql = new StringBuilder();
+
 				summarysql
-						.append("select txnt.name as 'Transaction Type', count(txnt.name) as 'No of transactions', sum(rolejoin.amount) as 'Total Amount', CAST(txn.lastupdate AS DATE) as 'Date',");
-				summarysql
-						.append("txnst.transactionstatusname as 'Status' from transactions txn, (select transactionid as transactionid, operatorid as originatinguser,dealerid as receivinguser,");
-				summarysql
-						.append("amount as amount from cashtransactions union select transactionid as transactionid, realuserresourceid as originatinguser, toreceivinguserresource as receivinguser, toamount as amount");
-				summarysql
-						.append(" from transactionvalueoperations) rolejoin, transactionstatus txnst,transactiontypes txnt where rolejoin.transactionid = txn.transactionid");
-				summarysql
-						.append(" and txnst.transactionstatusid = txn.transactionstatusid and txnt.transactiontypeid = txn.transactiontypeid group by txnt.name,txnst.transactionstatusname,CAST(txn.lastupdate AS DATE)");
+						.append("SELECT CAST(txn.lastupdate as DATE) AS 'Transaction Date'"
+								+ ",txnt.name AS 'Transaction Type'"
+								+ ",sum(actxn.amount) as 'Amount'"
+								+ " FROM transactions txn, transactionstatus txnst, transactiontypes txnt,accounttransactions"
+								+ " actxn,externalpaymentreference extpay, accountholders acth WHERE  txnst.transactionstatusid = txn.transactionstatusid"
+								+ " AND txnt.transactiontypeid = txn.transactiontypeid and "
+								+ "actxn.amount > 0 and actxn.transactionid = txn.transactionid and acth.accountholderid = actxn.userresourceid "
+								+ "and acth.profileid <> 14 and extpay.transactionid = txn.transactionid group by txnt.name, CAST(txn.lastupdate as DATE)");
+				// summarysql
+				// .append("select txnt.name as 'Transaction Type', count(txnt.name) as 'No of transactions', sum(rolejoin.amount) as 'Total Amount', CAST(txn.lastupdate AS DATE) as 'Date',");
+				// summarysql
+				// .append("txnst.transactionstatusname as 'Status' from transactions txn, (select transactionid as transactionid, operatorid as originatinguser,dealerid as receivinguser,");
+				// summarysql
+				// .append("amount as amount from cashtransactions union select transactionid as transactionid, realuserresourceid as originatinguser, toreceivinguserresource as receivinguser, toamount as amount");
+				// summarysql
+				// .append(" from transactionvalueoperations) rolejoin, transactionstatus txnst,transactiontypes txnt where rolejoin.transactionid = txn.transactionid");
+				// summarysql
+				// .append(" and txnst.transactionstatusid = txn.transactionstatusid and txnt.transactiontypeid = txn.transactiontypeid group by txnt.name,txnst.transactionstatusname,CAST(txn.lastupdate AS DATE)");
 
 				rs = stmt.executeQuery(summarysql.toString());
 				cD.setVisible(true);
@@ -996,14 +1008,14 @@ public class Reportform extends VerticalLayout {
 					x = x + 1;
 
 					String transactiontype = rs.getString("Transaction Type");
-					String amount = rs.getString("Total Amount");
-					String nooftransactions = rs
-							.getString("No of transactions");
-					String createdon = rs.getString("Date");
-					String status = rs.getString("Status");
-					System.out.println(nooftransactions);
-					System.out.println(amount);
-					System.out.println(createdon);
+					String amount = rs.getString("Amount");
+					// String nooftransactions = rs
+					// .getString("No of transactions");
+					String createdon = rs.getString("Transaction Date");
+					// String status = rs.getString("Status");
+					// System.out.println(nooftransactions);
+					// System.out.println(amount);
+					// System.out.println(createdon);
 					// String name = rs.getString("Username");
 
 					String d = createdon;
@@ -1037,20 +1049,20 @@ public class Reportform extends VerticalLayout {
 							.getItemProperty("Date");
 					Property<String> tdPropertytransactiontype = trItem
 							.getItemProperty("Transaction Type");
-					Property<String> tdPropertytransactioncount = trItem
-							.getItemProperty("Transaction Count");
+					// Property<String> tdPropertytransactioncount = trItem
+					// .getItemProperty("Transaction Count");
 					Property<String> tdPropertyamount = trItem
-							.getItemProperty("Sum of Transaction Amount (\u20A6)");
-					Property<String> tdPropertytransactionstatus = trItem
-							.getItemProperty("Status");
+							.getItemProperty("Amount (\u20A6)");
+					// Property<String> tdPropertytransactionstatus = trItem
+					// .getItemProperty("Status");
 
 					// tdPropertyname.setValue(name);
 					tdPropertyserial.setValue(String.valueOf(x));
 					tdPropertytransactiondate.setValue(date);
 					tdPropertytransactiontype.setValue(transactiontype);
 					tdPropertyamount.setValue(amount);
-					tdPropertytransactioncount.setValue(nooftransactions);
-					tdPropertytransactionstatus.setValue(status);
+					// tdPropertytransactioncount.setValue(nooftransactions);
+					// tdPropertytransactionstatus.setValue(status);
 				}
 
 				conn.close();
@@ -1124,10 +1136,8 @@ public class Reportform extends VerticalLayout {
 				Driver driver = (Driver) driver_class.newInstance();
 				DriverManager.registerDriver(driver);
 
-				Connection conn = DriverManager
-						.getConnection(
-								"jdbc:mysql://gomintdb.caabwbnfnavv.us-east-1.rds.amazonaws.com:3306/psadatasourcetest",
-								Uname, Pword);
+				Connection conn = DriverManager.getConnection(
+						MatsWebPortalUI.dbconn, Uname, Pword);
 
 				Statement stmt = conn.createStatement();
 				Statement stmt2 = conn.createStatement();
