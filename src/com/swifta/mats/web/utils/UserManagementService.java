@@ -57,7 +57,7 @@ public class UserManagementService {
 	// static String esbendpoint =
 	// "http://127.0.0.1:8280/services/Provisionservice";
 
-	static String esbendpoint = "http://54.173.157.210:8283/services/Provisionservice";
+	final static String esbendpoint = "http://146.148.68.127:8283/services/Provisionservice";
 
 	ProvisioningStub matsStub;
 
