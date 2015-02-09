@@ -51,10 +51,11 @@ import com.vaadin.ui.Window.CloseListener;
 
 public class Reportform extends VerticalLayout {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 252829471857525213L;
+	// private static final String Uname = "psatestuser";
+	// private static final String Pword = "psatest_2015";
+	// private static final String dbc =
+	// "jdbc:mysql://gomintdb.caabwbnfnavv.us-east-1.rds.amazonaws.com:3306/psadatasourcetest";
 	VerticalLayout searchform = new VerticalLayout();
 
 	PagedTableCustom table = new PagedTableCustom() {
@@ -592,8 +593,8 @@ public class Reportform extends VerticalLayout {
 
 			ds = container;
 
-			String Uname = "psaproduser";
-			String Pword = "psaproduser@2015";
+			// String Uname = "psaproduser";
+			// String Pword = "psaproduser@2015";
 			String drivers = "com.mysql.jdbc.Driver";
 			try {
 
@@ -602,7 +603,8 @@ public class Reportform extends VerticalLayout {
 				DriverManager.registerDriver(driver);
 
 				Connection conn = DriverManager.getConnection(
-						MatsWebPortalUI.dbconn, Uname, Pword);
+						MatsWebPortalUI.conf.DB, MatsWebPortalUI.conf.UN,
+						MatsWebPortalUI.conf.PW);
 
 				Statement stmt = conn.createStatement();
 				ResultSet rs;
@@ -763,8 +765,8 @@ public class Reportform extends VerticalLayout {
 				return;
 			}
 
-			String Uname = "psaproduser";
-			String Pword = "psaproduser@2015";
+			// String Uname = "psaproduser";
+			// String Pword = "psaproduser@2015";
 			String drivers = "com.mysql.jdbc.Driver";
 			try {
 
@@ -773,7 +775,8 @@ public class Reportform extends VerticalLayout {
 				DriverManager.registerDriver(driver);
 
 				Connection conn = DriverManager.getConnection(
-						MatsWebPortalUI.dbconn, Uname, Pword);
+						MatsWebPortalUI.conf.DB, MatsWebPortalUI.conf.UN,
+						MatsWebPortalUI.conf.PW);
 
 				Statement stmt = conn.createStatement();
 
@@ -793,16 +796,16 @@ public class Reportform extends VerticalLayout {
 				// trxnsql.append("transactionstatus txnst, transactiontypes txnt where rolejoin.transactionid = txn.transactionid and txnst.transactionstatusid = txn.transactionstatusid");
 				// trxnsql.append(" and txnt.transactiontypeid = txn.transactiontypeid order by rolejoin.transactionid, txn.lastupdate;");
 				trxnsql.append("SELECT txn.transactionid AS 'Transaction ID',"
-						+ " txn.lastupdate AS 'Timestamps'"
+						+ " txn.lastupdate AS 'Timestamp'"
 						+ ",'N/A' as 'Amount',txn.userresourceid as 'Sender',"
-						+ "'N/A' as 'Reciever',txnt.name AS 'Transaction Type',"
+						+ "'N/A' as 'Receiver',txnt.name AS 'Transaction Type',"
 						+ " txnst.transactionstatusname AS 'Status' FROM transactions txn,"
 						+ " transactionstatus txnst, transactiontypes txnt"
 						+ " WHERE txnst.transactionstatusid = txn.transactionstatusid AND txnt.transactiontypeid = txn.transactiontypeid and txn.transactionid not in (select txn1.transactionid from accounttransactions txn1 group by txn1.transactionid) "
 						+ "UNION"
 						+ " SELECT txn.transactionid AS 'Transaction ID',"
-						+ " txn.lastupdate AS 'Timestamps',(actxn.amount * -1) as 'Amount',"
-						+ " acth.username as 'Sender',txn.userresourceid as 'Reciever',"
+						+ " txn.lastupdate AS 'Timestamp',(actxn.amount * -1) as 'Amount',"
+						+ " acth.username as 'Sender',txn.userresourceid as 'Receiver',"
 						+ "txnt.name AS 'Transaction Type',"
 						+ " txnst.transactionstatusname AS 'Status' "
 						+ "FROM transactions txn,  transactionstatus txnst,"
@@ -813,8 +816,8 @@ public class Reportform extends VerticalLayout {
 						+ " and actxn.amount < 0 and actxn.transactionid = txn.transactionid"
 						+ " and txnt.name = 'DEPOSIT' group by actxn.transactionid"
 						+ " UNION SELECT txn.transactionid AS 'Transaction ID',"
-						+ " txn.lastupdate AS 'Timestamps',(actxn.amount * -1) as 'Amount',"
-						+ " txn.userresourceid as 'Sender','N/A' as 'Reciever',"
+						+ " txn.lastupdate AS 'Timestamp',(actxn.amount * -1) as 'Amount',"
+						+ " txn.userresourceid as 'Sender','N/A' as 'Receiver',"
 						+ "txnt.name AS 'Transaction Type', "
 						+ "txnst.transactionstatusname AS 'Status'"
 						+ " FROM transactions txn, transactionstatus txnst,"
@@ -822,7 +825,7 @@ public class Reportform extends VerticalLayout {
 						+ " WHERE txnst.transactionstatusid = txn.transactionstatusid"
 						+ " AND txnt.transactiontypeid = txn.transactiontypeid "
 						+ "and actxn.amount < 0 and actxn.transactionid = txn.transactionid "
-						+ "and txnt.name <> 'DEPOSIT' and txn.transactionid not in (select extpay.transactionid from externalpaymentreference extpay group by extpay.transactionid) ORDER BY 'Transaction ID',Timestamps;");
+						+ "and txnt.name <> 'DEPOSIT' and txn.transactionid not in (select extpay.transactionid from externalpaymentreference extpay group by extpay.transactionid) ORDER BY 'Transaction ID',Timestamp;");
 
 				// trxnsql.append("SELECT txn.transactionid AS 'Transaction ID', txnt.name AS 'Transaction Type',");
 				// trxnsql.append("txn.lastupdate AS 'Timestamp', txn.userresourceid as 'Sender', txnst.transactionstatusname AS 'Status' ");
@@ -967,12 +970,13 @@ public class Reportform extends VerticalLayout {
 			String drivers = "com.mysql.jdbc.Driver";
 			try {
 
-				Class driver_class = Class.forName(drivers);
+				Class<?> driver_class = Class.forName(drivers);
 				Driver driver = (Driver) driver_class.newInstance();
 				DriverManager.registerDriver(driver);
 
 				Connection conn = DriverManager.getConnection(
-						MatsWebPortalUI.dbconn, Uname, Pword);
+						MatsWebPortalUI.conf.DB, MatsWebPortalUI.conf.UN,
+						MatsWebPortalUI.conf.PW);
 
 				Statement stmt = conn.createStatement();
 				ResultSet rs;
@@ -1137,7 +1141,8 @@ public class Reportform extends VerticalLayout {
 				DriverManager.registerDriver(driver);
 
 				Connection conn = DriverManager.getConnection(
-						MatsWebPortalUI.dbconn, Uname, Pword);
+						MatsWebPortalUI.conf.DB, MatsWebPortalUI.conf.UN,
+						MatsWebPortalUI.conf.PW);
 
 				Statement stmt = conn.createStatement();
 				Statement stmt2 = conn.createStatement();
@@ -1145,23 +1150,6 @@ public class Reportform extends VerticalLayout {
 				int x = 0;
 				Object itemId;
 				Item trItem;
-				rs2 = stmt2
-						.executeQuery("select txn.userresourceid as 'Username', txnt.name as 'Transaction Type', txn.lastupdate as 'Timestamp', acct.openingbalance as 'Opening Balance', acct.closingbalance as 'Closing Balance', acct.amount as 'Amount',accts.name as 'Account Type'  from transactions txn join accounttransactions acct on txn.transactionid = acct.transactionid join transactiontypes txnt on txnt.transactiontypeid = txn.transactiontypeid join accounttypes accts on accts.accounttypeid = acct.accounttypeid   join accountholders ah on ah.username = txn.userresourceid group by txn.userresourceid order by txn.lastupdate");
-				cD.setVisible(false);
-
-				while (rs2.next()) {
-					agent.addItem(rs2.getString("Username"));
-					agent.setNullSelectionAllowed(false);
-					agent.setTextInputAllowed(false);
-					agent.setInputPrompt("Select");
-
-				}
-
-				// rs = stmt
-				// .executeQuery("select trx1.transactionid as txid,trxtyp.name as 'Transaction Type',acth2.username as 'Agent/Dealer',acts1.amount as commission ,acth.username as 'MM Operator',acts2.amount as Fees,acts3.amount as amount from accounttransactions acts1,  transactions trx1,transactiontypes trxtyp, accounttransactions acts2, accounttransactions acts3, accountholders acth, accountholders acth2 where acts1.transactionid = trx1.transactionid and acts2.transactionid = trx1.transactionid and acts2.userresourceid = acth.accountholderid and acts3.userresourceid = acth2.accountholderid and acts3.transactionid = trx1.transactionid and trx1.transactiontypeid = trxtyp.transactiontypeid and acts1.accountresourceid = 12 and acts2.accountresourceid in (select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from accountholders where profileid = 15 and accounttypeid = 2)) and acts3.accountresourceid in (select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from accountholders where (profileid = 11 or profileid = 6) and accounttypeid = 1))");
-				// Notification.show(rs.);
-				// rs = stmt
-				// .executeQuery("select txn.userresourceid as 'Username', txnt.name as 'Transaction Type', CAST(txn.lastupdate AS DATE) as 'Timestamp', format(acct.openingbalance /100,2) as 'Opening Balance', format(acct.closingbalance / 100,2) as 'Closing Balance', format(acct.amount / 100 , 2) as 'Amount',accts.name as 'Account Type'  from transactions txn join accounttransactions acct on txn.transactionid = acct.transactionid join transactiontypes txnt on txnt.transactiontypeid = txn.transactiontypeid join accounttypes accts on accts.accounttypeid = acct.accounttypeid   join accountholders ah on ah.username = txn.userresourceid  order by ah.username, txn.lastupdate");
 
 				StringBuilder sb = new StringBuilder();
 				sb.append("select trx1.transactionid as txid,trxtyp.name as 'Transaction Type','MATS_TOTAL_FEE&COMMISSION' as 'Commission Account',acts1.amount as commission,");

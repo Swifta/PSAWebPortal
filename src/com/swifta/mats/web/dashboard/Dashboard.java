@@ -71,8 +71,8 @@ public class Dashboard {
 			Class<?> driver_class = Class.forName(drivers);
 			Driver driver = (Driver) driver_class.newInstance();
 			DriverManager.registerDriver(driver);
-			conn = DriverManager.getConnection(MatsWebPortalUI.dbconn, Uname,
-					Pword);
+			conn = DriverManager.getConnection(MatsWebPortalUI.conf.DB,
+					MatsWebPortalUI.conf.UN, MatsWebPortalUI.conf.PW);
 			Statement stmt = conn.createStatement();
 			// ResultSet rs = stmt
 			// .executeQuery("select trx1.transactionid as txid,trxtyp.name as 'Transaction Type',acth2.username as 'Agent/Dealer',acts1.amount as commission ,acth.username as 'MM Operator',acts2.amount as Fees,acts3.amount as amount from accounttransactions acts1,  transactions trx1,transactiontypes trxtyp, accounttransactions acts2, accounttransactions acts3, accountholders acth, accountholders acth2 where acts1.transactionid = trx1.transactionid and acts2.transactionid = trx1.transactionid and acts2.userresourceid = acth.accountholderid and acts3.userresourceid = acth2.accountholderid and acts3.transactionid = trx1.transactionid and trx1.transactiontypeid = trxtyp.transactiontypeid and acts1.accountresourceid = 12 and acts2.accountresourceid in (select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from accountholders where profileid = 15 and accounttypeid = 2)) and acts3.accountresourceid in (select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from accountholders where (profileid = 11 or profileid = 6) and accounttypeid = 1))");

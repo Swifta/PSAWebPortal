@@ -14,6 +14,7 @@ import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
 import org.apache.axis2.transport.http.HTTPConstants;
 
+import com.swifta.mats.web.MatsWebPortalUI;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Activationrequest;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ActivationrequestE;
@@ -30,7 +31,7 @@ public class LoginService {
 	// static String esbendpoint =
 	// "http://127.0.0.1:8280/services/Provisionservice";
 
-	final static String esbendpoint = "http://146.148.68.127:8283/services/Provisionservice";
+	final static String esbendpoint = MatsWebPortalUI.conf.ESB;
 
 	org.apache.axis2.client.ServiceClient _serviceClient = null;
 

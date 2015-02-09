@@ -937,9 +937,10 @@ public class AddUserModule {
 
 	private HashMap<Integer, String> getCountries() {
 		HashMap<Integer, String> c = new HashMap<>();
-		String qx = "SELECT countryname as cname, countryid as cid FROM psadatasource.country;";
-		String Uname = "psaproduser";
-		String Pword = "psaproduser@2015";
+		String qx = "SELECT countryname as cname, countryid as cid FROM "
+				+ MatsWebPortalUI.conf.dbin + ".country;";
+		// String Uname = "psaproduser";
+		// String Pword = "psaproduser@2015";
 		String drivers = "com.mysql.jdbc.Driver";
 		try {
 			Class<?> driver_class = Class.forName(drivers);
@@ -947,7 +948,8 @@ public class AddUserModule {
 			DriverManager.registerDriver(driver);
 
 			Connection conn = DriverManager.getConnection(
-					MatsWebPortalUI.dbconn, Uname, Pword);
+					MatsWebPortalUI.conf.DB, MatsWebPortalUI.conf.UN,
+					MatsWebPortalUI.conf.PW);
 
 			Statement stmt = conn.createStatement();
 
@@ -974,8 +976,9 @@ public class AddUserModule {
 	private HashMap<Integer, String> getStates(int cid) {
 
 		HashMap<Integer, String> s = new HashMap<>();
-		String qx = "SELECT state as s, countrystateid as sid FROM psadatasource.countrystate where countryid = "
-				+ cid + ";";
+		String qx = "SELECT state as s, countrystateid as sid FROM "
+				+ MatsWebPortalUI.conf.dbin
+				+ ".countrystate where countryid = " + cid + ";";
 		String Uname = "psaproduser";
 		String Pword = "psaproduser@2015";
 		String drivers = "com.mysql.jdbc.Driver";
@@ -985,7 +988,8 @@ public class AddUserModule {
 			DriverManager.registerDriver(driver);
 
 			Connection conn = DriverManager.getConnection(
-					MatsWebPortalUI.dbconn, Uname, Pword);
+					MatsWebPortalUI.conf.DB, MatsWebPortalUI.conf.UN,
+					MatsWebPortalUI.conf.PW);
 
 			Statement stmt = conn.createStatement();
 
@@ -1013,8 +1017,9 @@ public class AddUserModule {
 
 		HashMap<Integer, String> s = new HashMap<>();
 		// = 1
-		String qx = "SELECT countrystatelgaid as lgid, lganame as lg FROM psadatasource.countrystatelga where countrystateid = "
-				+ sid + ";";
+		String qx = "SELECT countrystatelgaid as lgid, lganame as lg FROM "
+				+ MatsWebPortalUI.conf.dbin
+				+ ".countrystatelga where countrystateid = " + sid + ";";
 		String Uname = "psaproduser";
 		String Pword = "psaproduser@2015";
 		String drivers = "com.mysql.jdbc.Driver";
@@ -1024,7 +1029,8 @@ public class AddUserModule {
 			DriverManager.registerDriver(driver);
 
 			Connection conn = DriverManager.getConnection(
-					MatsWebPortalUI.dbconn, Uname, Pword);
+					MatsWebPortalUI.conf.DB, MatsWebPortalUI.conf.UN,
+					MatsWebPortalUI.conf.PW);
 
 			Statement stmt = conn.createStatement();
 

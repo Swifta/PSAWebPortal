@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 
 import org.apache.axis2.AxisFault;
 
+import com.swifta.mats.web.MatsWebPortalUI;
 import com.swifta.sub.mats.operation.financial.v1_0.FinancialsStub.StatusCode;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ServiceCommission;
@@ -23,7 +24,7 @@ public class CommissionService {
 	// static String esbendpoint =
 	// "http://127.0.0.1:8280/services/Provisionservice";
 
-	static final String esbendpoint = "http://146.148.68.127:8283/services/Provisionservice";
+	final static String esbendpoint = MatsWebPortalUI.conf.ESB;
 	private static final Logger logger = Logger
 			.getLogger(CommissionService.class.getName());
 	public String statusMessage = "";
@@ -38,7 +39,7 @@ public class CommissionService {
 
 		logger.info("--------------------------After setting setup fees and commission"
 				+ setupservicefeesandcommission);
-		ServiceCommission newServiceCommission = new ServiceCommission();
+		// ServiceCommission newServiceCommission = new ServiceCommission();
 
 		for (int i = 0; i < serviceCommissionArray.length; i++) {
 			logger.info("--------------------------Iterating commission:::"

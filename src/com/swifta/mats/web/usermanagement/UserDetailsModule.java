@@ -1872,7 +1872,8 @@ public class UserDetailsModule {
 			DriverManager.registerDriver(driver);
 
 			Connection conn = DriverManager.getConnection(
-					MatsWebPortalUI.dbconn, Uname, Pword);
+					MatsWebPortalUI.conf.DB, MatsWebPortalUI.conf.UN,
+					MatsWebPortalUI.conf.PW);
 
 			Statement stmt = conn.createStatement();
 

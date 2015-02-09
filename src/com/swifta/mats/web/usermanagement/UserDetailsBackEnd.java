@@ -36,7 +36,8 @@ public class UserDetailsBackEnd {
 			DriverManager.registerDriver(driver);
 
 			Connection conn = DriverManager.getConnection(
-					MatsWebPortalUI.dbconn, Uname, Pword);
+					MatsWebPortalUI.conf.DB, MatsWebPortalUI.conf.UN,
+					MatsWebPortalUI.conf.PW);
 
 			String sql = "SELECT  acth.username AS un, acth.msisdn AS msisdn, acth.email AS email, acthd.gender AS gender, acthd.occupation AS occupation, acthd.employer AS employer, CAST(acthd.dateofbirth as DATE) AS dateofbirth, pf.profilename AS prof, acths.accountholderstatusname AS status, acthd.firstname AS fn, acthd.lastname AS ln, c.countryname AS country, cs.state AS state, csl.lganame AS lg, idtype.identificationdescr AS idtype, id.identificationnumber AS id, ad.streetaddress AS street, id.isssuer as issuer, CAST(id.issuedate as DATE) as issuedate, CAST(id.expirydate as DATE) as expirydate,  pc.name as primarycontactname, pc.mobilenumber as primarymobilenumber,  pc.phonenumber as primaryphonenumber, sc.name as secondarycontactname, sc.mobilenumber as secondarymobilenumber,  sc.phonenumber as secondaryphonenumber FROM accountholders acth, accountholderdetails acthd, accountholderstatus acths, identificationattribute id, address ad,  profiles pf, identificationtypes idtype, country c, countrystate cs, countrystatelga csl,  primarycontactinfo pc, secondarycontactinfo sc  WHERE acth.accountholderdetailid = acthd.accountdetailsid AND acth.accountholderstatusid = acths.accountholderstatusid AND acthd.identificationid = id.identificationattrid AND acthd.addressid = ad.addressid AND pf.profileid = acth.profileid AND id.identificationtypeid = idtype.identificationtypeid AND acthd.countryid = c.countryid AND acthd.countrystateid = cs.countrystateid AND acthd.countrystatelgaid = csl.countrystatelgaid AND acthd.primarycontactinfoid = pc.primarycontactinfoid  AND acthd.secondarycontactinfoid = sc.secondarycontactinfoid AND pf.profiletypeid = 1  AND acth.username = '"
 					+ strUID + "';";
