@@ -24,6 +24,11 @@
             <url>http://dist.wso2.org/maven2/</url>
         </pluginRepository>
     </pluginRepositories>
+    
+    
+    
+    
+    
     <build>
         <plugins>
             <plugin>
@@ -70,6 +75,35 @@
                 <artifactId>maven-eclipse-plugin</artifactId>
                 <version>2.9</version>
             </plugin>
+            
+    <plugin>
+    <groupId>org.codehaus.mojo</groupId>
+    <artifactId>exec-maven-plugin</artifactId>
+    <version>1.2.1</version>
+    <executions>
+        <execution>
+            <phase>generate-sources</phase>
+            <goals>
+                <goal>java</goal>
+            </goals>
+            <configuration>
+                <classpathScope>compile</classpathScope>
+                <mainClass>com.vaadin.sass.SassCompiler</mainClass>
+                <arguments>
+                    <argument>src/main/webapp/VAADIN/themes/mats_web_portal/styles.scss</argument>
+                    <argument>src/main/webapp/VAADIN/themes/mats_web_portal/styles.css</argument>
+                </arguments>
+            </configuration>
+        </execution>
+    </executions>
+</plugin>
+            
+            
+            
+            
+            
+            
+            
         </plugins>
     </build>
 

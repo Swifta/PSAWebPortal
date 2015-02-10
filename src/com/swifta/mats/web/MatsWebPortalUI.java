@@ -65,105 +65,111 @@ public class MatsWebPortalUI extends UI {
 
 	@Override
 	protected void init(VaadinRequest request) {
-		new Navigator(this, this);
-		hm = new HashMap<>();
-		Initializer initializer = new Initializer();
+		try {
+			new Navigator(this, this);
+			hm = new HashMap<>();
+			Initializer initializer = new Initializer();
 
-		ts = initializer.getTS(hm);
-		getNavigator().addView("", new Login());
-		getNavigator().addView(Login.LOGIN, Login.class);
-		getNavigator().addView(Main.WS, Main.class);
+			ts = initializer.getTS(hm);
+			getNavigator().addView("", new Login());
+			getNavigator().addView(Login.LOGIN, Login.class);
+			getNavigator().addView(Main.WS, Main.class);
 
-		getNavigator().setErrorProvider(new ErrorVIEW());
+			getNavigator().setErrorProvider(new ErrorVIEW());
 
-		getNavigator().addViewChangeListener(new ViewChangeListener() {
+			getNavigator().addViewChangeListener(new ViewChangeListener() {
 
-			@Override
-			public boolean beforeViewChange(ViewChangeEvent event) {
+				@Override
+				public boolean beforeViewChange(ViewChangeEvent event) {
 
-				boolean isErrorView = event.getNewView() instanceof ErrorVIEW;
-				boolean isLoggedIn = UI.getCurrent().getSession()
-						.getAttribute("user") != null;
-				View prevView = event.getOldView();
-				if (prevView != null && prevView.equals(event.getNewView()))
-					return false;
-
-				if (isErrorView) {
-					vN = null;
-					if (prevView != null && isLoggedIn) {
-						Notification.show("Resource of \""
-								+ UI.getCurrent().getPage().getLocation()
-								+ "\" does not exist.",
-								Notification.Type.ERROR_MESSAGE);
-
-						prevView.enter(event);
-
+					boolean isErrorView = event.getNewView() instanceof ErrorVIEW;
+					boolean isLoggedIn = UI.getCurrent().getSession()
+							.getAttribute("user") != null;
+					View prevView = event.getOldView();
+					if (prevView != null && prevView.equals(event.getNewView()))
 						return false;
-					} else {
 
-						getNavigator().navigateTo(Login.LOGIN);
-						return false;
-					}
-
-				}
-
-				vN = event.getViewName();
-
-				boolean isLoginView = event.getNewView() instanceof Login;
-
-				if (!isLoggedIn)
-					VaadinSession.getCurrent().getSession()
-							.setMaxInactiveInterval(3600);
-
-				if (!isLoginView && !isLoggedIn) {
-					vN = null;
-					getNavigator().navigateTo(Login.LOGIN);
-					return false;
-				}
-
-				if (isLoginView) {
-					if (isLoggedIn) {
+					if (isErrorView) {
 						vN = null;
-						getNavigator().navigateTo(Main.WS);
-						return false;
-					} else {
-						return true;
+						if (prevView != null && isLoggedIn) {
+							Notification.show("Resource of \""
+									+ UI.getCurrent().getPage().getLocation()
+									+ "\" does not exist.",
+									Notification.Type.ERROR_MESSAGE);
+
+							prevView.enter(event);
+
+							return false;
+						} else {
+
+							getNavigator().navigateTo(Login.LOGIN);
+							return false;
+						}
+
 					}
 
-				} else {
-					if (!isLoggedIn) {
+					vN = event.getViewName();
+
+					boolean isLoginView = event.getNewView() instanceof Login;
+
+					if (!isLoggedIn)
+						VaadinSession.getCurrent().getSession()
+								.setMaxInactiveInterval(3600);
+
+					if (!isLoginView && !isLoggedIn) {
 						vN = null;
 						getNavigator().navigateTo(Login.LOGIN);
 						return false;
 					}
+
+					if (isLoginView) {
+						if (isLoggedIn) {
+							vN = null;
+							getNavigator().navigateTo(Main.WS);
+							return false;
+						} else {
+							return true;
+						}
+
+					} else {
+						if (!isLoggedIn) {
+							vN = null;
+							getNavigator().navigateTo(Login.LOGIN);
+							return false;
+						}
+					}
+
+					return true;
+
 				}
 
-				return true;
+				@Override
+				public void afterViewChange(ViewChangeEvent event) {
 
-			}
+				}
 
-			@Override
-			public void afterViewChange(ViewChangeEvent event) {
+			});
 
-			}
+			UI.getCurrent()
+					.getPage()
+					.addUriFragmentChangedListener(
+							new Page.UriFragmentChangedListener() {
 
-		});
+								@Override
+								public void uriFragmentChanged(
 
-		UI.getCurrent()
-				.getPage()
-				.addUriFragmentChangedListener(
-						new Page.UriFragmentChangedListener() {
+								UriFragmentChangedEvent event) {
 
-							@Override
-							public void uriFragmentChanged(
+									if (vN != null)
+										enter();
 
-							UriFragmentChangedEvent event) {
+								}
+							});
+		} catch (OutOfMemoryError e) {
+			Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
+			e.printStackTrace();
 
-								if (vN != null)
-									enter();
-
-							}
-						});
+		}
 
 	}
 

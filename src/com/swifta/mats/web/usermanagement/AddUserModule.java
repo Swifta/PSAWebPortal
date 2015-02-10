@@ -150,17 +150,17 @@ public class AddUserModule {
 		TextField tF = new TextField("First Name");
 		tFFN = tF;
 		tFFN.setRequired(true);
-		tF.setValue("Paul");
+		// tF.setValue("Paul");
 		cBasic.addComponent(tF);
 
 		tF = new TextField("Middle Name");
-		tF.setValue("Pwndz");
+		// tF.setValue("Pwndz");
 		tFMN = tF;
 		tFMN.setRequired(true);
 		cBasic.addComponent(tF);
 
 		tF = new TextField("Last Name");
-		tF.setValue("Kigozi");
+		// tF.setValue("Kigozi");
 		tFLN = tF;
 		tFLN.setRequired(true);
 		cBasic.addComponent(tF);
@@ -172,7 +172,7 @@ public class AddUserModule {
 
 		opt.addItem("MALE");
 		// opt.setItemCaption(2, "Male");
-		opt.select("MALE");
+		// opt.select("MALE");
 		optSex = opt;
 		optSex.setRequired(true);
 		cBasic.addComponent(opt);
@@ -192,13 +192,13 @@ public class AddUserModule {
 		combo.addItem("M.B.A");
 		combo.addItem("RA");
 		combo.addItem("CISA ");
-		combo.select("Ph.D");
+		// combo.select("Ph.D");
 		comboSuff = combo;
 		cBasic.addComponent(combo);
 
 		combo = new ComboBox("Language");
 		combo.addItem(1);
-		combo.select(1);
+		// combo.select(1);
 		combo.setItemCaption(1, "en-US");
 		combo.addItem(2);
 		combo.setItemCaption(2, "en-UK");
@@ -209,20 +209,20 @@ public class AddUserModule {
 		cBasic.addComponent(combo);
 
 		tF = new TextField("Occupation");
-		tF.setValue("Software Engineer");
+		// tF.setValue("Software Engineer");
 		tFOcc = tF;
 		tFOcc.setRequired(true);
 		cBasic.addComponent(tF);
 
 		tF = new TextField("Employer");
-		tF.setValue("Swifta");
+		// tF.setValue("Swifta");
 		tFEmp = tF;
 		cBasic.addComponent(tF);
 
 		PopupDateField dF = new PopupDateField("DoB");
 		Calendar cal = Calendar.getInstance();
 		cal.set(1988, 11, 12);
-		dF.setValue(cal.getTime());
+		// dF.setValue(cal.getTime());
 		dFDoB = dF;
 		cBasic.addComponent(dF);
 
@@ -280,34 +280,34 @@ public class AddUserModule {
 		combo.addItem("Drivers License Number");
 		combo.addItem("Identification Card");
 		combo.addItem("Employer Identification Number");
-		combo.select("Passport Number");
+		// combo.select("Passport Number");
 		comboIDType = combo;
 		comboIDType.setRequired(true);
 		cCompany.addComponent(combo);
 
 		tF = new TextField("ID No.");
-		tF.setValue("001");
+		// tF.setValue("001");
 		tFIDNo = tF;
 		tFIDNo.setRequired(true);
 		cCompany.addComponent(tF);
 
 		tF = new TextField("Issuer");
 		tFIssuer = tF;
-		tFIssuer.setValue("Republic of Uganda");
+		// tFIssuer.setValue("Republic of Uganda");
 		cCompany.addComponent(tF);
 
 		dF = new PopupDateField("Issue Date");
 		// cal = Calendar.getInstance();
 		cal.set(12, 12, 12);
-		dF.setValue(cal.getTime());
+		// dF.setValue(cal.getTime());
 		dFDoI = dF;
 		cCompany.addComponent(dF);
 
 		dF = new PopupDateField("Expiry Date");
 		// cal = Calendar.getInstance();
 		cal.set(14, 12, 12);
-		dF.setValue(cal.getTime());
-		dF.setValue(cal.getTime());
+		// dF.setValue(cal.getTime());
+		// dF.setValue(cal.getTime());
 		dFDoE = dF;
 		dFDoE.setRequired(true);
 		dFDoE.setImmediate(true);
@@ -325,18 +325,18 @@ public class AddUserModule {
 		pC.addComponent(cLbc);
 
 		tF = new TextField("Mobile Phone No.");
-		tF.setValue("+256704191152");
+		// tF.setValue("+256704191152");
 		tFPMNo = tF;
 
 		pC.addComponent(tF);
 
 		tF = new TextField("Alt. Phone No.");
-		tF.setValue("+1704191152");
+		// tF.setValue("+1704191152");
 		tFPANo = tF;
 		pC.addComponent(tF);
 
 		tF = new TextField("Email Address");
-		tF.setValue("pwndz172@gmail.com");
+		// tF.setValue("pwndz172@gmail.com");
 		tFPEmail = tF;
 		pC.addComponent(tF);
 		cC.addComponent(pC);
@@ -350,17 +350,17 @@ public class AddUserModule {
 		sC.addComponent(cLbc);
 
 		tF = new TextField("Mobile Phone No.");
-		tF.setValue("+256804191152");
+		// tF.setValue("+256804191152");
 		tFSMNo = tF;
 		sC.addComponent(tF);
 
 		tF = new TextField("Alt. Phone No.");
-		tF.setValue("+1804191152");
+		// tF.setValue("+1804191152");
 		tFSANo = tF;
 		sC.addComponent(tF);
 
 		tF = new TextField("E-mail Address");
-		tF.setValue("pkigozi@swifta.com");
+		// tF.setValue("pkigozi@swifta.com");
 		tFSEmail = tF;
 		sC.addComponent(tF);
 
@@ -375,24 +375,24 @@ public class AddUserModule {
 		physicalC.addComponent(cLbc);
 
 		tF = new TextField("Street");
-		tF.setValue("Yusuf Lule Rd.");
+		// tF.setValue("Yusuf Lule Rd.");
 		tFStreet = tF;
 		tFStreet.setRequired(true);
 		physicalC.addComponent(tF);
 
 		tF = new TextField("Postal Code");
-		tF.setValue("23");
+		// tF.setValue("23");
 		tFPostalCode = tF;
 		physicalC.addComponent(tF);
 
 		tF = new TextField("City");
-		tF.setValue("Kampala");
+		// tF.setValue("Kampala");
 		tFCity = tF;
 		tFCity.setRequired(true);
 		physicalC.addComponent(tF);
 
 		tF = new TextField("Province");
-		tF.setValue("Central");
+		// tF.setValue("Central");
 		tFProv = tF;
 		physicalC.addComponent(tF);
 
@@ -423,7 +423,7 @@ public class AddUserModule {
 			comboHierarchy.setItemCaption(e.getKey(), e.getValue());
 		}
 
-		comboHierarchy.select(1);
+		// comboHierarchy.select(1);
 		comboProfile = comboHierarchy;
 		comboProfile.setRequired(true);
 		cAcc.addComponent(comboHierarchy);
@@ -431,13 +431,13 @@ public class AddUserModule {
 		final VerticalLayout cLBody = new VerticalLayout();
 
 		tF = new TextField("Username");
-		tF.setValue("Livepwndz");
+		// tF.setValue("Livepwndz");
 		tFUN = tF;
 		tFUN.setRequired(true);
 		cLBody.addComponent(tF);
 
 		tF = new TextField("MSISDN");
-		tF.setValue("+256774191152");
+		// tF.setValue("+256774191152");
 		tFMSISDN = tF;
 		tFMSISDN.setRequired(true);
 		cLBody.addComponent(tF);
@@ -448,23 +448,23 @@ public class AddUserModule {
 		tF = new TextField("Email");
 		tFAccEmail = tF;
 		tFAccEmail.setRequired(true);
-		tFAccEmail.setValue("ppounds1@gmail.com");
+		// tFAccEmail.setValue("ppounds1@gmail.com");
 		cLBody.addComponent(tF);
 
 		combo = new ComboBox("Bank Domain");
 		combo.addItem("Heritage Bank");
-		combo.select("Heritage Bank");
+		// combo.select("Heritage Bank");
 		comboBDomain = combo;
 		cLBody.addComponent(combo);
 
 		combo = new ComboBox("Bank Code ID");
 		combo.addItem("001");
-		combo.select("001");
+		// combo.select("001");
 		comboBID = combo;
 		cLBody.addComponent(combo);
 
 		tF = new TextField("Bank Account");
-		tF.setValue("00232333452315");
+		// tF.setValue("00232333452315");
 		tFBAcc = tF;
 		// tFBAcc.setValidationVisible(true);
 		// tFBAcc.addValidator(new NoNull());
@@ -472,12 +472,12 @@ public class AddUserModule {
 
 		combo.addItem(1);
 		combo.setItemCaption(1, "US Dollars");
-		combo.select(1);
+		// combo.select(1);
 		comboCur = combo;
 		cLBody.addComponent(combo);
 
 		tF = new TextField("Clearing Number");
-		tF.setValue("00212");
+		// tF.setValue("00212");
 		tFClrNo = tF;
 		cLBody.addComponent(tF);
 
@@ -497,12 +497,12 @@ public class AddUserModule {
 		combo.setItemCaption(2,
 				"What was your favorite junior school teacher's name?");
 		combo.setItemCaption(3, "What was one of your nicknames in school?");
-		combo.select(2);
+		// combo.select(2);
 		comboSecQn = combo;
 		cLBody.addComponent(combo);
 
 		tF = new TextField("Answer");
-		tF.setValue("Mrs. X");
+		// tF.setValue("Mrs. X");
 		tFSecAns = tF;
 		cLBody.addComponent(tF);
 
