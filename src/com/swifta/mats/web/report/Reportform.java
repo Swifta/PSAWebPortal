@@ -10,8 +10,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.TreeSet;
 
 import com.swifta.mats.web.MatsWebPortalUI;
 import com.swifta.mats.web.usermanagement.PagedTableCustom;
@@ -52,10 +52,6 @@ import com.vaadin.ui.Window.CloseListener;
 public class Reportform extends VerticalLayout {
 
 	private static final long serialVersionUID = 252829471857525213L;
-	// private static final String Uname = "psatestuser";
-	// private static final String Pword = "psatest_2015";
-	// private static final String dbc =
-	// "jdbc:mysql://gomintdb.caabwbnfnavv.us-east-1.rds.amazonaws.com:3306/psadatasourcetest";
 	VerticalLayout searchform = new VerticalLayout();
 
 	PagedTableCustom table = new PagedTableCustom() {
@@ -82,7 +78,7 @@ public class Reportform extends VerticalLayout {
 	HorizontalLayout pnUserSearchResults2;
 
 	ComboBox agent;
-	HashMap<String, HashSet<String>> ht = new HashMap<>();
+	LinkedHashMap<String, TreeSet<String>> ht = new LinkedHashMap<>();
 	ComboBox comboF;
 	ComboBox comboVal;
 	IndexedContainer ds;
@@ -244,7 +240,7 @@ public class Reportform extends VerticalLayout {
 					return;
 				}
 				String creteria = event.getProperty().getValue().toString();
-				HashSet<String> arrL = ht.get(creteria);
+				TreeSet<String> arrL = ht.get(creteria);
 				if (arrL == null)
 					return;
 
@@ -310,13 +306,6 @@ public class Reportform extends VerticalLayout {
 				builder.append(table.getCaption());
 				builder.append("_");
 				builder.append(sdf.format(cal.getTime()));
-				/*
-				 * .append(cal.get(Calendar.DATE)); builder.append("-");
-				 * builder.append(cal.get(Calendar.MONTH)); builder.append("-");
-				 * builder.append(cal.get(Calendar.YEAR)); builder.append("_");
-				 * builder.append(cal.get(Calendar.HOUR)); builder.append(".");
-				 * builder.append(cal.get(Calendar.MINUTE));
-				 */
 
 				ExcelExport excelExport = new ExcelExport(table);
 				excelExport.setReportTitle(table.getCaption());
@@ -548,7 +537,7 @@ public class Reportform extends VerticalLayout {
 				dat2.setValue(null);
 
 				table.setContainerDataSource(ds);
-				int t = table.size();
+				int t = ds.size();
 				if (t > 30) {
 					t = 30;
 				}
@@ -682,7 +671,7 @@ public class Reportform extends VerticalLayout {
 					}
 
 					if (!ht.containsKey("Dealer ID")) {
-						HashSet<String> arrL = new HashSet<>();
+						TreeSet<String> arrL = new TreeSet<>();
 						arrL.add(did);
 						ht.put("Dealer ID", arrL);
 					} else {
@@ -690,7 +679,7 @@ public class Reportform extends VerticalLayout {
 					}
 
 					if (!ht.containsKey("Agent ID")) {
-						HashSet<String> arrL = new HashSet<>();
+						TreeSet<String> arrL = new TreeSet<>();
 						arrL.add(aid);
 						ht.put("Agent ID", arrL);
 					} else {
@@ -746,8 +735,11 @@ public class Reportform extends VerticalLayout {
 
 			container2
 					.addContainerProperty("Amount (\u20A6)", String.class, "");
-			container2.addContainerProperty("Sender", String.class, "");
+			container2.addContainerProperty("Agent/Sender", String.class, "");
+
 			container2.addContainerProperty("Receiver", String.class, "");
+
+			container2.addContainerProperty("Partner", String.class, "");
 
 			// container2.addContainerProperty("Sent_on_behalf_of",
 			// String.class,
@@ -784,57 +776,56 @@ public class Reportform extends VerticalLayout {
 				int x = 0;
 				Object itemId;
 				Item trItem;
-
-				// String sql =
-				// "select txn.transactionid as 'Transaction ID', tvo.fromamount as 'Amount', fromah.username as 'From', toah.username as 'To',txnt.name as 'Transaction Type', CAST(txn.lastupdate AS DATE) as 'Timestamp', txnst.transactionstatusname as 'Status' from transactions txn join transactionvalueoperations tvo on tvo.transactionid = txn.transactionid join transactionstatus txnst on txnst.transactionstatusid = txn.transactionstatusid join transactiontypes txnt on txnt.transactiontypeid = txn.transactiontypeid join accountholders ah on ah.username = txn.userresourceid join accountholders fromah on fromah.accountholderid = tvo.fromaccountholderuserid join accountholders toah on toah.accountholderid = tvo.toaccountholderresourceid   order by tvo.transactionid, ah.username, txn.lastupdate";
 				StringBuilder trxnsql = new StringBuilder();
-				// trxnsql.append("select  txn.transactionid as 'Transaction ID', rolejoin.amount as 'Amount', rolejoin.sender as 'Sender', rolejoin.send_onbehalf_of as 'send_onbehalf_of',");
-				// trxnsql.append("rolejoin.receiver as 'Receiver', rolejoin.received_onbehalf_of as 'received_onbehalf_of',txnt.name as 'Transaction Type', txn.lastupdate as 'Timestamp', txnst.transactionstatusname as 'Status'");
-				// trxnsql.append(" from transactions txn, (select transactionid as transactionid, operatorid as sender, operatorid as send_onbehalf_of, dealerid as receiver, dealerid as received_onbehalf_of,");
-				// trxnsql.append("amount as amount from cashtransactions union select transactionid as transactionid,initiatinguserresourceid as sender, realuserresourceid as onbehalf_of_sender,");
-				// trxnsql.append("toreceivinguserresource as receiver, (select username from accountholders where accountholderid = torealaccountholderresourceid) as onbehalf_of_receiver, toamount as amount from transactionvalueoperations) rolejoin,");
-				// trxnsql.append("transactionstatus txnst, transactiontypes txnt where rolejoin.transactionid = txn.transactionid and txnst.transactionstatusid = txn.transactionstatusid");
-				// trxnsql.append(" and txnt.transactiontypeid = txn.transactiontypeid order by rolejoin.transactionid, txn.lastupdate;");
-				trxnsql.append("SELECT txn.transactionid AS 'Transaction ID',"
-						+ " txn.lastupdate AS 'Timestamp'"
-						+ ",'N/A' as 'Amount',txn.userresourceid as 'Sender',"
-						+ "'N/A' as 'Receiver',txnt.name AS 'Transaction Type',"
-						+ " txnst.transactionstatusname AS 'Status' FROM transactions txn,"
-						+ " transactionstatus txnst, transactiontypes txnt"
-						+ " WHERE txnst.transactionstatusid = txn.transactionstatusid AND txnt.transactiontypeid = txn.transactiontypeid and txn.transactionid not in (select txn1.transactionid from accounttransactions txn1 group by txn1.transactionid) "
-						+ "UNION"
-						+ " SELECT txn.transactionid AS 'Transaction ID',"
-						+ " txn.lastupdate AS 'Timestamp',(actxn.amount * -1) as 'Amount',"
-						+ " acth.username as 'Sender',txn.userresourceid as 'Receiver',"
-						+ "txnt.name AS 'Transaction Type',"
-						+ " txnst.transactionstatusname AS 'Status' "
-						+ "FROM transactions txn,  transactionstatus txnst,"
-						+ " transactiontypes txnt,accounttransactions actxn"
-						+ " join accountholders acth on acth.accountholderid = actxn.userresourceid"
-						+ " WHERE txnst.transactionstatusid "
-						+ "= txn.transactionstatusid AND txnt.transactiontypeid = txn.transactiontypeid"
-						+ " and actxn.amount < 0 and actxn.transactionid = txn.transactionid"
-						+ " and txnt.name = 'DEPOSIT' group by actxn.transactionid"
-						+ " UNION SELECT txn.transactionid AS 'Transaction ID',"
-						+ " txn.lastupdate AS 'Timestamp',(actxn.amount * -1) as 'Amount',"
-						+ " txn.userresourceid as 'Sender','N/A' as 'Receiver',"
-						+ "txnt.name AS 'Transaction Type', "
-						+ "txnst.transactionstatusname AS 'Status'"
-						+ " FROM transactions txn, transactionstatus txnst,"
-						+ " transactiontypes txnt,accounttransactions actxn"
-						+ " WHERE txnst.transactionstatusid = txn.transactionstatusid"
-						+ " AND txnt.transactiontypeid = txn.transactiontypeid "
-						+ "and actxn.amount < 0 and actxn.transactionid = txn.transactionid "
-						+ "and txnt.name <> 'DEPOSIT' and txn.transactionid not in (select extpay.transactionid from externalpaymentreference extpay group by extpay.transactionid) ORDER BY 'Transaction ID',Timestamp;");
+				trxnsql.append("SELECT txn.transactionid AS 'TransactionID', txn.lastupdate AS 'Timestamps','N/A' as 'Amount',txn.userresourceid as");
+				trxnsql.append(" 'Sender','N/A' as 'Reciever','N/A' as 'Partner', txnt.name AS 'Transaction Type', txnst.transactionstatusname AS 'Status'");
+				trxnsql.append(" FROM transactions txn, transactionstatus txnst, transactiontypes txnt WHERE ");
+				trxnsql.append("txnst.transactionstatusid = txn.transactionstatusid");
+				trxnsql.append(" AND txnt.transactiontypeid = txn.transactiontypeid and txn.transactionid not in (select txn1.transactionid from ");
+				trxnsql.append(" accounttransactions txn1 group by txn1.transactionid)");
 
-				// trxnsql.append("SELECT txn.transactionid AS 'Transaction ID', txnt.name AS 'Transaction Type',");
-				// trxnsql.append("txn.lastupdate AS 'Timestamp', txn.userresourceid as 'Sender', txnst.transactionstatusname AS 'Status' ");
-				// trxnsql.append("FROM transactions txn, transactionstatus txnst, transactiontypes txnt WHERE txnst.transactionstatusid = txn.transactionstatusid ");
-				// trxnsql.append("AND txnt.transactiontypeid = txn.transactiontypeid ");
-				// trxnsql.append("ORDER BY txn.transactionid , txn.lastupdate;");
+				trxnsql.append(" UNION ");
+
+				trxnsql.append(" SELECT txn.transactionid AS 'Transaction ID', txn.lastupdate AS 'Timestamps',(actxn.amount * -1) as 'Amount',");
+				trxnsql.append(" txn.userresourceid as 'Sender',acth.username as 'Reciever', 'N/A' as 'Partner', txnt.name AS 'Transaction Type', ");
+				trxnsql.append(" txnst.transactionstatusname AS 'Status' FROM transactions txn, ");
+				trxnsql.append(" transactionstatus txnst, transactiontypes txnt,accounttransactions actxn join accountholders acth on acth.accountholderid = actxn.userresourceid ");
+				trxnsql.append(" WHERE txnst.transactionstatusid = txn.transactionstatusid AND txnt.transactiontypeid = txn.transactiontypeid and ");
+				trxnsql.append(" actxn.transactionid = txn.transactionid and txnt.name = 'DEPOSIT' AND txn.transactionid not in (SELECT txn.transactionid FROM transactions txn, ");
+				trxnsql.append(" transactionstatus txnst, transactiontypes txnt,accounttransactions actxn join accountholders acth on acth.accountholderid = actxn.userresourceid ");
+				trxnsql.append(" WHERE txnst.transactionstatusid = txn.transactionstatusid AND txnt.transactiontypeid = txn.transactiontypeid and ");
+				trxnsql.append("  acth.profileid <> 14 and actxn.transactionid = txn.transactionid and txnt.name = 'DEPOSIT' group by actxn.transactionid) group by actxn.transactionid");
+
+				trxnsql.append(" UNION ");
+
+				trxnsql.append(" SELECT txn.transactionid AS 'Transaction ID', txn.lastupdate AS 'Timestamps',(actxn.amount * -1) as 'Amount',");
+				trxnsql.append(" txn.userresourceid as 'Sender',acth.username as 'Reciever','N/A' as 'Partner', txnt.name AS 'Transaction Type', ");
+				trxnsql.append("txnst.transactionstatusname AS 'Status' FROM transactions txn, ");
+				trxnsql.append(" transactionstatus txnst, transactiontypes txnt,accounttransactions actxn join accountholders acth on acth.accountholderid = actxn.userresourceid ");
+				trxnsql.append(" WHERE txnst.transactionstatusid = txn.transactionstatusid AND txnt.transactiontypeid = txn.transactiontypeid and ");
+				trxnsql.append("  acth.profileid <> 14 and actxn.transactionid = txn.transactionid and txnt.name = 'DEPOSIT' group by actxn.transactionid");
+
+				trxnsql.append(" UNION ");
+
+				trxnsql.append(" SELECT txn.transactionid AS 'TransactionID', txn.lastupdate AS 'Timestamps',(actxn.amount * -1) as 'Amount', ");
+				trxnsql.append(" txnvo.toreceivinguserresource as 'Sender', extpay.refrence1 as 'Reciever',extpay.resourceid as 'Partner', txnt.name AS 'Transaction Type', ");
+				trxnsql.append(" txnst.transactionstatusname AS 'Status' FROM transactions txn,transactionvalueoperations txnvo, ");
+				trxnsql.append(" transactionstatus txnst, transactiontypes txnt,accounttransactions actxn,externalpaymentreference extpay WHERE ");
+				trxnsql.append(" txnst.transactionstatusid = txn.transactionstatusid AND txnt.transactiontypeid = txn.transactiontypeid and ");
+				trxnsql.append(" actxn.amount < 0 and actxn.transactionid = txn.transactionid and extpay.transactionid = txn.transactionid and txnvo.transactionid = txn.transactionid group by ");
+				trxnsql.append(" actxn.transactionid");
+
+				trxnsql.append(" UNION ");
+
+				trxnsql.append(" SELECT txn.transactionid AS 'TransactionID', txn.lastupdate AS 'Timestamps',(actxn.amount * -1) as 'Amount',");
+				trxnsql.append(" 'N/A' as 'Sender','N/A' as 'Reciever',txn.userresourceid as 'Partner', txnt.name AS 'Transaction Type', ");
+				trxnsql.append(" txnst.transactionstatusname AS 'Status' FROM transactions txn, ");
+				trxnsql.append(" transactionstatus txnst, transactiontypes txnt,accounttransactions actxn WHERE ");
+				trxnsql.append(" txnst.transactionstatusid = txn.transactionstatusid AND txnt.transactiontypeid = txn.transactiontypeid and ");
+				trxnsql.append(" actxn.amount < 0 and actxn.transactionid = txn.transactionid and txnt.name <> 'DEPOSIT' and txn.transactionid not in (select extpay.transactionid from ");
+				trxnsql.append(" externalpaymentreference extpay group by extpay.transactionid) ORDER BY TransactionID,Timestamps;");
 
 				rs = stmt.executeQuery(trxnsql.toString());
-				// .executeQuery("select txn.userresourceid as 'Username', txnt.name as 'Transaction Type', CAST(txn.lastupdate AS DATE) as 'Timestamp', format(acct.openingbalance /100,2) as 'Opening Balance', format(acct.closingbalance / 100,2) as 'Closing Balance', format(acct.amount / 100 , 2) as 'Amount',accts.name as 'Account Type'  from transactions txn join accounttransactions acct on txn.transactionid = acct.transactionid join transactiontypes txnt on txnt.transactiontypeid = txn.transactiontypeid join accounttypes accts on accts.accounttypeid = acct.accounttypeid   join accountholders ah on ah.username = txn.userresourceid  order by ah.username, txn.lastupdate");
 				cD.setVisible(true);
 
 				while (rs.next()) {
@@ -842,12 +833,13 @@ public class Reportform extends VerticalLayout {
 
 					String transactiontype = rs.getString("Transaction Type");
 					// String amount = rs.getString("Amount");
-					String createdon = rs.getString("Timestamp");
-					String transactionID = rs.getString("Transaction ID");
+					String createdon = rs.getString("Timestamps");
+					String transactionID = rs.getString("TransactionID");
 					String sender = rs.getString("Sender");
 					String status = rs.getString("Status");
 					String amount = rs.getString("Amount");
-					String receiver = rs.getString("Receiver");
+					String receiver = rs.getString("Reciever");
+					String partner = rs.getString("Partner");
 					String d = createdon;
 
 					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -859,8 +851,24 @@ public class Reportform extends VerticalLayout {
 						e.printStackTrace();
 					}
 
+					if (!ht.containsKey("Agent/Sender")) {
+						TreeSet<String> arrL = new TreeSet<>();
+						arrL.add(sender);
+						ht.put("Agent/Sender", arrL);
+					} else {
+						ht.get("Agent/Sender").add(sender);
+					}
+
+					if (!ht.containsKey("Partner")) {
+						TreeSet<String> arrL = new TreeSet<>();
+						arrL.add(partner);
+						ht.put("Partner", arrL);
+					} else {
+						ht.get("Partner").add(partner);
+					}
+
 					if (!ht.containsKey("Transaction Type")) {
-						HashSet<String> arrL = new HashSet<>();
+						TreeSet<String> arrL = new TreeSet<>();
 						arrL.add(transactiontype);
 						ht.put("Transaction Type", arrL);
 					} else {
@@ -868,7 +876,7 @@ public class Reportform extends VerticalLayout {
 					}
 
 					if (!ht.containsKey("Status")) {
-						HashSet<String> arrL = new HashSet<>();
+						TreeSet<String> arrL = new TreeSet<>();
 						arrL.add(status);
 						ht.put("Status", arrL);
 					} else {
@@ -896,7 +904,7 @@ public class Reportform extends VerticalLayout {
 					// Property<String> tdPropertyamount = trItem
 					// .getItemProperty("Amount (\u20A6)");
 					Property<String> tdPropertysender = trItem
-							.getItemProperty("Sender");
+							.getItemProperty("Agent/Sender");
 					// Property<String> tdPropertysenderonbehalfof = trItem
 					// .getItemProperty("Sent_on_behalf_of");
 
@@ -906,6 +914,8 @@ public class Reportform extends VerticalLayout {
 					// .getItemProperty("Received_on_behalf_of");
 					Property<String> tdPropertystatus = trItem
 							.getItemProperty("Status");
+					Property<String> tdPropertypartner = trItem
+							.getItemProperty("Partner");
 
 					tdPropertyserial.setValue(String.valueOf(x));
 					tdPropertytransactionid.setValue(transactionID);
@@ -917,6 +927,7 @@ public class Reportform extends VerticalLayout {
 					tdPropertyreceiver.setValue(receiver);
 
 					tdPropertystatus.setValue(status);
+					tdPropertypartner.setValue(partner);
 
 				}
 
@@ -1034,7 +1045,7 @@ public class Reportform extends VerticalLayout {
 					}
 
 					if (!ht.containsKey("Transaction Type")) {
-						HashSet<String> arrL = new HashSet<>();
+						TreeSet<String> arrL = new TreeSet<>();
 						arrL.add(transactiontype);
 						ht.put("Transaction Type", arrL);
 					} else {
@@ -1186,7 +1197,7 @@ public class Reportform extends VerticalLayout {
 					String fido = "Fees Account";
 
 					if (!ht.containsKey(fidTxtype)) {
-						HashSet<String> arrL = new HashSet<>();
+						TreeSet<String> arrL = new TreeSet<>();
 						arrL.add(transactiontype);
 						ht.put(fidTxtype, arrL);
 					} else {
@@ -1194,7 +1205,7 @@ public class Reportform extends VerticalLayout {
 					}
 
 					if (!ht.containsKey(fido)) {
-						HashSet<String> arrL = new HashSet<>();
+						TreeSet<String> arrL = new TreeSet<>();
 						arrL.add(feesAccount);
 						ht.put(fido, arrL);
 					} else {
@@ -1202,7 +1213,7 @@ public class Reportform extends VerticalLayout {
 					}
 
 					if (!ht.containsKey(fida)) {
-						HashSet<String> arrL = new HashSet<>();
+						TreeSet<String> arrL = new TreeSet<>();
 						arrL.add(commissionAccount);
 						ht.put(fida, arrL);
 					} else {
