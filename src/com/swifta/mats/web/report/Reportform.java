@@ -10,7 +10,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.TreeSet;
 
@@ -799,7 +798,7 @@ public class Reportform extends VerticalLayout {
 
 				trxnsql.append(" UNION ");
 
-				trxnsql.append(" SELECT txn.transactionid AS 'Transaction ID', txn.lastupdate AS 'Timestamps',(actxn.amount * -1) as 'Amount',");
+				trxnsql.append(" SELECT txn.transactionid AS 'Transaction ID', txn.lastupdate AS 'Timestamps', actxn.amount as 'Amount',");
 				trxnsql.append(" txn.userresourceid as 'Sender',acth.username as 'Reciever','N/A' as 'Partner', txnt.name AS 'Transaction Type', ");
 				trxnsql.append("txnst.transactionstatusname AS 'Status' FROM transactions txn, ");
 				trxnsql.append(" transactionstatus txnst, transactiontypes txnt,accounttransactions actxn join accountholders acth on acth.accountholderid = actxn.userresourceid ");
@@ -1294,7 +1293,10 @@ public class Reportform extends VerticalLayout {
 
 	@SuppressWarnings("unchecked")
 	private void showDetailsPop(Item row) {
-		if (!reportType.getValue().toString().equals("Transaction Report"))
+		if (table.getCaption() == null)
+			return;
+
+		if (!table.getCaption().equals("Transaction Report"))
 			return;
 
 		isPopupShowing = true;
@@ -1336,7 +1338,7 @@ public class Reportform extends VerticalLayout {
 		p = row.getItemProperty("Transaction Type");
 		String txnT = p.getValue().toString();
 
-		p = row.getItemProperty("Sender");
+		p = row.getItemProperty("Agent/Sender");
 		String sender = p.getValue().toString();
 
 		p = row.getItemProperty("Status");
@@ -1393,6 +1395,7 @@ public class Reportform extends VerticalLayout {
 		popup.setContent(cDeletePrompt);
 
 		UI.getCurrent().addWindow(popup);
+		popup.setModal(true);
 		btnCancel.addClickListener(new Button.ClickListener() {
 
 			private static final long serialVersionUID = -9071850366625898895L;
