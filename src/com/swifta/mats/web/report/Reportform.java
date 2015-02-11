@@ -612,7 +612,7 @@ public class Reportform extends VerticalLayout {
 				agentsql.append(" sum(actxns.closingbalance) - sum(actxns.openingbalance) as cashbalance, actxns.datecreated ");
 				agentsql.append("as datecreated, acts.profileid as profileid, actxns.transactionid as transactionid from");
 				agentsql.append(" accounttransactions actxns, transactions trx,accounts acts where actxns.transactionid = trx.transactionid and trx.transactionstatusid = 1 and trx.transactiontypeid=1 and  actxns.accountresourceid = acts.accountid and ");
-				agentsql.append(" acts.profileid = 12 group by CAST(actxns.datecreated as DATE),actxns.userresourceid) tbl1 join cashtransactions ctrs on ctrs.transactionid = tbl1.transactionid where ach.profileid = 11 and tbl1.cashacctid = ach.accountholderid and achd.accountdetailsid = ach.accountholderdetailid");
+				agentsql.append(" acts.profileid = 12 group by CAST(actxns.datecreated as DATE),actxns.userresourceid) tbl1 join cashtransactions ctrs on ctrs.transactionid = tbl1.transactionid where ach.profileid = 11 and tbl1.cashacctid = ach.accountholderid and achd.accountdetailsid = ach.accountholderdetailid order by date desc");
 
 				// rs = stmt
 				// .executeQuery("SELECT count(amount) as 'transactioncount',operatorid,format(sum(amount / 100),2) as 'amount',CAST(createdon as DATE) as 'created',dealerid FROM cashtransactions group by operatorid,CAST(createdon as DATE),dealerid order by created,operatorid");
@@ -823,7 +823,7 @@ public class Reportform extends VerticalLayout {
 				trxnsql.append(" transactionstatus txnst, transactiontypes txnt,accounttransactions actxn WHERE ");
 				trxnsql.append(" txnst.transactionstatusid = txn.transactionstatusid AND txnt.transactiontypeid = txn.transactiontypeid and ");
 				trxnsql.append(" actxn.amount < 0 and actxn.transactionid = txn.transactionid and txnt.name <> 'DEPOSIT' and txn.transactionid not in (select extpay.transactionid from ");
-				trxnsql.append(" externalpaymentreference extpay group by extpay.transactionid) ORDER BY TransactionID,Timestamps;");
+				trxnsql.append(" externalpaymentreference extpay group by extpay.transactionid) ORDER BY Timestamps desc;");
 
 				rs = stmt.executeQuery(trxnsql.toString());
 				cD.setVisible(true);
@@ -998,14 +998,14 @@ public class Reportform extends VerticalLayout {
 				StringBuilder summarysql = new StringBuilder();
 
 				summarysql
-						.append("SELECT CAST(txn.lastupdate as DATE) AS 'Transaction Date'"
+						.append("SELECT CAST(txn.lastupdate as DATE) AS 'TransactionDate'"
 								+ ",txnt.name AS 'Transaction Type'"
 								+ ",sum(actxn.amount) as 'Amount'"
 								+ " FROM transactions txn, transactionstatus txnst, transactiontypes txnt,accounttransactions"
 								+ " actxn,externalpaymentreference extpay, accountholders acth WHERE  txnst.transactionstatusid = txn.transactionstatusid"
 								+ " AND txnt.transactiontypeid = txn.transactiontypeid and "
 								+ "actxn.amount > 0 and actxn.transactionid = txn.transactionid and acth.accountholderid = actxn.userresourceid "
-								+ "and acth.profileid <> 14 and extpay.transactionid = txn.transactionid group by txnt.name, CAST(txn.lastupdate as DATE)");
+								+ "and acth.profileid <> 14 and extpay.transactionid = txn.transactionid group by txnt.name, CAST(txn.lastupdate as DATE) order by TransactionDate desc");
 				// summarysql
 				// .append("select txnt.name as 'Transaction Type', count(txnt.name) as 'No of transactions', sum(rolejoin.amount) as 'Total Amount', CAST(txn.lastupdate AS DATE) as 'Date',");
 				// summarysql
@@ -1026,7 +1026,7 @@ public class Reportform extends VerticalLayout {
 					String amount = rs.getString("Amount");
 					// String nooftransactions = rs
 					// .getString("No of transactions");
-					String createdon = rs.getString("Transaction Date");
+					String createdon = rs.getString("TransactionDate");
 					// String status = rs.getString("Status");
 					// System.out.println(nooftransactions);
 					// System.out.println(amount);
