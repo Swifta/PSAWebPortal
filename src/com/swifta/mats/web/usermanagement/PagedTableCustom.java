@@ -227,12 +227,12 @@ public class PagedTableCustom extends PagedTable {
 		controlBar.setExpandRatio(pageSize, 1);
 		addListener(new PageChangeListener() {
 			public void pageChanged(PagedTableChangeEvent event) {
-				first.setEnabled(container.getStartIndex() > 0);
-				previous.setEnabled(container.getStartIndex() < 0);
-				next.setEnabled(container.getStartIndex() < container
-						.getRealSize() - getPageLength());
-				last.setEnabled(container.getStartIndex() < container
-						.getRealSize() - getPageLength());
+				// first.setEnabled(container.getStartIndex() > 0);
+				// previous.setEnabled(container.getStartIndex() < 0);
+				// next.setEnabled(container.getStartIndex() < container
+				// .getRealSize() - getPageLength());
+				// last.setEnabled(container.getStartIndex() < container
+				// .getRealSize() - getPageLength());
 				currentPageTextField.setValue(String.valueOf(getCurrentPage()));
 				totalPagesLabel.setValue(String
 						.valueOf(getTotalAmountOfPages()));

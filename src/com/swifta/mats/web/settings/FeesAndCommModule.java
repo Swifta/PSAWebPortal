@@ -712,6 +712,8 @@ public class FeesAndCommModule {
 
 			@Override
 			public void valueChange(ValueChangeEvent event) {
+				if (event.getProperty().getValue() == null)
+					return;
 				if (event.getProperty().getValue().toString().trim()
 						.equals(arrConValues[0])) {
 					comboModelType.select(arrModelValues[0]);
@@ -727,6 +729,8 @@ public class FeesAndCommModule {
 
 			@Override
 			public void valueChange(ValueChangeEvent event) {
+				if (comboModelType.getValue() == null)
+					return;
 				if (comboModelType.getValue().toString()
 						.equals(arrModelValues[0])) {
 
@@ -861,8 +865,6 @@ public class FeesAndCommModule {
 					.fromValue(modType));
 			sc[i].setCommissionfeetype(ProvisioningStub.ServiceCommissionmatrix.Factory
 					.fromValue(mfg.getField("Mat").getValue().toString().trim()));
-			// sc[i].setCommissionfeetype(mfg.getField("Mat").getValue()
-			// .toString().trim());
 			sc[i].setCommissionfee(BigDecimal.valueOf(Float.valueOf(mfg
 					.getField("Amt").getValue().toString().trim())));
 			sc[i].setTransactiontypeid(txID);
@@ -989,11 +991,6 @@ public class FeesAndCommModule {
 			return true;
 		}
 		return false;
-	}
-
-	public HorizontalLayout getFeesForm(String strTbName, String strID,
-			boolean a, boolean b) {
-		return null;
 	}
 
 	private void resetFields(String type) {
@@ -1217,12 +1214,7 @@ public class FeesAndCommModule {
 		cChoose.addComponent(lbChoose);
 		cChoose.addComponent(comboOp);
 		cChoose.addComponent(btnRetrieve);
-		// cChoose.addComponent(comboConditionType);
-		// cChoose.addComponent(comboModelType);
-		// cChoose.addComponent(comboTxType);
 		cChoose.setStyleName("c_choose");
-
-		// cControls.addComponent(btn);
 
 		cManage.addComponent(cChoose);
 
@@ -1254,6 +1246,8 @@ public class FeesAndCommModule {
 
 			@Override
 			public void valueChange(ValueChangeEvent event) {
+				if (event.getProperty().getValue() == null)
+					return;
 				if (event.getProperty().getValue().toString().trim()
 						.equals(arrConValues[0])) {
 					comboModelType.select(arrModelValues[0]);
@@ -1269,6 +1263,9 @@ public class FeesAndCommModule {
 
 			@Override
 			public void valueChange(ValueChangeEvent event) {
+				if (comboModelType.getValue() == null)
+					return;
+
 				if (comboModelType.getValue().toString()
 						.equals(arrModelValues[0])) {
 
