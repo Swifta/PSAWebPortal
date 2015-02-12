@@ -141,8 +141,9 @@ public class Reportform extends VerticalLayout {
 
 		reportType.addItem("Float Management Report");
 		reportType.addItem("Transaction Report");
-		reportType.addItem("Summary Report");
+		reportType.addItem("Transaction Summary Report");
 		reportType.addItem("Fees / Commission Report");
+		reportType.addItem("Fees / Commission Summary Report");
 
 		// reportType.setNullSelectionAllowed(false);
 		// reportType.setTextInputAllowed(false);
@@ -728,10 +729,7 @@ public class Reportform extends VerticalLayout {
 			IndexedContainer container2 = new IndexedContainer();
 			container2.addContainerProperty("S/N", String.class, "");
 			container2.addContainerProperty("Transaction ID", String.class, "");
-			container2.addContainerProperty("Transaction Type", String.class,
-					"");
-
-			// container2.addContainerProperty("Amount", String.class, "");
+			container2.addContainerProperty("Date", Date.class, "");
 
 			container2
 					.addContainerProperty("Amount (\u20A6)", String.class, "");
@@ -741,14 +739,9 @@ public class Reportform extends VerticalLayout {
 
 			container2.addContainerProperty("Partner", String.class, "");
 
-			// container2.addContainerProperty("Sent_on_behalf_of",
-			// String.class,
-			// "");
-			// container2.addContainerProperty("Receiver", String.class, "");
-			// container2.addContainerProperty("Received_on_behalf_of",
-			// String.class, "");
+			container2.addContainerProperty("Transaction Type", String.class,
+					"");
 			container2.addContainerProperty("Status", String.class, "");
-			container2.addContainerProperty("Date", Date.class, "");
 
 			searchform.removeAllComponents();
 			searchform.addComponent(Transactions());
@@ -954,7 +947,7 @@ public class Reportform extends VerticalLayout {
 			// searchform.removeAllComponents();
 			// searchform.addComponent(SettlementForm());
 
-		} else if (selectedId.equalsIgnoreCase("Summary Report")) {
+		} else if (selectedId.equalsIgnoreCase("Transaction Summary Report")) {
 			IndexedContainer container3 = new IndexedContainer();
 
 			container3.addContainerProperty("S/N", String.class, "");
@@ -976,8 +969,6 @@ public class Reportform extends VerticalLayout {
 				return;
 			}
 
-			String Uname = "psaproduser";
-			String Pword = "psaproduser@2015";
 			String drivers = "com.mysql.jdbc.Driver";
 			try {
 
@@ -1006,16 +997,6 @@ public class Reportform extends VerticalLayout {
 								+ " AND txnt.transactiontypeid = txn.transactiontypeid and "
 								+ "actxn.amount > 0 and actxn.transactionid = txn.transactionid and acth.accountholderid = actxn.userresourceid "
 								+ "and acth.profileid <> 14 and extpay.transactionid = txn.transactionid group by txnt.name, CAST(txn.lastupdate as DATE) order by TransactionDate desc");
-				// summarysql
-				// .append("select txnt.name as 'Transaction Type', count(txnt.name) as 'No of transactions', sum(rolejoin.amount) as 'Total Amount', CAST(txn.lastupdate AS DATE) as 'Date',");
-				// summarysql
-				// .append("txnst.transactionstatusname as 'Status' from transactions txn, (select transactionid as transactionid, operatorid as originatinguser,dealerid as receivinguser,");
-				// summarysql
-				// .append("amount as amount from cashtransactions union select transactionid as transactionid, realuserresourceid as originatinguser, toreceivinguserresource as receivinguser, toamount as amount");
-				// summarysql
-				// .append(" from transactionvalueoperations) rolejoin, transactionstatus txnst,transactiontypes txnt where rolejoin.transactionid = txn.transactionid");
-				// summarysql
-				// .append(" and txnst.transactionstatusid = txn.transactionstatusid and txnt.transactiontypeid = txn.transactiontypeid group by txnt.name,txnst.transactionstatusname,CAST(txn.lastupdate AS DATE)");
 
 				rs = stmt.executeQuery(summarysql.toString());
 				cD.setVisible(true);
@@ -1105,6 +1086,7 @@ public class Reportform extends VerticalLayout {
 			// searchform.addComponent(SettlementForm());
 
 		} else if (selectedId.equalsIgnoreCase("Fees / Commission Report")) {
+			cD.setVisible(true);
 
 			IndexedContainer feesCommissionContainer = new IndexedContainer();
 			feesCommissionContainer.addContainerProperty("S/N", String.class,
@@ -1113,15 +1095,15 @@ public class Reportform extends VerticalLayout {
 					String.class, "");
 			feesCommissionContainer.addContainerProperty("Transaction Type",
 					String.class, "");
-			feesCommissionContainer.addContainerProperty("Commission Account",
-					String.class, "");
-			feesCommissionContainer.addContainerProperty("Fees Account",
-					String.class, "");
-			// feesCommissionContainer.addContainerProperty("Transaction Date",
-			// String.class, "");
 
-			// feesCommissionContainer.addContainerProperty(
-			// "Opening Balance (\u20A6)", String.class, "");
+			feesCommissionContainer
+					.addContainerProperty("Date", Date.class, "");
+
+			feesCommissionContainer.addContainerProperty("Amount (\u20A6)",
+					String.class, "");
+
+			feesCommissionContainer.addContainerProperty("Agent ID",
+					String.class, "");
 
 			feesCommissionContainer.addContainerProperty(
 					"Adjusted Fees (\u20A6)", String.class, "");
@@ -1131,23 +1113,29 @@ public class Reportform extends VerticalLayout {
 			feesCommissionContainer.addContainerProperty("Commission (\u20A6)",
 					String.class, "");
 
-			feesCommissionContainer.addContainerProperty("Amount (\u20A6)",
+			feesCommissionContainer.addContainerProperty(
+					"MATS Commission (\u20A6)", String.class, "");
+
+			feesCommissionContainer.addContainerProperty(
+					"Total Commission (\u20A6)", String.class, "");
+
+			feesCommissionContainer.addContainerProperty("Partner",
 					String.class, "");
+
 			searchform.removeAllComponents();
 			searchform.addComponent(Transactions());
 			ds = feesCommissionContainer;
-			// feesCommissionContainer.removeAllItems();
+
 			if (!feesCommissionContainer.removeAllItems()) {
 				return;
 			}
 
 			ds = feesCommissionContainer;
-			String Uname = "psaproduser";
-			String Pword = "psaproduser@2015";
+
 			String drivers = "com.mysql.jdbc.Driver";
 			try {
 
-				Class driver_class = Class.forName(drivers);
+				Class<?> driver_class = Class.forName(drivers);
 				Driver driver = (Driver) driver_class.newInstance();
 				DriverManager.registerDriver(driver);
 
@@ -1156,34 +1144,47 @@ public class Reportform extends VerticalLayout {
 						MatsWebPortalUI.conf.PW);
 
 				Statement stmt = conn.createStatement();
-				Statement stmt2 = conn.createStatement();
-				ResultSet rs, rs2;
+				ResultSet rs;
 				int x = 0;
 				Object itemId;
 				Item trItem;
 
 				StringBuilder sb = new StringBuilder();
-				sb.append("select trx1.transactionid as txid,trxtyp.name as 'Transaction Type','MATS_TOTAL_FEE&COMMISSION' as 'Commission Account',acts1.amount as commission,");
+				// sb.append("select trx1.transactionid as txid,trxtyp.name as 'Transaction Type','MATS_TOTAL_FEE&COMMISSION' as 'Commission Account',acts1.amount as commission,");
 
-				sb.append("acth.username as 'Fees Account',acts2.amount as 'Adjusted Fees',acts2.amount+acts1.amount as 'Original Fees',acts3.amount as amount,acts1.datecreated as 'DoC' from accounttransactions acts1,  transactions trx1, transactiontypes trxtyp, accounttransactions acts2, accounttransactions acts3, accountholders");
+				// sb.append("acth.username as 'Fees Account',acts2.amount as 'Adjusted Fees',acts2.amount+acts1.amount as 'Original Fees',acts3.amount as amount,acts1.datecreated as 'DoC' from accounttransactions acts1,  transactions trx1, transactiontypes trxtyp, accounttransactions acts2, accounttransactions acts3, accountholders");
 
-				sb.append(" acth, accountholders acth2, accounts act1, accounts act2, profiles pf1, profiles pf2 where acts1.transactionid = trx1.transactionid and act1.profileid = pf1.profileid and acts2.transactionid = trx1.transactionid and acts2.userresourceid = acth.accountholderid and acts1.accountresourceid = act1.accountid and act2.profileid = pf2.profileid and acts2.accountresourceid = act2.accountid and acts3.userresourceid = acth2.accountholderid and acts3.transactionid = trx1.transactionid and trx1.transactiontypeid = trxtyp.transactiontypeid and acts1.accountresourceid = 12 and acts2.accountresourceid in");
+				// sb.append(" acth, accountholders acth2, accounts act1, accounts act2, profiles pf1, profiles pf2 where acts1.transactionid = trx1.transactionid and act1.profileid = pf1.profileid and acts2.transactionid = trx1.transactionid and acts2.userresourceid = acth.accountholderid and acts1.accountresourceid = act1.accountid and act2.profileid = pf2.profileid and acts2.accountresourceid = act2.accountid and acts3.userresourceid = acth2.accountholderid and acts3.transactionid = trx1.transactionid and trx1.transactiontypeid = trxtyp.transactiontypeid and acts1.accountresourceid = 12 and acts2.accountresourceid in");
 
-				sb.append(" (select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from accountholders where profileid = 15 and accounttypeid = 2)) and acts3.accountresourceid in (select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from accountholders where (profileid = 11 or profileid = 6) and accounttypeid = 1))");
+				// sb.append(" (select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from accountholders where profileid = 15 and accounttypeid = 2)) and acts3.accountresourceid in (select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from accountholders where (profileid = 11 or profileid = 6) and accounttypeid = 1))");
 
+				sb.append(" select trx1.transactionid as txid,trxtyp.name as 'Transaction Type',acts1.datecreated as TransactionDate, ");
+				sb.append(" acts3.amount as Amount,txnvo.toreceivinguserresource as 'Agent ID',acts2.amount as 'Adjusted Fees',acts2.amount+acts1.amount as ");
+				sb.append(" 'Original Fees',acts1.amount as commission, (acts1.amount * 0.25) as 'MATS Comm.', (acts1.amount * 0.75) as 'Total Commission', acth.username as ");
+				sb.append(" 'Partner' from accounttransactions acts1, transactionvalueoperations txnvo, transactions trx1, transactiontypes trxtyp, accounttransactions acts2, ");
+				sb.append(" accounttransactions acts3, accountholders acth, accountholders acth2, accounts act1, accounts act2, profiles pf1, ");
+				sb.append(" profiles pf2 where acts1.transactionid = trx1.transactionid and act1.profileid = pf1.profileid and acts2.transactionid = ");
+				sb.append(" trx1.transactionid and acts2.userresourceid = acth.accountholderid and acts1.accountresourceid = act1.accountid and ");
+				sb.append(" act2.profileid = pf2.profileid and acts2.accountresourceid = act2.accountid and acts3.userresourceid = ");
+				sb.append(" acth2.accountholderid and acts3.transactionid = trx1.transactionid and txnvo.transactionid = trx1.transactionid and trx1.transactiontypeid = ");
+				sb.append(" trxtyp.transactiontypeid and acts1.accountresourceid = 12 and acts2.accountresourceid in ");
+				sb.append(" (select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from ");
+				sb.append(" accountholders where profileid = 15 and accounttypeid = 2)) and acts3.accountresourceid in ");
+				sb.append(" (select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from ");
+				sb.append(" accountholders where (profileid = 11 or profileid = 6) and accounttypeid = 1)) order by TransactionDate desc; ");
+				System.out.println(sb.toString());
 				rs = stmt.executeQuery(sb.toString());
 
 				while (rs.next()) {
 					x = x + 1;
-					String fidTxtype = "Transaction Type";
-					String fidCommAcc = "Commission Account";
-					String fidFAcc = "Fees Account";
 
-					String transactiontype = rs.getString(fidTxtype);
-					String feesAccount = rs.getString(fidFAcc);
-					String commissionAccount = rs.getString(fidCommAcc);
+					String transactiontype = rs.getString("Transaction Type");
+					String feesAccount = rs.getString("Partner");
+					String commissionAccount = rs.getString("Agent ID");
 
 					String transID = rs.getString("txid");
+
+					String sdate = rs.getString("TransactionDate");
 
 					String commission = rs.getString("commission");
 
@@ -1193,31 +1194,32 @@ public class Reportform extends VerticalLayout {
 
 					String amount = rs.getString("amount");
 
-					String fida = "Commission Account";
-					String fido = "Fees Account";
+					String mcomm = rs.getString("MATS Comm.");
 
-					if (!ht.containsKey(fidTxtype)) {
+					String tcomm = rs.getString("Total Commission");
+
+					if (!ht.containsKey("Transaction Type")) {
 						TreeSet<String> arrL = new TreeSet<>();
 						arrL.add(transactiontype);
-						ht.put(fidTxtype, arrL);
+						ht.put("Transaction Type", arrL);
 					} else {
-						ht.get(fidTxtype).add(transactiontype);
+						ht.get("Transaction Type").add(transactiontype);
 					}
 
-					if (!ht.containsKey(fido)) {
+					if (!ht.containsKey("Partner")) {
 						TreeSet<String> arrL = new TreeSet<>();
 						arrL.add(feesAccount);
-						ht.put(fido, arrL);
+						ht.put("Partner", arrL);
 					} else {
-						ht.get(fido).add(feesAccount);
+						ht.get("Partner").add(feesAccount);
 					}
 
-					if (!ht.containsKey(fida)) {
+					if (!ht.containsKey("Agent ID")) {
 						TreeSet<String> arrL = new TreeSet<>();
 						arrL.add(commissionAccount);
-						ht.put(fida, arrL);
+						ht.put("Agent ID", arrL);
 					} else {
-						ht.get(fida).add(commissionAccount);
+						ht.get("Agent ID").add(commissionAccount);
 					}
 
 					itemId = feesCommissionContainer.addItem();
@@ -1227,10 +1229,10 @@ public class Reportform extends VerticalLayout {
 					Property<String> tdPropertyserial = trItem
 							.getItemProperty("S/N");
 					Property<String> tdPropertyCommAcc = trItem
-							.getItemProperty("Commission Account");
+							.getItemProperty("Agent ID");
 
 					Property<String> tdPropertyFeesAcc = trItem
-							.getItemProperty("Fees Account");
+							.getItemProperty("Partner");
 
 					Property<String> tdPropertytransactiontype = trItem
 							.getItemProperty("Transaction Type");
@@ -1249,6 +1251,24 @@ public class Reportform extends VerticalLayout {
 					Property<String> tdPropertytxid = trItem
 							.getItemProperty("Trans. ID");
 
+					Property<String> tdPropertymcomm = trItem
+							.getItemProperty("MATS Commission (\u20A6)");
+
+					Property<String> tdPropertytcomm = trItem
+							.getItemProperty("Total Commission (\u20A6)");
+
+					Property<Date> tdPropertydate = trItem
+							.getItemProperty("Date");
+
+					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+					Date date = null;
+					try {
+						date = sdf.parse(sdate);
+					} catch (ParseException e) {
+
+						e.printStackTrace();
+					}
+
 					tdPropertyserial.setValue(String.valueOf(x));
 
 					tdPropertyCommAcc.setValue(commissionAccount);
@@ -1257,9 +1277,142 @@ public class Reportform extends VerticalLayout {
 					tdPropertyOFees.setValue(ofees);
 					tdPropertyCommission.setValue(commission);
 					tdPropertytxid.setValue(transID);
-
 					tdPropertytransactiontype.setValue(transactiontype);
+					tdPropertyamount.setValue(amount);
+					tdPropertymcomm.setValue(mcomm);
+					tdPropertytcomm.setValue(tcomm);
+					tdPropertydate.setValue(date);
 
+				}
+
+				conn.close();
+				Notification.show(x + " result(s) found",
+						Notification.Type.WARNING_MESSAGE);
+
+				table.setContainerDataSource(feesCommissionContainer);
+
+				if (x > 30)
+					x = 30;
+				table.setPageLength(x);
+				table.setSelectable(true);
+				// table.setEditable(true);
+			} catch (SQLException | ClassNotFoundException
+					| InstantiationException | IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				Notification.show("Error Establishing DBConnection = " + e,
+						Notification.Type.ERROR_MESSAGE);
+			}
+		} else if (selectedId
+				.equalsIgnoreCase("Fees / Commission Summary Report")) {
+
+			cD.setVisible(false);
+
+			IndexedContainer feesCommissionContainer = new IndexedContainer();
+			feesCommissionContainer.addContainerProperty("S/N", String.class,
+					"");
+			feesCommissionContainer.addContainerProperty("Partner",
+					String.class, "");
+			feesCommissionContainer.addContainerProperty("Commission (\u20A6)",
+					String.class, "");
+
+			feesCommissionContainer.addContainerProperty(
+					"Adjusted Fees (\u20A6)", String.class, "");
+			feesCommissionContainer.addContainerProperty(
+					"Original Fees (\u20A6)", String.class, "");
+			feesCommissionContainer.addContainerProperty("Amount (\u20A6)",
+					String.class, "");
+			searchform.removeAllComponents();
+			searchform.addComponent(Transactions());
+			ds = feesCommissionContainer;
+
+			if (!feesCommissionContainer.removeAllItems()) {
+				return;
+			}
+
+			ds = feesCommissionContainer;
+			String drivers = "com.mysql.jdbc.Driver";
+			try {
+
+				Class<?> driver_class = Class.forName(drivers);
+				Driver driver = (Driver) driver_class.newInstance();
+				DriverManager.registerDriver(driver);
+
+				Connection conn = DriverManager.getConnection(
+						MatsWebPortalUI.conf.DB, MatsWebPortalUI.conf.UN,
+						MatsWebPortalUI.conf.PW);
+
+				Statement stmt = conn.createStatement();
+				ResultSet rs;
+				int x = 0;
+				Object itemId;
+				Item trItem;
+
+				StringBuilder sb = new StringBuilder();
+
+				sb.append("select acth.username as 'Partner', sum(acts1.amount) as commission, sum(acts2.amount) as 'Adjusted Fees',");
+				sb.append("sum(acts2.amount+acts1.amount) as 'Original Fees',sum(acts3.amount) as amount from ");
+				sb.append("accounttransactions acts1,  transactions trx1, transactiontypes trxtyp, accounttransactions acts2, accounttransactions ");
+				sb.append("acts3, accountholders acth, accountholders acth2, accounts act1, accounts act2, profiles pf1, profiles pf2 where ");
+				sb.append("acts1.transactionid = trx1.transactionid and act1.profileid = pf1.profileid and acts2.transactionid = ");
+				sb.append("trx1.transactionid and acts2.userresourceid = acth.accountholderid and acts1.accountresourceid = act1.accountid and ");
+				sb.append("act2.profileid = pf2.profileid and acts2.accountresourceid = act2.accountid and acts3.userresourceid = ");
+				sb.append("acth2.accountholderid and acts3.transactionid = trx1.transactionid and trx1.transactiontypeid = ");
+				sb.append("trxtyp.transactiontypeid and acts1.accountresourceid = 12 and acts2.accountresourceid in ");
+				sb.append("(select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from ");
+				sb.append("accountholders where profileid = 15 and accounttypeid = 2)) and acts3.accountresourceid in ");
+				sb.append("(select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from ");
+				sb.append("accountholders where (profileid = 11 or profileid = 6) and accounttypeid = 1)) group by acth.username;");
+
+				rs = stmt.executeQuery(sb.toString());
+
+				while (rs.next()) {
+					x = x + 1;
+
+					String partner = rs.getString("Partner");
+
+					String commission = rs.getString("commission");
+
+					String afees = rs.getString("Adjusted Fees");
+
+					String ofees = rs.getString("Original Fees");
+
+					String amount = rs.getString("amount");
+
+					if (!ht.containsKey("Partner")) {
+						TreeSet<String> arrL = new TreeSet<>();
+						arrL.add(partner);
+						ht.put("Partner", arrL);
+					} else {
+						ht.get("Partner").add(partner);
+					}
+
+					itemId = feesCommissionContainer.addItem();
+
+					trItem = feesCommissionContainer.getItem(itemId);
+
+					Property<String> tdPropertyserial = trItem
+							.getItemProperty("S/N");
+					Property<String> tdPropertyPartner = trItem
+							.getItemProperty("Partner");
+
+					Property<String> tdPropertyAFees = trItem
+							.getItemProperty("Adjusted Fees (\u20A6)");
+					Property<String> tdPropertyOFees = trItem
+							.getItemProperty("Original Fees (\u20A6)");
+
+					Property<String> tdPropertyCommission = trItem
+							.getItemProperty("Commission (\u20A6)");
+
+					Property<String> tdPropertyamount = trItem
+							.getItemProperty("Amount (\u20A6)");
+
+					tdPropertyserial.setValue(String.valueOf(x));
+
+					tdPropertyPartner.setValue(partner);
+					tdPropertyAFees.setValue(afees);
+					tdPropertyOFees.setValue(ofees);
+					tdPropertyCommission.setValue(commission);
 					tdPropertyamount.setValue(amount);
 
 				}
