@@ -1,9 +1,16 @@
 package com.swifta.mats.web.settings;
 
 import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.Driver;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.swifta.mats.web.MatsWebPortalUI;
 import com.swifta.mats.web.usermanagement.NotifCustom;
 import com.swifta.mats.web.utils.CommissionService;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub;
@@ -66,8 +73,21 @@ public class FeesAndCommModule {
 	boolean isReset = false;
 	private boolean isSettingsURL = false;
 	private String curURL = null;
+	private HashMap<String, Integer> hmOp = new HashMap<>();
+	private HashMap<String, Integer> hmTxType = new HashMap<>();
+
+	private boolean ischanged = true;
 
 	public FeesAndCommModule() {
+
+		hmOp.put("TeasyMobile", 4);
+		hmOp.put("pocketmoni", 7);
+
+		hmTxType.put("CASHIN", 4);
+		hmTxType.put("CASHOUT", 5);
+		hmTxType.put("PAYMENT SEND", 6);
+		hmTxType.put("PAYMENT RECEIVE", 7);
+		hmTxType.put("3rd PARTY PAYMENT", 17);
 
 		comboOp = new ComboBox("Operator");
 		comboOp.addItem("teasymobile");
@@ -1186,92 +1206,34 @@ public class FeesAndCommModule {
 
 		cChoose.addComponent(addUserHeader);
 
-		Label lbAddUser = new Label("Manage " + tabType);
-		lbAddUser.setStyleName("label_add_user");
-		lbAddUser.setSizeUndefined();
-
-		cChoose.addComponent(lbAddUser);
 		Label lbChoose = new Label("Please choose...");
 
-		final ComboBox comboConditionType = new ComboBox("Condition Type");
-		comboConditionType.addItem(arrConValues[0]);
-		comboConditionType.setItemCaption(arrConValues[0], "Amount");
-		comboConditionType.addItem(arrConValues[1]);
-		comboConditionType.setItemCaption(arrConValues[1], "Fee");
-		comboConditionType.select(arrConValues[0]);
+		final ComboBox comboTxType = new ComboBox("Transaction Type");
+		comboTxType.addItem(4);
+		comboTxType.setItemCaption(4, "CASHIN");
+		comboTxType.addItem(5);
+		comboTxType.setItemCaption(5, "CASHOUT");
+		comboTxType.addItem(6);
+		comboTxType.setItemCaption(6, "PAYMENT SEND");
+		comboTxType.addItem(7);
+		comboTxType.setItemCaption(7, "PAYMENT RECEIVE");
+		comboTxType.addItem(17);
+		comboTxType.setItemCaption(17, "3rd PARTY PAYMENT");
+		comboTxType.select(4);
 
-		final ComboBox comboModelType = new ComboBox("Model Type");
-		comboModelType.addItem(arrModelValues[0]);
-		comboModelType.setItemCaption(arrModelValues[0], "Tiered");
-		comboModelType.addItem(arrModelValues[1]);
-		comboModelType.setItemCaption(arrModelValues[1], "None");
-		// comboModelType.select(arrModelValues[0]);
-
-		Item row = new PropertysetItem();
-
-		Property<String> pconTypeID = new ObjectProperty<>(arrConValues[0]);
-		Property<String> pmodelTypeID = new ObjectProperty<>(arrModelValues[0]);
-		row.addItemProperty("CONID", pconTypeID);
-		row.addItemProperty("MODID", pmodelTypeID);
-
-		otherfg = new FieldGroup(row);
-		otherfg.bind(comboConditionType, "CONID");
-		otherfg.bind(comboModelType, "MODID");
-
-		otherfg.addCommitHandler(new CommitHandler() {
-			private static final long serialVersionUID = 6144936023943646696L;
-
-			@Override
-			public void preCommit(CommitEvent commitEvent)
-					throws CommitException {
-				comboOp.setRequired(false);
-				comboConditionType.setRequired(false);
-				comboModelType.setRequired(false);
-				comboTxType.setRequired(false);
-				if (comboOp.getValue() == null) {
-					comboOp.setRequired(true);
-					Notification.show("Field marked with (*) is required.",
-							Notification.Type.WARNING_MESSAGE);
-					throw new CommitException("Field is required.");
-				} else if (comboConditionType.getValue() == null) {
-					comboConditionType.setRequired(true);
-					Notification.show("Field marked with (*) is required.",
-							Notification.Type.WARNING_MESSAGE);
-					throw new CommitException("Field is required.");
-
-				} else if (comboModelType.getValue() == null) {
-					comboModelType.setRequired(true);
-					Notification.show("Field marked with (*) is required.",
-							Notification.Type.WARNING_MESSAGE);
-					throw new CommitException("Field is required.");
-
-				} else if (comboTxType.getValue() == null) {
-					comboTxType.setRequired(true);
-					Notification.show("Field marked with (*) is required.",
-							Notification.Type.WARNING_MESSAGE);
-					throw new CommitException("Field is required.");
-				} else {
-					comboOp.setRequired(false);
-					comboConditionType.setRequired(false);
-					comboModelType.setRequired(false);
-					comboTxType.setRequired(false);
-					return;
-				}
-			}
-
-			@Override
-			public void postCommit(CommitEvent commitEvent)
-					throws CommitException {
-
-			}
-
-		});
+		final ComboBox comboOp = new ComboBox("Operator");
+		comboOp.addItem("teasymobile");
+		comboOp.setItemCaption("teasymobile", "TeasyMobile");
+		comboOp.addItem("pocketmoni");
+		comboOp.setItemCaption("pocketmoni", "PocketMoni");
+		comboOp.select("teasymobile");
 
 		Button btnRetrieve = new Button("Retrive");
 		btnRetrieve.setStyleName("btn_f_c_retrieve");
 
 		cChoose.addComponent(lbChoose);
 		cChoose.addComponent(comboOp);
+		cChoose.addComponent(comboTxType);
 		cChoose.addComponent(btnRetrieve);
 		cChoose.setStyleName("c_choose");
 
@@ -1283,6 +1245,19 @@ public class FeesAndCommModule {
 
 			@Override
 			public void valueChange(ValueChangeEvent event) {
+				ischanged = true;
+
+			}
+
+		});
+
+		comboOp.addValueChangeListener(new ValueChangeListener() {
+
+			private static final long serialVersionUID = -4750457498573552155L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				ischanged = true;
 
 			}
 
@@ -1293,89 +1268,40 @@ public class FeesAndCommModule {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				// TODO Retrive OP Tariffs.
-				getSearchResults(cManage);
-
-			}
-		});
-
-		comboConditionType.addValueChangeListener(new ValueChangeListener() {
-
-			private static final long serialVersionUID = -5878577330071011374L;
-
-			@Override
-			public void valueChange(ValueChangeEvent event) {
-				if (event.getProperty().getValue() == null)
-					return;
-				if (event.getProperty().getValue().toString().trim()
-						.equals(arrConValues[0])) {
-					comboModelType.select(arrModelValues[0]);
-				} else {
-					comboModelType.select(arrModelValues[1]);
-				}
-			}
-
-		});
-
-		comboModelType.addValueChangeListener(new ValueChangeListener() {
-			private static final long serialVersionUID = -6418325605387194047L;
-
-			@Override
-			public void valueChange(ValueChangeEvent event) {
-				if (comboModelType.getValue() == null)
-					return;
-
-				if (comboModelType.getValue().toString()
-						.equals(arrModelValues[0])) {
-
-					if (arrLRangeFG.size() == 0)
-						return;
-
-					removeAll();
-					FieldGroup fg = arrLRangeFG.get(0);
-					TextField min = (TextField) fg.getField("Min");
-					TextField max = (TextField) fg.getField("Max");
-					min.setValue("");
-					min.setEnabled(true);
-
-					max.setValue("");
-					max.setEnabled(true);
-					isTiered = true;
-					comboConditionType.select(arrConValues[0]);
-					return;
-
-				} else {
-					if (arrLRangeFG.size() == 0)
-						return;
-					removeAll();
-					FieldGroup fg = arrLRangeFG.get(0);
-					TextField min = (TextField) fg.getField("Min");
-					TextField max = (TextField) fg.getField("Max");
-					min.setValue("0.00");
-					min.setEnabled(false);
-
-					max.setValue("0.00");
-					max.setEnabled(false);
-					isTiered = false;
-					comboConditionType.select(arrConValues[1]);
+				if (comboOp.getValue() == null) {
+					Notification.show("Please select operator",
+							Notification.Type.ERROR_MESSAGE);
 					return;
 				}
 
-			}
+				if (comboTxType.getValue() == null) {
+					Notification.show("Please select Transaction Type",
+							Notification.Type.ERROR_MESSAGE);
+					return;
+				}
 
+				if (ischanged) {
+					ischanged = false;
+					getSearchResults(cManage,
+							comboOp.getItemCaption(comboOp.getValue()),
+							comboTxType.getItemCaption(comboTxType.getValue()));
+				}
+
+			}
 		});
 
 		return cManage;
 	}
 
-	private void getSearchResults(HorizontalLayout cManage) {
+	private void getSearchResults(HorizontalLayout cManage, String op,
+			String type) {
 		VerticalLayout cC = new VerticalLayout();
 		cManage.addComponent(cC);
-		addFees(cC);
-		addCommission(cC);
+		addFees(cC, op, type);
+		addCommission(cC, op, type);
 	}
 
-	private void addFees(VerticalLayout cC) {
+	private void addFees(VerticalLayout cC, String op, String type) {
 		VerticalLayout cAttr = new VerticalLayout();
 		cAttr.setSpacing(true);
 		cAttr.setMargin(new MarginInfo(false, false, true, false));
@@ -1383,7 +1309,7 @@ public class FeesAndCommModule {
 
 		final Label tFOp = new Label();
 		tFOp.setCaption("Selected Operator: ");
-		tFOp.setValue(comboOp.getItemCaption(comboOp.getValue()));
+		tFOp.setValue(op);
 		tFOp.setStyleName("label_add_user");
 
 		FormLayout cOp = new FormLayout();
@@ -1396,12 +1322,12 @@ public class FeesAndCommModule {
 
 		// Transaction Type
 
-		Label lbAttr = new Label(comboTxType.getCaption());
+		Label lbAttr = new Label("Transaction Type");
 		lbAttr.setStyleName("label_add_user attr");
 		cItemContent.addComponent(lbAttr);
 		cItemContent.setComponentAlignment(lbAttr, Alignment.TOP_LEFT);
 
-		String txtype = comboTxType.getItemCaption(comboTxType.getValue());
+		String txtype = type;
 		final Label lbAttrVal = new Label(txtype);
 		HorizontalLayout cAttrVal = new HorizontalLayout();
 		cAttrVal.addComponent(lbAttrVal);
@@ -1420,125 +1346,23 @@ public class FeesAndCommModule {
 		lbAttr.setSizeFull();
 		lbAttr.setStyleName("label_add_user attr");
 		cItemContentTier.addComponent(lbAttr);
-		cItemContentTier.addComponent(getPseudoTable());
+		cItemContentTier.addComponent(getPseudoTable(hmOp.get(op),
+				hmTxType.get(type)));
 		cAttrItem.addComponent(cItemContentTier);
 
-		// add();
-		// add();
-
-		HorizontalLayout cControls = new HorizontalLayout();
-		Button btnAdd = new Button("+");
-
-		btnAdd.setStyleName("btn_link");
-		Button btnRemove = new Button("-");
-		btnRemove.setStyleName("btn_link");
-
-		Button btnSave = new Button(FontAwesome.SAVE);
-		btnSave.setStyleName("btn_link");
-
-		Button btnCancel = new Button(FontAwesome.UNDO);
-		btnCancel.setStyleName("btn_link");
-
-		cControls.addComponent(btnAdd);
-		cControls.addComponent(btnRemove);
-		cControls.addComponent(btnSave);
-		// cControls.addComponent(btn);
-
 		cAttr.addComponent(cAttrItem);
-		// cAttr.addComponent(cControls);
 		cAttr.setWidth("100%");
 		cAttr.setHeightUndefined();
 
-		// cAttr.setComponentAlignment(cControls, Alignment.BOTTOM_RIGHT);
-		// VerticalLayout cT = new VerticalLayout();
-		// cT.setHeightUndefined();
-		// cT.setWidth("100%");
-		// cT.addComponent(getPseudoTable());
-		// cAttr.addComponent(cT);
-
 		cC.addComponent(cAttr);
 
-		btnAdd.addClickListener(new Button.ClickListener() {
-
-			private static final long serialVersionUID = 8105347974986024315L;
-
-			@Override
-			public void buttonClick(ClickEvent event) {
-				add();
-
-			}
-		});
-
-		btnRemove.addClickListener(new Button.ClickListener() {
-			private static final long serialVersionUID = -3921995443687711235L;
-
-			@Override
-			public void buttonClick(ClickEvent event) {
-				remove();
-
-			}
-		});
-
-		btnSave.addClickListener(new Button.ClickListener() {
-
-			private static final long serialVersionUID = -7900935606088856031L;
-
-			@Override
-			public void buttonClick(ClickEvent event) {
-				/*
-				 * Commit to server.
-				 */
-
-				if (isReadyToCommit(tabType, otherfg)) {
-					commit();
-					return;
-				} else {
-					return;
-				}
-
-			}
-		});
 	}
 
-	private void addCommission(VerticalLayout cC) {
+	private void addCommission(VerticalLayout cC, String op, String type) {
 		VerticalLayout cAttr = new VerticalLayout();
 		cAttr.setSpacing(true);
 		cAttr.setMargin(new MarginInfo(false, false, true, false));
 		cAttr.setStyleName("c_attr");
-
-		final Label tFOp = new Label();
-		tFOp.setCaption("Selected Operator: ");
-		tFOp.setValue(comboOp.getItemCaption(comboOp.getValue()));
-		tFOp.setStyleName("label_add_user");
-
-		FormLayout cOp = new FormLayout();
-		cOp.addComponent(tFOp);
-		// cAttr.addComponent(cOp);
-
-		HorizontalLayout crow = new HorizontalLayout();
-		VerticalLayout cTType = new VerticalLayout();
-		cTType.setHeight("100%");
-		cTType.setWidth("100%");
-		cTType.setSpacing(true);
-
-		Label lbTType = new Label("Transaction Type");
-		cTType.addComponent(lbTType);
-		cTType.setComponentAlignment(lbTType, Alignment.MIDDLE_CENTER);
-
-		crow.addComponent(cTType);
-
-		VerticalLayout cTTier = new VerticalLayout();
-
-		Label lbTTier = new Label("Tier(Commission)");
-		cTTier.addComponent(lbTTier);
-
-		lbTType.setStyleName("label_add_user attr");
-		lbTTier.setStyleName("label_add_user attr");
-
-		cTTier.setComponentAlignment(lbTTier, Alignment.MIDDLE_CENTER);
-		crow.addComponent(cTTier);
-
-		// cAttr.addComponent(crow);
 
 		HorizontalLayout cAttrItem = new HorizontalLayout();
 		VerticalLayout cItemContent = new VerticalLayout();
@@ -1546,12 +1370,12 @@ public class FeesAndCommModule {
 
 		// Transaction Type
 
-		Label lbAttr = new Label(comboTxType.getCaption());
+		Label lbAttr = new Label("Transaction Type");
 		lbAttr.setStyleName("label_add_user attr");
 		cItemContent.addComponent(lbAttr);
 		cItemContent.setComponentAlignment(lbAttr, Alignment.TOP_LEFT);
 
-		String txtype = comboTxType.getItemCaption(comboTxType.getValue());
+		String txtype = type;
 		final Label lbAttrVal = new Label(txtype);
 		HorizontalLayout cAttrVal = new HorizontalLayout();
 		cAttrVal.addComponent(lbAttrVal);
@@ -1570,250 +1394,220 @@ public class FeesAndCommModule {
 		lbAttr.setSizeFull();
 		lbAttr.setStyleName("label_add_user attr");
 		cItemContentTier.addComponent(lbAttr);
-		cItemContentTier.addComponent(getPseudoTable());
+		cItemContentTier.addComponent(getCommissionPseudoTable(hmOp.get(op),
+				hmTxType.get(type)));
 		cAttrItem.addComponent(cItemContentTier);
 
-		// add();
-		// add();
-
-		HorizontalLayout cControls = new HorizontalLayout();
-		Button btnAdd = new Button("+");
-
-		btnAdd.setStyleName("btn_link");
-		Button btnRemove = new Button("-");
-		btnRemove.setStyleName("btn_link");
-
-		Button btnSave = new Button(FontAwesome.SAVE);
-		btnSave.setStyleName("btn_link");
-
-		Button btnCancel = new Button(FontAwesome.UNDO);
-		btnCancel.setStyleName("btn_link");
-
-		cControls.addComponent(btnAdd);
-		cControls.addComponent(btnRemove);
-		cControls.addComponent(btnSave);
-		// cControls.addComponent(btn);
-
 		cAttr.addComponent(cAttrItem);
-		// cAttr.addComponent(cControls);
 		cAttr.setWidth("100%");
 		cAttr.setHeightUndefined();
 
-		// cAttr.setComponentAlignment(cControls, Alignment.BOTTOM_RIGHT);
-		// VerticalLayout cT = new VerticalLayout();
-		// cT.setHeightUndefined();
-		// cT.setWidth("100%");
-		// cT.addComponent(getPseudoTable());
-		// cAttr.addComponent(cT);
+		cC.addComponent(cAttr);
 
 		cC.addComponent(cAttr);
 
-		btnAdd.addClickListener(new Button.ClickListener() {
-
-			private static final long serialVersionUID = 8105347974986024315L;
-
-			@Override
-			public void buttonClick(ClickEvent event) {
-				add();
-
-			}
-		});
-
-		btnRemove.addClickListener(new Button.ClickListener() {
-			private static final long serialVersionUID = -3921995443687711235L;
-
-			@Override
-			public void buttonClick(ClickEvent event) {
-				remove();
-
-			}
-		});
-
-		btnSave.addClickListener(new Button.ClickListener() {
-
-			private static final long serialVersionUID = -7900935606088856031L;
-
-			@Override
-			public void buttonClick(ClickEvent event) {
-				/*
-				 * Commit to server.
-				 */
-
-				if (isReadyToCommit(tabType, otherfg)) {
-					commit();
-					return;
-				} else {
-					return;
-				}
-
-			}
-		});
 	}
 
 	@SuppressWarnings("unchecked")
-	private Table getPseudoTable() {
+	private Table getPseudoTable(int op, int txtype) {
 
 		IndexedContainer ct = new IndexedContainer();
-		Table ttb = new Table();
-
-		HorizontalLayout cttb = new HorizontalLayout();
-		cttb.setWidth("100%");
-		cttb.setHeightUndefined();
-		cttb.addComponent(ttb);
 
 		ct.addContainerProperty("Min.", String.class, "");
 		ct.addContainerProperty("Max.", String.class, "");
 		ct.addContainerProperty("Matrix", String.class, "");
 		ct.addContainerProperty("Amount", String.class, "");
+		ct.addContainerProperty("Last Updated", String.class, "");
 
-		Object ctobjr = ct.addItem();
-		Item rct = ct.getItem(ctobjr);
-		Property<String> pct = rct.getItemProperty("Min.");
-		pct.setValue("100.00");
+		ResultSet rs = getResultsFees(op, txtype);
+		int x = 0;
+		try {
+			while (rs.next()) {
+				x++;
+				String min = rs.getString("Min.");
+				String max = rs.getString("Max.");
+				String mat = rs.getString("Matrix");
+				String amt = rs.getString("Amount");
+				String date = rs.getString("Last Updated");
 
-		pct = rct.getItemProperty("Max.");
-		pct.setValue("1000.00");
+				Object ctobjr = ct.addItem();
+				Item rct = ct.getItem(ctobjr);
+				Property<String> pct = rct.getItemProperty("Min.");
+				pct.setValue(min);
 
-		pct = rct.getItemProperty("Matrix");
-		pct.setValue("%");
+				pct = rct.getItemProperty("Max.");
+				pct.setValue(max);
 
-		pct = rct.getItemProperty("Amount");
-		pct.setValue("2");
-		ttb.setContainerDataSource(ct);
-		ttb.setWidth("100%");
-		ttb.setHeightUndefined();
+				pct = rct.getItemProperty("Matrix");
+				pct.setValue(mat);
 
-		IndexedContainer container = new IndexedContainer();
-		container
-				.addContainerProperty("Transaction Type", String.class, "None");
-		container.addContainerProperty("Tier", HorizontalLayout.class, null);
+				pct = rct.getItemProperty("Amount");
+				pct.setValue(amt);
 
-		Object objr = container.addItem();
-		Item rowID = container.getItem(objr);
-		Property<String> cID = rowID.getItemProperty("Transaction Type");
-		cID.setValue("CASH_OUT");
+				pct = rct.getItemProperty("Last Updated");
+				pct.setValue(date);
+
+			}
+
+			if (x == 0)
+				Notification.show(
+						"No Configurations set for selected Transaction type",
+						Notification.Type.WARNING_MESSAGE);
+
+		} catch (SQLException e) {
+			Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
+			e.printStackTrace();
+		}
 
 		Table tb = new Table();
-		Property<HorizontalLayout> pt = rowID.getItemProperty("Tier");
-		pt.setValue(cttb);
+
 		tb.setWidth("100%");
 		tb.setHeightUndefined();
-		// tb.setContainerDataSource(container);
 		tb.setContainerDataSource(ct);
 		tb.setPageLength(0);
 		tb.setSelectable(true);
-		// tb.setPageLength(5);
 
 		return tb;
 	}
 
 	@SuppressWarnings("unchecked")
-	private Table getModPseudoTable() {
+	private Table getCommissionPseudoTable(int op, int txtype) {
 
 		IndexedContainer ct = new IndexedContainer();
-		Table ttb = new Table();
-
-		HorizontalLayout cttb = new HorizontalLayout();
-		cttb.setWidth("100%");
-		cttb.setHeightUndefined();
-		cttb.addComponent(ttb);
 
 		ct.addContainerProperty("Min.", String.class, "");
 		ct.addContainerProperty("Max.", String.class, "");
 		ct.addContainerProperty("Matrix", String.class, "");
 		ct.addContainerProperty("Amount", String.class, "");
+		ct.addContainerProperty("Last Updated", String.class, "");
 
-		Object ctobjr = ct.addItem();
-		Item rct = ct.getItem(ctobjr);
-		Property<String> pct = rct.getItemProperty("Min.");
-		pct.setValue("100.00");
+		ResultSet rs = getResultsCommission(op, txtype);
+		int x = 0;
+		try {
+			while (rs.next()) {
+				x++;
+				String min = rs.getString("Min.");
+				String max = rs.getString("Max.");
+				String mat = rs.getString("Matrix");
+				String amt = rs.getString("Amount");
+				String date = rs.getString("Last Updated");
 
-		pct = rct.getItemProperty("Max.");
-		pct.setValue("1000.00");
+				Object ctobjr = ct.addItem();
+				Item rct = ct.getItem(ctobjr);
+				Property<String> pct = rct.getItemProperty("Min.");
+				pct.setValue(min);
 
-		pct = rct.getItemProperty("Matrix");
-		pct.setValue("%");
+				pct = rct.getItemProperty("Max.");
+				pct.setValue(max);
 
-		pct = rct.getItemProperty("Amount");
-		pct.setValue("2");
+				pct = rct.getItemProperty("Matrix");
+				pct.setValue(mat);
 
-		ctobjr = ct.addItem();
-		rct = ct.getItem(ctobjr);
-		pct = rct.getItemProperty("Min.");
-		pct.setValue("100.00");
+				pct = rct.getItemProperty("Amount");
+				pct.setValue(amt);
 
-		pct = rct.getItemProperty("Max.");
-		pct.setValue("1000.00");
+				pct = rct.getItemProperty("Last Updated");
+				pct.setValue(date);
 
-		pct = rct.getItemProperty("Matrix");
-		pct.setValue("%");
+			}
 
-		pct = rct.getItemProperty("Amount");
-		pct.setValue("2");
-
-		ttb.setContainerDataSource(ct);
-		ttb.setWidth("100%");
-		ttb.setHeightUndefined();
-
-		IndexedContainer container = new IndexedContainer();
-		container
-				.addContainerProperty("Transaction Type", String.class, "None");
-		container.addContainerProperty("Tier", HorizontalLayout.class, null);
-
-		Object objr = container.addItem();
-		Item rowID = container.getItem(objr);
-		Property<String> cID = rowID.getItemProperty("Transaction Type");
-		cID.setValue("CASH_OUT");
+			if (x == 0)
+				Notification.show(
+						"No Configurations set for selected Transaction type",
+						Notification.Type.WARNING_MESSAGE);
+		} catch (SQLException e) {
+			Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
+			e.printStackTrace();
+		}
 
 		Table tb = new Table();
-		Property<HorizontalLayout> pt = rowID.getItemProperty("Tier");
-		pt.setValue(cttb);
+
 		tb.setWidth("100%");
 		tb.setHeightUndefined();
-		// tb.setContainerDataSource(container);
 		tb.setContainerDataSource(ct);
 		tb.setPageLength(0);
 		tb.setSelectable(true);
-		// tb.setPageLength(5);
 
 		return tb;
 	}
 
-	private void addTransactionType(String txType) {
+	private ResultSet getResultsFees(int op, int txtype) {
 
-		final Label lbAttrVal = new Label(txType);
-		VerticalLayout cTType = cArrLItemContent.get(0);
-		VerticalLayout cTTier = cArrLItemContent.get(1);
-		Table tb = getModPseudoTable();
+		StringBuilder sb = new StringBuilder();
+		sb.append(" select acth.username as MMO, sft.service_fee_type as 'Matrix', txnt.name as 'Transaction Type', ");
+		sb.append(" sfp.servicefeemodeltype as 'ModelType', ");
+		sb.append(" sft.minimumamount as 'Min.', sft.maximumamount as 'Max.', sft.service_fee as 'Amount', ");
+		sb.append(" CAST(sfp.lastupdate as DATE) as 'Last Updated' ");
+		sb.append(" from servicefeetransactiontype sft, transactiontypes txnt,accountholders acth,servicefeeproperties sfp ");
+		sb.append(" where txnt.transactiontypeid = sft.transactiontypeid and acth.accountholderid = sfp.accountholderid ");
+		sb.append(" and sfp.servicefeepropertiesid = sft.servicefeepropertiesid and acth.accountholderid = "
+				+ op);
+		sb.append(" and txnt.transactiontypeid = " + txtype + ";");
 
-		HorizontalLayout cAttrVal = new HorizontalLayout();
-		cAttrVal.setWidth(tb.getHeight() + "%");
-		// Notification.show(tb.getHeight() + "");
+		ResultSet rs = null;
 
-		cAttrVal.addComponent(lbAttrVal);
-		cTType.addComponent(cAttrVal);
-		cTType.setComponentAlignment(cAttrVal, Alignment.MIDDLE_CENTER);
+		String drivers = "com.mysql.jdbc.Driver";
+		try {
+			Class<?> driver_class = Class.forName(drivers);
+			Driver driver = (Driver) driver_class.newInstance();
+			DriverManager.registerDriver(driver);
 
-		cTTier.addComponent(tb);
-		// Notification.show(cTTier.getHeight() + "");
+			Connection conn = DriverManager.getConnection(
+					MatsWebPortalUI.conf.DB, MatsWebPortalUI.conf.UN,
+					MatsWebPortalUI.conf.PW);
+			Statement stmt = conn.createStatement();
 
-		/*
-		 * HorizontalLayout crow = new HorizontalLayout(); VerticalLayout cTType
-		 * = new VerticalLayout(); cTType.setHeight("100%");
-		 * cTType.setWidth("100%"); cTType.setSpacing(true);
-		 * 
-		 * Label lbTType = new Label(txType); lbTType.setWidth("100%");
-		 * cTType.addComponent(lbTType); cTType.setComponentAlignment(lbTType,
-		 * Alignment.MIDDLE_CENTER);
-		 * 
-		 * crow.addComponent(cTType);
-		 * 
-		 * VerticalLayout cTTier = new VerticalLayout();
-		 * 
-		 * cTTier.addComponent(getModPseudoTable()); crow.addComponent(cTTier);
-		 * crow.setWidth("100%"); cAttr.addComponent(crow);
-		 */
+			rs = stmt.executeQuery(sb.toString());
 
+		} catch (SQLException | ClassNotFoundException | InstantiationException
+				| IllegalAccessException e) {
+			e.printStackTrace();
+			Notification.show("DB Connection",
+					"Error Establishing DBConnection:  " + e.getMessage(),
+					Notification.Type.ERROR_MESSAGE);
+		}
+
+		return rs;
+	}
+
+	private ResultSet getResultsCommission(int op, int txtype) {
+
+		StringBuilder sb = new StringBuilder();
+
+		sb.append(" select acth.username as MMO, scf.commission_fee_type as 'Matrix',txnt.name as 'Transaction Type', ");
+		sb.append(" scp.servicecommissionmodeltype as 'Commission Model',scp.servicecommissioncondition as 'Commission Condition', ");
+		sb.append(" scf.minimumamount as 'Min.', scf.maximumamount as 'Max.', scf.commission_fee as ");
+		sb.append(" 'Amount', CAST(sCp.lastupdate as DATE) as 'Last Updated' ");
+		sb.append(" from servicecommissionfee scf, transactiontypes txnt,servicecommissionproperties scp,accountholders acth, ");
+		sb.append(" servicefeeproperties sfp where scf.transactiontypeid = txnt.transactiontypeid and ");
+		sb.append(" scp.servicecommissionpropertiesid = scf.servicecommissionpropertiesid and sfp.servicefeepropertiesid = scp.servicefeepropertiesid ");
+		sb.append(" and acth.accountholderid = sfp.accountholderid and acth.accountholderid = "
+				+ op + " and txnt.transactiontypeid = " + txtype + "; ");
+
+		ResultSet rs = null;
+
+		String drivers = "com.mysql.jdbc.Driver";
+		try {
+			Class<?> driver_class = Class.forName(drivers);
+			Driver driver = (Driver) driver_class.newInstance();
+			DriverManager.registerDriver(driver);
+
+			Connection conn = DriverManager.getConnection(
+					MatsWebPortalUI.conf.DB, MatsWebPortalUI.conf.UN,
+					MatsWebPortalUI.conf.PW);
+			Statement stmt = conn.createStatement();
+
+			rs = stmt.executeQuery(sb.toString());
+
+		} catch (SQLException | ClassNotFoundException | InstantiationException
+				| IllegalAccessException e) {
+			e.printStackTrace();
+			Notification.show("DB Connection",
+					"Error Establishing DBConnection:  " + e.getMessage(),
+					Notification.Type.ERROR_MESSAGE);
+		}
+
+		return rs;
 	}
 
 }

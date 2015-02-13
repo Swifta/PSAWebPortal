@@ -33,7 +33,7 @@ public class ManageFeesAndCommModule {
 
 		final BtnTabLike btnAuth = new BtnTabLike("Existing", null);
 		btnExisting = btnAuth;
-		btnAuth.setEnabled(false);
+		// btnAuth.setEnabled(false);
 
 		cManageAndAddTab.addComponent(btnPersonal);
 		cManageAndAddTab.addComponent(btnAccount);
@@ -58,7 +58,7 @@ public class ManageFeesAndCommModule {
 
 				btnPersonal.setEnabled(false);
 				btnAccount.setEnabled(true);
-				btnExisting.setEnabled(false);
+				btnExisting.setEnabled(true);
 
 				if (!isSettingsURL) {
 					String s = UI.getCurrent().getPage().getUriFragment();
@@ -92,7 +92,7 @@ public class ManageFeesAndCommModule {
 
 				btnAccount.setEnabled(false);
 				btnPersonal.setEnabled(true);
-				btnAuth.setEnabled(false);
+				btnAuth.setEnabled(true);
 
 				if (!isSettingsURL) {
 					String s = UI.getCurrent().getPage().getUriFragment();
