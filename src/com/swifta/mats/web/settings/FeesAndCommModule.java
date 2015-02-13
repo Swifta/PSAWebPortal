@@ -77,11 +77,12 @@ public class FeesAndCommModule {
 	private HashMap<String, Integer> hmTxType = new HashMap<>();
 
 	private boolean ischanged = true;
+	private VerticalLayout cCX;
 
 	public FeesAndCommModule() {
 
 		hmOp.put("TeasyMobile", 4);
-		hmOp.put("pocketmoni", 7);
+		hmOp.put("PocketMoni", 7);
 
 		hmTxType.put("CASHIN", 4);
 		hmTxType.put("CASHOUT", 5);
@@ -1295,10 +1296,13 @@ public class FeesAndCommModule {
 
 	private void getSearchResults(HorizontalLayout cManage, String op,
 			String type) {
-		VerticalLayout cC = new VerticalLayout();
-		cManage.addComponent(cC);
-		addFees(cC, op, type);
-		addCommission(cC, op, type);
+		if (cCX != null)
+			cManage.removeComponent(cCX);
+
+		cCX = new VerticalLayout();
+		cManage.addComponent(cCX);
+		addFees(cCX, op, type);
+		addCommission(cCX, op, type);
 	}
 
 	private void addFees(VerticalLayout cC, String op, String type) {
