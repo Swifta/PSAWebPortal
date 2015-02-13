@@ -877,12 +877,13 @@ ul.empty li{
 	//margin-left: -400px;
 }
 .see_lay{
-	background: url(img/skin.jpg);
+	//background: url(img/skin.jpg);
     background-repeat: repeat;
 	border: 1px solid #7ec0ee;
 	border-radius: 10px;
 	margin: 10px 5px 5px 10px;
 	padding: 2px;
+	cursor: pointer;
 	
 }
 .lge{
@@ -965,11 +966,14 @@ ul.empty li{
 .btn_back{
 	//margin: 20px 30px 0px -50px !important;
 	//margin-top: 50px;
+	position: fixed;
 	
 }
 
 .frm_manage_commission{
 	//padding: 0px 10px;
+	background: #F0F;
+	margin-top: 650px;
 }
 
 .c_attr v-label{
@@ -1164,6 +1168,17 @@ ul.empty li{
 	margin-top: 25px;
 	//padding: 10px;
 	background: #FFF;
+}
+
+.btn_hand{
+ 	cursor: pointer !important;
+ 	background: #F00 !important;
+ 	
+}
+
+.btn_hand:hover{
+ 	border: 1px solid #444 !important;
+ 	background: #F0F !important;
 }
 
 

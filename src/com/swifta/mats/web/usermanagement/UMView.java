@@ -1,7 +1,6 @@
 package com.swifta.mats.web.usermanagement;
 
 import com.swifta.mats.web.Login;
-import com.swifta.mats.web.MatsWebPortalUI;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.VaadinSession;
@@ -25,7 +24,7 @@ public class UMView extends VerticalLayout implements View {
 	String id = null;
 
 	public UMView(TabSheet ts) {
-		ts = MatsWebPortalUI.ts;
+		this.ts = ts;
 		ts.setSelectedTab(2);
 		this.ts = ts;
 		id = ts.getSelectedTab().getId();

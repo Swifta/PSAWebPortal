@@ -36,15 +36,6 @@ public class AddIcons extends VerticalLayout {
 		layout1.setComponentAlignment(image, Alignment.MIDDLE_CENTER);
 		layout1.setComponentAlignment(name, Alignment.BOTTOM_CENTER);
 
-		/*
-		 * layout1.addLayoutClickListener(new LayoutClickListener() {
-		 * 
-		 * private static final long serialVersionUID = 1L;
-		 * 
-		 * public void layoutClick(LayoutClickEvent event) { //
-		 * Notification.show("I have been thoroughly clicked....!!"); } });
-		 */
-
 		return layout1;
 
 	}

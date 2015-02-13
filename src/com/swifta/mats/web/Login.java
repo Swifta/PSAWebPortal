@@ -220,8 +220,11 @@ public class Login extends VerticalLayout implements View {
 								.setMaxInactiveInterval(1800);
 						// mx//UI.getCurrent().getNavigator()
 						// mx//.navigateTo(WorkSpace.WORK_SPACE);
+
+						Initializer initts = new Initializer();
 						UI.getCurrent().getNavigator()
-								.navigateTo(Main.WS);
+								.addView(Main.WS, new Main(initts.getTS()));
+						UI.getCurrent().getNavigator().navigateTo(Main.WS);
 
 						logger.info("---------------after getting navigator to workspace:::Login");
 

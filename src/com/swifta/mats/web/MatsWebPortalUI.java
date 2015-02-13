@@ -21,7 +21,6 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.UI;
 
 @SuppressWarnings("serial")
@@ -29,14 +28,15 @@ import com.vaadin.ui.UI;
 @PreserveOnRefresh
 public class MatsWebPortalUI extends UI {
 
-	public static TabSheet ts;
+	// public static TabSheet ts;
 	private HashMap<String, Integer> hm;
 	private String vN = null;
+	private View main = null;
 
 	public static final Conf conf = new Conf("testing");
 
 	@WebServlet(value = "/*", asyncSupported = true)
-	@VaadinServletConfiguration(productionMode = true, closeIdleSessions = true, ui = MatsWebPortalUI.class, widgetset = "com.swifta.mats.web.widgetset.Mats_web_portalWidgetset")
+	@VaadinServletConfiguration(productionMode = false, closeIdleSessions = true, ui = MatsWebPortalUI.class, widgetset = "com.swifta.mats.web.widgetset.Mats_web_portalWidgetset")
 	public static class Servlet extends VaadinServlet {
 
 		@Override
@@ -67,13 +67,12 @@ public class MatsWebPortalUI extends UI {
 	protected void init(VaadinRequest request) {
 		try {
 			new Navigator(this, this);
-			hm = new HashMap<>();
-			Initializer initializer = new Initializer();
 
-			ts = initializer.getTS(hm);
+			// Initializer initializer = new Initializer();
+
+			// ts = initializer.getTS(hm);
 			getNavigator().addView("", new Login());
 			getNavigator().addView(Login.LOGIN, Login.class);
-			getNavigator().addView(Main.WS, Main.class);
 
 			getNavigator().setErrorProvider(new ErrorVIEW());
 
@@ -101,7 +100,6 @@ public class MatsWebPortalUI extends UI {
 
 							return false;
 						} else {
-
 							getNavigator().navigateTo(Login.LOGIN);
 							return false;
 						}
@@ -116,6 +114,12 @@ public class MatsWebPortalUI extends UI {
 						VaadinSession.getCurrent().getSession()
 								.setMaxInactiveInterval(3600);
 
+					if (prevView != null && !(prevView instanceof Login)
+							&& !isLoggedIn) {
+						getCurrent().getSession().close();
+						getCurrent().close();
+					}
+
 					if (!isLoginView && !isLoggedIn) {
 						vN = null;
 						getNavigator().navigateTo(Login.LOGIN);
@@ -125,7 +129,10 @@ public class MatsWebPortalUI extends UI {
 					if (isLoginView) {
 						if (isLoggedIn) {
 							vN = null;
-							getNavigator().navigateTo(Main.WS);
+							if (main != null)
+								main.enter(event);
+							else
+								getNavigator().navigateTo(Login.LOGIN);
 							return false;
 						} else {
 							return true;
@@ -138,6 +145,9 @@ public class MatsWebPortalUI extends UI {
 							return false;
 						}
 					}
+
+					if (main == null && event.getNewView() instanceof Main)
+						main = event.getNewView();
 
 					return true;
 
@@ -174,7 +184,6 @@ public class MatsWebPortalUI extends UI {
 	}
 
 	private void enter() {
-
 		UI.getCurrent().getNavigator().navigateTo(vN);
 
 	}

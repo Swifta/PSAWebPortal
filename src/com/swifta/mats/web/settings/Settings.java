@@ -40,7 +40,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.Upload;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
@@ -54,7 +53,7 @@ public class Settings extends VerticalLayout {
 	Button BulkImport = new Button("Bulk Import");
 	Button back = new Button();
 
-	public static WorkSpaceManageFeesAndComm wmfac;
+	public WorkSpaceManageFeesAndComm wmfac;
 
 	ComboBox selection = new ComboBox();
 	Button createAccount = new Button("Create");
@@ -125,21 +124,30 @@ public class Settings extends VerticalLayout {
 		setMargin(true);
 		AddIcons icon1 = new AddIcons();
 
-		back.setStyleName(ValoTheme.BUTTON_ICON_ONLY + " btn_link btn_back");
-		back.setIcon(FontAwesome.BACKWARD);
+		back.setStyleName("btn_link btn_back");
+		back.setCaption("Back");
+		back.setDescription("Back to all settings");
+		back.setIcon(FontAwesome.UNDO);
 
 		final VerticalLayout het1 = icon1.ImagesClicking("Account Management",
 				"img/use.png");
+		het1.setStyleName(ValoTheme.LINK_SMALL + " ic_hand see_lay");
 		final VerticalLayout het2 = icon1.ImagesClicking("Permissions",
 				"img/permission.png");
+		het2.setStyleName(ValoTheme.LINK_SMALL + " ic_hand see_lay");
 		final VerticalLayout het3 = icon1.ImagesClicking("Authentication",
 				"img/auth.png");
+		het3.setStyleName(ValoTheme.LINK_SMALL + " ic_hand see_lay");
 		final VerticalLayout het4 = icon1.ImagesClicking("Fees/ Commission",
 				"img/fees.png");
+		het4.setStyleName(ValoTheme.LINK_SMALL + " ic_hand see_lay");
 		final VerticalLayout het5 = icon1.ImagesClicking("Transfer",
 				"img/transfer.png");
+		het5.setStyleName(ValoTheme.LINK_SMALL + " ic_hand see_lay");
 		final VerticalLayout het6 = icon1.ImagesClicking("Threshold",
 				"img/threshold.png");
+
+		het6.setStyleName(ValoTheme.LINK_SMALL + " ic_hand see_lay");
 
 		final HorizontalLayout cIcon = new HorizontalLayout();
 		cIcon.addComponent(het1);
@@ -155,65 +163,14 @@ public class Settings extends VerticalLayout {
 
 			@Override
 			public void layoutClick(LayoutClickEvent event) {
-				wmfac = new WorkSpaceManageFeesAndComm();
-				VerticalLayout cmfac = wmfac.getWorkSpaceAccountProfile();
+				if (wmfac == null)
+					wmfac = new WorkSpaceManageFeesAndComm();
 
-				cmfac.addComponent(back);
-				cmfac.setComponentAlignment(back, Alignment.BOTTOM_LEFT);
+				VerticalLayout cmfac = wmfac.getWorkSpaceAccountProfile(back);
 				laying.removeAllComponents();
 				laying.addComponent(cmfac);
 				laying.setComponentAlignment(cmfac, Alignment.TOP_LEFT);
 				laying.setSizeFull();
-
-				ManageFeesAndCommModule.btnComm
-						.addClickListener(new Button.ClickListener() {
-
-							/**
-					 * 
-					 */
-							private static final long serialVersionUID = -7254175574123940145L;
-
-							@Override
-							public void buttonClick(ClickEvent event) {
-								UI.getCurrent()
-										.getSession()
-										.setAttribute(
-												WorkSpaceManageFeesAndComm.SESSION_WSMP_CUR_ACTION,
-												FeesAndCommModule.COMMISSION);
-								wmfac.wsmpModifier();
-							}
-						});
-
-				ManageFeesAndCommModule.btnFees
-						.addClickListener(new Button.ClickListener() {
-
-							private static final long serialVersionUID = 3563106614667999001L;
-
-							@Override
-							public void buttonClick(ClickEvent event) {
-								UI.getCurrent()
-										.getSession()
-										.setAttribute(
-												WorkSpaceManageFeesAndComm.SESSION_WSMP_CUR_ACTION,
-												FeesAndCommModule.FEES);
-								wmfac.wsmpModifier();
-							}
-						});
-				ManageFeesAndCommModule.btnExisting
-						.addClickListener(new Button.ClickListener() {
-
-							private static final long serialVersionUID = 3563106614667999001L;
-
-							@Override
-							public void buttonClick(ClickEvent event) {
-								UI.getCurrent()
-										.getSession()
-										.setAttribute(
-												WorkSpaceManageFeesAndComm.SESSION_WSMP_CUR_ACTION,
-												FeesAndCommModule.EXISTING);
-								wmfac.wsmpModifier();
-							}
-						});
 
 			}
 
@@ -265,12 +222,20 @@ public class Settings extends VerticalLayout {
 
 			public void layoutClick(LayoutClickEvent event) {
 
-				searchResultsContainer.setSizeUndefined();
+				searchResultsContainer.setWidth("100%");
+				searchResultsContainer.setHeightUndefined();
+
 				searchResultsContainer.setSpacing(true);
 				searchResultsContainer.setMargin(new MarginInfo(false, true,
 						true, true));
 
-				tb.setWidth("990px");
+				searchResultsContainer.addComponent(back);
+				searchResultsContainer.setComponentAlignment(back,
+						Alignment.BOTTOM_RIGHT);
+
+				// tb.setWidth("990px");
+				tb.setWidth("100%");
+				tb.setHeightUndefined();
 
 				tb.setContainerDataSource(container);
 				tb.setColumnIcon(" ", FontAwesome.CHECK_SQUARE);
@@ -314,14 +279,17 @@ public class Settings extends VerticalLayout {
 				searchResultsContainer.addComponent(bulkLayout);
 
 				searchResultsContainer.addComponent(tb);
+				searchResultsContainer.setExpandRatio(tb, 1);
 
 				searchResultsContainer.addComponent(pnUserSearchResults2);
-				searchResultsContainer.addComponent(back);
-				searchResultsContainer.setComponentAlignment(back,
-						Alignment.BOTTOM_LEFT);
 
 				laying.removeAllComponents();
 				laying.addComponent(searchResultsContainer);
+				laying.setExpandRatio(searchResultsContainer, 1);
+				int x = container.size();
+				if (x > 30)
+					x = 29;
+				tb.setPageLength(x + 1);
 
 			}
 		});
@@ -367,7 +335,10 @@ public class Settings extends VerticalLayout {
 					}
 				}
 
-				// TODO Auto-generated method stub
+				int x = tb.getContainerDataSource().size();
+				if (x > 30)
+					t = 29;
+				tb.setPageLength(t + 1);
 
 			}
 
@@ -418,6 +389,10 @@ public class Settings extends VerticalLayout {
 
 						container.addContainerFilter(filter);
 						tb.setContainerDataSource(container);
+						int x = tb.getContainerDataSource().size();
+						if (x > 30)
+							x = 29;
+						tb.setPageLength(x + 1);
 					} else {
 						Notification.show("No result found, table is empty");
 					}
@@ -427,6 +402,10 @@ public class Settings extends VerticalLayout {
 						Notification.show("Table is Empty");
 					}
 					tb.setContainerDataSource(container);
+					int x = tb.getContainerDataSource().size();
+					if (x > 30)
+						x = 29;
+					tb.setPageLength(x + 1);
 
 				}
 
@@ -580,6 +559,7 @@ public class Settings extends VerticalLayout {
 
 								laying.removeAllComponents();
 								laying.addComponent(searchResultsContainer);
+								laying.setExpandRatio(searchResultsContainer, 1);
 								BulkImport.setEnabled(true);
 								Notification.show("Done");
 							}
@@ -602,6 +582,7 @@ public class Settings extends VerticalLayout {
 				layoutFile.addComponent(cancelBulk);
 
 				laying.addComponent(layoutFile, 0);
+				laying.setExpandRatio(searchResultsContainer, 1);
 
 				// TODO Auto-generated method stub
 
@@ -634,6 +615,7 @@ public class Settings extends VerticalLayout {
 				// laying.removeAllComponents();
 
 				laying.addComponent(addAccount, 0);
+				laying.setExpandRatio(searchResultsContainer, 1);
 				// adduser.setDisableOnClick(true);
 				adduser.setEnabled(false);
 			}
@@ -655,12 +637,17 @@ public class Settings extends VerticalLayout {
 						type.getValue().toString(), codeOfAccount.getValue(),
 						descOfAccount.getValue(), container, 0);
 				tb.setContainerDataSource(container);
+				int x = container.size();
+				if (x > 30)
+					x = 29;
+				tb.setPageLength(x + 1);
 				// TODO Auto-generated method stub
 				nameOfAccount.setValue("");
 				codeOfAccount.setValue("");
 				descOfAccount.setValue("");
 				type.setValue("Fees");
 				laying.addComponent(searchResultsContainer);
+				laying.setExpandRatio(searchResultsContainer, 1);
 
 			}
 
@@ -707,12 +694,20 @@ public class Settings extends VerticalLayout {
 				}
 
 				tb.setContainerDataSource(container);
+				int x = container.size();
+				if (x > 30)
+					x = 29;
+				tb.setPageLength(x + 1);
 				laying.removeComponent(addAccount);
+
 				// btnEdit.setEnabled(true);
 				// TODO Auto-generated method stub
 
 			}
 		});
+
+		laying.setWidth("100%");
+		laying.setHeightUndefined();
 
 		return laying;
 
@@ -813,6 +808,7 @@ public class Settings extends VerticalLayout {
 				// laying.removeAllComponents();
 
 				laying.addComponent(addAccount, 0);
+				laying.setExpandRatio(searchResultsContainer, 1);
 
 				// btnEdit.setEnabled(false);
 				event.getButton().setEnabled(false);
@@ -860,6 +856,11 @@ public class Settings extends VerticalLayout {
 
 					Notification.show("No description on Button");
 				}
+
+				int x = container.size();
+				if (x > 30)
+					x = 29;
+				tb.setPageLength(x + 1);
 
 			}
 		});

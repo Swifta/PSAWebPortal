@@ -25,7 +25,6 @@ import com.vaadin.data.util.filter.Compare.GreaterOrEqual;
 import com.vaadin.data.util.filter.Compare.LessOrEqual;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -43,21 +42,21 @@ public class Main extends VerticalLayout implements View {
 	private static final long serialVersionUID = 7453202011100914519L;
 	public static final String WS = "dashboard";
 
-	boolean isCriteriaChanged = false;
-	String dCat;
+	private boolean isCriteriaChanged = false;
+	private String dCat;
 	private TabSheet ts;
-	VerticalLayout tab = null;
-	String id = null;
+	private VerticalLayout tab = null;
+	private String id = null;
+
 	private boolean isc = false;
 
-	public Main() {
+	public Main(TabSheet ts) {
 
 		isc = true;
-		ts = MatsWebPortalUI.ts;
+		this.ts = ts;
 		ts.setSelectedTab(0);
 		id = ts.getSelectedTab().getId();
 		tab = (VerticalLayout) ts.getSelectedTab();
-
 		if (id != null && id.equals("ds")) {
 			addHeader();
 			addMenu();
@@ -66,7 +65,6 @@ public class Main extends VerticalLayout implements View {
 			addMenu();
 			d();
 			tab.setId("ds");
-
 		}
 
 	}
@@ -103,7 +101,8 @@ public class Main extends VerticalLayout implements View {
 			public void buttonClick(ClickEvent event) {
 				UI.getCurrent().getSession().setAttribute("user", null);
 				UI.getCurrent().getNavigator().navigateTo(Login.LOGIN);
-				VaadinSession.getCurrent().close();
+				// VaadinSession.getCurrent().close();
+				// UI.getCurrent().getPage().setLocation("");
 
 			}
 		});

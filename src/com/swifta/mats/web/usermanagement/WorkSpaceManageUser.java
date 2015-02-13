@@ -158,20 +158,34 @@ public class WorkSpaceManageUser {
 
 	private void modifier(String frag) {
 
-		String param = frag.substring(frag.indexOf('?') + 1);
-		if (param == null)
-			return;
+		String action = null;
+		String aParam[] = new String[] {};
+		if (frag.indexOf('?') == -1) {
+			action = "search";
+		} else {
+			String param = frag.substring(frag.indexOf('?') + 1);
+			if (param == null) {
+				action = "search";
+			} else if (param.trim().isEmpty()) {
+				action = "search";
+			} else {
+				aParam = param.split("&");
+				String arr[] = aParam[0].split("=");
 
-		String aParam[] = param.split("&");
-		if (aParam.length < 2)
-			return;
-		String action = aParam[0].split("=")[1];
+				if (arr.length < 2)
+					action = "search";
+				else
+					action = aParam[0].split("=")[1];
+			}
+
+		}
 
 		StringBuilder strb = new StringBuilder();
-		for (int i = 1; i < aParam.length; i++) {
-			strb.append(aParam[i]);
-			strb.append("&");
-		}
+		if (aParam.length > 0)
+			for (int i = 1; i < aParam.length; i++) {
+				strb.append(aParam[i]);
+				strb.append("&");
+			}
 		if (!prevSearchFrag.contains(frag)) {
 			switch (action) {
 			case "search": {

@@ -4,6 +4,7 @@ import com.swifta.mats.web.usermanagement.BtnTabLike;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 public class ManageFeesAndCommModule {
@@ -11,6 +12,8 @@ public class ManageFeesAndCommModule {
 	public static BtnTabLike btnComm;
 	public static BtnTabLike btnFees;
 	public static BtnTabLike btnExisting;
+	private boolean isSettingsURL = false;
+	private String curURL = null;
 
 	public VerticalLayout getMenu(boolean boolAddHeaderStatus,
 			boolean boolEditStatus, boolean hasOp) {
@@ -30,6 +33,7 @@ public class ManageFeesAndCommModule {
 
 		final BtnTabLike btnAuth = new BtnTabLike("Existing", null);
 		btnExisting = btnAuth;
+		btnAuth.setEnabled(false);
 
 		cManageAndAddTab.addComponent(btnPersonal);
 		cManageAndAddTab.addComponent(btnAccount);
@@ -54,7 +58,20 @@ public class ManageFeesAndCommModule {
 
 				btnPersonal.setEnabled(false);
 				btnAccount.setEnabled(true);
-				btnExisting.setEnabled(true);
+				btnExisting.setEnabled(false);
+
+				if (!isSettingsURL) {
+					String s = UI.getCurrent().getPage().getUriFragment();
+					curURL = (s.indexOf('?') == -1) ? s + "/" : s.substring(0,
+							s.indexOf('?'));
+					isSettingsURL = true;
+				}
+
+				String url = curURL + "?action=Fees";
+
+				if (WorkSpaceManageFeesAndComm.prevSearchFrag.contains(url))
+					WorkSpaceManageFeesAndComm.prevSearchFrag.remove(url);
+				UI.getCurrent().getPage().setUriFragment(url);
 
 			}
 		});
@@ -75,7 +92,20 @@ public class ManageFeesAndCommModule {
 
 				btnAccount.setEnabled(false);
 				btnPersonal.setEnabled(true);
-				btnAuth.setEnabled(true);
+				btnAuth.setEnabled(false);
+
+				if (!isSettingsURL) {
+					String s = UI.getCurrent().getPage().getUriFragment();
+					curURL = (s.indexOf('?') == -1) ? s + "/" : s.substring(0,
+							s.indexOf('?'));
+					isSettingsURL = true;
+				}
+
+				String url = curURL + "?action=Commission";
+
+				if (WorkSpaceManageFeesAndComm.prevSearchFrag.contains(url))
+					WorkSpaceManageFeesAndComm.prevSearchFrag.remove(url);
+				UI.getCurrent().getPage().setUriFragment(url);
 
 			}
 		});
@@ -97,6 +127,19 @@ public class ManageFeesAndCommModule {
 				btnAuth.setEnabled(false);
 				btnAccount.setEnabled(true);
 				btnPersonal.setEnabled(true);
+
+				if (!isSettingsURL) {
+					String s = UI.getCurrent().getPage().getUriFragment();
+					curURL = (s.indexOf('?') == -1) ? s + "/" : s.substring(0,
+							s.indexOf('?'));
+					isSettingsURL = true;
+				}
+
+				String url = curURL + "?action=existing";
+
+				if (WorkSpaceManageFeesAndComm.prevSearchFrag.contains(url))
+					WorkSpaceManageFeesAndComm.prevSearchFrag.remove(url);
+				UI.getCurrent().getPage().setUriFragment(url);
 
 			}
 		});

@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.swifta.mats.web.usermanagement.NotifCustom;
 import com.swifta.mats.web.utils.CommissionService;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ServiceCommission;
@@ -47,13 +48,14 @@ public class FeesAndCommModule {
 	private static String lookedTab = null;
 	private ComboBox comboOp;
 	private ComboBox comboTxType;
-	private int confCount = 0;
-	ArrayList<FieldGroup> arrLDFG;
+	// private int confCount = 0;
+	HashMap<String, FieldGroup> hmDFG;
 	private ArrayList<ArrayList<FieldGroup>> arrLAllFG;
 	private HashMap<String, ArrayList<ArrayList<FieldGroup>>> hmAllFG;
 	public final static String COMMISSION = "Commission";
 	public final static String FEES = "Fees";
 	public final static String EXISTING = "existing";
+	private static final BigDecimal comboModeType = null;
 	private String tabType = null;
 	private String[] arrMatValues;
 	private String[] arrModelValues;
@@ -62,15 +64,17 @@ public class FeesAndCommModule {
 	ArrayList<FieldGroup> prfg;
 	ArrayList<FieldGroup> pmfg;
 	boolean isReset = false;
+	private boolean isSettingsURL = false;
+	private String curURL = null;
 
 	public FeesAndCommModule() {
 
 		comboOp = new ComboBox("Operator");
-		comboOp.addItem(7);
-		comboOp.setItemCaption(7, "TeasyMobile");
-		comboOp.addItem(4);
-		comboOp.setItemCaption(4, "PocketMoni");
-		comboOp.select(7);
+		comboOp.addItem("teasymobile");
+		comboOp.setItemCaption("teasymobile", "TeasyMobile");
+		comboOp.addItem("pocketmoni");
+		comboOp.setItemCaption("pocketmoni", "PocketMoni");
+		comboOp.select("teasymobile");
 
 		comboTxType = new ComboBox("Transaction Type");
 		comboTxType.addItem(4);
@@ -85,7 +89,7 @@ public class FeesAndCommModule {
 		comboTxType.setItemCaption(17, "3rd PARTY PAYMENT");
 		comboTxType.select(4);
 		hmAllFG = new HashMap<>();
-		arrLDFG = new ArrayList<>();
+		hmDFG = new HashMap<>();
 		arrMatValues = new String[] { "PERCENT", "FIXED" };
 		arrModelValues = new String[] { "TIERED", "NOTAPPLICABLE" };
 		arrConValues = new String[] { "AMOUNT", "FEE" };
@@ -419,6 +423,39 @@ public class FeesAndCommModule {
 		addMatrix();
 	}
 
+	private void add(ArrayList<ArrayList<FieldGroup>> allFG) {
+		addRange(allFG.get(0));
+		addMatrix(allFG.get(1));
+
+	}
+
+	private void addMatrix(ArrayList<FieldGroup> arrLFG) {
+		VerticalLayout cMat = cArrLItemContent.get(2);
+		VerticalLayout cAmt = cArrLItemContent.get(3);
+
+		for (int i = 0; i < arrLFG.size(); i++) {
+			FieldGroup mfg = arrLFG.get(i);
+			cMat.addComponent(mfg.getField("Mat"));
+			cAmt.addComponent(mfg.getField("Amt"));
+			arrLMatFG.add(mfg);
+
+		}
+
+	}
+
+	private void addRange(ArrayList<FieldGroup> arrLRFG) {
+		VerticalLayout cMin = cArrLItemContent.get(0);
+		VerticalLayout cMax = cArrLItemContent.get(1);
+
+		for (int i = 0; i < arrLRFG.size(); i++) {
+			FieldGroup rfg = arrLRFG.get(i);
+			cMin.addComponent(rfg.getField("Min"));
+			cMax.addComponent(rfg.getField("Max"));
+			arrLRangeFG.add(rfg);
+		}
+
+	}
+
 	private void remove() {
 		removeRange();
 		removeMatrix();
@@ -655,8 +692,6 @@ public class FeesAndCommModule {
 		lbAttr.setStyleName("label_add_user attr");
 		cItemContentAmt.addComponent(lbAttr);
 		cAttrItem.addComponent(cItemContentAmt);
-		add();
-		// add();
 
 		HorizontalLayout cControls = new HorizontalLayout();
 		Button btnAdd = new Button("+");
@@ -812,6 +847,26 @@ public class FeesAndCommModule {
 			}
 		});
 
+		if (hmAllFG.size() == 0) {
+			add();
+			return cManage;
+		}
+
+		if (!hmAllFG.containsKey(type)) {
+			add();
+			return cManage;
+		}
+
+		ArrayList<ArrayList<FieldGroup>> allFG = hmAllFG.get(type);
+		FieldGroup dfg = hmDFG.get(type);
+		String mt = dfg.getField("MODID").getValue().toString().trim();
+		String ct = dfg.getField("CONID").getValue().toString().trim();
+		isTiered = mt.equals(arrModelValues[0]);
+		comboModelType.select(mt);
+		comboConditionType.select(ct);
+
+		add(allFG);
+
 		return cManage;
 	}
 
@@ -845,8 +900,8 @@ public class FeesAndCommModule {
 		ArrayList<ArrayList<FieldGroup>> allCommFG = hmAllFG.get(COMMISSION);
 		allRange = allCommFG.get(0);
 		allMat = allCommFG.get(1);
-		ArrayList<FieldGroup> arrLDFG = allCommFG.get(2);
-		FieldGroup dfg = arrLDFG.get(0);
+		FieldGroup dfg = hmDFG.get(COMMISSION);
+		// FieldGroup dfg = arrLDFG.get(0);
 		String conType = dfg.getField("CONID").getValue().toString().trim();
 		String modType = dfg.getField("MODID").getValue().toString().trim();
 
@@ -876,16 +931,12 @@ public class FeesAndCommModule {
 		try {
 			if (cs.setFeesAndCommission(opID, txID, sc, sf)) {
 				if (cs.statusMessage == null) {
-					Notification.show("Tariff information saved successfully!",
-							Notification.Type.WARNING_MESSAGE);
-					confCount = 0;
+					NotifCustom.show("Fees / Commission ",
+							"Tariff information saved successfully!");
 					resetFields(lookedTab);
 
 				} else {
-					confCount = 0;
-					comboOp.setEnabled(true);
-					comboTxType.setEnabled(true);
-					lookedTab = null;
+
 					Notification.show("Tariff saving FAILED: "
 							+ cs.statusMessage,
 							Notification.Type.WARNING_MESSAGE);
@@ -950,42 +1001,54 @@ public class FeesAndCommModule {
 		 * Ready to commit valid values to the server.
 		 */
 
-		arrLDFG.clear();
-		arrLDFG.add(dfg);
+		hmDFG.put(type, dfg);
 		arrLAllFG.add(arrLRangeFG);
 		arrLAllFG.add(arrLMatFG);
-		arrLAllFG.add(arrLDFG);
 		hmAllFG.put(type, arrLAllFG);
-		confCount++;
 
-		if (type.equals(FEES) && confCount < 2) {
+		if (type.equals(FEES) && hmAllFG.size() < 2) {
 			lookedTab = type;
-			UI.getCurrent()
-					.getSession()
-					.setAttribute(
-							WorkSpaceManageFeesAndComm.SESSION_WSMP_CUR_ACTION,
-							COMMISSION);
-			Settings.wmfac.wsmpModifier();
+
+			if (!isSettingsURL) {
+				String s = UI.getCurrent().getPage().getUriFragment();
+
+				curURL = (s.indexOf('?') == -1) ? s + "/" : s.substring(0,
+						s.indexOf('?'));
+				isSettingsURL = true;
+			}
+
 			ManageFeesAndCommModule.btnFees.setStyleName("btn_tab_like");
 			ManageFeesAndCommModule.btnFees.setEnabled(true);
 			ManageFeesAndCommModule.btnComm
 					.setStyleName("btn_tab_like btn_tab_like_active");
 			ManageFeesAndCommModule.btnComm.setEnabled(false);
 
-		} else if (type.equals(COMMISSION) && confCount < 2) {
-			lookedTab = type;
-			UI.getCurrent()
-					.getSession()
-					.setAttribute(
-							WorkSpaceManageFeesAndComm.SESSION_WSMP_CUR_ACTION,
-							FEES);
-			Settings.wmfac.wsmpModifier();
+			String url = curURL + "?action=" + COMMISSION;
 
+			if (WorkSpaceManageFeesAndComm.prevSearchFrag.contains(url))
+				WorkSpaceManageFeesAndComm.prevSearchFrag.remove(url);
+			UI.getCurrent().getPage().setUriFragment(url);
+
+		} else if (type.equals(COMMISSION) && hmAllFG.size() < 2) {
+			lookedTab = type;
+			if (!isSettingsURL) {
+				String s = UI.getCurrent().getPage().getUriFragment();
+				curURL = (s.indexOf('?') == -1) ? s + "/" : s.substring(0,
+						s.indexOf('?'));
+				isSettingsURL = true;
+			}
+
+			ManageFeesAndCommModule.btnComm.setStyleName("btn_tab_like");
+			ManageFeesAndCommModule.btnComm.setEnabled(true);
 			ManageFeesAndCommModule.btnFees
 					.setStyleName("btn_tab_like btn_tab_like_active");
 			ManageFeesAndCommModule.btnFees.setEnabled(false);
-			ManageFeesAndCommModule.btnComm.setStyleName("btn_tab_like");
-			ManageFeesAndCommModule.btnComm.setEnabled(true);
+
+			String url = curURL + "?action=" + FEES;
+
+			if (WorkSpaceManageFeesAndComm.prevSearchFrag.contains(url))
+				WorkSpaceManageFeesAndComm.prevSearchFrag.remove(url);
+			UI.getCurrent().getPage().setUriFragment(url);
 
 		} else {
 			return true;
@@ -999,12 +1062,12 @@ public class FeesAndCommModule {
 
 		if (type.equals(COMMISSION)) {
 
-			UI.getCurrent()
-					.getSession()
-					.setAttribute(
-							WorkSpaceManageFeesAndComm.SESSION_WSMP_CUR_ACTION,
-							type);
-			Settings.wmfac.wsmpModifier();
+			String url = curURL + "/?action=" + type;
+
+			if (WorkSpaceManageFeesAndComm.prevSearchFrag.contains(url))
+				WorkSpaceManageFeesAndComm.prevSearchFrag.remove(url);
+			UI.getCurrent().getPage().setUriFragment(url);
+
 			ManageFeesAndCommModule.btnFees.setStyleName("btn_tab_like");
 			ManageFeesAndCommModule.btnFees.setEnabled(true);
 			ManageFeesAndCommModule.btnComm
@@ -1012,12 +1075,12 @@ public class FeesAndCommModule {
 			ManageFeesAndCommModule.btnComm.setEnabled(false);
 
 		} else if (type.equals(FEES)) {
-			UI.getCurrent()
-					.getSession()
-					.setAttribute(
-							WorkSpaceManageFeesAndComm.SESSION_WSMP_CUR_ACTION,
-							type);
-			Settings.wmfac.wsmpModifier();
+
+			String url = curURL + "/?action=" + type;
+
+			if (WorkSpaceManageFeesAndComm.prevSearchFrag.contains(url))
+				WorkSpaceManageFeesAndComm.prevSearchFrag.remove(url);
+			UI.getCurrent().getPage().setUriFragment(url);
 
 			ManageFeesAndCommModule.btnFees
 					.setStyleName("btn_tab_like btn_tab_like_active");
@@ -1028,7 +1091,7 @@ public class FeesAndCommModule {
 		}
 	}
 
-	public void apmModifier(String strTbName, HorizontalLayout cContent) {
+	void apmModifier(String strTbName, HorizontalLayout cContent) {
 
 		cContent.removeAllComponents();
 		if (strTbName.equals(EXISTING)) {
@@ -1036,70 +1099,66 @@ public class FeesAndCommModule {
 			return;
 		}
 		cContent.addComponent(getFeesContainer(strTbName));
-		if (lookedTab != null && !isReset) {
+		if (lookedTab != null) {
 			if (lookedTab.equals(strTbName)) {
-
 				comboOp.setEnabled(true);
 				comboTxType.setEnabled(true);
-				confCount = 0;
 
-				ArrayList<ArrayList<FieldGroup>> allFeesFG = hmAllFG
-						.get(strTbName);
-				if (allFeesFG != null) {
-					ArrayList<FieldGroup> allRange = allFeesFG.get(0);
-					ArrayList<FieldGroup> allMat = allFeesFG.get(1);
-
-					FieldGroup dfg = arrLDFG.get(0);
-					String conType = dfg.getField("CONID").getValue()
-							.toString().trim();
-					String modType = dfg.getField("MODID").getValue()
-							.toString().trim();
-					ComboBox comboConT = (ComboBox) otherfg.getField("CONID");
-					ComboBox comboModT = (ComboBox) otherfg.getField("MODID");
-
-					comboConT.setValue(conType);
-					comboModT.setValue(modType);
-
-					comboOp.setEnabled(true);
-					comboTxType.setEnabled(true);
-
-					for (int i = 0; i < allRange.size(); i++) {
-
-						FieldGroup rfg = allRange.get(i);
-						FieldGroup mfg = allMat.get(i);
-
-						FieldGroup nrfg = arrLRangeFG.get(i);
-						FieldGroup nmfg = arrLMatFG.get(i);
-
-						TextField tfRMin = (TextField) rfg.getField("Min");
-						TextField tfnRMin = (TextField) nrfg.getField("Min");
-
-						TextField tfRMax = (TextField) rfg.getField("Max");
-						TextField tfnRMax = (TextField) nrfg.getField("Max");
-
-						ComboBox comboMat = (ComboBox) mfg.getField("Mat");
-						ComboBox combonMat = (ComboBox) nmfg.getField("Mat");
-
-						TextField tfAmt = (TextField) mfg.getField("Amt");
-						TextField tfnAmt = (TextField) nmfg.getField("Amt");
-
-						tfnRMin.setValue(tfRMin.getValue());
-						tfnRMax.setValue(tfRMax.getValue());
-						combonMat.setValue(comboMat.getValue());
-						tfnAmt.setValue(tfAmt.getValue());
-						add();
-
-					}
-
-				}
-				return;
 			} else {
 				comboOp.setEnabled(false);
 				comboTxType.setEnabled(false);
 
 			}
-
 		}
+
+		/*
+		 * if (lookedTab != null && !isReset) { if (lookedTab.equals(strTbName))
+		 * { comboOp.setEnabled(true); comboTxType.setEnabled(true);
+		 * 
+		 * ArrayList<ArrayList<FieldGroup>> allFeesFG = hmAllFG .get(strTbName);
+		 * if (allFeesFG != null) { ArrayList<FieldGroup> allRange =
+		 * allFeesFG.get(0); ArrayList<FieldGroup> allMat = allFeesFG.get(1);
+		 * 
+		 * FieldGroup dfg = arrLDFG.get(0); String conType =
+		 * dfg.getField("CONID").getValue() .toString().trim(); String modType =
+		 * dfg.getField("MODID").getValue() .toString().trim(); ComboBox
+		 * comboConT = (ComboBox) otherfg.getField("CONID"); ComboBox comboModT
+		 * = (ComboBox) otherfg.getField("MODID");
+		 * 
+		 * comboConT.setValue(conType); comboModT.setValue(modType);
+		 * 
+		 * comboOp.setEnabled(true); comboTxType.setEnabled(true);
+		 * 
+		 * for (int i = 0; i < allRange.size(); i++) {
+		 * 
+		 * FieldGroup rfg = allRange.get(i); FieldGroup mfg = allMat.get(i);
+		 * 
+		 * FieldGroup nrfg = arrLRangeFG.get(i); FieldGroup nmfg =
+		 * arrLMatFG.get(i);
+		 * 
+		 * TextField tfRMin = (TextField) rfg.getField("Min"); TextField tfnRMin
+		 * = (TextField) nrfg.getField("Min");
+		 * 
+		 * TextField tfRMax = (TextField) rfg.getField("Max"); TextField tfnRMax
+		 * = (TextField) nrfg.getField("Max");
+		 * 
+		 * ComboBox comboMat = (ComboBox) mfg.getField("Mat"); ComboBox
+		 * combonMat = (ComboBox) nmfg.getField("Mat");
+		 * 
+		 * TextField tfAmt = (TextField) mfg.getField("Amt"); TextField tfnAmt =
+		 * (TextField) nmfg.getField("Amt");
+		 * 
+		 * tfnRMin.setValue(tfRMin.getValue());
+		 * tfnRMax.setValue(tfRMax.getValue());
+		 * combonMat.setValue(comboMat.getValue());
+		 * tfnAmt.setValue(tfAmt.getValue()); add();
+		 * 
+		 * }
+		 * 
+		 * } return; }
+		 * 
+		 * }
+		 */
 
 	}
 
@@ -1146,7 +1205,7 @@ public class FeesAndCommModule {
 		comboModelType.setItemCaption(arrModelValues[0], "Tiered");
 		comboModelType.addItem(arrModelValues[1]);
 		comboModelType.setItemCaption(arrModelValues[1], "None");
-		comboModelType.select(arrModelValues[0]);
+		// comboModelType.select(arrModelValues[0]);
 
 		Item row = new PropertysetItem();
 

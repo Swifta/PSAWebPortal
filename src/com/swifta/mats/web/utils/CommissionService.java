@@ -158,7 +158,7 @@ public class CommissionService {
 				logger.info("--------------------------setupservicefeesandcommissionResponse is null");
 			}
 
-			this.statusMessage = response.getResponsemessage();
+			statusMessage = response.getResponsemessage();
 
 		} else {
 			logger.info("--------------------------feesAndCommissionResponseE is null");
