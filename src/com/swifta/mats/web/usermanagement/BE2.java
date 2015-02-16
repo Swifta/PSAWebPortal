@@ -302,7 +302,7 @@ public class BE2 {
 	}
 
 	private void showActivateUserContainer(final ArrayList<String> arrLBulkIDs,
-			final String[] arrID, Button btn) {
+			final String[] arrID, final Button btn) {
 
 		String cap = btn.getCaption();
 
@@ -313,6 +313,7 @@ public class BE2 {
 
 		isPopupShowing = true;
 		isSent = false;
+		isValidatorAdded = false;
 
 		String username = null;
 		if (arrID != null) {
@@ -358,7 +359,8 @@ public class BE2 {
 		final TextField tFCurrency = new TextField("Currency");
 
 		final TextField tFSecAns = new TextField("Security Answer");
-		final TextField tFIDD = new TextField("ID Number");
+		final TextField tFIDD = new TextField("User ID.");
+		tFIDD.setRequired(true);
 		final TextField tFUserRID = new TextField("User Resource ID");
 		tFUserRID.setRequired(true);
 		tFUserRID.setValue(arrID[3]);
@@ -422,12 +424,53 @@ public class BE2 {
 
 				if (isSent)
 					return;
+
+				if (!isValidatorAdded) {
+					tFPIN.setRequired(false);
+					tFPINConf.setRequired(false);
+					tFPIN.addValidator(new PINMatch(tFPIN, tFPINConf));
+					tFPINConf.addValidator(new PINMatch(tFPIN, tFPINConf));
+
+					isValidatorAdded = true;
+				}
+				try {
+					tFPIN.validate();
+				} catch (InvalidValueException e) {
+					tFPINConf.setComponentError(null);
+					Notification.show("PIN Error!",
+							Notification.Type.ERROR_MESSAGE);
+					return;
+				}
+
+				try {
+					tFPINConf.validate();
+				} catch (InvalidValueException e) {
+					tFPIN.setComponentError(null);
+					Notification.show("PIN Error!",
+							Notification.Type.ERROR_MESSAGE);
+					return;
+				}
+
 				if (ums == null)
 					ums = new UserManagementService();
 
 				String strResponse = null;
 
-				String userresourceid = tFUserRID.getValue();
+				if (tFIDD.getValue() == null) {
+					tFIDD.focus();
+					Notification.show("Please input User ID",
+							Notification.Type.ERROR_MESSAGE);
+					return;
+				}
+				if (tFIDD.getValue().trim().isEmpty()) {
+					Notification.show("Please input User ID",
+							Notification.Type.ERROR_MESSAGE);
+					tFIDD.focus();
+					return;
+
+				}
+
+				String userresourceid = tFUserRID.getValue().trim();
 				String bankdomainid = tFBID.getValue();
 				String IDnumber = tFIDD.getValue();
 				String SecurityAns = tFSecAns.getValue();
@@ -452,23 +495,16 @@ public class BE2 {
 					}
 				isSent = true;
 
-				if (strResponse != null && strResponse.equals(strSxs)) {
+				if (strResponse != null && strResponse.contains("SUCCESSFUL")) {
 					strResponse = "Activation successful!";
-					// btnActivate.setVisible(false);
-					// btnActivate.setEnabled(false);
-					btnActivate.setIcon(null);
-					btnActivate.setCaption("R");
-					btnActivate.setStyleName("btn_link");
-					btnActivate.setDescription("Reset PIN");
+					btn.setIcon(null);
+					btn.setCaption("R");
+					btn.setStyleName("btn_link");
+					btn.setDescription("Reset PIN");
 
 				}
 
 				NotifCustom.show("Activation", strResponse);
-				/*
-				 * 
-				 * TODO on positive response, update the table.
-				 */
-
 				popup.close();
 
 			}
@@ -1115,13 +1151,11 @@ public class BE2 {
 		actionsC.setSizeUndefined();
 		actionsC.setStyleName("c_actions");
 
-		Item trItem;
-		container.addItem(strUID);
-		trItem = container.getItem(strUID);
-
+		Object x = container.addItem();
+		Item trItem = container.getItem(x);
 		Property<CheckBox> tdPropertyCheck = trItem.getItemProperty(" ");
 		Property<String> tdPropertySN = trItem.getItemProperty("S/N");
-		// Property<String> tdPropertyUID = trItem.getItemProperty("UID");
+		// <String> tdPropertyUID = trItem.getItemProperty("UID");
 		Property<String> tdPropertyEmail = trItem.getItemProperty("Email");
 		Property<String> tdPropertyMSISDN = trItem.getItemProperty("MSISDN");
 		Property<String> tdPropertyUname = trItem.getItemProperty("Username");
@@ -1351,7 +1385,7 @@ public class BE2 {
 		IndexedContainer container = new IndexedContainer();
 		container.addContainerProperty(" ", CheckBox.class, null);
 		container.addContainerProperty("S/N", String.class, "000");
-		// container.addContainerProperty("UID", String.class, "000");
+		container.addContainerProperty("UID", String.class, "000");
 		container.addContainerProperty("Username", String.class, "");
 
 		container.addContainerProperty("First Name", String.class, "");
@@ -1372,8 +1406,6 @@ public class BE2 {
 		 * strFname, String strLname, String strProf
 		 */
 
-		String Uname = "psaproduser";
-		String Pword = "psaproduser@2015";
 		String drivers = "com.mysql.jdbc.Driver";
 		try {
 			Class<?> driver_class = Class.forName(drivers);

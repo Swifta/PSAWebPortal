@@ -1,7 +1,5 @@
 package com.swifta.mats.web;
 
-import java.util.HashMap;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 
@@ -28,8 +26,6 @@ import com.vaadin.ui.UI;
 @PreserveOnRefresh
 public class MatsWebPortalUI extends UI {
 
-	// public static TabSheet ts;
-	private HashMap<String, Integer> hm;
 	private String vN = null;
 	private View main = null;
 
