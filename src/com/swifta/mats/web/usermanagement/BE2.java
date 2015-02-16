@@ -302,7 +302,7 @@ public class BE2 {
 	}
 
 	private void showActivateUserContainer(final ArrayList<String> arrLBulkIDs,
-			final String[] arrID, Button btn) {
+			final String[] arrID, final Button btn) {
 
 		String cap = btn.getCaption();
 
@@ -359,7 +359,8 @@ public class BE2 {
 		final TextField tFCurrency = new TextField("Currency");
 
 		final TextField tFSecAns = new TextField("Security Answer");
-		final TextField tFIDD = new TextField("ID Number");
+		final TextField tFIDD = new TextField("User ID.");
+		tFIDD.setRequired(true);
 		final TextField tFUserRID = new TextField("User Resource ID");
 		tFUserRID.setRequired(true);
 		tFUserRID.setValue(arrID[3]);
@@ -455,11 +456,24 @@ public class BE2 {
 
 				String strResponse = null;
 
+				if (tFIDD.getValue() == null) {
+					tFIDD.focus();
+					Notification.show("Please input User ID",
+							Notification.Type.ERROR_MESSAGE);
+					return;
+				}
+				if (tFIDD.getValue().trim().isEmpty()) {
+					Notification.show("Please input User ID",
+							Notification.Type.ERROR_MESSAGE);
+					tFIDD.focus();
+					return;
+
+				}
+
 				String userresourceid = tFUserRID.getValue().trim();
 				String bankdomainid = tFBID.getValue();
 				String IDnumber = tFIDD.getValue();
 				String SecurityAns = tFSecAns.getValue();
-				Notification.show(userresourceid);
 
 				// TODO Please remember to update id.in the for loop.
 
@@ -481,21 +495,16 @@ public class BE2 {
 					}
 				isSent = true;
 
-				if (strResponse != null && strResponse.equals(strSxs)) {
+				if (strResponse != null && strResponse.contains("SUCCESSFUL")) {
 					strResponse = "Activation successful!";
-					btnActivate.setIcon(null);
-					btnActivate.setCaption("R");
-					btnActivate.setStyleName("btn_link");
-					btnActivate.setDescription("Reset PIN");
+					btn.setIcon(null);
+					btn.setCaption("R");
+					btn.setStyleName("btn_link");
+					btn.setDescription("Reset PIN");
 
 				}
 
 				NotifCustom.show("Activation", strResponse);
-				/*
-				 * 
-				 * TODO on positive response, update the table.
-				 */
-
 				popup.close();
 
 			}
@@ -1146,7 +1155,7 @@ public class BE2 {
 		Item trItem = container.getItem(x);
 		Property<CheckBox> tdPropertyCheck = trItem.getItemProperty(" ");
 		Property<String> tdPropertySN = trItem.getItemProperty("S/N");
-		Property<String> tdPropertyUID = trItem.getItemProperty("UID");
+		// <String> tdPropertyUID = trItem.getItemProperty("UID");
 		Property<String> tdPropertyEmail = trItem.getItemProperty("Email");
 		Property<String> tdPropertyMSISDN = trItem.getItemProperty("MSISDN");
 		Property<String> tdPropertyUname = trItem.getItemProperty("Username");
@@ -1161,7 +1170,7 @@ public class BE2 {
 
 		tdPropertyCheck.setValue(chk);
 		tdPropertySN.setValue(sn);
-		tdPropertyUID.setValue(strUID);
+		// tdPropertyUID.setValue(strUID);
 		tdPropertyUname.setValue(strUname);
 		tdPropertyFname.setValue(strFname);
 		tdPropertyLname.setValue(strLname);

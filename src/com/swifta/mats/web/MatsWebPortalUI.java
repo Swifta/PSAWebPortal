@@ -29,7 +29,7 @@ public class MatsWebPortalUI extends UI {
 	private String vN = null;
 	private View main = null;
 
-	public static final Conf conf = new Conf("p");
+	public static final Conf conf = new Conf("production");
 
 	@WebServlet(value = "/*", asyncSupported = true)
 	@VaadinServletConfiguration(productionMode = true, closeIdleSessions = true, ui = MatsWebPortalUI.class, widgetset = "com.swifta.mats.web.widgetset.Mats_web_portalWidgetset")
