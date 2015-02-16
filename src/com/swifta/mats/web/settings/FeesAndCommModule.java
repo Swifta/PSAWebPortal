@@ -9,6 +9,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import com.swifta.mats.web.MatsWebPortalUI;
 import com.swifta.mats.web.usermanagement.NotifCustom;
@@ -28,6 +30,8 @@ import com.vaadin.data.fieldgroup.FieldGroup.CommitHandler;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.util.PropertysetItem;
+import com.vaadin.event.FieldEvents.FocusEvent;
+import com.vaadin.event.FieldEvents.FocusListener;
 import com.vaadin.event.ListenerMethod.MethodException;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.MarginInfo;
@@ -74,16 +78,19 @@ public class FeesAndCommModule {
 	boolean isReset = false;
 	private boolean isSettingsURL = false;
 	private String curURL = null;
-	private HashMap<String, Integer> hmOp = new HashMap<>();
+	private HashMap<String, String> hmOp;
+	private HashMap<String, Integer> hmOpx;
 	private HashMap<String, Integer> hmTxType = new HashMap<>();
 
 	private boolean ischanged = true;
 	private VerticalLayout cCX;
+	private boolean isExistingInit = false;
+	private boolean isOthersInit = false;
 
 	public FeesAndCommModule() {
 
-		hmOp.put("TeasyMobile", 4);
-		hmOp.put("PocketMoni", 7);
+		// hmOp.put("TeasyMobile", 4);
+		// hmOp.put("PocketMoni", 7);
 
 		hmTxType.put("CASHIN", 4);
 		hmTxType.put("CASHOUT", 5);
@@ -92,11 +99,11 @@ public class FeesAndCommModule {
 		hmTxType.put("3rd PARTY PAYMENT", 17);
 
 		comboOp = new ComboBox("Operator");
-		comboOp.addItem("teasymobile");
-		comboOp.setItemCaption("teasymobile", "TeasyMobile");
-		comboOp.addItem("pocketmoni");
-		comboOp.setItemCaption("pocketmoni", "PocketMoni");
-		comboOp.select("teasymobile");
+		// comboOp.addItem("teasymobile");
+		// comboOp.setItemCaption("teasymobile", "TeasyMobile");
+		// comboOp.addItem("pocketmoni");
+		// comboOp.setItemCaption("pocketmoni", "PocketMoni");
+		// comboOp.select("teasymobile");
 
 		comboTxType = new ComboBox("Transaction Type");
 		comboTxType.addItem(4);
@@ -536,6 +543,7 @@ public class FeesAndCommModule {
 		arrLAllFG = new ArrayList<>();
 		isTiered = true;
 		tabType = type;
+		isOthersInit = false;
 
 		HorizontalLayout cManage = new HorizontalLayout();
 		cManage.setWidthUndefined();
@@ -628,6 +636,43 @@ public class FeesAndCommModule {
 			@Override
 			public void postCommit(CommitEvent commitEvent)
 					throws CommitException {
+
+			}
+
+		});
+
+		comboOp.addFocusListener(new FocusListener() {
+			private static final long serialVersionUID = 1470960826655063334L;
+
+			@Override
+			public void focus(FocusEvent event) {
+				if (isExistingInit)
+					return;
+				if (hmOp == null && !isOthersInit) {
+					getOperators();
+					Set<Entry<String, String>> es = (Set<Entry<String, String>>) hmOp
+							.entrySet();
+					for (Entry<String, String> e : es) {
+						comboOp.addItem(e.getKey());
+						comboOp.setItemCaption(e.getKey(), e.getValue());
+					}
+
+					isOthersInit = true;
+					return;
+
+				}
+
+				if (hmOp != null && !isOthersInit) {
+
+					Set<Entry<String, String>> es = (Set<Entry<String, String>>) hmOp
+							.entrySet();
+					for (Entry<String, String> e : es) {
+						comboOp.addItem(e.getKey());
+						comboOp.setItemCaption(e.getKey(), e.getValue());
+					}
+					isOthersInit = true;
+
+				}
 
 			}
 
@@ -1187,6 +1232,8 @@ public class FeesAndCommModule {
 
 	public HorizontalLayout getExistingFeesContainer(String type) {
 
+		isExistingInit = false;
+
 		cArrLItemContent = new ArrayList<>(4);
 		arrLRangeFG = new ArrayList<>();
 		arrLMatFG = new ArrayList<>();
@@ -1225,11 +1272,6 @@ public class FeesAndCommModule {
 		comboTxType.select(4);
 
 		final ComboBox comboOp = new ComboBox("Operator");
-		comboOp.addItem("teasymobile");
-		comboOp.setItemCaption("teasymobile", "TeasyMobile");
-		comboOp.addItem("pocketmoni");
-		comboOp.setItemCaption("pocketmoni", "PocketMoni");
-		comboOp.select("teasymobile");
 
 		Button btnRetrieve = new Button("Retrive");
 		btnRetrieve.setStyleName("btn_f_c_retrieve");
@@ -1241,6 +1283,42 @@ public class FeesAndCommModule {
 		cChoose.setStyleName("c_choose");
 
 		cManage.addComponent(cChoose);
+
+		comboOp.addFocusListener(new FocusListener() {
+			private static final long serialVersionUID = 1470960826655063334L;
+
+			@Override
+			public void focus(FocusEvent event) {
+				if (isExistingInit)
+					return;
+				if (hmOpx == null && !isExistingInit) {
+					getOperators();
+					Set<Entry<String, Integer>> es = (Set<Entry<String, Integer>>) hmOpx
+							.entrySet();
+					for (Entry<String, Integer> e : es) {
+						comboOp.addItem(e.getValue());
+						comboOp.setItemCaption(e.getValue(), e.getKey());
+					}
+					isExistingInit = true;
+					return;
+
+				}
+
+				if (hmOpx != null && !isExistingInit) {
+
+					Set<Entry<String, Integer>> es = (Set<Entry<String, Integer>>) hmOpx
+							.entrySet();
+					for (Entry<String, Integer> e : es) {
+						comboOp.addItem(e.getValue());
+						comboOp.setItemCaption(e.getValue(), e.getKey());
+					}
+					isExistingInit = true;
+
+				}
+
+			}
+
+		});
 
 		comboTxType.addValueChangeListener(new ValueChangeListener() {
 
@@ -1352,7 +1430,7 @@ public class FeesAndCommModule {
 		lbAttr.setSizeFull();
 		lbAttr.setStyleName("label_add_user attr");
 		cItemContentTier.addComponent(lbAttr);
-		cItemContentTier.addComponent(getPseudoTableFees(hmOp.get(op),
+		cItemContentTier.addComponent(getPseudoTableFees(hmOpx.get(op),
 				hmTxType.get(type)));
 		cAttrItem.addComponent(cItemContentTier);
 
@@ -1400,7 +1478,7 @@ public class FeesAndCommModule {
 		lbAttr.setSizeFull();
 		lbAttr.setStyleName("label_add_user attr");
 		cItemContentTier.addComponent(lbAttr);
-		cItemContentTier.addComponent(getCommissionPseudoTable(hmOp.get(op),
+		cItemContentTier.addComponent(getCommissionPseudoTable(hmOpx.get(op),
 				hmTxType.get(type)));
 		cAttrItem.addComponent(cItemContentTier);
 
@@ -1550,6 +1628,8 @@ public class FeesAndCommModule {
 				+ op);
 		sb.append(" and txnt.transactiontypeid = " + txtype + ";");
 
+		System.out.println(sb.toString());
+
 		ResultSet rs = null;
 
 		String drivers = "com.mysql.jdbc.Driver";
@@ -1583,7 +1663,7 @@ public class FeesAndCommModule {
 		sb.append(" select acth.username as MMO, scf.commission_fee_type as 'Matrix',txnt.name as 'Transaction Type', ");
 		sb.append(" scp.servicecommissionmodeltype as 'Commission Model',scp.servicecommissioncondition as 'Commission Condition', ");
 		sb.append(" scf.minimumamount as 'Min.', scf.maximumamount as 'Max.', scf.commission_fee as ");
-		sb.append(" 'Amount', CAST(sCp.lastupdate as DATE) as 'Last Updated' ");
+		sb.append(" 'Amount', CAST(scp.lastupdate as DATE) as 'Last Updated' ");
 		sb.append(" from servicecommissionfee scf, transactiontypes txnt,servicecommissionproperties scp,accountholders acth, ");
 		sb.append(" servicefeeproperties sfp where scf.transactiontypeid = txnt.transactiontypeid and ");
 		sb.append(" scp.servicecommissionpropertiesid = scf.servicecommissionpropertiesid and sfp.servicefeepropertiesid = scp.servicefeepropertiesid ");
@@ -1614,6 +1694,46 @@ public class FeesAndCommModule {
 		}
 
 		return rs;
+	}
+
+	private void getOperators() {
+		hmOp = new HashMap<>();
+		hmOpx = new HashMap<>();
+
+		StringBuilder sb = new StringBuilder(
+				"select accountholderid as id,username as un from accountholders where profileid = 15;");
+
+		ResultSet rs = null;
+
+		String drivers = "com.mysql.jdbc.Driver";
+		try {
+			Class<?> driver_class = Class.forName(drivers);
+			Driver driver = (Driver) driver_class.newInstance();
+			DriverManager.registerDriver(driver);
+
+			Connection conn = DriverManager.getConnection(
+					MatsWebPortalUI.conf.DB, MatsWebPortalUI.conf.UN,
+					MatsWebPortalUI.conf.PW);
+			Statement stmt = conn.createStatement();
+
+			rs = stmt.executeQuery(sb.toString());
+
+			while (rs.next()) {
+				String op = rs.getString("un");
+				int id = rs.getInt("id");
+				hmOp.put(op, op.toUpperCase());
+				hmOpx.put(op.toUpperCase(), id);
+
+			}
+
+		} catch (SQLException | ClassNotFoundException | InstantiationException
+				| IllegalAccessException e) {
+			e.printStackTrace();
+			Notification.show("DB Connection",
+					"Error Establishing DBConnection:  " + e.getMessage(),
+					Notification.Type.ERROR_MESSAGE);
+		}
+
 	}
 
 }
