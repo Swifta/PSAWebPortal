@@ -51,7 +51,6 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 public class FeesAndCommModule {
-	// UserDetailsModule udm;
 	HorizontalLayout udc;
 	private ArrayList<VerticalLayout> cArrLItemContent;
 	private ArrayList<FieldGroup> arrLRangeFG;
@@ -60,14 +59,12 @@ public class FeesAndCommModule {
 	private static String lookedTab = null;
 	private ComboBox comboOp;
 	private ComboBox comboTxType;
-	// private int confCount = 0;
 	HashMap<String, FieldGroup> hmDFG;
 	private ArrayList<ArrayList<FieldGroup>> arrLAllFG;
 	private HashMap<String, ArrayList<ArrayList<FieldGroup>>> hmAllFG;
 	public final static String COMMISSION = "Commission";
 	public final static String FEES = "Fees";
 	public final static String EXISTING = "existing";
-	private static final BigDecimal comboModeType = null;
 	private String tabType = null;
 	private String[] arrMatValues;
 	private String[] arrModelValues;
@@ -84,13 +81,11 @@ public class FeesAndCommModule {
 
 	private boolean ischanged = true;
 	private VerticalLayout cCX;
-	private boolean isExistingInit = false;
-	private boolean isOthersInit = false;
+
+	// private boolean isExistingInit = false;
+	// private boolean isOthersInit = false;
 
 	public FeesAndCommModule() {
-
-		// hmOp.put("TeasyMobile", 4);
-		// hmOp.put("PocketMoni", 7);
 
 		hmTxType.put("CASHIN", 4);
 		hmTxType.put("CASHOUT", 5);
@@ -99,12 +94,6 @@ public class FeesAndCommModule {
 		hmTxType.put("3rd PARTY PAYMENT", 17);
 
 		comboOp = new ComboBox("Operator");
-		// comboOp.addItem("teasymobile");
-		// comboOp.setItemCaption("teasymobile", "TeasyMobile");
-		// comboOp.addItem("pocketmoni");
-		// comboOp.setItemCaption("pocketmoni", "PocketMoni");
-		// comboOp.select("teasymobile");
-
 		comboTxType = new ComboBox("Transaction Type");
 		comboTxType.addItem(4);
 		comboTxType.setItemCaption(4, "CASHIN");
@@ -122,6 +111,9 @@ public class FeesAndCommModule {
 		arrMatValues = new String[] { "PERCENT", "FIXED" };
 		arrModelValues = new String[] { "TIERED", "NOTAPPLICABLE" };
 		arrConValues = new String[] { "AMOUNT", "FEE" };
+
+		hmOp = new HashMap<>();
+		hmOpx = new HashMap<>();
 
 	}
 
@@ -543,7 +535,6 @@ public class FeesAndCommModule {
 		arrLAllFG = new ArrayList<>();
 		isTiered = true;
 		tabType = type;
-		isOthersInit = false;
 
 		HorizontalLayout cManage = new HorizontalLayout();
 		cManage.setWidthUndefined();
@@ -646,32 +637,13 @@ public class FeesAndCommModule {
 
 			@Override
 			public void focus(FocusEvent event) {
-				if (isExistingInit)
-					return;
-				if (hmOp == null && !isOthersInit) {
-					getOperators();
-					Set<Entry<String, String>> es = (Set<Entry<String, String>>) hmOp
-							.entrySet();
-					for (Entry<String, String> e : es) {
-						comboOp.addItem(e.getKey());
-						comboOp.setItemCaption(e.getKey(), e.getValue());
-					}
 
-					isOthersInit = true;
-					return;
-
-				}
-
-				if (hmOp != null && !isOthersInit) {
-
-					Set<Entry<String, String>> es = (Set<Entry<String, String>>) hmOp
-							.entrySet();
-					for (Entry<String, String> e : es) {
-						comboOp.addItem(e.getKey());
-						comboOp.setItemCaption(e.getKey(), e.getValue());
-					}
-					isOthersInit = true;
-
+				getOperators();
+				Set<Entry<String, String>> es = (Set<Entry<String, String>>) hmOp
+						.entrySet();
+				for (Entry<String, String> e : es) {
+					comboOp.addItem(e.getKey());
+					comboOp.setItemCaption(e.getKey(), e.getValue());
 				}
 
 			}
@@ -1232,8 +1204,6 @@ public class FeesAndCommModule {
 
 	public HorizontalLayout getExistingFeesContainer(String type) {
 
-		isExistingInit = false;
-
 		cArrLItemContent = new ArrayList<>(4);
 		arrLRangeFG = new ArrayList<>();
 		arrLMatFG = new ArrayList<>();
@@ -1289,31 +1259,13 @@ public class FeesAndCommModule {
 
 			@Override
 			public void focus(FocusEvent event) {
-				if (isExistingInit)
-					return;
-				if (hmOpx == null && !isExistingInit) {
-					getOperators();
-					Set<Entry<String, Integer>> es = (Set<Entry<String, Integer>>) hmOpx
-							.entrySet();
-					for (Entry<String, Integer> e : es) {
-						comboOp.addItem(e.getValue());
-						comboOp.setItemCaption(e.getValue(), e.getKey());
-					}
-					isExistingInit = true;
-					return;
 
-				}
-
-				if (hmOpx != null && !isExistingInit) {
-
-					Set<Entry<String, Integer>> es = (Set<Entry<String, Integer>>) hmOpx
-							.entrySet();
-					for (Entry<String, Integer> e : es) {
-						comboOp.addItem(e.getValue());
-						comboOp.setItemCaption(e.getValue(), e.getKey());
-					}
-					isExistingInit = true;
-
+				getOperators();
+				Set<Entry<String, Integer>> es = (Set<Entry<String, Integer>>) hmOpx
+						.entrySet();
+				for (Entry<String, Integer> e : es) {
+					comboOp.addItem(e.getValue());
+					comboOp.setItemCaption(e.getValue(), e.getKey());
 				}
 
 			}
@@ -1697,8 +1649,6 @@ public class FeesAndCommModule {
 	}
 
 	private void getOperators() {
-		hmOp = new HashMap<>();
-		hmOpx = new HashMap<>();
 
 		StringBuilder sb = new StringBuilder(
 				"select accountholderid as id,username as un from accountholders where profileid = 15;");

@@ -223,12 +223,7 @@ public class UserManagementService {
 					// System.out.println(response3.getResponseMessage());
 					if (response3 != null) {
 						statusMessage = response3.getResponsemessage();
-						// if (statusMessage
-						// .equals("ACCOUNT_HOLDER_ACCOUNT_ACTIVATION_SUCCESSFUL"))
-						// {
-						// // UserManagementService
-						// // .provisioning(resourceid, firstPin);
-						// }
+
 					}
 				} else {
 					statusMessage = "Activation Response is empty";

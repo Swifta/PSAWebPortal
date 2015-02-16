@@ -309,6 +309,9 @@ public class AddUserModule {
 		// dF.setValue(cal.getTime());
 		// dF.setValue(cal.getTime());
 		dFDoE = dF;
+		dFDoI.setRequired(true);
+		dFDoI.setImmediate(true);
+
 		dFDoE.setRequired(true);
 		dFDoE.setImmediate(true);
 
@@ -461,7 +464,7 @@ public class AddUserModule {
 		combo.addItem("001");
 		// combo.select("001");
 		comboBID = combo;
-		cLBody.addComponent(combo);
+		cLBody.addComponent(comboBID);
 
 		tF = new TextField("Bank Account");
 		// tF.setValue("00232333452315");
@@ -762,8 +765,10 @@ public class AddUserModule {
 
 					String bacc = (tFBAcc.getValue() == null) ? "" : tFBAcc
 							.getValue().toString();
-					int bid = (comboBID.getValue() == null) ? 0 : Integer
-							.valueOf(comboBID.getValue().toString());
+					int bid = (comboBID.getValue() == null) ? 0 : (comboBID
+							.getValue().toString().trim().isEmpty()) ? 0
+							: Integer.valueOf(comboBID.getValue().toString());
+
 					String bd = (comboBDomain.getValue() == null) ? ""
 							: comboBDomain.getValue().toString();
 					String clrno = (tFClrNo.getValue() == null) ? "" : tFClrNo
@@ -786,8 +791,10 @@ public class AddUserModule {
 					String un = (tFUN.getValue() == null) ? "" : tFUN
 							.getValue().toString();
 					int country = (comboCountry.getValue() == null) ? 0
-							: Integer.valueOf(comboCountry.getValue()
-									.toString());
+							: (comboCountry.getValue().toString().trim()
+									.isEmpty()) ? 0
+									: Integer.valueOf(comboCountry.getValue()
+											.toString());
 					Date dob = (dFDoB.getValue() == null) ? new Date()
 							: (Date) dFDoB.getValue();
 					String employer = (tFEmp.getValue() == null) ? "" : tFEmp
@@ -796,12 +803,14 @@ public class AddUserModule {
 							.getValue().toString();
 					String gender = (optSex.getValue() == null) ? "" : optSex
 							.getItemCaption(optSex.getValue()).toString();
-					int lang = (comboLang.getValue() == null) ? 0 : Integer
-							.valueOf(comboLang.getValue().toString());
+					int lang = (comboLang.getValue() == null) ? 0 : (comboLang
+							.getValue().toString().trim().isEmpty()) ? 0
+							: Integer.valueOf(comboLang.getValue().toString());
 					String ln = (tFLN.getValue() == null) ? "" : tFLN
 							.getValue().toString();
-					int lgid = (comboLG.getValue() == null) ? 0 : Integer
-							.valueOf(comboLG.getValue().toString());
+					int lgid = (comboLG.getValue() == null) ? 0 : (comboLG
+							.getValue().toString().trim().isEmpty()) ? 0
+							: Integer.valueOf(comboLG.getValue().toString());
 
 					String mn = (tFMN.getValue() == null) ? "" : tFMN
 							.getValue().toString();
@@ -809,14 +818,17 @@ public class AddUserModule {
 							.getValue().toString();
 					String pref = (comboPref.getValue() == null) ? ""
 							: comboPref.getValue().toString();
-					int stateid = (comboState.getValue() == null) ? 0 : Integer
-							.valueOf(comboState.getValue().toString());
+					int stateid = (comboState.getValue() == null) ? 0
+							: (comboState.getValue().toString().trim()
+									.isEmpty()) ? 0 : Integer
+									.valueOf(comboState.getValue().toString());
 					String suff = (comboSuff.getValue() == null) ? ""
 							: comboSuff.getValue().toString();
 					String city = (tFCity.getValue() == null) ? "" : tFCity
 							.getValue().toString();
 					String pcode = (tFPostalCode.getValue() == null) ? ""
-							: tFPostalCode.getValue().toString();
+							: (tFPostalCode.getValue().isEmpty()) ? "000"
+									: tFPostalCode.getValue().toString();
 					String str = (tFStreet.getValue() == null) ? "" : tFStreet
 							.getValue().toString();
 					String prov = (tFProv.getValue() == null) ? "" : tFProv
@@ -1196,7 +1208,7 @@ public class AddUserModule {
 		comboIDType.setRequired(false);
 
 		// dFDoB.setRequired(false);
-		// dFDoI.setRequired(false);
+		dFDoI.setRequired(false);
 		dFDoE.setRequired(false);
 		optSex.setRequired(false);
 
@@ -1242,6 +1254,7 @@ public class AddUserModule {
 		// dFDoB.addValidator(new NoNull());
 		// dFDoI.addValidator(new NoNull());
 		dFDoE.addValidator(new NoNull());
+		dFDoI.addValidator(new NoNull());
 		optSex.addValidator(new NoNull());
 		isValidatorAdded = true;
 
