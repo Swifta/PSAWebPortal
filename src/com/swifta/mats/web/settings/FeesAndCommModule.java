@@ -39,6 +39,7 @@ import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
+//import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
 //import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
@@ -1117,6 +1118,7 @@ public class FeesAndCommModule {
 		cContent.removeAllComponents();
 		if (strTbName.equals(EXISTING)) {
 			cContent.addComponent(getExistingFeesContainer(strTbName));
+			ischanged = true;
 			return;
 		}
 		cContent.addComponent(getFeesContainer(strTbName));
@@ -1350,7 +1352,7 @@ public class FeesAndCommModule {
 		lbAttr.setSizeFull();
 		lbAttr.setStyleName("label_add_user attr");
 		cItemContentTier.addComponent(lbAttr);
-		cItemContentTier.addComponent(getPseudoTable(hmOp.get(op),
+		cItemContentTier.addComponent(getPseudoTableFees(hmOp.get(op),
 				hmTxType.get(type)));
 		cAttrItem.addComponent(cItemContentTier);
 
@@ -1413,7 +1415,7 @@ public class FeesAndCommModule {
 	}
 
 	@SuppressWarnings("unchecked")
-	private Table getPseudoTable(int op, int txtype) {
+	private Table getPseudoTableFees(int op, int txtype) {
 
 		IndexedContainer ct = new IndexedContainer();
 
