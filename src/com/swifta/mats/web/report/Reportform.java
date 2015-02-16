@@ -618,7 +618,7 @@ public class Reportform extends VerticalLayout {
 				agentsql.append(" acts.profileid = 12 group by CAST(actxns.datecreated as DATE),actxns.userresourceid) tbl1 join cashtransactions ctrs on ctrs.transactionid = tbl1.transactionid where ach.profileid = 11 and tbl1.cashacctid = ach.accountholderid and achd.accountdetailsid = ach.accountholderdetailid order by date desc;");
 
 				rs = stmt.executeQuery(agentsql.toString());
-				System.out.println(agentsql.toString());
+				// System.out.println(agentsql.toString());
 
 				cD.setVisible(true);
 
@@ -642,7 +642,7 @@ public class Reportform extends VerticalLayout {
 							.getItemProperty("Date");
 
 					Property<String> tdPropertyfullname = trItem
-							.getItemProperty("Dealer Full Name");
+							.getItemProperty("Full Name");
 					String aid = rs.getString("aid");
 					String did = rs.getString("did");
 					String amt = rs.getString("amount");

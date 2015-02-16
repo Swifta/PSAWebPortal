@@ -1124,8 +1124,9 @@ public class AddUserModule {
 		comboProfile.select(null);
 		comboIDType.select(null);
 
-		cal = Calendar.getInstance();
-		Date date = cal.getTime();
+		// cal = Calendar.getInstance();
+		// cal.clear();
+		Date date = null;
 
 		dFDoB.setValue(date);
 		dFDoB.setValue(date);
@@ -1133,7 +1134,7 @@ public class AddUserModule {
 		dFDoE.setValue(date);
 		optSex.select(null);
 
-		Notification.show("Fields reset.");
+		Notification.show("Fields reset.", Notification.Type.WARNING_MESSAGE);
 
 		/*
 		 * ArrayList<Object> arrLAllFields = new ArrayList<>();
