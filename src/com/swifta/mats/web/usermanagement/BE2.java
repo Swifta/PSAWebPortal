@@ -313,6 +313,7 @@ public class BE2 {
 
 		isPopupShowing = true;
 		isSent = false;
+		isValidatorAdded = false;
 
 		String username = null;
 		if (arrID != null) {
@@ -422,15 +423,43 @@ public class BE2 {
 
 				if (isSent)
 					return;
+
+				if (!isValidatorAdded) {
+					tFPIN.setRequired(false);
+					tFPINConf.setRequired(false);
+					tFPIN.addValidator(new PINMatch(tFPIN, tFPINConf));
+					tFPINConf.addValidator(new PINMatch(tFPIN, tFPINConf));
+
+					isValidatorAdded = true;
+				}
+				try {
+					tFPIN.validate();
+				} catch (InvalidValueException e) {
+					tFPINConf.setComponentError(null);
+					Notification.show("PIN Error!",
+							Notification.Type.ERROR_MESSAGE);
+					return;
+				}
+
+				try {
+					tFPINConf.validate();
+				} catch (InvalidValueException e) {
+					tFPIN.setComponentError(null);
+					Notification.show("PIN Error!",
+							Notification.Type.ERROR_MESSAGE);
+					return;
+				}
+
 				if (ums == null)
 					ums = new UserManagementService();
 
 				String strResponse = null;
 
-				String userresourceid = tFUserRID.getValue();
+				String userresourceid = tFUserRID.getValue().trim();
 				String bankdomainid = tFBID.getValue();
 				String IDnumber = tFIDD.getValue();
 				String SecurityAns = tFSecAns.getValue();
+				Notification.show(userresourceid);
 
 				// TODO Please remember to update id.in the for loop.
 
@@ -454,8 +483,6 @@ public class BE2 {
 
 				if (strResponse != null && strResponse.equals(strSxs)) {
 					strResponse = "Activation successful!";
-					// btnActivate.setVisible(false);
-					// btnActivate.setEnabled(false);
 					btnActivate.setIcon(null);
 					btnActivate.setCaption("R");
 					btnActivate.setStyleName("btn_link");
@@ -1115,13 +1142,11 @@ public class BE2 {
 		actionsC.setSizeUndefined();
 		actionsC.setStyleName("c_actions");
 
-		Item trItem;
-		container.addItem(strUID);
-		trItem = container.getItem(strUID);
-
+		Object x = container.addItem();
+		Item trItem = container.getItem(x);
 		Property<CheckBox> tdPropertyCheck = trItem.getItemProperty(" ");
 		Property<String> tdPropertySN = trItem.getItemProperty("S/N");
-		// Property<String> tdPropertyUID = trItem.getItemProperty("UID");
+		Property<String> tdPropertyUID = trItem.getItemProperty("UID");
 		Property<String> tdPropertyEmail = trItem.getItemProperty("Email");
 		Property<String> tdPropertyMSISDN = trItem.getItemProperty("MSISDN");
 		Property<String> tdPropertyUname = trItem.getItemProperty("Username");
@@ -1136,7 +1161,7 @@ public class BE2 {
 
 		tdPropertyCheck.setValue(chk);
 		tdPropertySN.setValue(sn);
-		// tdPropertyUID.setValue(strUID);
+		tdPropertyUID.setValue(strUID);
 		tdPropertyUname.setValue(strUname);
 		tdPropertyFname.setValue(strFname);
 		tdPropertyLname.setValue(strLname);
@@ -1351,7 +1376,7 @@ public class BE2 {
 		IndexedContainer container = new IndexedContainer();
 		container.addContainerProperty(" ", CheckBox.class, null);
 		container.addContainerProperty("S/N", String.class, "000");
-		// container.addContainerProperty("UID", String.class, "000");
+		container.addContainerProperty("UID", String.class, "000");
 		container.addContainerProperty("Username", String.class, "");
 
 		container.addContainerProperty("First Name", String.class, "");
@@ -1372,8 +1397,6 @@ public class BE2 {
 		 * strFname, String strLname, String strProf
 		 */
 
-		String Uname = "psaproduser";
-		String Pword = "psaproduser@2015";
 		String drivers = "com.mysql.jdbc.Driver";
 		try {
 			Class<?> driver_class = Class.forName(drivers);

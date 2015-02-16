@@ -1,7 +1,5 @@
 package com.swifta.mats.web;
 
-import java.util.HashMap;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 
@@ -28,12 +26,10 @@ import com.vaadin.ui.UI;
 @PreserveOnRefresh
 public class MatsWebPortalUI extends UI {
 
-	// public static TabSheet ts;
-	private HashMap<String, Integer> hm;
 	private String vN = null;
 	private View main = null;
 
-	public static final Conf conf = new Conf("production");
+	public static final Conf conf = new Conf("p");
 
 	@WebServlet(value = "/*", asyncSupported = true)
 	@VaadinServletConfiguration(productionMode = true, closeIdleSessions = true, ui = MatsWebPortalUI.class, widgetset = "com.swifta.mats.web.widgetset.Mats_web_portalWidgetset")

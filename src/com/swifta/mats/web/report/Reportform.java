@@ -554,6 +554,8 @@ public class Reportform extends VerticalLayout {
 	private void loadData(Object ft) {
 		if (searchform != null)
 			searchform.removeAllComponents();
+		if (ft == null)
+			return;
 
 		String selectedId = ft.toString();
 		if (selectedId == null)
@@ -608,15 +610,13 @@ public class Reportform extends VerticalLayout {
 
 				StringBuilder agentsql = new StringBuilder();
 
-				agentsql.append("select cast(tbl1.datecreated as DATE) as 'date', ctrs.operatorid as aid, ach.username as did, concat(achd.firstname,' ',achd.lastname) as fullname, tbl1.cashbalance as ");
+				agentsql.append("select cast(tbl1.datecreated as DATE) as 'date', ctrs.operatorid as aid, ach.username as did, concat(achd.firstname,' ',achd.lastname) as fullname, tbl1.cashbalance as");
 				agentsql.append(" amount from accountholders ach, accountholderdetails achd, ( select actxns.userresourceid as cashacctid, ");
 				agentsql.append(" sum(actxns.closingbalance) - sum(actxns.openingbalance) as cashbalance, actxns.datecreated ");
-				agentsql.append("as datecreated, acts.profileid as profileid, actxns.transactionid as transactionid from");
+				agentsql.append(" as datecreated, acts.profileid as profileid, actxns.transactionid as transactionid from");
 				agentsql.append(" accounttransactions actxns, transactions trx,accounts acts where actxns.transactionid = trx.transactionid and trx.transactionstatusid = 1 and trx.transactiontypeid=1 and  actxns.accountresourceid = acts.accountid and ");
 				agentsql.append(" acts.profileid = 12 group by CAST(actxns.datecreated as DATE),actxns.userresourceid) tbl1 join cashtransactions ctrs on ctrs.transactionid = tbl1.transactionid where ach.profileid = 11 and tbl1.cashacctid = ach.accountholderid and achd.accountdetailsid = ach.accountholderdetailid order by date desc");
 
-				// rs = stmt
-				// .executeQuery("SELECT count(amount) as 'transactioncount',operatorid,format(sum(amount / 100),2) as 'amount',CAST(createdon as DATE) as 'created',dealerid FROM cashtransactions group by operatorid,CAST(createdon as DATE),dealerid order by created,operatorid");
 				rs = stmt.executeQuery(agentsql.toString());
 
 				cD.setVisible(true);
@@ -630,12 +630,6 @@ public class Reportform extends VerticalLayout {
 
 					Property<String> tdPropertyserial = trItem
 							.getItemProperty("S/N");
-
-					// Property<String> tdPropertytransactiondate =
-					// trItem
-					// .getItemProperty("Transaction Date");
-					// Property<String> tdPropertyagentid = trItem
-					// .getItemProperty("Agent ID");
 					Property<String> tdPropertydealerid = trItem
 							.getItemProperty("Dealer ID");
 					Property<String> tdPropertyagentid = trItem
@@ -648,13 +642,8 @@ public class Reportform extends VerticalLayout {
 
 					Property<String> tdPropertyfullname = trItem
 							.getItemProperty("Full Name");
-
-					// String agentid = rs.getString("operatorid");
 					String aid = rs.getString("aid");
 					String did = rs.getString("did");
-					// String createdon = rs.getString("created");
-					// String transactionstatusid = rs
-					// .getString("transactionstatusid");
 					String amt = rs.getString("amount");
 					String fullname = rs.getString("fullname");
 
@@ -690,8 +679,6 @@ public class Reportform extends VerticalLayout {
 					// DateFormat.
 
 					tdPropertyserial.setValue(String.valueOf(x));
-					// tdPropertytransactiondate.setValue(createdon);
-					// tdPropertyagentid.setValue(agentid);
 					tdPropertydealerid.setValue(did);
 					tdPropertyagentid.setValue(aid);
 					tdPropertyevalueamount.setValue(amt);
@@ -714,16 +701,12 @@ public class Reportform extends VerticalLayout {
 				table.setSelectable(true);
 
 			} catch (SQLException | InstantiationException
-					| IllegalAccessException | ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+					| IllegalAccessException | ClassNotFoundException
+					| NullPointerException e) {
+				errorHandler(e);
 
-				Notification.show("Error Establishing DBConnection = " + e,
-						Notification.Type.ERROR_MESSAGE);
 			}
 
-			// searchform.removeAllComponents();
-			// searchform.addComponent(FloatManagementForm());
 		} else if (selectedId.equalsIgnoreCase("Transaction Report")) {
 
 			IndexedContainer container2 = new IndexedContainer();
@@ -937,11 +920,9 @@ public class Reportform extends VerticalLayout {
 				table.setContainerDataSource(container2);
 
 			} catch (SQLException | ClassNotFoundException
-					| InstantiationException | IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				Notification.show("Error Establishing DBConnection = " + e,
-						Notification.Type.ERROR_MESSAGE);
+					| InstantiationException | IllegalAccessException
+					| NullPointerException e) {
+				errorHandler(e);
 			}
 
 			// searchform.removeAllComponents();
@@ -1076,10 +1057,7 @@ public class Reportform extends VerticalLayout {
 
 			} catch (SQLException | ClassNotFoundException
 					| InstantiationException | IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				Notification.show("Error Establishing DBConnection = " + e,
-						Notification.Type.ERROR_MESSAGE);
+				errorHandler(e);
 			}
 
 			// searchform.removeAllComponents();
@@ -1297,11 +1275,9 @@ public class Reportform extends VerticalLayout {
 				table.setSelectable(true);
 				// table.setEditable(true);
 			} catch (SQLException | ClassNotFoundException
-					| InstantiationException | IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				Notification.show("Error Establishing DBConnection = " + e,
-						Notification.Type.ERROR_MESSAGE);
+					| InstantiationException | IllegalAccessException
+					| NullPointerException e) {
+				errorHandler(e);
 			}
 		} else if (selectedId
 				.equalsIgnoreCase("Fees / Commission Summary Report")) {
@@ -1429,11 +1405,9 @@ public class Reportform extends VerticalLayout {
 				table.setSelectable(true);
 				// table.setEditable(true);
 			} catch (SQLException | ClassNotFoundException
-					| InstantiationException | IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				Notification.show("Error Establishing DBConnection = " + e,
-						Notification.Type.ERROR_MESSAGE);
+					| InstantiationException | IllegalAccessException
+					| NullPointerException e) {
+				errorHandler(e);
 			}
 		}
 		comboF.removeAllItems();
@@ -1606,6 +1580,18 @@ public class Reportform extends VerticalLayout {
 			Notification.show("Error occured", Notification.Type.ERROR_MESSAGE);
 			e.printStackTrace();
 
+		}
+	}
+
+	private void errorHandler(Exception e) {
+		if (e instanceof NullPointerException) {
+			Notification.show("Can not generate report at this moment.",
+					Notification.Type.WARNING_MESSAGE);
+			e.printStackTrace();
+		} else {
+			e.printStackTrace();
+			Notification.show("Error Establishing DBConnection = " + e,
+					Notification.Type.ERROR_MESSAGE);
 		}
 	}
 }
