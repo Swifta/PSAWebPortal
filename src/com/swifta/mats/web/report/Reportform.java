@@ -641,7 +641,7 @@ public class Reportform extends VerticalLayout {
 							.getItemProperty("Date");
 
 					Property<String> tdPropertyfullname = trItem
-							.getItemProperty("Full Name");
+							.getItemProperty("Dealer Full Name");
 					String aid = rs.getString("aid");
 					String did = rs.getString("did");
 					String amt = rs.getString("amount");
