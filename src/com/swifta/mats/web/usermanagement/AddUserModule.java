@@ -901,11 +901,13 @@ public class AddUserModule {
 				}
 
 				if (strResponse.contains("completed")
-						&& strResponse.contains("successful"))
+						&& strResponse.contains("successful")) {
 					NotifCustom.show("Message: ", strResponse);
-				else
+					reset();
+				} else {
 					Notification.show("Response: " + strResponse,
 							Notification.Type.ERROR_MESSAGE);
+				}
 
 			}
 		});
@@ -1020,8 +1022,7 @@ public class AddUserModule {
 		String qx = "SELECT countrystatelgaid as lgid, lganame as lg FROM "
 				+ MatsWebPortalUI.conf.dbin
 				+ ".countrystatelga where countrystateid = " + sid + ";";
-		String Uname = "psaproduser";
-		String Pword = "psaproduser@2015";
+
 		String drivers = "com.mysql.jdbc.Driver";
 		try {
 			Class<?> driver_class = Class.forName(drivers);

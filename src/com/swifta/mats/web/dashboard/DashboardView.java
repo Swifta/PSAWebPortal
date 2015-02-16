@@ -23,6 +23,7 @@ import com.vaadin.data.util.filter.Compare.GreaterOrEqual;
 import com.vaadin.data.util.filter.Compare.LessOrEqual;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -44,6 +45,17 @@ public class DashboardView implements View {
 	String dCat;
 	private TabSheet ts;
 	private VerticalLayout tab = null;
+
+	private PiechartDash pie = new PiechartDash();
+	private BarChartDash bar = new BarChartDash();
+
+	private Chart barChart = (Chart) bar.getChart();
+	private Chart pieChart = (Chart) pie.getChart();
+
+	private DateField dat = new DateField();
+	private DateField dat2 = new DateField();
+
+	private ComboBox comboGF = new ComboBox("Please select...");
 
 	public DashboardView(TabSheet ts) {
 		this.ts = ts;
@@ -96,12 +108,10 @@ public class DashboardView implements View {
 	}
 
 	private void d() {
-		final DateField dat = new DateField();
-		final DateField dat2 = new DateField();
+
 		final Button filter = new Button("Filter");
 		final HorizontalLayout pi;
 		Label la = new Label("Filter by: ");
-		final ComboBox comboGF = new ComboBox("Please select...");
 
 		dat.addValidator(new ValidateRange(dat, dat2));
 		dat2.addValidator(new ValidateRange(dat, dat2));
@@ -138,11 +148,10 @@ public class DashboardView implements View {
 		VerticalLayout dashboard1 = new VerticalLayout();
 		dashboard1.setImmediate(true);
 		dashboard1.setCaption("Test1");
-		PiechartDash pie = new PiechartDash();
+		pie = new PiechartDash();
 		pi = new HorizontalLayout();
 		HorizontalLayout lut = new HorizontalLayout();
 		FormLayout former = new FormLayout();
-		final BarChartDash bar = new BarChartDash();
 
 		dat.setCaption("Start Date");
 		dat2.setCaption("End Date");
@@ -153,10 +162,11 @@ public class DashboardView implements View {
 		former.addComponent(comboGF);
 		former.addComponent(dat);
 		former.addComponent(dat2);
-		former.addComponent(filter);
+		// former.addComponent(filter);
+		Button btnReload = new Button();
+		btnReload.setIcon(FontAwesome.REPEAT);
+		former.addComponent(btnReload);
 		former.setWidth("100px");
-		final Chart barChart = (Chart) bar.getChart();
-		final Chart pieChart = (Chart) pie.getChart();
 		pi.addComponent(pieChart);
 		pi.addComponent(barChart);
 
@@ -278,6 +288,17 @@ public class DashboardView implements View {
 
 		});
 
+		btnReload.addClickListener(new Button.ClickListener() {
+			private static final long serialVersionUID = -1405690945608678270L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				Dashboard.updateOtb();
+				redrawCharts();
+
+			}
+		});
+
 		lut.setSizeFull();
 		lut.addComponent(former);
 		lut.addComponent(pi);
@@ -309,6 +330,84 @@ public class DashboardView implements View {
 					throw new InvalidValueException("Invalid date range");
 				}
 		}
+
+	}
+
+	@SuppressWarnings("unchecked")
+	private void redrawCharts() {
+
+		isCriteriaChanged = true;
+
+		if (Dashboard.otb == null)
+			return;
+
+		Object cat = new String("Transaction Type");
+
+		Dashboard.otb.removeAllContainerFilters();
+
+		Iterator<Integer> itr = (Iterator<Integer>) Dashboard.otb.getItemIds()
+				.iterator();
+
+		HashMap<String, Float> hm = new HashMap<>();
+
+		while (itr.hasNext()) {
+			int rid = itr.next();
+			Item r = Dashboard.otb.getItem(rid);
+			Property<String> f = r.getItemProperty(cat.toString());
+			String param = f.getValue();
+			if (!hm.containsKey(param)) {
+				hm.put(param, 1F);
+			} else {
+				hm.put(param, hm.get(param) + 1);
+			}
+		}
+
+		Float t = 0F;
+		Iterator<Entry<String, Float>> itrx = hm.entrySet().iterator();
+		while (itrx.hasNext()) {
+			Entry<String, Float> e = itrx.next();
+			t = t + e.getValue();
+		}
+
+		itrx = hm.entrySet().iterator();
+		while (itrx.hasNext()) {
+			Entry<String, Float> e = itrx.next();
+			hm.put(e.getKey(), (e.getValue() / t) * 100);
+		}
+
+		DataSeries series = new DataSeries();
+
+		Iterator<Entry<String, Float>> itrSet = hm.entrySet().iterator();
+		while (itrSet.hasNext()) {
+			Entry<String, Float> e = itrSet.next();
+
+			DataSeriesItem item = new DataSeriesItem(e.getKey(), Math.round(e
+					.getValue()));
+
+			series.add(item);
+
+		}
+
+		itrx = hm.entrySet().iterator();
+
+		Set<String> types = hm.keySet();
+		String[] type = new String[types.size()];
+		types.toArray(type);
+
+		Collection<Float> vals = hm.values();
+		Float[] val = new Float[vals.size()];
+		vals.toArray(val);
+
+		for (int i = 0; i < val.length; i++)
+			val[i] = Float.valueOf(BigDecimal.valueOf(val[i])
+					.setScale(1, BigDecimal.ROUND_UP).toString());
+
+		PiechartDash.conf.setSeries(series);
+
+		pieChart.drawChart();
+		bar.xAxis.setCategories(type);
+		bar.serie.setData(val);
+		barChart.drawChart();
 
 	}
 

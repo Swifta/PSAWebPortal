@@ -1400,58 +1400,12 @@ public class BE2 {
 		container.addContainerProperty("Actions", HorizontalLayout.class, null);
 		arrLChkBulk = new ArrayList<>();
 		arrLCombos = new ArrayList<>();
+		getDBData(container);
 
 		/*
 		 * IndexedContainer container, String strUID, String strUname, String
 		 * strFname, String strLname, String strProf
 		 */
-
-		String drivers = "com.mysql.jdbc.Driver";
-		try {
-			Class<?> driver_class = Class.forName(drivers);
-			Driver driver = (Driver) driver_class.newInstance();
-			DriverManager.registerDriver(driver);
-
-			Connection conn = DriverManager.getConnection(
-					MatsWebPortalUI.conf.DB, MatsWebPortalUI.conf.UN,
-					MatsWebPortalUI.conf.PW);
-
-			String qx = "SELECT acth.username as un, acth.msisdn as msisdn, acth.email as email,pf.profilename as prof, acths.accountholderstatusname as status,acthd.firstname as fn ,acthd.lastname as ln,id.identificationnumber as id,ad.streetaddress as street from accountholders acth, accountholderdetails acthd, accountholderstatus acths, identificationattribute id, address ad, profiles pf where acth.accountholderdetailid = acthd.accountdetailsid and acth.accountholderstatusid = acths.accountholderstatusid and acthd.identificationid = id.identificationattrid and acthd.addressid = ad.addressid and pf.profileid = acth.profileid and pf.profiletypeid = 1;";
-
-			Statement stmt = conn.createStatement();
-
-			ResultSet rs = stmt.executeQuery(qx);
-			int x = 0;
-
-			while (rs.next()) {
-				x++;
-				String id = rs.getString("id");
-				String sn = String.valueOf(x);
-				String un = rs.getString("un");
-				String prof = rs.getString("prof");
-				String msisdn = rs.getString("msisdn");
-				String email = rs.getString("email");
-				String fn = rs.getString("fn");
-
-				String ln = rs.getString("ln");
-
-				String status = rs.getString("status");
-				addRow(container, sn, id, un, fn, ln, prof, status, email,
-						msisdn);
-
-			}
-
-		} catch (SQLException | ClassNotFoundException | InstantiationException
-				| IllegalAccessException | IllegalStateException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			if (!(e instanceof IllegalStateException)) {
-				Notification.show("DB Connection",
-						"Error Establishing DBConnection:  " + e.getMessage(),
-						Notification.Type.ERROR_MESSAGE);
-			}
-
-		}
 
 		return container;
 	}
@@ -1876,15 +1830,42 @@ public class BE2 {
 		Button btnSearch = new Button();
 		Button btnFilter = new Button("Filter");
 
+		Button btnReload = new Button();
+		btnReload.setIcon(FontAwesome.REPEAT);
+		btnReload.setStyleName("btn_s_rx");
+		btnReload.setDescription("Reload Table Content");
+
 		searchForm.addComponent(btnFilter);
 		btnSearch.setEnabled(false);
 
 		searchForm.addComponent(btnSearch);
+
+		searchForm.addComponent(btnReload);
 		btnSearch.setStyleName("btn_s_rx");
 		btnFilter.setStyleName("btn_s_rx");
 
 		btnSearch.setIcon(FontAwesome.SEARCH);
 		isSearchURL = false;
+
+		btnReload.addClickListener(new Button.ClickListener() {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = -7024000758308491011L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				// TODO Auto-generated method stub
+				getDBData(container);
+				tb.setContainerDataSource(container);
+				int x = container.size();
+				if (x > 30)
+					x = 30;
+				tb.setPageLength(x);
+
+			}
+		});
 
 		btnFilter.addClickListener(new Button.ClickListener() {
 
@@ -1942,7 +1923,6 @@ public class BE2 {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-
 				if (!isSearchURL) {
 					curURL = UI.getCurrent().getPage().getUriFragment();
 					if (curURL.indexOf('?') != -1)
@@ -2035,6 +2015,57 @@ public class BE2 {
 		}
 
 		tb.setPageLength(t);
+
+	}
+
+	private void getDBData(IndexedContainer container) {
+
+		String drivers = "com.mysql.jdbc.Driver";
+		try {
+			Class<?> driver_class = Class.forName(drivers);
+			Driver driver = (Driver) driver_class.newInstance();
+			DriverManager.registerDriver(driver);
+
+			Connection conn = DriverManager.getConnection(
+					MatsWebPortalUI.conf.DB, MatsWebPortalUI.conf.UN,
+					MatsWebPortalUI.conf.PW);
+
+			String qx = "SELECT acth.username as un, acth.msisdn as msisdn, acth.email as email,pf.profilename as prof, acths.accountholderstatusname as status,acthd.firstname as fn ,acthd.lastname as ln,id.identificationnumber as id,ad.streetaddress as street from accountholders acth, accountholderdetails acthd, accountholderstatus acths, identificationattribute id, address ad, profiles pf where acth.accountholderdetailid = acthd.accountdetailsid and acth.accountholderstatusid = acths.accountholderstatusid and acthd.identificationid = id.identificationattrid and acthd.addressid = ad.addressid and pf.profileid = acth.profileid and pf.profiletypeid = 1;";
+
+			Statement stmt = conn.createStatement();
+
+			ResultSet rs = stmt.executeQuery(qx);
+			int x = 0;
+
+			while (rs.next()) {
+				x++;
+				String id = rs.getString("id");
+				String sn = String.valueOf(x);
+				String un = rs.getString("un");
+				String prof = rs.getString("prof");
+				String msisdn = rs.getString("msisdn");
+				String email = rs.getString("email");
+				String fn = rs.getString("fn");
+
+				String ln = rs.getString("ln");
+
+				String status = rs.getString("status");
+				addRow(container, sn, id, un, fn, ln, prof, status, email,
+						msisdn);
+
+			}
+
+		} catch (SQLException | ClassNotFoundException | InstantiationException
+				| IllegalAccessException | IllegalStateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			if (!(e instanceof IllegalStateException)) {
+				Notification.show("DB Connection",
+						"Error Establishing DBConnection:  " + e.getMessage(),
+						Notification.Type.ERROR_MESSAGE);
+			}
+
+		}
 
 	}
 

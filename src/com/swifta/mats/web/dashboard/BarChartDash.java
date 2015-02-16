@@ -69,7 +69,7 @@ public class BarChartDash {
 		conf.setLegend(legend);
 
 		Tooltip tooltip = new Tooltip();
-		tooltip.setFormatter("''+ this.x +''+'data chart: '"
+		tooltip.setFormatter("' '+ this.x +''+'data chart: '"
 				+ "+ Highcharts.numberFormat(this.y, 1) +' percent'");
 		conf.setTooltip(tooltip);
 
