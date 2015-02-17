@@ -1070,9 +1070,26 @@ public class AddUserModule {
 	private class NoNull implements Validator {
 		private static final long serialVersionUID = -5634103226093178664L;
 
+		Object f;
+
+		NoNull(Object f) {
+			this.f = f;
+		}
+
 		@Override
 		public void validate(Object value) throws InvalidValueException {
 			if (value == null || value.toString().isEmpty()) {
+
+				if (f instanceof TextField)
+					((TextField) f).focus();
+				if (f instanceof ComboBox)
+					((ComboBox) f).focus();
+				if (f instanceof OptionGroup)
+					((OptionGroup) f).focus();
+				if (f instanceof CheckBox)
+					((CheckBox) f).focus();
+				if (f instanceof PopupDateField)
+					((PopupDateField) f).focus();
 
 				throw new InvalidValueException(
 						"Please fill in all fields marked with (!).");
@@ -1085,54 +1102,65 @@ public class AddUserModule {
 
 	private void reset() {
 
-		tFFN.setValue("");
-		tFMN.setValue("");
-		tFLN.setValue("");
-		tFOcc.setValue("");
-		tFEmp.setValue("");
-		tFUN.setValue("");
-		tFMSISDN.setValue("");
-		tFBAcc.setValue("");
-		tFAccEmail.setValue("");
-		tFClrNo.setValue("");
-		tFSecAns.setValue("");
-		tFPMNo.setValue("");
+		clearField(tFFN);
+		clearField(tFMN);
+		clearField(tFLN);
+		clearField(tFOcc);
+		// tFEmp.addValidator(new NoNull());
+		clearField(tFUN);
+		clearField(tFMSISDN);
+		// tFBAcc.addValidator(new NoNull());
+		clearField(tFAccEmail);
+		// tFClrNo.addValidator(new NoNull());
+		// tFSecAns.addValidator(new NoNull());
+		// tFPMNo.addValidator(new NoNull());
+		// tFPANo.addValidator(new NoNull());
+		// tFPEmail.addValidator(new NoNull());
+		// tFPostalCode.addValidator(new NoNull());
+		clearField(tFStreet);
+		clearField(tFCity);
+		// tFProv.addValidator(new NoNull());
+		// tFSMNo.addValidator(new NoNull());
+		// tFSANo.addValidator(new NoNull());
+		// tFSEmail.addValidator(new NoNull());
+		// tFIssuer.addValidator(new NoNull());
+		clearField(tFIDNo);
+
+		// chcTAndC.addValidator(new NoNull());
+		// comboPref.addValidator(new NoNull());
+
+		// comboSuff.addValidator(new NoNull());
+		clearField(comboState);
+		clearField(comboLG);
+		clearField(comboCountry);
+		clearField(comboLang);
+		// comboBDomain.addValidator(new NoNull());
+		// comboBID.addValidator(new NoNull());
+		// comboCur.addValidator(new NoNull());
+		// comboSecQn.addValidator(new NoNull());
+
 		tFPANo.setValue("");
 		tFPEmail.setValue("");
 		tFPostalCode.setValue("");
-		tFStreet.setValue("");
-		tFCity.setValue("");
+
 		tFProv.setValue("");
 		tFSMNo.setValue("");
 		tFSANo.setValue("");
 		tFSEmail.setValue("");
 		tFIssuer.setValue("");
-		tFIDNo.setValue("");
 
 		chcTAndC.setValue(false);
 		comboPref.select(null);
-
 		comboSuff.select(null);
-		comboState.select(null);
-		comboLG.select(null);
-		comboCountry.select(null);
-		comboLang.select(null);
+
 		comboBDomain.select(null);
 		comboBID.select(null);
 		comboCur.select(null);
 		comboSecQn.select(null);
-		comboProfile.select(null);
-		comboIDType.select(null);
-
-		// cal = Calendar.getInstance();
-		// cal.clear();
+		tFSecAns.setValue("");
 		Date date = null;
 
 		dFDoB.setValue(date);
-		dFDoB.setValue(date);
-		dFDoI.setValue(date);
-		dFDoE.setValue(date);
-		optSex.select(null);
 
 		Notification.show("Fields reset.", Notification.Type.WARNING_MESSAGE);
 
@@ -1213,50 +1241,50 @@ public class AddUserModule {
 		dFDoE.setRequired(false);
 		optSex.setRequired(false);
 
-		tFFN.addValidator(new NoNull());
-		tFMN.addValidator(new NoNull());
-		tFLN.addValidator(new NoNull());
-		tFOcc.addValidator(new NoNull());
+		tFFN.addValidator(new NoNull(tFFN));
+		tFMN.addValidator(new NoNull(tFMN));
+		tFLN.addValidator(new NoNull(tFLN));
+		tFOcc.addValidator(new NoNull(tFOcc));
 		// tFEmp.addValidator(new NoNull());
-		tFUN.addValidator(new NoNull());
-		tFMSISDN.addValidator(new NoNull());
+		tFUN.addValidator(new NoNull(tFUN));
+		tFMSISDN.addValidator(new NoNull(tFMSISDN));
 		// tFBAcc.addValidator(new NoNull());
-		tFAccEmail.addValidator(new NoNull());
+		tFAccEmail.addValidator(new NoNull(tFAccEmail));
 		// tFClrNo.addValidator(new NoNull());
 		// tFSecAns.addValidator(new NoNull());
 		// tFPMNo.addValidator(new NoNull());
 		// tFPANo.addValidator(new NoNull());
 		// tFPEmail.addValidator(new NoNull());
 		// tFPostalCode.addValidator(new NoNull());
-		tFStreet.addValidator(new NoNull());
-		tFCity.addValidator(new NoNull());
+		tFStreet.addValidator(new NoNull(tFStreet));
+		tFCity.addValidator(new NoNull(tFCity));
 		// tFProv.addValidator(new NoNull());
 		// tFSMNo.addValidator(new NoNull());
 		// tFSANo.addValidator(new NoNull());
 		// tFSEmail.addValidator(new NoNull());
 		// tFIssuer.addValidator(new NoNull());
-		tFIDNo.addValidator(new NoNull());
+		tFIDNo.addValidator(new NoNull(tFIDNo));
 
 		// chcTAndC.addValidator(new NoNull());
 		// comboPref.addValidator(new NoNull());
 
 		// comboSuff.addValidator(new NoNull());
-		comboState.addValidator(new NoNull());
-		comboLG.addValidator(new NoNull());
-		comboCountry.addValidator(new NoNull());
-		comboLang.addValidator(new NoNull());
+		comboState.addValidator(new NoNull(comboState));
+		comboLG.addValidator(new NoNull(comboLG));
+		comboCountry.addValidator(new NoNull(comboLG));
+		comboLang.addValidator(new NoNull(comboLang));
 		// comboBDomain.addValidator(new NoNull());
 		// comboBID.addValidator(new NoNull());
 		// comboCur.addValidator(new NoNull());
 		// comboSecQn.addValidator(new NoNull());
-		comboProfile.addValidator(new NoNull());
-		comboIDType.addValidator(new NoNull());
+		comboProfile.addValidator(new NoNull(comboProfile));
+		comboIDType.addValidator(new NoNull(comboIDType));
 
 		// dFDoB.addValidator(new NoNull());
 		// dFDoI.addValidator(new NoNull());
-		dFDoE.addValidator(new NoNull());
-		dFDoI.addValidator(new NoNull());
-		optSex.addValidator(new NoNull());
+		dFDoE.addValidator(new NoNull(dFDoE));
+		dFDoI.addValidator(new NoNull(dFDoI));
+		optSex.addValidator(new NoNull(optSex));
 		isValidatorAdded = true;
 
 	}
@@ -1306,6 +1334,56 @@ public class AddUserModule {
 		dFDoI.validate();
 		dFDoE.validate();
 		optSex.validate();
+
+	}
+
+	private void clearField(Object f) {
+		isValidatorAdded = false;
+
+		if (f instanceof TextField) {
+			TextField tf = ((TextField) f);
+			tf.setValue("");
+			tf.setComponentError(null);
+			tf.setRequired(true);
+			return;
+		}
+		if (f instanceof ComboBox) {
+
+			ComboBox combo = ((ComboBox) f);
+			combo.setComponentError(null);
+			combo.setRequired(true);
+			combo.select(null);
+			return;
+		}
+		if (f instanceof OptionGroup) {
+
+			OptionGroup opt = ((OptionGroup) f);
+			opt.select(null);
+			opt.setComponentError(null);
+			opt.setRequired(true);
+
+			return;
+
+		}
+		if (f instanceof CheckBox) {
+
+			CheckBox chk = ((CheckBox) f);
+			chk.setValue(false);
+			chk.setComponentError(null);
+			chk.setRequired(true);
+
+			return;
+
+		}
+		if (f instanceof PopupDateField) {
+			Date date = null;
+			PopupDateField d = ((PopupDateField) f);
+			d.setValue(date);
+			d.setComponentError(null);
+			d.setRequired(true);
+
+			return;
+		}
 
 	}
 

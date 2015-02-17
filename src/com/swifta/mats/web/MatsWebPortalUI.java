@@ -29,7 +29,7 @@ public class MatsWebPortalUI extends UI {
 	private String vN = null;
 	private View main = null;
 
-	public static final Conf conf = new Conf("production");
+	public static final Conf conf = new Conf("testing");
 
 	@WebServlet(value = "/*", asyncSupported = true)
 	@VaadinServletConfiguration(productionMode = true, closeIdleSessions = true, ui = MatsWebPortalUI.class, widgetset = "com.swifta.mats.web.widgetset.Mats_web_portalWidgetset")
@@ -49,7 +49,8 @@ public class MatsWebPortalUI extends UI {
 							CustomizedSystemMessages msg = new CustomizedSystemMessages();
 							msg.setSessionExpiredNotificationEnabled(false);
 							msg.setSessionExpiredMessage("Click HERE to login again.");
-
+							msg.setCommunicationErrorNotificationEnabled(false);
+							msg.setInternalErrorNotificationEnabled(false);
 							return msg;
 						}
 
@@ -77,6 +78,9 @@ public class MatsWebPortalUI extends UI {
 				@Override
 				public boolean beforeViewChange(ViewChangeEvent event) {
 
+					if (main == null && event.getNewView() instanceof Main)
+						main = event.getNewView();
+
 					boolean isErrorView = event.getNewView() instanceof ErrorVIEW;
 					boolean isLoggedIn = UI.getCurrent().getSession()
 							.getAttribute("user") != null;
@@ -88,12 +92,10 @@ public class MatsWebPortalUI extends UI {
 						vN = null;
 						if (prevView != null && isLoggedIn) {
 							Notification.show("Resource of \""
-									+ UI.getCurrent().getPage().getLocation()
-									+ "\" does not exist.",
-									Notification.Type.ERROR_MESSAGE);
-
+									+ getCurrent().getPage().getLocation()
+									+ "\" is expired or does not exist .",
+									Notification.Type.TRAY_NOTIFICATION);
 							prevView.enter(event);
-
 							return false;
 						} else {
 							getNavigator().navigateTo(Login.LOGIN);
@@ -125,10 +127,7 @@ public class MatsWebPortalUI extends UI {
 					if (isLoginView) {
 						if (isLoggedIn) {
 							vN = null;
-							if (main != null)
-								main.enter(event);
-							else
-								getNavigator().navigateTo(Login.LOGIN);
+							getNavigator().navigateTo(Main.WS);
 							return false;
 						} else {
 							return true;
@@ -141,9 +140,6 @@ public class MatsWebPortalUI extends UI {
 							return false;
 						}
 					}
-
-					if (main == null && event.getNewView() instanceof Main)
-						main = event.getNewView();
 
 					return true;
 

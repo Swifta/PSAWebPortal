@@ -129,11 +129,7 @@ public class SearchUserModule {
 				}
 
 				String strParams = strBuilder.toString();
-
-				String url = curURL + "/?action=search&" + strParams;
-
-				if (WorkSpaceManageUser.prevSearchFrag.contains(url))
-					WorkSpaceManageUser.prevSearchFrag.remove(url);
+				String url = "!" + UMView.UM + "/?action=search&" + strParams;
 
 				UI.getCurrent().getPage().setUriFragment(url);
 

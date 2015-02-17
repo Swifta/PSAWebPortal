@@ -9,14 +9,11 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 public class WorkSpaceManageUser {
-	/**
-	 * 
-	 */
-
 	private HorizontalLayout contentC;
 
 	private AddUserModule aum;
@@ -31,6 +28,7 @@ public class WorkSpaceManageUser {
 	private HorizontalLayout caddman = new HorizontalLayout();
 	private FormLayout cs;
 	public static ArrayList<String> prevSearchFrag = new ArrayList<>();
+	private VerticalLayout csr;
 
 	public WorkSpaceManageUser() {
 		setCoreUI();
@@ -50,10 +48,10 @@ public class WorkSpaceManageUser {
 		sum = new SearchUserModule();
 		mm = getManageUserMenu(false);
 		mm.setSizeUndefined();
-		cs = sum.getSearchForm("x");
-		csman.addComponent(cs);
+		// cs = sum.getSearchForm("x");
+		// csman.addComponent(cs);
 		csman.setSizeFull();
-		csman.setComponentAlignment(cs, Alignment.TOP_CENTER);
+		// csman.setComponentAlignment(cs, Alignment.TOP_CENTER);
 
 		contentC.addComponent(csman);
 
@@ -149,70 +147,124 @@ public class WorkSpaceManageUser {
 							@Override
 							public void uriFragmentChanged(
 									UriFragmentChangedEvent event) {
-
-								modifier(UI.getCurrent().getPage()
-										.getUriFragment());
+								modifier(event.getUriFragment());
 							}
 						});
 	}
 
 	private void modifier(String frag) {
 
+		if (frag == null)
+			return;
+		if (frag.isEmpty())
+			return;
+
 		String action = null;
 		String aParam[] = new String[] {};
+
 		if (frag.indexOf('?') == -1) {
-			action = "search";
+
+			Notification.show(frag + " : IN SWITCH NOOOOOO",
+					Notification.Type.ERROR_MESSAGE);
+
+			if (csr != null)
+				csr.setVisible(false);
+			cs.setVisible(true);
+
+			return;
 		} else {
 			String param = frag.substring(frag.indexOf('?') + 1);
 			if (param == null) {
-				action = "search";
+
+				Notification.show(frag + " : IN SWITCH NOOOOOO",
+						Notification.Type.ERROR_MESSAGE);
+
+				if (csr != null)
+					csr.setVisible(false);
+				cs.setVisible(true);
+				return;
 			} else if (param.trim().isEmpty()) {
-				action = "search";
+
+				Notification.show(frag + " : IN SWITCH NOOOOOO",
+						Notification.Type.ERROR_MESSAGE);
+				if (csr != null)
+					csr.setVisible(false);
+				cs.setVisible(true);
+
+				return;
 			} else {
 				aParam = param.split("&");
 				String arr[] = aParam[0].split("=");
 
-				if (arr.length < 2)
-					action = "search";
-				else
+				if (arr.length < 2) {
+					Notification.show(frag + " : IN SWITCH NOOOOOO",
+							Notification.Type.ERROR_MESSAGE);
+					if (csr != null)
+						csr.setVisible(false);
+					cs.setVisible(true);
+					return;
+				} else {
 					action = aParam[0].split("=")[1];
+				}
 			}
 
 		}
 
 		StringBuilder strb = new StringBuilder();
-		if (aParam.length > 0)
-			for (int i = 1; i < aParam.length; i++) {
-				strb.append(aParam[i]);
-				strb.append("&");
-			}
-		if (!prevSearchFrag.contains(frag)) {
-			switch (action) {
-			case "search": {
-
-				VerticalLayout csr = sum.getSearchResults(strb.toString());
-				csman.addComponent(csr);
-				csman.setExpandRatio(csr, 1.0f);
-				csman.setStyleName("csman");
-				cs.setVisible(false);
-				break;
-			}
-			case "search_results": {
-				csman.removeAllComponents();
-				VerticalLayout csr = sum.getSearchResults(strb.toString());
-				csman.addComponent(csr);
-				csman.setExpandRatio(csr, 1.0f);
-				break;
-			}
-			case "filter_search_results": {
-
-				sum.addFilters(strb.toString());
-				break;
-			}
-			}
-
-			prevSearchFrag.add(frag);
+		if (aParam.length < 0) {
+			Notification.show(frag + " : IN SWITCH NOOOOOO",
+					Notification.Type.ERROR_MESSAGE);
+			if (csr != null)
+				csr.setVisible(false);
+			cs.setVisible(true);
+			return;
 		}
+		for (int i = 1; i < aParam.length; i++) {
+			strb.append(aParam[i]);
+			strb.append("&");
+		}
+
+		// if (!prevSearchFrag.contains(frag)) {
+		Notification.show(frag + " : IN SWITCH YES",
+				Notification.Type.ERROR_MESSAGE);
+		switch (action) {
+		case "search_form": {
+			if (csr != null)
+				csr.setVisible(false);
+			cs.setVisible(true);
+
+			break;
+		}
+		case "search": {
+			if (csr == null)
+				csr = sum.getSearchResults(strb.toString());
+			csr.setVisible(true);
+			csman.addComponent(csr);
+			csman.setExpandRatio(csr, 1.0f);
+			csman.setStyleName("csman");
+			cs.setVisible(false);
+			break;
+		}
+		case "search_results": {
+			if (csr == null)
+				csr = sum.getSearchResults(strb.toString());
+			csr.setVisible(true);
+			csman.addComponent(csr);
+			csman.setExpandRatio(csr, 1.0f);
+			cs.setVisible(false);
+			break;
+		}
+		case "filter_search_results": {
+			if (csr == null)
+				csr = sum.getSearchResults(strb.toString());
+			csr.setVisible(true);
+			sum.addFilters(strb.toString());
+			break;
+		}
+		}
+
+		prevSearchFrag.add(frag);
+		// }
 
 	}
 }

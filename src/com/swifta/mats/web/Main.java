@@ -25,6 +25,7 @@ import com.vaadin.data.util.filter.Compare.GreaterOrEqual;
 import com.vaadin.data.util.filter.Compare.LessOrEqual;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -48,11 +49,8 @@ public class Main extends VerticalLayout implements View {
 	private VerticalLayout tab = null;
 	private String id = null;
 
-	private boolean isc = false;
-
 	public Main(TabSheet ts) {
 
-		isc = true;
 		this.ts = ts;
 		ts.setSelectedTab(0);
 		id = ts.getSelectedTab().getId();
@@ -71,11 +69,9 @@ public class Main extends VerticalLayout implements View {
 
 	@Override
 	public void enter(ViewChangeEvent event) {
-		if (isc) {
-			ts.setSelectedTab(0);
-			addMenu();
-			isc = false;
-		}
+		ts.setSelectedTab(0);
+		addMenu();
+
 	}
 
 	private void addHeader() {
@@ -101,8 +97,6 @@ public class Main extends VerticalLayout implements View {
 			public void buttonClick(ClickEvent event) {
 				UI.getCurrent().getSession().setAttribute("user", null);
 				UI.getCurrent().getNavigator().navigateTo(Login.LOGIN);
-				// VaadinSession.getCurrent().close();
-				// UI.getCurrent().getPage().setLocation("");
 
 			}
 		});
@@ -174,6 +168,10 @@ public class Main extends VerticalLayout implements View {
 		former.addComponent(dat);
 		former.addComponent(dat2);
 		former.addComponent(filter);
+		Button btnReload = new Button();
+		btnReload.setIcon(FontAwesome.REPEAT);
+		// former.addComponent(btnReload);
+		btnReload.setDescription("Reload chart data");
 		former.setWidth("100px");
 		final Chart barChart = (Chart) bar.getChart();
 		final Chart pieChart = (Chart) pie.getChart();

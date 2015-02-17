@@ -45,7 +45,6 @@ public class ReportView extends VerticalLayout implements View {
 
 	@Override
 	public void enter(ViewChangeEvent event) {
-
 		ts.setSelectedTab(1);
 		addMenu();
 

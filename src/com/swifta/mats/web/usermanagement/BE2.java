@@ -76,8 +76,6 @@ public class BE2 {
 	private HashMap<String, Integer> hm;
 	private HashMap<String, String> hmFilter;
 	private IndexedContainer container;
-	private String curURL = null;
-	private boolean isSearchURL = false;
 	ArrayList<Object> arrLTfs;
 	public Window upop;
 
@@ -410,8 +408,6 @@ public class BE2 {
 		btnActivate.addClickListener(new Button.ClickListener() {
 
 			private static final long serialVersionUID = -6318666715385643538L;
-			String strSxs = new String(
-					"ACCOUNT_HOLDER_ACCOUNT_ACTIVATION_SUCCESSFUL");
 
 			@Override
 			public void buttonClick(ClickEvent event) {
@@ -1385,7 +1381,7 @@ public class BE2 {
 		IndexedContainer container = new IndexedContainer();
 		container.addContainerProperty(" ", CheckBox.class, null);
 		container.addContainerProperty("S/N", String.class, "000");
-		container.addContainerProperty("UID", String.class, "000");
+		// container.addContainerProperty("UID", String.class, "000");
 		container.addContainerProperty("Username", String.class, "");
 
 		container.addContainerProperty("First Name", String.class, "");
@@ -1845,13 +1841,9 @@ public class BE2 {
 		btnFilter.setStyleName("btn_s_rx");
 
 		btnSearch.setIcon(FontAwesome.SEARCH);
-		isSearchURL = false;
 
 		btnReload.addClickListener(new Button.ClickListener() {
 
-			/**
-			 * 
-			 */
 			private static final long serialVersionUID = -7024000758308491011L;
 
 			@Override
@@ -1876,12 +1868,7 @@ public class BE2 {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				if (!isSearchURL) {
-					curURL = UI.getCurrent().getPage().getUriFragment();
-					if (curURL.indexOf('?') != -1)
-						curURL = curURL.substring(0, curURL.indexOf('?'));
-					isSearchURL = true;
-				}
+
 				StringBuilder strBuilder = new StringBuilder();
 
 				for (Object tF : arrLTfs) {
@@ -1903,12 +1890,8 @@ public class BE2 {
 
 				String strParams = strBuilder.toString();
 
-				String url = curURL + "?action=filter_search_results&"
-						+ strParams;
-
-				if (WorkSpaceManageUser.prevSearchFrag.contains(url))
-					WorkSpaceManageUser.prevSearchFrag.remove(url);
-
+				String url = "!" + UMView.UM
+						+ "/?action=filter_search_results&" + strParams;
 				UI.getCurrent().getPage().setUriFragment(url);
 
 			}
@@ -1923,12 +1906,6 @@ public class BE2 {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				if (!isSearchURL) {
-					curURL = UI.getCurrent().getPage().getUriFragment();
-					if (curURL.indexOf('?') != -1)
-						curURL = curURL.substring(0, curURL.indexOf('?'));
-					isSearchURL = true;
-				}
 				StringBuilder strBuilder = new StringBuilder();
 
 				for (Object tF : arrLTfs) {
@@ -1949,11 +1926,8 @@ public class BE2 {
 				}
 
 				String strSearchParams = strBuilder.toString();
-				String url = curURL + "?action=search_results&"
+				String url = "!" + UMView.UM + "/?action=search_results&"
 						+ strSearchParams;
-
-				if (WorkSpaceManageUser.prevSearchFrag.contains(url))
-					WorkSpaceManageUser.prevSearchFrag.remove(url);
 
 				UI.getCurrent().getPage().setUriFragment(url);
 
