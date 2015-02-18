@@ -21,6 +21,8 @@ import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.Validator;
 import com.vaadin.data.Validator.InvalidValueException;
+import com.vaadin.data.validator.DateRangeValidator;
+import com.vaadin.data.validator.EmailValidator;
 import com.vaadin.event.FieldEvents.FocusEvent;
 import com.vaadin.event.FieldEvents.FocusListener;
 import com.vaadin.server.FontAwesome;
@@ -149,6 +151,7 @@ public class AddUserModule {
 
 		TextField tF = new TextField("First Name");
 		tFFN = tF;
+		tF.setImmediate(true);
 		tFFN.setRequired(true);
 		// tF.setValue("Paul");
 		cBasic.addComponent(tF);
@@ -156,12 +159,14 @@ public class AddUserModule {
 		tF = new TextField("Middle Name");
 		// tF.setValue("Pwndz");
 		tFMN = tF;
+		tF.setImmediate(true);
 		tFMN.setRequired(true);
 		cBasic.addComponent(tF);
 
 		tF = new TextField("Last Name");
 		// tF.setValue("Kigozi");
 		tFLN = tF;
+		tF.setImmediate(true);
 		tFLN.setRequired(true);
 		cBasic.addComponent(tF);
 
@@ -175,6 +180,7 @@ public class AddUserModule {
 		// opt.select("MALE");
 		optSex = opt;
 		optSex.setRequired(true);
+		optSex.setImmediate(true);
 		cBasic.addComponent(opt);
 
 		ComboBox combo = new ComboBox("Prefix");
@@ -206,12 +212,14 @@ public class AddUserModule {
 		combo.setItemCaption(3, "fr");
 		comboLang = combo;
 		comboLang.setRequired(true);
+		comboLang.setImmediate(true);
 		cBasic.addComponent(combo);
 
 		tF = new TextField("Occupation");
 		// tF.setValue("Software Engineer");
 		tFOcc = tF;
 		tFOcc.setRequired(true);
+		tFOcc.setImmediate(true);
 		cBasic.addComponent(tF);
 
 		tF = new TextField("Employer");
@@ -283,12 +291,14 @@ public class AddUserModule {
 		// combo.select("Passport Number");
 		comboIDType = combo;
 		comboIDType.setRequired(true);
+		comboIDType.setImmediate(true);
 		cCompany.addComponent(combo);
 
 		tF = new TextField("ID No.");
 		// tF.setValue("001");
 		tFIDNo = tF;
 		tFIDNo.setRequired(true);
+		tFIDNo.setImmediate(true);
 		cCompany.addComponent(tF);
 
 		tF = new TextField("Issuer");
@@ -301,14 +311,28 @@ public class AddUserModule {
 		cal.set(12, 12, 12);
 		// dF.setValue(cal.getTime());
 		dFDoI = dF;
+		// cal.clear();
+
+		cal = Calendar.getInstance();
+		Date dToday = cal.getTime();
+
+		cal.set(1970, 0, 1);
+		Date dMin = cal.getTime();
+
+		dFDoI.addValidator(new DateRangeValidator(
+				"Invalid issue date. Please select a date Earlier/Today.",
+				dMin, dToday, null));
 		cCompany.addComponent(dF);
 
+		dFDoI.setImmediate(true);
+
 		dF = new PopupDateField("Expiry Date");
-		// cal = Calendar.getInstance();
 		cal.set(14, 12, 12);
-		// dF.setValue(cal.getTime());
-		// dF.setValue(cal.getTime());
 		dFDoE = dF;
+		DateRangeValidator drv = new DateRangeValidator("ID is Expired",
+				dToday, null, null);
+		dFDoE.addValidator(drv);
+
 		dFDoI.setRequired(true);
 		dFDoI.setImmediate(true);
 
@@ -341,6 +365,8 @@ public class AddUserModule {
 		tF = new TextField("Email Address");
 		// tF.setValue("pwndz172@gmail.com");
 		tFPEmail = tF;
+		tFPEmail.addValidator(new EmailValidator("Invalid Email address."));
+		tFPEmail.setImmediate(true);
 		pC.addComponent(tF);
 		cC.addComponent(pC);
 
@@ -365,6 +391,8 @@ public class AddUserModule {
 		tF = new TextField("E-mail Address");
 		// tF.setValue("pkigozi@swifta.com");
 		tFSEmail = tF;
+		tFSEmail.addValidator(new EmailValidator("Invalid Email Address."));
+		tFSEmail.setImmediate(true);
 		sC.addComponent(tF);
 
 		cC.addComponent(sC);
@@ -381,6 +409,7 @@ public class AddUserModule {
 		// tF.setValue("Yusuf Lule Rd.");
 		tFStreet = tF;
 		tFStreet.setRequired(true);
+		tFStreet.setImmediate(true);
 		physicalC.addComponent(tF);
 
 		tF = new TextField("Postal Code");
@@ -392,6 +421,7 @@ public class AddUserModule {
 		// tF.setValue("Kampala");
 		tFCity = tF;
 		tFCity.setRequired(true);
+		tFCity.setImmediate(true);
 		physicalC.addComponent(tF);
 
 		tF = new TextField("Province");
@@ -429,6 +459,7 @@ public class AddUserModule {
 		// comboHierarchy.select(1);
 		comboProfile = comboHierarchy;
 		comboProfile.setRequired(true);
+		comboProfile.setImmediate(true);
 		cAcc.addComponent(comboHierarchy);
 
 		final VerticalLayout cLBody = new VerticalLayout();
@@ -443,6 +474,7 @@ public class AddUserModule {
 		// tF.setValue("+256774191152");
 		tFMSISDN = tF;
 		tFMSISDN.setRequired(true);
+		tFMSISDN.setImmediate(true);
 		cLBody.addComponent(tF);
 
 		// / tF = new TextField("PIN");
@@ -450,7 +482,9 @@ public class AddUserModule {
 
 		tF = new TextField("Email");
 		tFAccEmail = tF;
+		tFAccEmail.addValidator(new EmailValidator("Invalid Email Address."));
 		tFAccEmail.setRequired(true);
+		tFAccEmail.setImmediate(true);
 		// tFAccEmail.setValue("ppounds1@gmail.com");
 		cLBody.addComponent(tF);
 
@@ -473,6 +507,7 @@ public class AddUserModule {
 		// tFBAcc.addValidator(new NoNull());
 		cLBody.addComponent(tF);
 
+		combo = new ComboBox("Currency");
 		combo.addItem(1);
 		combo.setItemCaption(1, "US Dollars");
 		// combo.select(1);
@@ -765,16 +800,15 @@ public class AddUserModule {
 
 					String bacc = (tFBAcc.getValue() == null) ? "" : tFBAcc
 							.getValue().toString();
-					int bid = (comboBID.getValue() == null) ? 0 : (comboBID
-							.getValue().toString().trim().isEmpty()) ? 0
-							: Integer.valueOf(comboBID.getValue().toString());
+					int bid = (comboBID.getValue() == null) ? 0 : Integer
+							.valueOf(comboBID.getValue().toString());
 
 					String bd = (comboBDomain.getValue() == null) ? ""
 							: comboBDomain.getValue().toString();
 					String clrno = (tFClrNo.getValue() == null) ? "" : tFClrNo
 							.getValue().toString();
-					String cur = (comboCur.getValue() == null) ? "" : comboCur
-							.getValue().toString();
+					String cur = (comboCur.getValue() == null) ? "000"
+							: comboCur.getValue().toString();
 					String accEmail = (tFAccEmail.getValue() == null) ? ""
 							: tFAccEmail.getValue().toString();
 					String msisdn = (tFMSISDN.getValue() == null) ? ""
@@ -1134,6 +1168,12 @@ public class AddUserModule {
 		clearField(comboLG);
 		clearField(comboCountry);
 		clearField(comboLang);
+		clearField(comboProfile);
+		clearField(comboIDType);
+		clearField(dFDoI);
+		clearField(dFDoE);
+		clearField(optSex);
+		clearField(chcTAndC);
 		// comboBDomain.addValidator(new NoNull());
 		// comboBID.addValidator(new NoNull());
 		// comboCur.addValidator(new NoNull());
@@ -1161,6 +1201,8 @@ public class AddUserModule {
 		Date date = null;
 
 		dFDoB.setValue(date);
+		tFPEmail.setComponentError(null);
+		tFSEmail.setComponentError(null);
 
 		Notification.show("Fields reset.", Notification.Type.WARNING_MESSAGE);
 
@@ -1334,6 +1376,15 @@ public class AddUserModule {
 		dFDoI.validate();
 		dFDoE.validate();
 		optSex.validate();
+		tFPEmail.setComponentError(null);
+		tFSEmail.setComponentError(null);
+
+		if (tFPEmail.getValue() != null
+				&& !tFPEmail.getValue().trim().isEmpty())
+			tFPEmail.validate();
+		if (tFSEmail.getValue() != null
+				&& !tFSEmail.getValue().trim().isEmpty())
+			tFSEmail.validate();
 
 	}
 
@@ -1385,6 +1436,31 @@ public class AddUserModule {
 			return;
 		}
 
+	}
+
+	private class IDDateValidator implements Validator {
+
+		private PopupDateField dIssue, dExpiry;
+
+		IDDateValidator(PopupDateField d1, PopupDateField d2) {
+			this.dIssue = d1;
+			this.dExpiry = d2;
+
+		}
+
+		@Override
+		public void validate(Object value) throws InvalidValueException {
+			if (dIssue.getValue() == null)
+				return;
+			if (dExpiry.getValue() == null)
+				return;
+			Calendar cal = Calendar.getInstance();
+			Date dToday = cal.getTime();
+			// DateValidator d = new DateRangeValidator(null, dToday, dToday,
+			// null);
+			// if(dIssue)
+
+		}
 	}
 
 }
