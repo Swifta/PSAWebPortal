@@ -9,7 +9,9 @@ import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.TreeSet;
 
@@ -82,8 +84,6 @@ public class Reportform extends VerticalLayout {
 	ComboBox comboF;
 	ComboBox comboVal;
 	IndexedContainer ds;
-	private boolean isPopupShowing = false;
-	private boolean isTxnReport = false;
 	ComboBox reportType;
 	boolean isCriteriaChanged = false;
 	private PopupDateField dat = new PopupDateField("From: ");
@@ -124,20 +124,12 @@ public class Reportform extends VerticalLayout {
 	}
 
 	public void reportformat() {
-		// Float Management
 
-		// Transaction
+		// table.setRowHeaderMode(RowHeaderMode.INDEX);
 
-		// Summary
-
-		// Commission
-
-		// container2.addContainerProperty("Account Type", String.class, "");
 		setMargin(true);
 		reportType = new ComboBox("Search by Report Type");
 		Button export = new Button("Export result");
-
-		Button Add = new Button("Add");
 
 		reportType.addItem("Float Management Report");
 		reportType.addItem("Transaction Report");
@@ -209,6 +201,11 @@ public class Reportform extends VerticalLayout {
 
 		dat2.addFocusListener(new FocusListener() {
 
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 8306366457968363383L;
+
 			@Override
 			public void focus(FocusEvent event) {
 				if (dat2.getValue() == null || dat.getValue() == null)
@@ -220,6 +217,11 @@ public class Reportform extends VerticalLayout {
 		});
 
 		dat.addFocusListener(new FocusListener() {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = -3939984171341906628L;
 
 			@Override
 			public void focus(FocusEvent event) {
@@ -390,7 +392,7 @@ public class Reportform extends VerticalLayout {
 		// DateField from = new DateField("Transaction Report From");
 		// DateField to = new DateField("Transaction Report To");
 		VerticalLayout transactions = new VerticalLayout();
-		Button search = new Button("Search");
+
 		agent = new ComboBox("Agent/Dealer");
 
 		agent.addItem("dolapo");
@@ -523,6 +525,7 @@ public class Reportform extends VerticalLayout {
 
 			private static final long serialVersionUID = -2214024761998185485L;
 
+			@SuppressWarnings("unchecked")
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				if (ds == null)
@@ -542,9 +545,21 @@ public class Reportform extends VerticalLayout {
 				if (t > 30) {
 					t = 30;
 				}
-				table.setPageLength(t);
 
-			}
+				table.setPageLength(t);
+				Iterator<Collection<?>> itr = (Iterator<Collection<?>>) table
+						.getItemIds().iterator();
+				int i = 0;
+				while (itr.hasNext()) {
+					i++;
+					Object itemid = itr.next();
+					Item item = table.getItem(itemid);
+					Property<String> p = item.getItemProperty("S/N");
+					p.setValue(i + "");
+
+				}
+
+			};
 
 		});
 
@@ -584,13 +599,10 @@ public class Reportform extends VerticalLayout {
 			container.addContainerProperty("Amount (\u20A6)", String.class, "");
 
 			ds = container;
-
-			// String Uname = "psaproduser";
-			// String Pword = "psaproduser@2015";
 			String drivers = "com.mysql.jdbc.Driver";
 			try {
 
-				Class driver_class = Class.forName(drivers);
+				Class<?> driver_class = Class.forName(drivers);
 				Driver driver = (Driver) driver_class.newInstance();
 				DriverManager.registerDriver(driver);
 
@@ -648,8 +660,6 @@ public class Reportform extends VerticalLayout {
 					String amt = rs.getString("amount");
 					String fullname = rs.getString("fullname");
 
-					// Calendar cal = Calendar.getIns
-
 					String d = rs.getString("date");
 
 					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -677,9 +687,7 @@ public class Reportform extends VerticalLayout {
 						ht.get("Agent ID").add(aid);
 					}
 
-					// DateFormat.
-
-					tdPropertyserial.setValue(String.valueOf(x));
+					tdPropertyserial.setValue(x + "");
 					tdPropertydealerid.setValue(did);
 					tdPropertyagentid.setValue(aid);
 					tdPropertyevalueamount.setValue(amt);
@@ -687,6 +695,7 @@ public class Reportform extends VerticalLayout {
 					tdPropertyfullname.setValue(fullname);
 
 				}
+
 				conn.close();
 
 				Notification.show(x + " result(s) found",
@@ -697,6 +706,7 @@ public class Reportform extends VerticalLayout {
 				}
 
 				table.setPageLength(x);
+				// table.getd
 
 				table.setContainerDataSource(container);
 				table.setSelectable(true);
@@ -739,7 +749,7 @@ public class Reportform extends VerticalLayout {
 			String drivers = "com.mysql.jdbc.Driver";
 			try {
 
-				Class driver_class = Class.forName(drivers);
+				Class<?> driver_class = Class.forName(drivers);
 				Driver driver = (Driver) driver_class.newInstance();
 				DriverManager.registerDriver(driver);
 
@@ -982,7 +992,7 @@ public class Reportform extends VerticalLayout {
 
 				rs = stmt.executeQuery(summarysql.toString());
 
-				System.out.println(summarysql.toString());
+				// System.out.println(summarysql.toString());
 				cD.setVisible(true);
 				while (rs.next()) {
 					x = x + 1;
@@ -1153,7 +1163,7 @@ public class Reportform extends VerticalLayout {
 				sb.append(" accountholders where profileid = 15 and accounttypeid = 2)) and acts3.accountresourceid in ");
 				sb.append(" (select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from ");
 				sb.append(" accountholders where (profileid = 11 or profileid = 6) and accounttypeid = 1)) order by TransactionDate desc; ");
-				System.out.println(sb.toString());
+				// System.out.println(sb.toString());
 				rs = stmt.executeQuery(sb.toString());
 
 				while (rs.next()) {
@@ -1429,8 +1439,6 @@ public class Reportform extends VerticalLayout {
 		if (!table.getCaption().equals("Transaction Report"))
 			return;
 
-		isPopupShowing = true;
-
 		table.setSelectable(false);
 		table.setEnabled(false);
 
@@ -1542,7 +1550,7 @@ public class Reportform extends VerticalLayout {
 
 			@Override
 			public void windowClose(CloseEvent e) {
-				isPopupShowing = false;
+
 				table.setSelectable(true);
 				table.setEnabled(true);
 			}
@@ -1551,6 +1559,7 @@ public class Reportform extends VerticalLayout {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	public void addDFilters() {
 		dat.setComponentError(null);
 		dat2.setComponentError(null);
@@ -1575,6 +1584,19 @@ public class Reportform extends VerticalLayout {
 				if (t > 30)
 					t = 30;
 				table.setPageLength(t);
+
+				table.setPageLength(t);
+				Iterator<Collection<?>> itr = (Iterator<Collection<?>>) table
+						.getItemIds().iterator();
+				int i = 0;
+				while (itr.hasNext()) {
+					i++;
+					Object itemid = itr.next();
+					Item item = table.getItem(itemid);
+					Property<String> p = item.getItemProperty("S/N");
+					p.setValue(i + "");
+
+				}
 
 			}
 

@@ -32,12 +32,19 @@ public class MatsWebPortalUI extends UI {
 	public static final Conf conf = new Conf("production");
 
 	@WebServlet(value = "/*", asyncSupported = true)
-	@VaadinServletConfiguration(productionMode = true, closeIdleSessions = true, ui = MatsWebPortalUI.class, widgetset = "com.swifta.mats.web.widgetset.Mats_web_portalWidgetset")
+	@VaadinServletConfiguration(productionMode = false, closeIdleSessions = true, ui = MatsWebPortalUI.class, widgetset = "com.swifta.mats.web.widgetset.Mats_web_portalWidgetset")
 	public static class Servlet extends VaadinServlet {
 
 		@Override
-		protected void servletInitialized() throws ServletException {
-			super.servletInitialized();
+		protected void servletInitialized() {
+			try {
+				super.servletInitialized();
+			} catch (ServletException e) {
+				Notification.show(e.getMessage(),
+						Notification.Type.ERROR_MESSAGE);
+				e.printStackTrace();
+			}
+			// PreparedStatement s = new PreparedStatement();
 			// getService().addSessionDestroyListener(this);
 
 			getService().setSystemMessagesProvider(
@@ -167,7 +174,7 @@ public class MatsWebPortalUI extends UI {
 
 								}
 							});
-		} catch (OutOfMemoryError e) {
+		} catch (Exception e) {
 			Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
 			e.printStackTrace();
 

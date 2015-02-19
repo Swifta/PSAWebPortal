@@ -1995,14 +1995,14 @@ public class BE2 {
 	private void getDBData(IndexedContainer container) {
 
 		String drivers = "com.mysql.jdbc.Driver";
+		Connection conn = null;
 		try {
 			Class<?> driver_class = Class.forName(drivers);
 			Driver driver = (Driver) driver_class.newInstance();
 			DriverManager.registerDriver(driver);
 
-			Connection conn = DriverManager.getConnection(
-					MatsWebPortalUI.conf.DB, MatsWebPortalUI.conf.UN,
-					MatsWebPortalUI.conf.PW);
+			conn = DriverManager.getConnection(MatsWebPortalUI.conf.DB,
+					MatsWebPortalUI.conf.UN, MatsWebPortalUI.conf.PW);
 
 			String qx = "SELECT acth.username as un, acth.msisdn as msisdn, acth.email as email,pf.profilename as prof, acths.accountholderstatusname as status,acthd.firstname as fn ,acthd.lastname as ln,id.identificationnumber as id,ad.streetaddress as street from accountholders acth, accountholderdetails acthd, accountholderstatus acths, identificationattribute id, address ad, profiles pf where acth.accountholderdetailid = acthd.accountdetailsid and acth.accountholderstatusid = acths.accountholderstatusid and acthd.identificationid = id.identificationattrid and acthd.addressid = ad.addressid and pf.profileid = acth.profileid and pf.profiletypeid = 1;";
 
@@ -2031,6 +2031,7 @@ public class BE2 {
 
 		} catch (SQLException | ClassNotFoundException | InstantiationException
 				| IllegalAccessException | IllegalStateException e) {
+
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			if (!(e instanceof IllegalStateException)) {
@@ -2039,6 +2040,13 @@ public class BE2 {
 						Notification.Type.ERROR_MESSAGE);
 			}
 
+		} finally {
+			if (conn != null)
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 		}
 
 	}
