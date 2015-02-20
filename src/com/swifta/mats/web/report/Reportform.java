@@ -13,6 +13,9 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import com.swifta.mats.web.MatsWebPortalUI;
@@ -26,9 +29,9 @@ import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.Validator;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.data.util.filter.And;
-import com.vaadin.data.util.filter.Compare;
 import com.vaadin.data.util.filter.Compare.GreaterOrEqual;
 import com.vaadin.data.util.filter.Compare.LessOrEqual;
+import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.event.FieldEvents.FocusEvent;
 import com.vaadin.event.FieldEvents.FocusListener;
 import com.vaadin.event.ItemClickEvent;
@@ -50,6 +53,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
+import com.vaadin.ui.themes.ValoTheme;
 
 public class Reportform extends VerticalLayout {
 
@@ -81,8 +85,7 @@ public class Reportform extends VerticalLayout {
 
 	ComboBox agent;
 	LinkedHashMap<String, TreeSet<String>> ht = new LinkedHashMap<>();
-	ComboBox comboF;
-	ComboBox comboVal;
+
 	IndexedContainer ds;
 	ComboBox reportType;
 	boolean isCriteriaChanged = false;
@@ -91,13 +94,11 @@ public class Reportform extends VerticalLayout {
 	HorizontalLayout cD;
 	Filter cFilter;
 	Filter dFilter;
-
-	// PagedTableContainerCustom container = new
-	// PagedTableContainerCustom(contain);
-	// PagedTableContainerCustom container2 = new PagedTableContainerCustom(
-	// contain2);
-	// PagedTableContainerCustom container3 = new PagedTableContainerCustom(
-	// contain3);
+	private HorizontalLayout cByAndVal;
+	private Button btnApply;
+	private TreeMap<String, String> cMap = new TreeMap<>();
+	private boolean isFirstCriteriaChanged = true;
+	private Label lb;
 
 	private class ValidateRange implements Validator {
 		private static final long serialVersionUID = -5454180295673067279L;
@@ -145,32 +146,47 @@ public class Reportform extends VerticalLayout {
 		cD = new HorizontalLayout();
 		cD.setSpacing(true);
 		cD.setVisible(false);
+		lb = new Label("Filter by: ");
+		lb.setSizeUndefined();
+		lb.setVisible(false);
+		lb.setStyleName("label_search_user");
+		cF.addComponent(lb);
 
 		// dat.setDateFormat("mm-dd-yy");
 
 		cD.addComponent(dat);
 		cD.addComponent(dat2);
 
-		final HorizontalLayout cByAndVal = new HorizontalLayout();
+		cByAndVal = new HorizontalLayout();
+		btnApply = new Button("Apply");
+		btnApply.setStyleName(ValoTheme.LINK_LARGE + " btn_s_rx");
+
+		btnApply.setVisible(false);
+		btnApply.addClickListener(new Button.ClickListener() {
+			private static final long serialVersionUID = 6233032315069180601L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				if (!isFirstCriteriaChanged)
+					return;
+				refine();
+				isFirstCriteriaChanged = false;
+
+			}
+		});
+
 		cF.addComponent(cByAndVal);
 
 		cF.addComponent(cD);
 
-		comboF = new ComboBox("Filter by: ");
-
 		Button btnReload = new Button("Reload");
 		cF.addComponent(btnReload);
-		cF.setSpacing(true);
 
-		cByAndVal.addComponent(comboF);
+		cF.setSpacing(true);
 		cByAndVal.setSpacing(true);
 
 		addComponent(reportType);
 		addComponent(cF);
-
-		comboVal = new ComboBox("Select " + comboF.getValue());
-		cByAndVal.addComponent(comboVal);
-		comboVal.setVisible(false);
 
 		dat.addValidator(new ValidateRange(dat, dat2));
 		dat2.addValidator(new ValidateRange(dat, dat2));
@@ -228,32 +244,6 @@ public class Reportform extends VerticalLayout {
 				if (dat2.getValue() == null || dat.getValue() == null)
 					return;
 				addDFilters();
-
-			}
-
-		});
-
-		comboF.addValueChangeListener(new ValueChangeListener() {
-			private static final long serialVersionUID = 4792221698725213906L;
-
-			@Override
-			public void valueChange(ValueChangeEvent event) {
-				if (event.getProperty().getValue() == null) {
-					comboVal.setVisible(false);
-					return;
-				}
-				String creteria = event.getProperty().getValue().toString();
-				TreeSet<String> arrL = ht.get(creteria);
-				if (arrL == null)
-					return;
-
-				comboVal.removeAllItems();
-				for (String s : arrL) {
-					comboVal.addItem(s);
-				}
-
-				comboVal.setCaption("Select " + creteria);
-				comboVal.setVisible(true);
 
 			}
 
@@ -389,40 +379,7 @@ public class Reportform extends VerticalLayout {
 	}
 
 	public VerticalLayout Transactions() {
-		// DateField from = new DateField("Transaction Report From");
-		// DateField to = new DateField("Transaction Report To");
 		VerticalLayout transactions = new VerticalLayout();
-
-		agent = new ComboBox("Agent/Dealer");
-
-		agent.addItem("dolapo");
-		Label lab3 = new Label("Search for Transaction Report");
-
-		// transactions.addComponent(lab3);
-		// transactions.addComponent(from);
-		// transactions.addComponent(to);
-		// transactions.addComponent(agent);
-		// transactions.addComponent(partner);
-		// transactions.addComponent(search);
-
-		/*
-		 * m* search.addClickListener(new Button.ClickListener() {
-		 * 
-		 * 
-		 * 
-		 * private static final long serialVersionUID = 1L;
-		 * 
-		 * @Override public void buttonClick(ClickEvent event) {
-		 * container2.removeAllContainerFilters(); Filter filter = new
-		 * SimpleStringFilter("Name", agent.getValue() .toString(), true, true);
-		 * 
-		 * container2.addContainerFilter(filter);
-		 * table.setContainerDataSource(container2); // TODO Auto-generated
-		 * method stub agent.setInputPrompt("Select");
-		 * 
-		 * } }); *
-		 */
-
 		return transactions;
 	}
 
@@ -520,48 +477,97 @@ public class Reportform extends VerticalLayout {
 
 	}
 
-	private void addFilter(final IndexedContainer ds) {
-		comboVal.addValueChangeListener(new ValueChangeListener() {
+	private void addFilter() {
+		if (ds == null)
+			return;
 
-			private static final long serialVersionUID = -2214024761998185485L;
+		cMap.clear();
 
-			@SuppressWarnings("unchecked")
+		Set<String> arrC = ht.keySet();
+		if (arrC == null)
+			return;
+		Iterator<String> itrc = arrC.iterator();
+		ComboBox combo;
+		cByAndVal.removeAllComponents();
+		while (itrc.hasNext()) {
+			String c = itrc.next();
+			combo = new ComboBox(c);
+			addVCL(combo);
+			TreeSet<String> scv = ht.get(c);
+			for (String cv : scv)
+				combo.addItem(cv);
+			cByAndVal.addComponent(combo);
+		}
+
+		cByAndVal.addComponent(btnApply);
+		btnApply.setVisible(true);
+		lb.setVisible(true);
+
+	}
+
+	private void addVCL(final ComboBox combo) {
+
+		combo.addValueChangeListener(new ValueChangeListener() {
+
+			private static final long serialVersionUID = -5075193702278484474L;
+
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-				if (ds == null)
-					return;
-				ds.removeAllContainerFilters();
-				if (comboVal.getValue() != null && comboF.getValue() != null) {
-					cFilter = new And(new Compare.Equal(comboF.getValue()
-							.toString(), comboVal.getValue()));
-					ds.addContainerFilter(cFilter);
+				isFirstCriteriaChanged = true;
+				if (combo.getValue() == null) {
+					if (cMap.containsKey(combo.getCaption())) {
+						cMap.remove(combo.getCaption());
+						return;
+					}
 				}
+				cMap.put(combo.getCaption(), combo.getValue().toString());
 
-				dat.setValue(null);
-				dat2.setValue(null);
-
-				table.setContainerDataSource(ds);
-				int t = ds.size();
-				if (t > 30) {
-					t = 30;
-				}
-
-				table.setPageLength(t);
-				Iterator<Collection<?>> itr = (Iterator<Collection<?>>) table
-						.getItemIds().iterator();
-				int i = 0;
-				while (itr.hasNext()) {
-					i++;
-					Object itemid = itr.next();
-					Item item = table.getItem(itemid);
-					Property<String> p = item.getItemProperty("S/N");
-					p.setValue(i + "");
-
-				}
-
-			};
+			}
 
 		});
+
+	}
+
+	@SuppressWarnings("unchecked")
+	private void refine() {
+
+		if (ds == null)
+			return;
+		if (cMap.size() == 0) {
+			ds.removeAllContainerFilters();
+			return;
+		}
+
+		ds.removeAllContainerFilters();
+		Iterator<Entry<String, String>> itrc = cMap.entrySet().iterator();
+		while (itrc.hasNext()) {
+			Entry<String, String> e = itrc.next();
+			cFilter = new SimpleStringFilter(e.getKey(), e.getValue(), true,
+					false);
+			ds.addContainerFilter(cFilter);
+		}
+
+		dat.setValue(null);
+		dat2.setValue(null);
+
+		table.setContainerDataSource(ds);
+		int t = ds.size();
+		if (t > 30) {
+			t = 30;
+		}
+
+		table.setPageLength(t);
+		Iterator<Collection<?>> itr = (Iterator<Collection<?>>) table
+				.getItemIds().iterator();
+		int i = 0;
+		while (itr.hasNext()) {
+			i++;
+			Object itemid = itr.next();
+			Item item = table.getItem(itemid);
+			Property<String> p = item.getItemProperty("S/N");
+			p.setValue(i + "");
+
+		}
 
 	}
 
@@ -586,13 +592,6 @@ public class Reportform extends VerticalLayout {
 
 			container.addContainerProperty("S/N", String.class, "");
 			container.addContainerProperty("Date", Date.class, "");
-			// container.addContainerProperty("Transaction ID",
-			// String.class, "");
-
-			// container.addContainerProperty("Transaction Date",
-			// String.class, "");
-			// container
-			// .addContainerProperty("Agent ID", String.class, "");
 			container.addContainerProperty("Agent ID", String.class, "");
 			container.addContainerProperty("Dealer ID", String.class, "");
 			container.addContainerProperty("Full Name", String.class, "");
@@ -615,7 +614,7 @@ public class Reportform extends VerticalLayout {
 				int x = 0;
 				Object itemId;
 				Item trItem;
-				ds = container;
+
 				if (!container.removeAllItems()) {
 					return;
 				}
@@ -744,8 +743,6 @@ public class Reportform extends VerticalLayout {
 				return;
 			}
 
-			// String Uname = "psaproduser";
-			// String Pword = "psaproduser@2015";
 			String drivers = "com.mysql.jdbc.Driver";
 			try {
 
@@ -1121,8 +1118,6 @@ public class Reportform extends VerticalLayout {
 				return;
 			}
 
-			ds = feesCommissionContainer;
-
 			String drivers = "com.mysql.jdbc.Driver";
 			try {
 
@@ -1319,7 +1314,6 @@ public class Reportform extends VerticalLayout {
 				return;
 			}
 
-			ds = feesCommissionContainer;
 			String drivers = "com.mysql.jdbc.Driver";
 			try {
 
@@ -1423,11 +1417,8 @@ public class Reportform extends VerticalLayout {
 				errorHandler(e);
 			}
 		}
-		comboF.removeAllItems();
-		for (String s : ht.keySet())
-			comboF.addItem(s);
-		comboF.select(null);
-		addFilter(ds);
+
+		addFilter();
 
 	}
 
@@ -1564,6 +1555,8 @@ public class Reportform extends VerticalLayout {
 		dat.setComponentError(null);
 		dat2.setComponentError(null);
 		isCriteriaChanged = true;
+		if (ds == null)
+			return;
 		try {
 			dat2.validate();
 
@@ -1610,7 +1603,8 @@ public class Reportform extends VerticalLayout {
 
 	private void errorHandler(Exception e) {
 		if (e instanceof NullPointerException) {
-			Notification.show("Can not generate report at this moment.",
+			Notification.show(
+					"Oops... something happened while generating reports.",
 					Notification.Type.WARNING_MESSAGE);
 			e.printStackTrace();
 		} else {
