@@ -343,6 +343,7 @@ public class Reportform extends VerticalLayout {
 
 		addComponent(export);
 		setComponentAlignment(export, Alignment.BOTTOM_RIGHT);
+		reportType.setValue("Fees / Commission Report");
 
 	}
 
