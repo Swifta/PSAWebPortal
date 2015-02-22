@@ -9,9 +9,15 @@ public class Client {
 
 	public static void main(String args[]) throws Exception {
 
-		String result = Client.passreset();
+		// String result = Client.passreset();
 
-		System.out.println(result);
+		Client.passreset();
+
+		// Client.unlockAccount();
+
+		// Client.authenticate();
+
+		// System.out.println(result);
 
 		// Client.sql();
 
@@ -119,7 +125,7 @@ public class Client {
 
 	public static void authenticate() throws AxisFault {
 		LoginService loginService = new LoginService();
-		System.out.println(loginService.authenticateUser("166735", "modupe"));
+		System.out.println(loginService.authenticateUser("matsng", "password"));
 
 	}
 
@@ -164,8 +170,18 @@ public class Client {
 		System.out.println(agentsql.toString());
 	}
 
-	public static String passreset() throws AxisFault {
-		return UserManagementService.passwordResetByAdmin("admin", "olumide",
-				"1345");
+	public static void passreset() throws AxisFault {
+		System.out.println(UserManagementService.passwordResetByAdmin("admin",
+				"olumide", "1345"));
+	}
+
+	public static void unlockAccount() throws AxisFault {
+		System.out.println(UserManagementService.unlockUserAccount("admin",
+				"matsng"));
+	}
+
+	public static void lockUserAccountByAdmin() throws AxisFault {
+		System.out.println(UserManagementService.lockUserAccountByAdmin(
+				"admin", "matsng"));
 	}
 }

@@ -223,7 +223,6 @@ public class UserManagementService {
 					// System.out.println(response3.getResponseMessage());
 					if (response3 != null) {
 						statusMessage = response3.getResponsemessage();
-
 					}
 				} else {
 					statusMessage = "Activation Response is empty";
@@ -438,6 +437,150 @@ public class UserManagementService {
 						.getProperty(HTTPConstants.MC_HTTP_STATUS_CODE);
 				if (statuscode == 202) {
 					statusMessage = "PASSWORD_RESET_WAS_SUCCESSFUL";
+				} else {
+					statusMessage = "REQUEST CANNOT BE COMPLETED AT THIS MOMENT, TRY AGAIN LATER1";
+				}
+			} catch (Exception e1) {
+				statusMessage = "REQUEST CANNOT BE COMPLETED AT THIS MOMENT, TRY AGAIN LATER";
+				e1.printStackTrace();
+			}
+		}
+		return statusMessage;
+
+	}
+
+	public static String unlockUserAccount(String initiatinguser,
+			String username) throws AxisFault {
+
+		ServiceClient sender = new ServiceClient();
+
+		String statusMessage = "";
+		try {
+
+			OMFactory fac = OMAbstractFactory.getOMFactory();
+
+			OMNamespace omNs = fac.createOMNamespace(
+					"http://services.mgt.identity.carbon.wso2.org", "ser");
+
+			OMElement unlockUserAccountElem = fac.createOMElement(
+					"unlockUserAccount", omNs);
+
+			OMElement userNameElement = fac.createOMElement("userName", omNs);
+			userNameElement.addChild(fac
+					.createOMText(userNameElement, username));
+
+			unlockUserAccountElem.addChild(userNameElement);
+
+			Options options = new Options();
+			options.setTo(targetEPR);
+			options.setTransportInProtocol(Constants.TRANSPORT_HTTP);
+			options.setAction("urn:unlockUserAccount");
+
+			options.setProperty(HTTPConstants.CHUNKED, Constants.VALUE_FALSE);
+
+			sender = new ServiceClient();
+			sender.setOptions(options);
+			OMElement result = sender.sendReceive(unlockUserAccountElem);
+
+			OMElement firstelement = result.getFirstElement();
+
+			statusMessage = firstelement.getFirstElement().getText();
+
+			return statusMessage;
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			// e.printStackTrace();
+			try {
+				System.out
+						.println("HTTP status code: "
+								+ sender.getLastOperationContext()
+										.getMessageContext(
+												WSDLConstants.MESSAGE_LABEL_IN_VALUE)
+										.getProperty(
+												HTTPConstants.MC_HTTP_STATUS_CODE));
+				Integer statuscode = (Integer) sender
+						.getLastOperationContext()
+						.getMessageContext(WSDLConstants.MESSAGE_LABEL_IN_VALUE)
+						.getProperty(HTTPConstants.MC_HTTP_STATUS_CODE);
+				if (statuscode == 202) {
+					statusMessage = "ACCOUNT UNLOCKED SUCCESSFULLY";
+				} else {
+					statusMessage = "REQUEST CANNOT BE COMPLETED AT THIS MOMENT, TRY AGAIN LATER1";
+				}
+			} catch (Exception e1) {
+				statusMessage = "REQUEST CANNOT BE COMPLETED AT THIS MOMENT, TRY AGAIN LATER";
+				e1.printStackTrace();
+			}
+		}
+		return statusMessage;
+
+	}
+
+	public static String lockUserAccountByAdmin(String initiatinguser,
+			String username) throws AxisFault {
+
+		ServiceClient sender = new ServiceClient();
+
+		String statusMessage = "";
+		try {
+
+			OMFactory fac = OMAbstractFactory.getOMFactory();
+
+			OMNamespace omNs = fac.createOMNamespace(
+					"http://services.mgt.identity.carbon.wso2.org", "ser");
+
+			OMElement lockUserAccountElem = fac.createOMElement(
+					"lockUserAccount", omNs);
+
+			OMElement userNameElement = fac.createOMElement("userName", omNs);
+			userNameElement.addChild(fac
+					.createOMText(userNameElement, username));
+
+			lockUserAccountElem.addChild(userNameElement);
+
+			Options options = new Options();
+			options.setTo(targetEPR);
+			options.setTransportInProtocol(Constants.TRANSPORT_HTTP);
+			options.setAction("urn:lockUserAccount");
+
+			options.setProperty(HTTPConstants.CHUNKED, Constants.VALUE_FALSE);
+
+			sender = new ServiceClient();
+			sender.setOptions(options);
+			OMElement result = sender.sendReceive(lockUserAccountElem);
+
+			OMElement firstelement = result.getFirstElement();
+
+			statusMessage = firstelement.getFirstElement().getText();
+
+			// System.out.println(firstelement.getText());
+
+			System.out.println(statusMessage);
+
+			// if (firstelement.getText().equals("true")) {
+			// status = true;
+			// }
+
+			return statusMessage;
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			// e.printStackTrace();
+			try {
+				System.out
+						.println("HTTP status code: "
+								+ sender.getLastOperationContext()
+										.getMessageContext(
+												WSDLConstants.MESSAGE_LABEL_IN_VALUE)
+										.getProperty(
+												HTTPConstants.MC_HTTP_STATUS_CODE));
+				Integer statuscode = (Integer) sender
+						.getLastOperationContext()
+						.getMessageContext(WSDLConstants.MESSAGE_LABEL_IN_VALUE)
+						.getProperty(HTTPConstants.MC_HTTP_STATUS_CODE);
+				if (statuscode == 202) {
+					statusMessage = "ACCOUNT LOCKED SUCCESSFULLY";
 				} else {
 					statusMessage = "REQUEST CANNOT BE COMPLETED AT THIS MOMENT, TRY AGAIN LATER1";
 				}

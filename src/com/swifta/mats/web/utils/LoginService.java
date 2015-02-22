@@ -38,10 +38,10 @@ public class LoginService {
 	private static EndpointReference targetEPR = new EndpointReference(
 			esbendpoint);
 
-	public Boolean authenticateUser(String username, String password)
+	public String authenticateUser(String username, String password)
 			throws AxisFault {
 
-		boolean status = false;
+		// boolean status = false;
 
 		ServiceClient sender = null;
 
@@ -73,13 +73,21 @@ public class LoginService {
 		sender.setOptions(options);
 		OMElement result = sender.sendReceive(authenticate);
 
+		// OMElement firstelement = result.getFirstElement();
+
 		OMElement firstelement = result.getFirstElement();
 
-		if (firstelement.getText().equals("true")) {
-			status = true;
-		}
+		String statusMessage = firstelement.getFirstElement().getText();
 
-		return status;
+		// System.out.println(firstelement.getText());
+
+		System.out.println(statusMessage);
+
+		// if (firstelement.getText().equals("true")) {
+		// status = true;
+		// }
+
+		return statusMessage;
 
 		// String statusCode = "", responseMessage = "";
 

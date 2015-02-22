@@ -211,7 +211,7 @@ public class Login extends VerticalLayout implements View {
 				// if (validCredentials()) {
 				try {
 					if (loginService.authenticateUser(tfUsername.getValue(),
-							tfPassword.getValue())) {
+							tfPassword.getValue()).equals("true")) {
 						logger.info("---------------Validation successful");
 						UI.getCurrent().getSession()
 								.setAttribute("user", tfUsername.getValue());
@@ -229,8 +229,19 @@ public class Login extends VerticalLayout implements View {
 						logger.info("---------------after getting navigator to workspace:::Login");
 
 					} else {
-
-						lPrompt.setValue("Invalid Username or Password.");
+						if (loginService.authenticateUser(
+								tfUsername.getValue(), tfPassword.getValue())
+								.equals("false")) {
+							lPrompt.setValue("Invalid Username or Password.");
+						} else if (loginService.authenticateUser(
+								tfUsername.getValue(), tfPassword.getValue())
+								.equals("17003")) {
+							lPrompt.setValue("User account is locked for user : "
+									+ "("
+									+ tfUsername.getValue()
+									+ ")"
+									+ " cannot login until the account is unlocked");
+						}
 						tfUsername.focus();
 						lPrompt.setStyleName("label_login_prompt_err");
 						lWelcome.setValue("Oops...");
