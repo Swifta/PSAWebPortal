@@ -123,6 +123,7 @@ public class MatsWebPortalUI extends UI {
 							&& !isLoggedIn) {
 						getCurrent().getSession().close();
 						getCurrent().close();
+						return false;
 					}
 
 					if (!isLoginView && !isLoggedIn) {

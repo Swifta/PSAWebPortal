@@ -167,11 +167,11 @@ public class Reportform extends VerticalLayout {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
+
 				if (!isFirstCriteriaChanged)
 					return;
 				refine();
 				isFirstCriteriaChanged = false;
-
 			}
 		});
 
@@ -536,6 +536,13 @@ public class Reportform extends VerticalLayout {
 			return;
 		if (cMap.size() == 0) {
 			ds.removeAllContainerFilters();
+
+			table.setContainerDataSource(ds);
+			int x = ds.size();
+			if (x > 30)
+				x = 30;
+			table.setPageLength(x);
+
 			return;
 		}
 
@@ -622,7 +629,12 @@ public class Reportform extends VerticalLayout {
 
 				StringBuilder agentsql = new StringBuilder();
 
-				agentsql.append("select cast(tbl1.datecreated as DATE) as 'date', ctrs.operatorid as aid, ach.username as did, concat(achd.firstname,' ',achd.lastname) as fullname, tbl1.cashbalance as ");
+				Calendar cal = Calendar.getInstance();
+				Date dx = cal.getTime();
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+				String dm = sdf.format(dx);
+
+				agentsql.append("select cast(tbl1.datecreated as DATE) as date, ctrs.operatorid as aid, ach.username as did, concat(achd.firstname,' ',achd.lastname) as fullname, tbl1.cashbalance as ");
 				agentsql.append(" amount from accountholders ach, accountholderdetails achd, ( select actxns.userresourceid as cashacctid, ");
 				agentsql.append(" sum(actxns.closingbalance) - sum(actxns.openingbalance) as cashbalance, actxns.datecreated ");
 				agentsql.append(" as datecreated, acts.profileid as profileid, actxns.transactionid as transactionid from");
@@ -630,7 +642,6 @@ public class Reportform extends VerticalLayout {
 				agentsql.append(" acts.profileid = 12 group by CAST(actxns.datecreated as DATE),actxns.userresourceid) tbl1 join cashtransactions ctrs on ctrs.transactionid = tbl1.transactionid where ach.profileid = 11 and tbl1.cashacctid = ach.accountholderid and achd.accountdetailsid = ach.accountholderdetailid order by date desc;");
 
 				rs = stmt.executeQuery(agentsql.toString());
-				// System.out.println(agentsql.toString());
 
 				cD.setVisible(true);
 
@@ -661,8 +672,9 @@ public class Reportform extends VerticalLayout {
 					String fullname = rs.getString("fullname");
 
 					String d = rs.getString("date");
+					// Notification.show(rs.getDate("date").toString(),
+					// Notification.Type.ERROR_MESSAGE);
 
-					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 					Date date = null;
 					try {
 						date = sdf.parse(d);
