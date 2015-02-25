@@ -10,6 +10,7 @@ import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.CustomizedSystemMessages;
+import com.vaadin.server.ErrorHandler;
 import com.vaadin.server.Page;
 import com.vaadin.server.Page.UriFragmentChangedEvent;
 import com.vaadin.server.SystemMessages;
@@ -37,6 +38,7 @@ public class MatsWebPortalUI extends UI {
 
 		@Override
 		protected void servletInitialized() {
+
 			try {
 				super.servletInitialized();
 			} catch (ServletException e) {
@@ -69,6 +71,18 @@ public class MatsWebPortalUI extends UI {
 
 	@Override
 	protected void init(VaadinRequest request) {
+
+		VaadinSession.getCurrent().setErrorHandler(new ErrorHandler() {
+
+			@Override
+			public void error(com.vaadin.server.ErrorEvent event) {
+
+				Notification.show("Sorry, something went wrong.",
+						Notification.Type.TRAY_NOTIFICATION);
+				event.getThrowable().printStackTrace();
+			}
+
+		});
 		try {
 			new Navigator(this, this);
 
@@ -105,6 +119,8 @@ public class MatsWebPortalUI extends UI {
 							prevView.enter(event);
 							return false;
 						} else {
+							UI.getCurrent().getSession()
+									.setAttribute("user", null);
 							getNavigator().navigateTo(Login.LOGIN);
 							return false;
 						}

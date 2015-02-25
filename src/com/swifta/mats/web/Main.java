@@ -55,28 +55,17 @@ public class Main extends VerticalLayout implements View {
 	private Chart pieChart = (Chart) pie.getChart();
 
 	public Main(TabSheet ts) {
-
 		this.ts = ts;
-		ts.setSelectedTab(0);
-		id = ts.getSelectedTab().getId();
 		tab = (VerticalLayout) ts.getSelectedTab();
-		if (id != null && id.equals("ds")) {
-			addHeader();
-			addMenu();
-		} else {
-			addHeader();
-			addMenu();
-			d();
-			tab.setId("ds");
-		}
-
+		addHeader();
+		addMenu();
+		d();
 	}
 
 	@Override
 	public void enter(ViewChangeEvent event) {
 		ts.setSelectedTab(0);
 		addMenu();
-
 	}
 
 	private void addHeader() {

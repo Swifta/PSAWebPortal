@@ -5,7 +5,7 @@ import com.swifta.mats.web.report.ReportView;
 import com.swifta.mats.web.settings.SettingsView;
 import com.swifta.mats.web.transactions.TransView;
 import com.swifta.mats.web.usermanagement.UMView;
-import com.vaadin.ui.Notification;
+import com.vaadin.navigator.View;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TextField;
@@ -15,6 +15,7 @@ import com.vaadin.ui.VerticalLayout;
 public class Initializer {
 
 	private TabSheet m;
+	private View crp, cum, ct, cap, cs;
 
 	TabSheet getTS() {
 		createTabSheet();
@@ -65,62 +66,69 @@ public class Initializer {
 			public void selectedTabChange(SelectedTabChangeEvent event) {
 				String id = m.getSelectedTab().getId();
 				switch (id) {
-				case "ds":
 				case "ds_init": {
-
-					UI.getCurrent().getNavigator()
-							.addView("dashboard", new Main(m));
 					UI.getCurrent().getNavigator().navigateTo(Main.WS);
 
 					break;
 				}
-				case "rp":
+
 				case "rp_init": {
-					UI.getCurrent().getNavigator()
-							.addView("report", new ReportView(m));
+
+					if (crp == null) {
+						crp = new ReportView(m);
+						UI.getCurrent().getNavigator().addView("report", crp);
+					}
 					UI.getCurrent().getNavigator().navigateTo("report");
 					break;
 				}
 
-				case "um_init":
-				case "um": {
-					UI.getCurrent().getNavigator()
-							.addView("user_management", new UMView(m));
+				case "um_init": {
+					if (cum == null) {
+						cum = new UMView(m);
+						UI.getCurrent().getNavigator()
+								.addView("user_management", cum);
+					}
 					UI.getCurrent().getNavigator()
 							.navigateTo("user_management");
 					break;
 				}
 
-				case "tx_init":
-				case "tx": {
-					UI.getCurrent().getNavigator()
-							.addView("transactions", new TransView(m));
+				case "tx_init": {
+
+					if (ct == null) {
+						ct = new TransView(m);
+						UI.getCurrent().getNavigator()
+								.addView("transactions", ct);
+					}
 					UI.getCurrent().getNavigator().navigateTo("transactions");
 					break;
 				}
 
-				case "ap_init":
-				case "ap": {
-					UI.getCurrent().getNavigator()
-							.addView("account_profile", new ProfileView(m));
+				case "ap_init": {
+					if (cap == null) {
+						cap = new ProfileView(m);
+
+						UI.getCurrent().getNavigator()
+								.addView("account_profile", cap);
+					}
 					UI.getCurrent().getNavigator()
 							.navigateTo("account_profile");
 					break;
 				}
 
-				case "st_init":
-				case "st": {
-					UI.getCurrent().getNavigator()
-							.addView("settings", new SettingsView(m));
+				case "st_init": {
+					if (cs == null) {
+						cs = new SettingsView(m);
+						UI.getCurrent().getNavigator().addView("settings", cs);
+					}
 					UI.getCurrent().getNavigator().navigateTo("settings");
+
 					break;
 				}
 
 				default: {
 
 					if (UI.getCurrent().getSession().getAttribute("user") != null) {
-						UI.getCurrent().getNavigator()
-								.addView("dashboard", new Main(m));
 						UI.getCurrent().getNavigator().navigateTo("dashbord");
 					} else {
 						UI.getCurrent().getNavigator().navigateTo(Login.LOGIN);

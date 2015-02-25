@@ -24,19 +24,11 @@ public class SettingsView extends VerticalLayout implements View {
 	String id = null;
 
 	public SettingsView(TabSheet ts) {
-
-		ts.setSelectedTab(5);
 		this.ts = ts;
-
-		id = ts.getSelectedTab().getId();
 		tab = (VerticalLayout) ts.getSelectedTab();
-		if (id != null && id.equals("st")) {
-			addHeader();
-		} else {
-			addHeader();
-			d();
-			tab.setId("st");
-		}
+		addHeader();
+		addMenu();
+		d();
 
 	}
 

@@ -45,19 +45,10 @@ public class UMView extends VerticalLayout implements View {
 
 	public UMView(TabSheet ts) {
 		this.ts = ts;
-		ts.setSelectedTab(2);
-		this.ts = ts;
-		id = ts.getSelectedTab().getId();
 		tab = (VerticalLayout) ts.getSelectedTab();
-		if (id != null && id.equals("um")) {
-			addHeader();
-			addMenu();
-		} else {
-			addHeader();
-			addMenu();
-			d();
-			tab.setId("um");
-		}
+		addHeader();
+		addMenu();
+		d();
 
 	}
 

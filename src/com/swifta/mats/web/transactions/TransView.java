@@ -25,20 +25,11 @@ public class TransView extends VerticalLayout implements View {
 	String id = null;
 
 	public TransView(TabSheet ts) {
-		ts.setSelectedTab(3);
 		this.ts = ts;
-
-		id = ts.getSelectedTab().getId();
 		tab = (VerticalLayout) ts.getSelectedTab();
-		if (id != null && id.equals("tx")) {
-			addHeader();
-			addMenu();
-		} else {
-			addHeader();
-			addMenu();
-			d();
-			tab.setId("tx");
-		}
+		addHeader();
+		addMenu();
+		d();
 
 	}
 

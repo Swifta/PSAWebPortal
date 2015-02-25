@@ -24,23 +24,11 @@ public class ReportView extends VerticalLayout implements View {
 	String id = null;
 
 	public ReportView(TabSheet ts) {
-
-		ts.setSelectedTab(1);
 		this.ts = ts;
-		id = ts.getSelectedTab().getId();
 		tab = (VerticalLayout) ts.getSelectedTab();
-		if (id != null && id.equals("rp")) {
-			addHeader();
-			addMenu();
-
-		} else {
-
-			addHeader();
-			addMenu();
-			d();
-			tab.setId("rp");
-		}
-
+		addHeader();
+		addMenu();
+		d();
 	}
 
 	@Override
