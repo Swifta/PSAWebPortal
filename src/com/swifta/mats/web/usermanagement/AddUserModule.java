@@ -781,6 +781,7 @@ public class AddUserModule {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				UserManagementService ums = new UserManagementService();
+
 				String strResponse = "";
 
 				String idtype = "";

@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.axis2.AxisFault;
+
 import com.swifta.mats.web.MatsWebPortalUI;
 import com.swifta.mats.web.utils.UserManagementService;
 import com.vaadin.data.Container.Filter;
@@ -1197,9 +1199,13 @@ public class BE2 {
 
 		btnSetDefaultAcc = new Button("D");
 
-		// StringBuilder sb = new StringBuilder();
-		// sb.append("users_personal_");
+		Button btnLock = new Button();
+		btnLock.setIcon(FontAwesome.LOCK);
+		btnLock.setDescription("Lock user");
+		btnLock.setStyleName("btn_link");
 
+		btnLock.setId("users_personal_" + hm.get(strProf) + "_" + strUname
+				+ "_lock");
 		btnDetails.setId("users_personal_" + hm.get(strProf) + "_" + strUname
 				+ "_details");
 		btnEdit.setId("user_personal_" + hm.get(strProf) + "_" + strUname
@@ -1227,6 +1233,7 @@ public class BE2 {
 		// actionsC.addComponent(btnSetParent);
 		actionsC.addComponent(btnSetDefaultAcc);
 		actionsC.addComponent(btnLink);
+		actionsC.addComponent(btnLock);
 		actionsC.addComponent(btnDetails);
 		actionsC.addComponent(btnEdit);
 		actionsC.addComponent(btnDelete);
@@ -1249,6 +1256,48 @@ public class BE2 {
 
 		}
 		// actionsC.addComponent(btnMoreActions);
+
+		btnLock.addClickListener(new Button.ClickListener() {
+			private static final long serialVersionUID = 7670596957858236065L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				String[] arrID = event.getButton().getId().split("_");
+				String uname = arrID[2];
+				String inituser = UI.getCurrent().getSession()
+						.getAttribute("user").toString();
+
+				uname = "matsng";
+
+				if (event.getButton().getIcon().equals(FontAwesome.LOCK)) {
+					try {
+						UserManagementService.lockUserAccountByAdmin(inituser,
+								uname);
+					} catch (AxisFault e) {
+						Notification.show(
+								"Sorry! Error occured while Locking user.",
+								Notification.Type.ERROR_MESSAGE);
+						e.printStackTrace();
+					}
+					event.getButton().setIcon(FontAwesome.UNLOCK);
+					event.getButton().setDescription("Unlock user.");
+
+				} else {
+					try {
+						UserManagementService
+								.unlockUserAccount(inituser, uname);
+					} catch (AxisFault e) {
+						Notification.show(
+								"Sorry! Error occured while Locking user.",
+								Notification.Type.ERROR_MESSAGE);
+						e.printStackTrace();
+					}
+					event.getButton().setIcon(FontAwesome.LOCK);
+					event.getButton().setDescription("Lock user.");
+				}
+
+			}
+		});
 
 		btnDetails.addClickListener(new Button.ClickListener() {
 

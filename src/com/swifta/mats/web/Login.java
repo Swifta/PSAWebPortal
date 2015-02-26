@@ -14,6 +14,7 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinSession;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -42,6 +43,7 @@ public class Login extends VerticalLayout implements View {
 	private final PropertysetItem item;
 	private final ObjectProperty<String> pUsername;
 	private final ObjectProperty<String> pPassword;
+	private String curuname = null;
 
 	private void loginPageContent() {
 
@@ -70,6 +72,8 @@ public class Login extends VerticalLayout implements View {
 		lPrompt.setStyleName("label_login_prompt");
 
 		loginLabelContainer.addComponent(lWelcome);
+		loginLabelContainer.setComponentAlignment(lWelcome,
+				Alignment.MIDDLE_CENTER);
 		loginLabelContainer.addComponent(lPrompt);
 
 		VerticalLayout panelLoginAndLogoAndSloganContainer = new VerticalLayout();
@@ -208,6 +212,7 @@ public class Login extends VerticalLayout implements View {
 				}
 				logger.info("---------------Before validating the username and password"
 						+ tfUsername.getValue());
+				curuname = tfUsername.getValue();
 				// if (validCredentials()) {
 				try {
 					if (loginService.authenticateUser(tfUsername.getValue(),
@@ -229,18 +234,23 @@ public class Login extends VerticalLayout implements View {
 						logger.info("---------------after getting navigator to workspace:::Login");
 
 					} else {
+
 						if (loginService.authenticateUser(
 								tfUsername.getValue(), tfPassword.getValue())
 								.equals("false")) {
 							lPrompt.setValue("Invalid Username or Password.");
+
 						} else if (loginService.authenticateUser(
 								tfUsername.getValue(), tfPassword.getValue())
 								.equals("17003")) {
-							lPrompt.setValue("User account is locked for user : "
+							lPrompt.setContentMode(ContentMode.HTML);
+							lPrompt.setValue("<div style='text-align: center; width: 100%;'>User account is locked for user: </div>"
 									+ "("
-									+ tfUsername.getValue()
+									+ curuname
 									+ ")"
 									+ " cannot login until the account is unlocked");
+						} else {
+							lPrompt.setValue("Sorry, can not access system right now.");
 						}
 						tfUsername.focus();
 						lPrompt.setStyleName("label_login_prompt_err");
