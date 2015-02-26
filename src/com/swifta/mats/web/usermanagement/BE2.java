@@ -1281,6 +1281,9 @@ public class BE2 {
 					}
 					event.getButton().setIcon(FontAwesome.UNLOCK);
 					event.getButton().setDescription("Unlock user.");
+					Notification.show(uname
+							+ "'s account has been LOCKED successfully.",
+							Notification.Type.HUMANIZED_MESSAGE);
 
 				} else {
 					try {
@@ -1288,12 +1291,16 @@ public class BE2 {
 								.unlockUserAccount(inituser, uname);
 					} catch (AxisFault e) {
 						Notification.show(
-								"Sorry! Error occured while Locking user.",
+								"Sorry! Error occured while unlocking user.",
 								Notification.Type.ERROR_MESSAGE);
 						e.printStackTrace();
 					}
 					event.getButton().setIcon(FontAwesome.LOCK);
 					event.getButton().setDescription("Lock user.");
+
+					Notification.show(uname
+							+ " 's account has been UNLOCKED successfully.",
+							Notification.Type.HUMANIZED_MESSAGE);
 				}
 
 			}

@@ -76,9 +76,6 @@ public class MatsWebPortalUI extends UI {
 
 			@Override
 			public void error(com.vaadin.server.ErrorEvent event) {
-
-				Notification.show("Sorry, something went wrong.",
-						Notification.Type.TRAY_NOTIFICATION);
 				event.getThrowable().printStackTrace();
 			}
 

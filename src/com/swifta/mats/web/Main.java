@@ -12,6 +12,8 @@ import com.swifta.mats.web.dashboard.BarChartDash;
 import com.swifta.mats.web.dashboard.Dashboard;
 import com.swifta.mats.web.dashboard.PiechartDash;
 import com.vaadin.addon.charts.Chart;
+import com.vaadin.addon.charts.PointClickEvent;
+import com.vaadin.addon.charts.PointClickListener;
 import com.vaadin.addon.charts.model.DataSeries;
 import com.vaadin.addon.charts.model.DataSeriesItem;
 import com.vaadin.data.Container.Filter;
@@ -33,6 +35,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -60,6 +63,7 @@ public class Main extends VerticalLayout implements View {
 		addHeader();
 		addMenu();
 		d();
+
 	}
 
 	@Override
@@ -173,6 +177,13 @@ public class Main extends VerticalLayout implements View {
 		former.setWidth("100px");
 		barChart = (Chart) bar.getChart();
 		pieChart = (Chart) pie.getChart();
+		barChart.addPointClickListener(new PointClickListener() {
+			@Override
+			public void onClick(PointClickEvent event) {
+				Notification.show(event.getCategory());
+			}
+
+		});
 
 		pi.addComponent(pieChart);
 		pi.addComponent(barChart);

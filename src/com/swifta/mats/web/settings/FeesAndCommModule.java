@@ -734,13 +734,16 @@ public class FeesAndCommModule {
 
 		HorizontalLayout cControls = new HorizontalLayout();
 		Button btnAdd = new Button("+");
+		btnAdd.setDescription("Add new row");
 
 		btnAdd.setStyleName("btn_link");
 		Button btnRemove = new Button("-");
 		btnRemove.setStyleName("btn_link");
+		btnRemove.setDescription("Remove the last row.");
 
 		Button btnSave = new Button(FontAwesome.SAVE);
 		btnSave.setStyleName("btn_link");
+		btnSave.setDescription("Save Configurations");
 
 		Button btnCancel = new Button(FontAwesome.UNDO);
 		btnCancel.setStyleName("btn_link");

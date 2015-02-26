@@ -36,7 +36,6 @@ public class BarChartDash {
 	public Component getChart() {
 		Chart chart = new Chart(ChartType.COLUMN);
 
-		String user = "Agent 001";
 		Configuration conf = chart.getConfiguration();
 		// conf.getChart().setMargin(50, 80, 100, 50);
 

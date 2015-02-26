@@ -41,7 +41,7 @@ public class PiechartDash {
 		credits.getPosition().setVerticalAlign(VerticalAlign.MIDDLE);
 		credits.getPosition().setX(0);
 		credits.getPosition().setY(10);
-		conf.setCredits(credits);
+		// conf.setCredits(credits);
 
 		PlotOptionsPie plotOptions = new PlotOptionsPie();
 		plotOptions.setCursor(Cursor.POINTER);
