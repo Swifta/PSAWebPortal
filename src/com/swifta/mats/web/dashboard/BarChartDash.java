@@ -69,7 +69,7 @@ public class BarChartDash {
 
 		Tooltip tooltip = new Tooltip();
 		tooltip.setFormatter("' '+ this.x +''+'data chart: '"
-				+ "+ Highcharts.numberFormat(this.y, 1) +' percent'");
+				+ "+ Highcharts.numberFormat(this.y, 2) +' percent'");
 		conf.setTooltip(tooltip);
 
 		Collection<Float> sper = hm.values();
@@ -77,7 +77,7 @@ public class BarChartDash {
 		sper.toArray(tper);
 		for (int i = 0; i < tper.length; i++)
 			tper[i] = Float.valueOf(BigDecimal.valueOf(tper[i])
-					.setScale(1, BigDecimal.ROUND_UP).toString());
+					.setScale(1, BigDecimal.ROUND_HALF_DOWN).toString());
 
 		serie = new ListSeries("Percentage", tper);
 

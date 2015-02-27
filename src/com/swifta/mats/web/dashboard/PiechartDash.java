@@ -18,13 +18,13 @@ public class PiechartDash {
 	public static Configuration conf;
 
 	public String getDescription() {
-		return "Pie chart with customized credits";
+		return "Data Pie Chart";
 	}
 
 	public Component getChart() {
 		Component ret = createChart();
-		ret.setWidth("450px");
-		ret.setHeight("450px");
+		ret.setWidth("100%");
+		ret.setHeight("100%");
 		return ret;
 	}
 
@@ -33,7 +33,7 @@ public class PiechartDash {
 
 		conf = chart.getConfiguration();
 
-		conf.setTitle("Data Chart ");
+		conf.setTitle("MATS Activity Pie Chart");
 
 		Credits credits = new Credits(true);
 		credits.setPosition(new CreditPosition());
@@ -52,7 +52,7 @@ public class PiechartDash {
 		dataLabels.setConnectorColor(new SolidColor(0, 0, 0));
 
 		dataLabels
-				.setFormatter("''+this.point.name +': '+ this.percentage.toFixed(1) +'% '");
+				.setFormatter("''+this.point.name +': '+ this.percentage.toFixed(2) +'% '");
 
 		plotOptions.setDataLabels(dataLabels);
 

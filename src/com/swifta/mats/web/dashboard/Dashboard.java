@@ -22,6 +22,7 @@ public class Dashboard {
 
 	public static HashMap<String, Float> hm = null;
 	public static IndexedContainer otb = null;
+	private static HashMap<String, HashMap<String, Float>> hmStatusStats;
 
 	// public static HashMap<String, Double> hm
 
@@ -53,6 +54,10 @@ public class Dashboard {
 
 	}
 
+	public static HashMap<String, HashMap<String, Float>> getStatusStats() {
+		return hmStatusStats;
+	}
+
 	@SuppressWarnings("unchecked")
 	public static HashMap<String, Float> getChartData() {
 		IndexedContainer originalTb = new IndexedContainer();
@@ -60,6 +65,7 @@ public class Dashboard {
 		originalTb.addContainerProperty("Fees Account", String.class, null);
 		originalTb.addContainerProperty("DoT", Long.class, null);
 		HashMap<String, Float> hm = new HashMap<>();
+		hmStatusStats = new HashMap<>();
 
 		int x = 0;
 
@@ -99,6 +105,7 @@ public class Dashboard {
 			String fAcc = "";
 			long fDoT = 0L;
 			String transactiontype = "";
+			String status = null;
 
 			while (rs.next()) {
 				x = x + 1;
@@ -111,6 +118,7 @@ public class Dashboard {
 				tType = rs.getString("Transaction Type");
 				fAcc = rs.getString("MM Operator");
 				fDoT = rs.getDate("DoT").getTime();
+				status = rs.getString("Status");
 
 				ptType.setValue(tType);
 				pfAcc.setValue(fAcc);
@@ -118,13 +126,35 @@ public class Dashboard {
 
 				transactiontype = rs.getString(fidTxtype);
 				if (!hm.containsKey(transactiontype)) {
+					HashMap<String, Float> hmStat = new HashMap<>();
 					hm.put(transactiontype, 1F);
+					hmStat.put(status, 1F);
+					hmStatusStats.put(transactiontype, hmStat);
 				} else {
 					hm.put(transactiontype, hm.get(transactiontype) + 1);
+					HashMap<String, Float> hmStat = hmStatusStats
+							.get(transactiontype);
+					if (!hmStat.containsKey(status)) {
+						hmStat.put(status, 1F);
+					} else {
+						hmStat.put(status, hmStat.get(status) + 1);
+
+					}
+
 				}
 			}
 
 			otb = originalTb;
+
+			/*
+			 * while (itrb.hasNext()) { Entry<String, HashMap<String, Float>> e
+			 * = itrb.next(); System.out.println("Transaction Type: " +
+			 * e.getKey()); HashMap<String, Float> hmx = e.getValue();
+			 * Iterator<Entry<String, Float>> itr = hmx.entrySet().iterator();
+			 * while (itr.hasNext()) { Entry<String, Float> ex = itr.next();
+			 * System.out.print("Status: " + ex.getKey());
+			 * System.out.println(" Stat: " + ex.getValue()); } }
+			 */
 
 			Float total = 0F;
 			Iterator<Entry<String, Float>> itr = hm.entrySet().iterator();
@@ -161,7 +191,6 @@ public class Dashboard {
 		originalTb.addContainerProperty("Transaction Type", String.class, null);
 		originalTb.addContainerProperty("Fees Account", String.class, null);
 		originalTb.addContainerProperty("DoT", Long.class, null);
-		HashMap<String, Float> hm = new HashMap<>();
 
 		int x = 0;
 

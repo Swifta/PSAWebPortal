@@ -1283,7 +1283,7 @@ public class BE2 {
 					event.getButton().setDescription("Unlock user.");
 					Notification.show(uname
 							+ "'s account has been LOCKED successfully.",
-							Notification.Type.HUMANIZED_MESSAGE);
+							Notification.Type.WARNING_MESSAGE);
 
 				} else {
 					try {
@@ -1299,8 +1299,8 @@ public class BE2 {
 					event.getButton().setDescription("Lock user.");
 
 					Notification.show(uname
-							+ " 's account has been UNLOCKED successfully.",
-							Notification.Type.HUMANIZED_MESSAGE);
+							+ "'s account has been UNLOCKED successfully.",
+							Notification.Type.WARNING_MESSAGE);
 				}
 
 			}

@@ -28,6 +28,7 @@ import com.vaadin.data.util.filter.Compare.LessOrEqual;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -36,6 +37,7 @@ import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -49,13 +51,16 @@ public class Main extends VerticalLayout implements View {
 
 	private TabSheet ts;
 	private VerticalLayout tab = null;
-	private String id = null;
 
 	private PiechartDash pie = new PiechartDash();
 	private BarChartDash bar = new BarChartDash();
 
 	private Chart barChart = (Chart) bar.getChart();
 	private Chart pieChart = (Chart) pie.getChart();
+	private HashMap<String, HashMap<String, Float>> hmSS;
+	private VerticalLayout cDrill = new VerticalLayout();
+	private Panel pDrill = new Panel();
+	private Button btnClose;
 
 	public Main(TabSheet ts) {
 		this.ts = ts;
@@ -63,6 +68,7 @@ public class Main extends VerticalLayout implements View {
 		addHeader();
 		addMenu();
 		d();
+		hmSS = Dashboard.getStatusStats();
 
 	}
 
@@ -163,6 +169,7 @@ public class Main extends VerticalLayout implements View {
 		dat2.setCaption("End Date");
 		comboGF.addItem("Transaction Type");
 		comboGF.addItem("Fees Account");
+		comboGF.select("Transaction Type");
 
 		former.addComponent(la);
 		la.setWidth("100%");
@@ -185,8 +192,108 @@ public class Main extends VerticalLayout implements View {
 
 		});
 
-		pi.addComponent(pieChart);
-		pi.addComponent(barChart);
+		pieChart.addPointClickListener(new PointClickListener() {
+			@Override
+			public void onClick(PointClickEvent event) {
+				if (comboGF.getValue() == null)
+					return;
+				if (!comboGF.getValue().toString().equals("Transaction Type"))
+					return;
+
+				DataSeriesItem dsi = ((DataSeries) event.getSeries()).get(event
+						.getPointIndex());
+
+				String cat = dsi.getName();
+				if (cat == null)
+					return;
+				Float n = Float.valueOf(dsi.getY().toString());
+
+				cDrill.removeAllComponents();
+
+				cDrill.addComponent(btnClose);
+				cDrill.setComponentAlignment(btnClose, Alignment.TOP_RIGHT);
+
+				Label lbT = new Label(cat + "'s Details");
+				cDrill.addComponent(lbT);
+				lbT.setSizeUndefined();
+				cDrill.setComponentAlignment(lbT, Alignment.MIDDLE_CENTER);
+
+				Label lbP = new Label(
+						"<span style='padding-left: 5px; font-weight:bold;'>("
+								+ BigDecimal.valueOf(n).setScale(2,
+										BigDecimal.ROUND_DOWN) + "% )</span>");
+
+				lbP.setContentMode(ContentMode.HTML);
+
+				cDrill.addComponent(lbP);
+				lbP.setSizeUndefined();
+				cDrill.setComponentAlignment(lbP, Alignment.MIDDLE_CENTER);
+
+				HorizontalLayout c = null;
+
+				HashMap<String, Float> hms = hmSS.get(cat);
+				Label lb = null;
+				Iterator<Entry<String, Float>> itr = hms.entrySet().iterator();
+				Float t = 0F;
+
+				while (itr.hasNext()) {
+					Entry<String, Float> e = itr.next();
+					t = t + e.getValue();
+				}
+
+				itr = hms.entrySet().iterator();
+				while (itr.hasNext()) {
+					lb = new Label();
+					lb.setSizeUndefined();
+					c = new HorizontalLayout();
+					c.setSizeUndefined();
+					Entry<String, Float> e = itr.next();
+					// lb.setStyleName("x_m_n");
+					lb.setContentMode(ContentMode.HTML);
+					lb.setValue(e.getKey()
+							+ "  : <span style='padding-left: 20px; font-weight:bold;'> "
+							+ BigDecimal.valueOf(((e.getValue() / t) * n))
+									.setScale(2, BigDecimal.ROUND_DOWN)
+							+ "% </span>");
+					c.addComponent(lb);
+					cDrill.addComponent(c);
+				}
+
+				pDrill.setVisible(true);
+
+			}
+
+		});
+
+		VerticalLayout cPie = new VerticalLayout();
+
+		btnClose = new Button("x");
+		btnClose.setStyleName("btn_link");
+		cDrill.addComponent(btnClose);
+		cDrill.setComponentAlignment(btnClose, Alignment.TOP_RIGHT);
+		btnClose.setDescription("Close");
+		btnClose.addClickListener(new Button.ClickListener() {
+			private static final long serialVersionUID = 5224520640943009840L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				pDrill.setVisible(false);
+
+			}
+		});
+
+		cPie.addComponent(pieChart);
+		cPie.addComponent(pDrill);
+		cPie.setStyleName("c_pie");
+		cDrill.setSizeUndefined();
+		cDrill.setMargin(true);
+		pDrill.setContent(cDrill);
+		pDrill.setSizeUndefined();
+		pDrill.setStyleName("c_drill");
+		pDrill.setVisible(false);
+
+		pi.addComponent(cPie);
+		// pi.addComponent(barChart);
 
 		btnReload.addClickListener(new Button.ClickListener() {
 			private static final long serialVersionUID = -1405690945608678270L;
@@ -277,8 +384,10 @@ public class Main extends VerticalLayout implements View {
 				while (itrSet.hasNext()) {
 					Entry<String, Float> e = itrSet.next();
 
-					DataSeriesItem item = new DataSeriesItem(e.getKey(), Math
-							.round(e.getValue()));
+					DataSeriesItem item = new DataSeriesItem(e.getKey(), Float
+							.valueOf(BigDecimal.valueOf(e.getValue())
+									.setScale(2, BigDecimal.ROUND_DOWN)
+									.toString()));
 
 					series.add(item);
 
@@ -296,7 +405,7 @@ public class Main extends VerticalLayout implements View {
 
 				for (int i = 0; i < val.length; i++)
 					val[i] = Float.valueOf(BigDecimal.valueOf(val[i])
-							.setScale(1, BigDecimal.ROUND_UP).toString());
+							.setScale(2, BigDecimal.ROUND_DOWN).toString());
 
 				PiechartDash.conf.setSeries(series);
 
@@ -404,8 +513,9 @@ public class Main extends VerticalLayout implements View {
 		while (itrSet.hasNext()) {
 			Entry<String, Float> e = itrSet.next();
 
-			DataSeriesItem item = new DataSeriesItem(e.getKey(), Math.round(e
-					.getValue()));
+			DataSeriesItem item = new DataSeriesItem(e.getKey(),
+					Float.valueOf(BigDecimal.valueOf(e.getValue())
+							.setScale(2, BigDecimal.ROUND_DOWN).toString()));
 
 			series.add(item);
 
@@ -423,7 +533,7 @@ public class Main extends VerticalLayout implements View {
 
 		for (int i = 0; i < val.length; i++)
 			val[i] = Float.valueOf(BigDecimal.valueOf(val[i])
-					.setScale(1, BigDecimal.ROUND_UP).toString());
+					.setScale(2, BigDecimal.ROUND_DOWN).toString());
 
 		PiechartDash.conf.setSeries(series);
 
