@@ -36,7 +36,6 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.UI;
@@ -55,12 +54,14 @@ public class Main extends VerticalLayout implements View {
 	private PiechartDash pie = new PiechartDash();
 	private BarChartDash bar = new BarChartDash();
 
-	private Chart barChart = (Chart) bar.getChart();
+	// private Timeline barChart = (Timeline) bar.getChart();
 	private Chart pieChart = (Chart) pie.getChart();
 	private HashMap<String, HashMap<String, Float>> hmSS;
 	private VerticalLayout cDrill = new VerticalLayout();
 	private Panel pDrill = new Panel();
 	private Button btnClose;
+	private ComboBox comboGF;
+	private DateField dat, dat2;
 
 	public Main(TabSheet ts) {
 		this.ts = ts;
@@ -114,14 +115,14 @@ public class Main extends VerticalLayout implements View {
 
 	private void d() {
 
-		final DateField dat = new DateField();
-		final DateField dat2 = new DateField();
+		dat = new DateField();
+		dat2 = new DateField();
 		final Button filter = new Button("Filter");
 		filter.setDescription("Filter chart data.");
 		final HorizontalLayout pi;
 
 		Label la = new Label("Filter by: ");
-		final ComboBox comboGF = new ComboBox("Please select...");
+		comboGF = new ComboBox("Please select...");
 
 		dat.addValidator(new ValidateRange(dat, dat2));
 		dat2.addValidator(new ValidateRange(dat, dat2));
@@ -182,15 +183,8 @@ public class Main extends VerticalLayout implements View {
 		former.addComponent(btnReload);
 		btnReload.setDescription("Reload chart data");
 		former.setWidth("100px");
-		barChart = (Chart) bar.getChart();
-		pieChart = (Chart) pie.getChart();
-		barChart.addPointClickListener(new PointClickListener() {
-			@Override
-			public void onClick(PointClickEvent event) {
-				Notification.show(event.getCategory());
-			}
 
-		});
+		pieChart = (Chart) pie.getChart();
 
 		pieChart.addPointClickListener(new PointClickListener() {
 			@Override
@@ -282,6 +276,9 @@ public class Main extends VerticalLayout implements View {
 			}
 		});
 
+		// barChart.setWidth("100%");
+		// cPie.addComponent(barChart);
+
 		cPie.addComponent(pieChart);
 		cPie.addComponent(pDrill);
 		cPie.setStyleName("c_pie");
@@ -306,8 +303,7 @@ public class Main extends VerticalLayout implements View {
 					t = new String("Transaction Type");
 					comboGF.select(t);
 				}
-
-				redrawCharts(t);
+				redrawCharts();
 
 			}
 		});
@@ -316,104 +312,10 @@ public class Main extends VerticalLayout implements View {
 
 			private static final long serialVersionUID = 7867132630286287368L;
 
-			@SuppressWarnings("unchecked")
 			@Override
 			public void buttonClick(ClickEvent event) {
-
-				if (!isCriteriaChanged)
-					return;
-				else
-					isCriteriaChanged = false;
-				Object cat = comboGF.getValue();
-				// if (cat == null || cat.toString().equals(dCat))
-				// return;
-				if (cat == null)
-					return;
-
-				if (Dashboard.otb == null)
-					return;
-
-				Date start = dat.getValue();
-				Date end = dat2.getValue();
-				Filter dfilter = null;
-
-				if (start != null && end != null) {
-
-					dat2.validate();
-					Dashboard.otb.removeAllContainerFilters();
-					dfilter = new And(
-							new GreaterOrEqual("DoT", start.getTime()),
-							new LessOrEqual("DoT", end.getTime()));
-					Dashboard.otb.addContainerFilter(dfilter);
-				}
-
-				Iterator<Integer> itr = (Iterator<Integer>) Dashboard.otb
-						.getItemIds().iterator();
-
-				HashMap<String, Float> hm = new HashMap<>();
-
-				while (itr.hasNext()) {
-					int rid = itr.next();
-					Item r = Dashboard.otb.getItem(rid);
-					Property<String> f = r.getItemProperty(cat.toString());
-					String param = f.getValue();
-					if (!hm.containsKey(param)) {
-						hm.put(param, 1F);
-					} else {
-						hm.put(param, hm.get(param) + 1);
-					}
-				}
-
-				Float t = 0F;
-				Iterator<Entry<String, Float>> itrx = hm.entrySet().iterator();
-				while (itrx.hasNext()) {
-					Entry<String, Float> e = itrx.next();
-					t = t + e.getValue();
-				}
-
-				itrx = hm.entrySet().iterator();
-				while (itrx.hasNext()) {
-					Entry<String, Float> e = itrx.next();
-					hm.put(e.getKey(), (e.getValue() / t) * 100);
-				}
-
-				DataSeries series = new DataSeries();
-
-				Iterator<Entry<String, Float>> itrSet = hm.entrySet()
-						.iterator();
-				while (itrSet.hasNext()) {
-					Entry<String, Float> e = itrSet.next();
-
-					DataSeriesItem item = new DataSeriesItem(e.getKey(), Float
-							.valueOf(BigDecimal.valueOf(e.getValue())
-									.setScale(2, BigDecimal.ROUND_DOWN)
-									.toString()));
-
-					series.add(item);
-
-				}
-
-				itrx = hm.entrySet().iterator();
-
-				Set<String> types = hm.keySet();
-				String[] type = new String[types.size()];
-				types.toArray(type);
-
-				Collection<Float> vals = hm.values();
-				Float[] val = new Float[vals.size()];
-				vals.toArray(val);
-
-				for (int i = 0; i < val.length; i++)
-					val[i] = Float.valueOf(BigDecimal.valueOf(val[i])
-							.setScale(2, BigDecimal.ROUND_DOWN).toString());
-
-				PiechartDash.conf.setSeries(series);
-
-				pieChart.drawChart();
-				bar.xAxis.setCategories(type);
-				bar.serie.setData(val);
-				barChart.drawChart();
-
+				pDrill.setVisible(false);
+				addFilters();
 			}
 		});
 
@@ -424,6 +326,10 @@ public class Main extends VerticalLayout implements View {
 			public void valueChange(ValueChangeEvent event) {
 
 				isCriteriaChanged = true;
+				Date d = null;
+				dat.setValue(d);
+				dat2.setValue(d);
+				Dashboard.otb.removeAllContainerFilters();
 
 			}
 
@@ -465,33 +371,68 @@ public class Main extends VerticalLayout implements View {
 
 	}
 
-	@SuppressWarnings("unchecked")
-	private void redrawCharts(Object c) {
+	private void redrawCharts() {
+		addFilters();
 
-		isCriteriaChanged = true;
+	}
+
+	@SuppressWarnings("unchecked")
+	private void addFilters() {
+
+		if (!isCriteriaChanged) {
+			return;
+		} else {
+			isCriteriaChanged = false;
+		}
+		Object cat = comboGF.getValue();
+
+		if (cat == null)
+			return;
 
 		if (Dashboard.otb == null)
 			return;
 
-		Object cat = c;
+		Date start = dat.getValue();
+		Date end = dat2.getValue();
+		Filter dfilter = null;
 
-		Dashboard.otb.removeAllContainerFilters();
+		if (start != null && end != null) {
+
+			dat2.validate();
+			Dashboard.otb.removeAllContainerFilters();
+			dfilter = new And(new GreaterOrEqual("DoT", start),
+					new LessOrEqual("DoT", end));
+			Dashboard.otb.addContainerFilter(dfilter);
+		}
 
 		Iterator<Integer> itr = (Iterator<Integer>) Dashboard.otb.getItemIds()
 				.iterator();
 
 		HashMap<String, Float> hm = new HashMap<>();
+		hmSS.clear();
 
 		while (itr.hasNext()) {
 			int rid = itr.next();
 			Item r = Dashboard.otb.getItem(rid);
 			Property<String> f = r.getItemProperty(cat.toString());
+			String s = (String) r.getItemProperty("Status").getValue();
 			String param = f.getValue();
 			if (!hm.containsKey(param)) {
+				HashMap<String, Float> hmStat = new HashMap<>();
 				hm.put(param, 1F);
+				hmStat.put(s, 1F);
+				hmSS.put(param, hmStat);
 			} else {
 				hm.put(param, hm.get(param) + 1);
+				HashMap<String, Float> hmStat = hmSS.get(param);
+				if (!hmStat.containsKey(s)) {
+					hmStat.put(s, 1F);
+				} else {
+					hmStat.put(s, hmStat.get(s) + 1);
+
+				}
 			}
+
 		}
 
 		Float t = 0F;
@@ -540,7 +481,6 @@ public class Main extends VerticalLayout implements View {
 		pieChart.drawChart();
 		bar.xAxis.setCategories(type);
 		bar.serie.setData(val);
-		barChart.drawChart();
 
 	}
 

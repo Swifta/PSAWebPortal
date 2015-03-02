@@ -8,7 +8,6 @@ import com.swifta.mats.web.usermanagement.UMView;
 import com.vaadin.navigator.View;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
@@ -25,25 +24,23 @@ public class Initializer {
 	private void createTabSheet() {
 		m = new TabSheet();
 		VerticalLayout u = new VerticalLayout();
-		TextField tf = new TextField();
-		// u.addComponent(tf);
 		u.setId("ds_init");
 		m.addTab(u, "Dashbord");
 
 		VerticalLayout v = new VerticalLayout();
-		tf = new TextField();
+		// tf = new TextField();
 		// v.addComponent(tf);
 		v.setId("rp_init");
 		m.addTab(v, "Reports");
 
 		VerticalLayout um = new VerticalLayout();
-		tf = new TextField();
+		// tf = new TextField();
 		// v.addComponent(tf);
 		um.setId("um_init");
 		m.addTab(um, "User Management");
 
 		VerticalLayout tx = new VerticalLayout();
-		tf = new TextField();
+		// tf = new TextField();
 		// v.addComponent(tf);
 		tx.setId("tx_init");
 		m.addTab(tx, "Transactions");
