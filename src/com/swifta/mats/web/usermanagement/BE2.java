@@ -28,7 +28,6 @@ import com.vaadin.data.Validator;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.data.util.filter.Compare;
-import com.vaadin.event.MouseEvents.ClickListener;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
@@ -1776,22 +1775,7 @@ public class BE2 {
 
 		final Window popup = new Window("Details of " + username);
 		popup.setModal(true);
-		popup.setStyleName("w_delete_user");
-
-		popup.addClickListener(new ClickListener() {
-
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 2042510651880289410L;
-
-			@Override
-			public void click(com.vaadin.event.MouseEvents.ClickEvent event) {
-				popup.center();
-
-			}
-
-		});
+		popup.setStyleName("w_delete_user u_d_popup");
 
 		popup.setIcon(FontAwesome.ALIGN_JUSTIFY);
 
@@ -1800,6 +1784,9 @@ public class BE2 {
 		VerticalLayout cDeletePrompt = new VerticalLayout();
 		cDeletePrompt.setSpacing(true);
 		cDeletePrompt.setMargin(true);
+		popup.setDraggable(false);
+
+		popup.setImmediate(true);
 
 		FormLayout frmDeleteReason = new FormLayout();
 		frmDeleteReason.setSizeUndefined();
@@ -1812,13 +1799,14 @@ public class BE2 {
 
 		UserDetailsModule udm = new UserDetailsModule();
 		VerticalLayout cUD = udm.getUserDetailsContainer(arrID[3],
-				"view_details");
+				"view_details", popup);
 
 		cDeletePrompt.addComponent(cUD);
 		cDeletePrompt.setComponentAlignment(cUD, Alignment.MIDDLE_CENTER);
 
 		popup.setContent(cDeletePrompt);
-		popup.setSizeUndefined();
+		// popup.setSizeUndefined();
+		popup.setHeight("600px");
 
 		UI.getCurrent().addWindow(popup);
 

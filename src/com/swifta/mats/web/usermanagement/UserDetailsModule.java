@@ -27,7 +27,6 @@ import com.vaadin.event.FieldEvents.FocusEvent;
 import com.vaadin.event.FieldEvents.FocusListener;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.MarginInfo;
-import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -41,6 +40,7 @@ import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
 public class UserDetailsModule {
@@ -113,8 +113,9 @@ public class UserDetailsModule {
 
 	private boolean boolEditStatus = false;
 	private HorizontalLayout cBtnEditCancel;
-	UserDetailsBackEnd bee;
+	private UserDetailsBackEnd bee;
 	private Map<String, String> hm;
+	private Window cpop;
 
 	public UserDetailsModule() {
 
@@ -125,7 +126,7 @@ public class UserDetailsModule {
 		cDetailsAndOperations.setSizeUndefined();
 
 		cUPersonalDetails = new FormLayout();
-		cUPersonalDetails.setMargin(true);
+		cUPersonalDetails.setMargin(false);
 		cUPersonalDetails.setSpacing(false);
 		cUPersonalDetails.setStyleName("frm_details_personal_info");
 		cUPersonalDetails.setSizeUndefined();
@@ -161,6 +162,7 @@ public class UserDetailsModule {
 		btnEdit.setIcon(FontAwesome.EDIT);
 		btnEdit.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
 		btnEdit.setStyleName("btn_link");
+		btnEdit.setVisible(false);
 
 		final Button btnCancel = new Button();
 		btnCancel.setId(btnEditId);
@@ -236,9 +238,10 @@ public class UserDetailsModule {
 	}
 
 	public VerticalLayout getUserDetailsContainer(String strUID,
-			String strAction) {
+			String strAction, Window pop) {
+		cpop = pop;
 		cUDetails = new VerticalLayout();
-		cUDetails.setMargin(new MarginInfo(false, true, true, true));
+		cUDetails.setMargin(new MarginInfo(false, false, false, false));
 
 		cUDetails.setStyleName("c_u_details");
 		cUDetails.setSizeFull();
@@ -342,8 +345,6 @@ public class UserDetailsModule {
 				if (!isfromsub) {
 					cA = (HorizontalLayout) cPerAccAuthInfo.getComponent(0);
 					cPerAccAuthInfo.replaceComponent(cA, cP);
-
-					return;
 				} else {
 					prevL = (HorizontalLayout) cPerAccAuthInfo.getComponent(0);
 					cPerAccAuthInfo.replaceComponent(prevL, cP);
@@ -352,8 +353,9 @@ public class UserDetailsModule {
 					btnLog.setStyleName("btn_tab_like");
 					cManUserSubMenu.setStyleName("c_sub_menu_invisible");
 					isfromsub = false;
-					return;
 				}
+
+				cpop.center();
 
 			}
 		});
@@ -389,8 +391,10 @@ public class UserDetailsModule {
 					btnLog.setEnabled(true);
 					btnLog.setStyleName("btn_tab_like");
 					cManUserSubMenu.setStyleName("c_sub_menu_invisible");
-					return;
+
 				}
+
+				cpop.center();
 
 			}
 		});
@@ -451,7 +455,7 @@ public class UserDetailsModule {
 					} else {
 						cPerAccAuthInfo.replaceComponent(p, prevL);
 					}
-					return;
+
 				} else if (!btnAccount.isEnabled()) {
 
 					btnAccount.setEnabled(true);
@@ -469,9 +473,10 @@ public class UserDetailsModule {
 					} else {
 						cPerAccAuthInfo.replaceComponent(p, prevL);
 					}
-					return;
 
 				}
+
+				cpop.center();
 
 			}
 		});
@@ -495,7 +500,10 @@ public class UserDetailsModule {
 				cLA = (HorizontalLayout) cPerAccAuthInfo.getComponent(0);
 				cPerAccAuthInfo.replaceComponent(cLA, cLP);
 
+				cpop.center();
+
 			}
+
 		});
 
 		btnAct.addClickListener(new Button.ClickListener() {
@@ -518,6 +526,8 @@ public class UserDetailsModule {
 
 				cLP = (HorizontalLayout) cPerAccAuthInfo.getComponent(0);
 				cPerAccAuthInfo.replaceComponent(cLP, cLA);
+
+				cpop.center();
 
 			}
 		});
@@ -567,21 +577,27 @@ public class UserDetailsModule {
 		String strProf = hm.get("Profile Type");
 
 		VerticalLayout cAgentInfo = new VerticalLayout();
-		cAgentInfo.setMargin(new MarginInfo(true, true, true, true));
+		cAgentInfo.setMargin(new MarginInfo(true, false, true, false));
 		cAgentInfo.setStyleName("c_details_test");
 		cAgentInfo.setSizeUndefined();
 
-		VerticalLayout cBasic = new VerticalLayout();
+		FormLayout cBasic = new FormLayout();
+
 		// cBasic.setSpacing(true);
-		// cBasic.setSpacing(true);
-		Label lbB = new Label("General");
-		lbB.setStyleName("lb_frm_add_user");
+		Label lbB = new Label();
+		lbB.setCaption("General");
+		lbB.setStyleName("label_search_user u_d_t");
+		// lbB.setStyleName("lb_frm_add_user");
 		cBasic.addComponent(lbB);
 		String cap = "First Name";
 		TextField tF = new TextField(cap);
 		tFFN = tF;
 		tFFN.setRequired(true);
 		tF.setValue(hm.get(cap));
+
+		TextField tFx = new TextField("Name of Name");
+		FormLayout ctfx = new FormLayout();
+		ctfx.addComponent(tFx);
 
 		addDatum("Username", hm.get("Username"), cBasic);
 		addDatum("Profile", strProf, cBasic);
@@ -716,12 +732,16 @@ public class UserDetailsModule {
 
 		HorizontalLayout cBAndCAndAcc = new HorizontalLayout();
 		cBAndCAndAcc.addComponent(cBasic);
+
+		// cBAndCAndAcc.addComponent(ctfx);
+
 		cBAndCAndAcc.addComponent(cC);
 
-		VerticalLayout cCompany = new VerticalLayout();
+		FormLayout cCompany = new FormLayout();
 		// Label lbC = new Label("Company");
-		Label lbC = new Label("Identification");
-		lbC.setStyleName("lb_frm_add_user");
+		Label lbC = new Label();
+		lbC.setCaption("Identification");
+		lbC.setStyleName("label_search_user lb_frm_add_user u_d_t");
 
 		combo = new ComboBox("ID Type");
 
@@ -776,14 +796,13 @@ public class UserDetailsModule {
 		addDatum("Expiry Date", hm.get("Expiry Date"), cCompany);
 		cC.addComponent(cCompany);
 
-		VerticalLayout pC = new VerticalLayout();
+		FormLayout pC = new FormLayout();
 		// pC.setSpacing(true);
-		lbC = new Label("Primary Contacts");
-		HorizontalLayout cLbc = new HorizontalLayout();
-		cLbc.setSizeUndefined();
-		cLbc.setMargin(new MarginInfo(true, false, false, false));
-		cLbc.addComponent(lbC);
-		pC.addComponent(cLbc);
+		lbC = new Label();
+		lbC.setCaption("Primary Contacts");
+		lbC.setStyleName("label_search_user u_d_t");
+
+		pC.addComponent(lbC);
 
 		tF = new TextField("Mobile Phone No.");
 		tF.setValue("+256704191152");
@@ -808,14 +827,12 @@ public class UserDetailsModule {
 
 		cC.addComponent(pC);
 
-		VerticalLayout sC = new VerticalLayout();
+		FormLayout sC = new FormLayout();
 		// sC.setSpacing(true);
-		lbC = new Label("Secondary Contacts");
-		cLbc = new HorizontalLayout();
-		cLbc.setSizeUndefined();
-		cLbc.setMargin(new MarginInfo(true, false, false, false));
-		cLbc.addComponent(lbC);
-		sC.addComponent(cLbc);
+		lbC = new Label();
+		lbC.setCaption("Secondary Contacts");
+		lbC.setStyleName("label_search_user lb_frm_add_user u_d_t");
+		sC.addComponent(lbC);
 
 		tF = new TextField("Mobile Phone No.");
 		tF.setValue("+256804191152");
@@ -841,14 +858,12 @@ public class UserDetailsModule {
 
 		cC.addComponent(sC);
 
-		VerticalLayout physicalC = new VerticalLayout();
+		FormLayout physicalC = new FormLayout();
 		// physicalC.setSpacing(true);
-		lbC = new Label("Physical Address");
-		cLbc = new HorizontalLayout();
-		cLbc.setSizeUndefined();
-		cLbc.setMargin(new MarginInfo(true, false, false, false));
-		cLbc.addComponent(lbC);
-		physicalC.addComponent(cLbc);
+		lbC = new Label();
+		lbC.setCaption("Physical Address");
+		lbC.setStyleName("label_search_user lb_frm_add_user u_d_t");
+		physicalC.addComponent(lbC);
 
 		tF = new TextField("Street");
 		tF.setValue("Yusuf Lule Rd.");
@@ -970,17 +985,23 @@ public class UserDetailsModule {
 		VerticalLayout cAgentInfo = new VerticalLayout();
 		cAgentInfo.setMargin(new MarginInfo(true, true, true, true));
 		cAgentInfo.setStyleName("c_details_test");
-		cAgentInfo.setSizeUndefined();
 
-		VerticalLayout cAcc = new VerticalLayout();
-		Label lbAcc = new Label("Account");
-		lbAcc.setStyleName("lb_frm_add_user");
-		cAcc.addComponent(lbAcc);
+		// VerticalLayout cAcc = new VerticalLayout();
+		Label lbAcc = new Label();
+
+		lbAcc.setCaption("Account");
+		lbAcc.setStyleName("label_search_user lb_frm_add_user u_d_t");
+
+		// lbC.setCaption("Identification");
+		// lbC.setStyleName("label_search_user lb_frm_add_user u_d_t");
+		// lbAcc.setStyleName("lb_frm_add_user");
+
 		ComboBox comboHierarchy = null;
 
 		comboHierarchy = new ComboBox("Profile");
 
-		final VerticalLayout cLBody = new VerticalLayout();
+		final FormLayout cLBody = new FormLayout();
+		cLBody.addComponent(lbAcc);
 		// cLBody.setSpacing(true);
 
 		comboHierarchy.addItem(1);
@@ -1056,8 +1077,8 @@ public class UserDetailsModule {
 
 		cLBody.setStyleName("c_body_visible");
 
-		cAcc.addComponent(cAccBody);
-		cAgentInfo.addComponent(cAcc);
+		// cAcc.addComponent(cAccBody);
+		cAgentInfo.addComponent(cLBody);
 
 		// cBAndCAndAcc.addComponent(cAcc);
 		HorizontalLayout c = new HorizontalLayout();
@@ -1083,7 +1104,7 @@ public class UserDetailsModule {
 		profToID.put(15, "MATS_SERVICE_PROVIDER_USER_PROFILE");
 
 		VerticalLayout cAgentInfo = new VerticalLayout();
-		cAgentInfo.setMargin(new MarginInfo(true, true, true, true));
+		cAgentInfo.setMargin(new MarginInfo(true, false, true, false));
 		cAgentInfo.setStyleName("c_details_test");
 		cAgentInfo.setSizeUndefined();
 		VerticalLayout cBasic = new VerticalLayout();
@@ -1833,6 +1854,7 @@ public class UserDetailsModule {
 						// FontAwesome.EDIT
 						btnEdit.setId(btnEditId);
 						btnEdit.setIcon(FontAwesome.EDIT);
+						btnEdit.setVisible(false);
 
 						// Reset Edit status to false
 						uDetailsEditStatus = false;
@@ -1852,6 +1874,7 @@ public class UserDetailsModule {
 				resetForm(arrLAllEditableFields, arrLTfEditableVals);
 				btnEdit.setId(btnEditId);
 				btnEdit.setIcon(FontAwesome.EDIT);
+				btnEdit.setVisible(false);
 				btnCancel.setVisible(false);
 
 			}
@@ -2139,14 +2162,21 @@ public class UserDetailsModule {
 		Label lb = new Label();
 		lb.setImmediate(true);
 		lb.setStyleName("label_ud");
-		lb.setContentMode(ContentMode.HTML);
-		lb.setValue("<span class = 'label_cap_custom_ud'> " + cap
-				+ ":  </span>" + "<div class = 'label_val_custom_ud'>" + val
-				+ "</div>");
-		if (container instanceof HorizontalLayout)
+		lb.setCaption(cap + ": ");
+		lb.setValue(val);
+		// lb.setContentMode(ContentMode.HTML);
+		// lb.setValue("<span class = 'label_cap_custom_ud'> " + cap
+		// + ":  </span>" + "<div class = 'label_val_custom_ud'>" + val
+		// + "</div>");
+		if (container instanceof HorizontalLayout) {
 			((HorizontalLayout) container).addComponent(lb);
-		else
+		} else if (container instanceof FormLayout) {
+			((FormLayout) container).addComponent(lb);
+			((FormLayout) container).setSpacing(false);
+		} else {
 			((VerticalLayout) container).addComponent(lb);
+			((VerticalLayout) container).setSpacing(false);
+		}
 
 	}
 

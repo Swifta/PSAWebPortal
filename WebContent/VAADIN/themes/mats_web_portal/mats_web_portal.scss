@@ -625,6 +625,11 @@ ul.empty li{
 	
 }
 
+.u_d_t{
+	color: #197DE1;
+	padding: 10px;
+}
+
 .label_search_results{
 	color: #197DE1;
 	padding: 10px;
@@ -1076,11 +1081,11 @@ ul.empty li{
 	//float: left;
 }
 
-.label_ud{
-	border-bottom: 2px #FFF inset;
-	min-width: 100%;
-	background: #FFF;
-	padding-top: 10px;
+.label_ud.v-caption{
+	background: #F00 !important;
+	font-weight: bold !important;
+	color: #F0F !important;
+	
 }
 
 .c_details_test{
@@ -1193,8 +1198,13 @@ ul.empty li{
 	
 }
 
-.x_m_n{
-	background: #F00;
+
+.v-caption-u_d_t span{
+	color: #197DE1 !important;
+	padding: 10px 10px 0px 0px !important;
+	font-size: 18px;
+	font-weight: 300;
+	
 }
 
 
