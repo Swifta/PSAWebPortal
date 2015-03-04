@@ -242,7 +242,7 @@ public class Login extends VerticalLayout implements View {
 
 						} else if (loginService.authenticateUser(
 								tfUsername.getValue(), tfPassword.getValue())
-								.equals("17003")) {
+								.equals("locked")) {
 							lPrompt.setContentMode(ContentMode.HTML);
 							lPrompt.setValue("<div style='text-align: center; width: 100%;'>User account is locked for user: </div>"
 									+ "("
