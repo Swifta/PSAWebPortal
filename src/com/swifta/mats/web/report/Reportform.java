@@ -302,7 +302,8 @@ public class Reportform extends VerticalLayout {
 
 				ExcelExport excelExport = new ExcelExport(table);
 				excelExport.setReportTitle(table.getCaption());
-				excelExport.setExportFileName(builder.toString());
+				excelExport.setExportFileName(builder.toString() + ".xls");
+
 				excelExport.setDisplayTotals(false);
 				excelExport.export();
 
@@ -501,11 +502,15 @@ public class Reportform extends VerticalLayout {
 		}
 
 		cByAndVal.addComponent(btnApply);
-		if (cMap.size() == 0)
+		if (ds.size() == 0) {
 			btnApply.setVisible(false);
-		else
+			cD.setVisible(false);
+			lb.setVisible(false);
+		} else {
 			btnApply.setVisible(true);
-		lb.setVisible(true);
+			lb.setVisible(true);
+			cD.setVisible(true);
+		}
 
 	}
 
@@ -826,7 +831,7 @@ public class Reportform extends VerticalLayout {
 				trxnsql.append(" not in (select extpay.transactionid from  ");
 				trxnsql.append(" externalpaymentreference extpay group by extpay.transactionid) group by txn.transactionid) ");
 
-				System.out.println(trxnsql.toString());
+				// System.out.println(trxnsql.toString());
 
 				rs = stmt.executeQuery(trxnsql.toString());
 				cD.setVisible(true);
