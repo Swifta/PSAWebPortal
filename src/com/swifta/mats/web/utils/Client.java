@@ -11,11 +11,11 @@ public class Client {
 
 		// String result = Client.passreset();
 
-		Client.passreset();
+		// Client.passreset();
 
 		// Client.unlockAccount();
 
-		// Client.authenticate();
+		Client.authenticate();
 
 		// System.out.println(result);
 
@@ -125,7 +125,7 @@ public class Client {
 
 	public static void authenticate() throws AxisFault {
 		LoginService loginService = new LoginService();
-		System.out.println(loginService.authenticateUser("matsng", "password"));
+		System.out.println(loginService.authenticateUser("olumide", "134"));
 
 	}
 
