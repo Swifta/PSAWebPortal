@@ -15,7 +15,8 @@ public class Client {
 
 		// Client.unlockAccount();
 
-		Client.authenticate();
+		// Client.authenticate();
+		Client.activate();
 
 		// System.out.println(result);
 
@@ -107,9 +108,9 @@ public class Client {
 
 		// Notification.show(String.valueOf(give));
 
-		String userresourceid = "166735";
+		String userresourceid = "Livep";
 		String bankdomainid = "0";
-		String IDnumber = "166735";
+		String IDnumber = "2111";
 		String SecurityAns = "Mrs.fd X";
 		String firstPin = "mo123";
 		String confirmPin = "mo123";

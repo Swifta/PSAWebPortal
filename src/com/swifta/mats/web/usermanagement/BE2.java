@@ -78,6 +78,7 @@ public class BE2 {
 	private HashMap<String, String> hmFilter;
 	private IndexedContainer container;
 	ArrayList<Object> arrLTfs;
+	Button btnLock;
 	public Window upop;
 
 	BE2() {
@@ -498,6 +499,9 @@ public class BE2 {
 					btn.setCaption("R");
 					btn.setStyleName("btn_link");
 					btn.setDescription("Reset PIN");
+					btnLock.setVisible(true);
+					btnLock.setIcon(FontAwesome.LOCK);
+					btnLock.setDescription("Lock user.");
 
 				}
 
@@ -1198,7 +1202,7 @@ public class BE2 {
 
 		btnSetDefaultAcc = new Button("D");
 
-		Button btnLock = new Button();
+		btnLock = new Button();
 		btnLock.setIcon(FontAwesome.LOCK);
 		btnLock.setDescription("Lock user");
 		btnLock.setStyleName("btn_link");
@@ -1240,21 +1244,29 @@ public class BE2 {
 		btnDelete.setEnabled(false);
 		btnDelete.setVisible(false);
 
+		// Notification.show(status, Notification.Type.ERROR_MESSAGE);
+
+		if (status.equals("BLOCKED")) {
+			btnLock.setIcon(FontAwesome.UNLOCK);
+			btnLock.setDescription("Unlock account.");
+
+			btnActivate.setIcon(null);
+			btnActivate.setCaption("R");
+			btnActivate.setStyleName("btn_link");
+			btnActivate.setDescription("Reset PIN");
+		}
+
 		if (status.equals("ACTIVE")) {
 
 			btnActivate.setIcon(null);
 			btnActivate.setCaption("R");
 			btnActivate.setStyleName("btn_link");
 			btnActivate.setDescription("Reset PIN");
-
-			// btnActivate.setIcon(null);
-			// btnActivate.removeStyleName(ValoTheme.BUTTON_ICON_ONLY);
-
-			// btnActivate.setStyleName("btn_link");
-			// btnActivate.setCaption("R");
-
 		}
-		// actionsC.addComponent(btnMoreActions);
+
+		if (status.equals("REGISTERED")) {
+			btnLock.setVisible(false);
+		}
 
 		btnLock.addClickListener(new Button.ClickListener() {
 			private static final long serialVersionUID = 7670596957858236065L;
@@ -1262,44 +1274,43 @@ public class BE2 {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				String[] arrID = event.getButton().getId().split("_");
-				String uname = arrID[2];
+				String uname = arrID[3];
 				String inituser = UI.getCurrent().getSession()
 						.getAttribute("user").toString();
 
-				uname = "matsng";
+				String s = null;
 
 				if (event.getButton().getIcon().equals(FontAwesome.LOCK)) {
 					try {
-						UserManagementService.lockUserAccountByAdmin(inituser,
-								uname);
+						s = UserManagementService.lockUserAccountByAdmin(
+								inituser, uname);
 					} catch (AxisFault e) {
 						Notification.show(
 								"Sorry! Error occured while Locking user.",
 								Notification.Type.ERROR_MESSAGE);
 						e.printStackTrace();
 					}
-					event.getButton().setIcon(FontAwesome.UNLOCK);
-					event.getButton().setDescription("Unlock user.");
-					Notification.show(uname
-							+ "'s account has been LOCKED successfully.",
-							Notification.Type.WARNING_MESSAGE);
 
 				} else {
 					try {
-						UserManagementService
-								.unlockUserAccount(inituser, uname);
+						s = UserManagementService.unlockUserAccount(inituser,
+								uname);
 					} catch (AxisFault e) {
 						Notification.show(
 								"Sorry! Error occured while unlocking user.",
 								Notification.Type.ERROR_MESSAGE);
 						e.printStackTrace();
 					}
-					event.getButton().setIcon(FontAwesome.LOCK);
-					event.getButton().setDescription("Lock user.");
 
-					Notification.show(uname
-							+ "'s account has been UNLOCKED successfully.",
-							Notification.Type.WARNING_MESSAGE);
+					Notification.show(s, Notification.Type.WARNING_MESSAGE);
+					System.out.println(s);
+					if (s.contains("LOCKED")) {
+						event.getButton().setIcon(FontAwesome.LOCK);
+						event.getButton().setDescription("Lock user.");
+					} else {
+						event.getButton().setIcon(FontAwesome.UNLOCK);
+						event.getButton().setDescription("Unlock user.");
+					}
 				}
 
 			}

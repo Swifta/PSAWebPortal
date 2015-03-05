@@ -6,7 +6,6 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collection;
@@ -32,8 +31,7 @@ import com.vaadin.data.util.filter.And;
 import com.vaadin.data.util.filter.Compare.GreaterOrEqual;
 import com.vaadin.data.util.filter.Compare.LessOrEqual;
 import com.vaadin.data.util.filter.SimpleStringFilter;
-import com.vaadin.event.FieldEvents.FocusEvent;
-import com.vaadin.event.FieldEvents.FocusListener;
+import com.vaadin.data.validator.DateRangeValidator;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.server.FontAwesome;
@@ -88,7 +86,7 @@ public class Reportform extends VerticalLayout {
 
 	IndexedContainer ds;
 	ComboBox reportType;
-	boolean isCriteriaChanged = false;
+	// private boolean isCriteriaChanged = false;
 	private PopupDateField dat = new PopupDateField("From: ");
 	private PopupDateField dat2 = new PopupDateField("To: ");
 	HorizontalLayout cD;
@@ -99,6 +97,7 @@ public class Reportform extends VerticalLayout {
 	private TreeMap<String, String> cMap = new TreeMap<>();
 	private boolean isFirstCriteriaChanged = true;
 	private Label lb;
+	private Button btnReload;
 
 	private class ValidateRange implements Validator {
 		private static final long serialVersionUID = -5454180295673067279L;
@@ -114,12 +113,19 @@ public class Reportform extends VerticalLayout {
 		public void validate(Object value) throws InvalidValueException {
 			Date s = start.getValue();
 			Date e = end.getValue();
+			end.removeAllValidators();
+
 			if (s == null || e == null)
 				return;
 
-			if (s.compareTo(e) > 0) {
-				throw new InvalidValueException("Invalid date range");
-			}
+			DateRangeValidator drv = new DateRangeValidator(
+					"Invalid date range", s, e, null);
+
+			end.setComponentError(null);
+			start.setComponentError(null);
+			start.addValidator(drv);
+			end.addValidator(drv);
+
 		}
 
 	}
@@ -131,7 +137,7 @@ public class Reportform extends VerticalLayout {
 		setMargin(true);
 		reportType = new ComboBox("Search by Report Type");
 		Button export = new Button("Export result");
-		reportType.addItem("Transaction Report(Only Today)");
+		// reportType.addItem("Transaction Report(Only Today)");
 		reportType.addItem("Transaction Report");
 		reportType.addItem("Transaction Summary Report");
 		reportType.addItem("Fees / Commission Report");
@@ -179,7 +185,7 @@ public class Reportform extends VerticalLayout {
 
 		cF.addComponent(cD);
 
-		Button btnReload = new Button("Reload");
+		btnReload = new Button("Reload");
 		cF.addComponent(btnReload);
 
 		cF.setSpacing(true);
@@ -188,8 +194,17 @@ public class Reportform extends VerticalLayout {
 		addComponent(reportType);
 		addComponent(cF);
 
-		dat.addValidator(new ValidateRange(dat, dat2));
-		dat2.addValidator(new ValidateRange(dat, dat2));
+		dat.setImmediate(true);
+		dat2.setImmediate(true);
+
+		dat.setValue(Calendar.getInstance().getTime());
+		dat2.setValue(Calendar.getInstance().getTime());
+
+		// dat.addValidator(new ValidateRange(dat, dat2));
+		// dat2.addValidator(new ValidateRange(dat, dat2));
+
+		btnReload.setVisible(false);
+
 		dat.addValueChangeListener(new ValueChangeListener() {
 
 			private static final long serialVersionUID = -1020854682753361028L;
@@ -198,7 +213,8 @@ public class Reportform extends VerticalLayout {
 			public void valueChange(ValueChangeEvent event) {
 				dat.setComponentError(null);
 				dat2.setComponentError(null);
-				isCriteriaChanged = true;
+				Date d = null;
+				dat2.setValue(d);
 
 			}
 
@@ -210,40 +226,26 @@ public class Reportform extends VerticalLayout {
 
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-				// addDFilters();
-			}
 
-		});
+				dat.setComponentError(null);
+				dat2.setComponentError(null);
+				dat2.removeAllValidators();
+				dat.removeAllValidators();
 
-		dat2.addFocusListener(new FocusListener() {
-
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 8306366457968363383L;
-
-			@Override
-			public void focus(FocusEvent event) {
 				if (dat2.getValue() == null || dat.getValue() == null)
 					return;
-				addDFilters();
+				DateRangeValidator drv = new DateRangeValidator(
+						"Invalid date range", dat.getValue(), dat2.getValue(),
+						null);
 
-			}
-
-		});
-
-		dat.addFocusListener(new FocusListener() {
-
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = -3939984171341906628L;
-
-			@Override
-			public void focus(FocusEvent event) {
-				if (dat2.getValue() == null || dat.getValue() == null)
-					return;
-				addDFilters();
+				dat.addValidator(drv);
+				dat2.addValidator(drv);
+				try {
+					dat2.validate();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				loadData(reportType.getValue(), dat.getValue(), dat2.getValue());
 
 			}
 
@@ -260,7 +262,7 @@ public class Reportform extends VerticalLayout {
 			public void valueChange(ValueChangeEvent event) {
 				if (reportType.getValue() == null)
 					return;
-				loadData(reportType.getValue());
+				loadData(reportType.getValue(), dat.getValue(), dat2.getValue());
 			}
 
 		});
@@ -273,7 +275,7 @@ public class Reportform extends VerticalLayout {
 			public void buttonClick(ClickEvent event) {
 				if (reportType.getValue() == null)
 					return;
-				loadData(reportType.getValue());
+				loadData(reportType.getValue(), dat.getValue(), dat2.getValue());
 			}
 		});
 
@@ -347,7 +349,7 @@ public class Reportform extends VerticalLayout {
 
 		addComponent(export);
 		setComponentAlignment(export, Alignment.BOTTOM_RIGHT);
-		reportType.setValue("Transaction Report(Only Today)");
+		// reportType.setValue("Transaction Report(Only Today)");
 
 	}
 
@@ -507,8 +509,8 @@ public class Reportform extends VerticalLayout {
 		cByAndVal.addComponent(btnApply);
 		if (ds.size() == 0) {
 			btnApply.setVisible(false);
-			cD.setVisible(false);
-			lb.setVisible(false);
+			cD.setVisible(true);
+			lb.setVisible(true);
 		} else {
 			btnApply.setVisible(true);
 			lb.setVisible(true);
@@ -591,7 +593,7 @@ public class Reportform extends VerticalLayout {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void loadData(Object ft) {
+	private void loadData(Object ft, Object dat, Object dat2) {
 		if (searchform != null)
 			searchform.removeAllComponents();
 		if (ft == null)
@@ -603,6 +605,13 @@ public class Reportform extends VerticalLayout {
 		if (ht != null) {
 			ht.clear();
 		}
+
+		Calendar cal = Calendar.getInstance();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		String curd = sdf.format(cal.getTime());
+
+		String d1 = ((dat == null) ? curd : sdf.format(dat));
+		String d2 = ((dat == null) ? curd : sdf.format(dat2));
 
 		table.setCaption(selectedId);
 		if (selectedId.equalsIgnoreCase("Float Management Report")) {
@@ -640,18 +649,23 @@ public class Reportform extends VerticalLayout {
 
 				StringBuilder agentsql = new StringBuilder();
 
-				Calendar cal = Calendar.getInstance();
-				Date dx = cal.getTime();
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-				String dm = sdf.format(dx);
+				// Calendar cal = Calendar.getInstance();
+				// Date dx = cal.getTime();
+				// sdf = new SimpleDateFormat("yyyy-MM-dd");
+				// String dm = sdf.format(dx);
 
-				agentsql.append("select cast(tbl1.datecreated as DATE) as date, ctrs.operatorid as aid, ach.username as did, concat(achd.firstname,' ',achd.lastname) as fullname, tbl1.cashbalance as ");
-				agentsql.append(" amount from accountholders ach, accountholderdetails achd, ( select actxns.userresourceid as cashacctid, ");
-				agentsql.append(" sum(actxns.closingbalance) - sum(actxns.openingbalance) as cashbalance, actxns.datecreated ");
-				agentsql.append(" as datecreated, acts.profileid as profileid, actxns.transactionid as transactionid from");
-				agentsql.append(" accounttransactions actxns, transactions trx,accounts acts where actxns.transactionid = trx.transactionid and trx.transactionstatusid = 1 and trx.transactiontypeid=1 and  actxns.accountresourceid = acts.accountid and ");
-				agentsql.append(" acts.profileid = 12 group by CAST(actxns.datecreated as DATE),actxns.userresourceid) tbl1 join cashtransactions ctrs on ctrs.transactionid = tbl1.transactionid where ach.profileid = 11 and tbl1.cashacctid = ach.accountholderid and achd.accountdetailsid = ach.accountholderdetailid and date="
-						+ dm + " order by date desc;");
+				agentsql.append(" select cast(tbl1.datecreated as DATE) as datecreated, ctrs.operatorid as aid, ach.username as did, concat(achd.firstname,' ',achd.lastname) as fullname, ");
+				agentsql.append(" tbl1.cashbalance as amount from accountholders ach, accountholderdetails achd, ( select actxns.userresourceid as cashacctid, sum(actxns.closingbalance) -  ");
+				agentsql.append(" sum(actxns.openingbalance) as cashbalance, actxns.datecreated as datecreated, acts.profileid as profileid, actxns.transactionid as transactionid from  ");
+				agentsql.append(" accounttransactions actxns, transactions trx,accounts acts where actxns.transactionid = trx.transactionid and trx.transactionstatusid = 1 and  ");
+				agentsql.append(" trx.transactiontypeid=1 and  actxns.accountresourceid = acts.accountid and acts.profileid = 12 group by CAST(actxns.datecreated as DATE),  ");
+				agentsql.append(" actxns.userresourceid) tbl1 join cashtransactions ctrs on ctrs.transactionid = tbl1.transactionid where ach.profileid = 11 and tbl1.cashacctid =  ");
+				agentsql.append(" ach.accountholderid and achd.accountdetailsid = ach.accountholderdetailid and datecreated >= '"
+						+ d1
+						+ "' and datecreated <= DATE_ADD('"
+						+ d2
+						+ "', INTERVAL 1 DAY)  ");
+				agentsql.append(" order by datecreated desc;  ");
 
 				rs = stmt.executeQuery(agentsql.toString());
 
@@ -683,17 +697,7 @@ public class Reportform extends VerticalLayout {
 					String amt = rs.getString("amount");
 					String fullname = rs.getString("fullname");
 
-					String d = rs.getString("date");
-					// Notification.show(rs.getDate("date").toString(),
-					// Notification.Type.ERROR_MESSAGE);
-
-					Date date = null;
-					try {
-						date = sdf.parse(d);
-					} catch (ParseException e) {
-
-						e.printStackTrace();
-					}
+					Date date = rs.getDate("datecreated");
 
 					if (!ht.containsKey("Dealer ID")) {
 						TreeSet<String> arrL = new TreeSet<>();
@@ -785,286 +789,70 @@ public class Reportform extends VerticalLayout {
 				int x = 0;
 				Object itemId;
 				Item trItem;
-				StringBuilder trxnsql = new StringBuilder();
-				trxnsql.append("SELECT txn.transactionid AS 'TransactionID', txn.lastupdate AS 'Timestamps','N/A' as 'Amount',txn.userresourceid as");
-				trxnsql.append(" 'Sender','N/A' as 'Reciever','N/A' as 'Partner', txnt.name AS 'Transaction Type', txnst.transactionstatusname AS 'Status'");
-				trxnsql.append(" FROM transactions txn, transactionstatus txnst, transactiontypes txnt WHERE ");
-				trxnsql.append("txnst.transactionstatusid = txn.transactionstatusid");
-				trxnsql.append(" AND txnt.transactiontypeid = txn.transactiontypeid and txn.transactionid not in (select txn1.transactionid from ");
-				trxnsql.append(" accounttransactions txn1 group by txn1.transactionid)");
-
-				trxnsql.append(" UNION ");
-
-				trxnsql.append(" SELECT txn.transactionid AS 'Transaction ID', txn.lastupdate AS 'Timestamps',(actxn.amount * -1) as 'Amount',");
-				trxnsql.append(" txn.userresourceid as 'Sender',acth.username as 'Reciever', 'N/A' as 'Partner', txnt.name AS 'Transaction Type', ");
-				trxnsql.append(" txnst.transactionstatusname AS 'Status' FROM transactions txn, ");
-				trxnsql.append(" transactionstatus txnst, transactiontypes txnt,accounttransactions actxn join accountholders acth on acth.accountholderid = actxn.userresourceid ");
-				trxnsql.append(" WHERE txnst.transactionstatusid = txn.transactionstatusid AND txnt.transactiontypeid = txn.transactiontypeid and ");
-				trxnsql.append(" actxn.transactionid = txn.transactionid and txnt.name = 'DEPOSIT' AND txn.transactionid not in (SELECT txn.transactionid FROM transactions txn, ");
-				trxnsql.append(" transactionstatus txnst, transactiontypes txnt,accounttransactions actxn join accountholders acth on acth.accountholderid = actxn.userresourceid ");
-				trxnsql.append(" WHERE txnst.transactionstatusid = txn.transactionstatusid AND txnt.transactiontypeid = txn.transactiontypeid and ");
-				trxnsql.append("  acth.profileid <> 14 and actxn.transactionid = txn.transactionid and txnt.name = 'DEPOSIT' group by actxn.transactionid) group by actxn.transactionid");
-
-				trxnsql.append(" UNION ");
-
-				trxnsql.append(" SELECT txn.transactionid AS 'Transaction ID', txn.lastupdate AS 'Timestamps', actxn.amount as 'Amount',");
-				trxnsql.append(" txn.userresourceid as 'Sender',acth.username as 'Reciever','N/A' as 'Partner', txnt.name AS 'Transaction Type', ");
-				trxnsql.append("txnst.transactionstatusname AS 'Status' FROM transactions txn, ");
-				trxnsql.append(" transactionstatus txnst, transactiontypes txnt,accounttransactions actxn join accountholders acth on acth.accountholderid = actxn.userresourceid ");
-				trxnsql.append(" WHERE txnst.transactionstatusid = txn.transactionstatusid AND txnt.transactiontypeid = txn.transactiontypeid and ");
-				trxnsql.append("  acth.profileid <> 14 and actxn.transactionid = txn.transactionid and txnt.name = 'DEPOSIT' group by actxn.transactionid");
-
-				trxnsql.append(" UNION ");
-
-				trxnsql.append(" SELECT txn.transactionid AS 'TransactionID', txn.lastupdate AS 'Timestamps',(actxn.amount * -1) as 'Amount', ");
-				trxnsql.append(" txnvo.toreceivinguserresource as 'Sender', extpay.refrence1 as 'Reciever',extpay.resourceid as 'Partner', txnt.name AS 'Transaction Type', ");
-				trxnsql.append(" txnst.transactionstatusname AS 'Status' FROM transactions txn,transactionvalueoperations txnvo, ");
-				trxnsql.append(" transactionstatus txnst, transactiontypes txnt,accounttransactions actxn,externalpaymentreference extpay WHERE ");
-				trxnsql.append(" txnst.transactionstatusid = txn.transactionstatusid AND txnt.transactiontypeid = txn.transactiontypeid and ");
-				trxnsql.append(" actxn.amount < 0 and actxn.transactionid = txn.transactionid and extpay.transactionid = txn.transactionid and txnvo.transactionid = txn.transactionid group by ");
-				trxnsql.append(" actxn.transactionid");
-
-				trxnsql.append(" UNION ");
-
-				trxnsql.append(" (SELECT txn.transactionid AS 'TransactionID', txn.lastupdate AS 'Timestamps',(actxn.amount * -1) as 'Amount', ");
-				trxnsql.append(" 'N/A' as 'Sender','N/A' as 'Reciever',txn.userresourceid as 'Partner', txnt.name AS 'Transaction Type',  ");
-				trxnsql.append(" txnst.transactionstatusname AS 'Status' FROM transactions txn,  ");
-				trxnsql.append("  transactionstatus txnst, transactiontypes txnt,accounttransactions actxn WHERE  ");
-				trxnsql.append(" txnst.transactionstatusid = txn.transactionstatusid AND txnt.transactiontypeid = txn.transactiontypeid and  ");
-				trxnsql.append(" actxn.amount < 0 and actxn.transactionid = txn.transactionid and txnt.name <> 'DEPOSIT' and txn.transactionid  ");
-				trxnsql.append(" not in (select extpay.transactionid from  ");
-				trxnsql.append(" externalpaymentreference extpay group by extpay.transactionid) group by txn.transactionid) ");
-
-				// System.out.println(trxnsql.toString());
-
-				rs = stmt.executeQuery(trxnsql.toString());
-				cD.setVisible(true);
-
-				while (rs.next()) {
-					x = x + 1;
-
-					String transactiontype = rs.getString("Transaction Type");
-					// String amount = rs.getString("Amount");
-					String createdon = rs.getString("Timestamps");
-					String transactionID = rs.getString("TransactionID");
-					String sender = rs.getString("Sender");
-					String status = rs.getString("Status");
-					String amount = rs.getString("Amount");
-					String receiver = rs.getString("Reciever");
-					String partner = rs.getString("Partner");
-					String d = createdon;
-
-					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-					Date date = null;
-					try {
-						date = sdf.parse(d);
-					} catch (ParseException e) {
-
-						e.printStackTrace();
-					}
-
-					if (!ht.containsKey("Agent/Sender")) {
-						TreeSet<String> arrL = new TreeSet<>();
-						arrL.add(sender);
-						ht.put("Agent/Sender", arrL);
-					} else {
-						ht.get("Agent/Sender").add(sender);
-					}
-
-					if (!ht.containsKey("Partner")) {
-						TreeSet<String> arrL = new TreeSet<>();
-						arrL.add(partner);
-						ht.put("Partner", arrL);
-					} else {
-						ht.get("Partner").add(partner);
-					}
-
-					if (!ht.containsKey("Transaction Type")) {
-						TreeSet<String> arrL = new TreeSet<>();
-						arrL.add(transactiontype);
-						ht.put("Transaction Type", arrL);
-					} else {
-						ht.get("Transaction Type").add(transactiontype);
-					}
-
-					if (!ht.containsKey("Status")) {
-						TreeSet<String> arrL = new TreeSet<>();
-						arrL.add(status);
-						ht.put("Status", arrL);
-					} else {
-						ht.get("Status").add(status);
-					}
-
-					itemId = container2.addItem();
-
-					trItem = container2.getItem(itemId);
-
-					Property<String> tdPropertyserial = trItem
-							.getItemProperty("S/N");
-
-					Property<Date> tdPropertytransactiondate = trItem
-							.getItemProperty("Date");
-					Property<String> tdPropertytransactionid = trItem
-							.getItemProperty("Transaction ID");
-					Property<String> tdPropertyamount = trItem
-							.getItemProperty("Amount (\u20A6)");
-
-					Property<String> tdPropertyreceiver = trItem
-							.getItemProperty("Receiver");
-					Property<String> tdPropertytransactiontype = trItem
-							.getItemProperty("Transaction Type");
-					// Property<String> tdPropertyamount = trItem
-					// .getItemProperty("Amount (\u20A6)");
-					Property<String> tdPropertysender = trItem
-							.getItemProperty("Agent/Sender");
-					// Property<String> tdPropertysenderonbehalfof = trItem
-					// .getItemProperty("Sent_on_behalf_of");
-
-					// Property<String> tdPropertyreceiver = trItem
-					// .getItemProperty("Receiver");
-					// Property<String> tdPropertyreceiveronbehalfof = trItem
-					// .getItemProperty("Received_on_behalf_of");
-					Property<String> tdPropertystatus = trItem
-							.getItemProperty("Status");
-					Property<String> tdPropertypartner = trItem
-							.getItemProperty("Partner");
-
-					tdPropertyserial.setValue(String.valueOf(x));
-					tdPropertytransactionid.setValue(transactionID);
-					tdPropertytransactiondate.setValue(date);
-					tdPropertytransactiontype.setValue(transactiontype);
-					// tdPropertyamount.setValue(amount);
-					tdPropertysender.setValue(sender);
-					tdPropertyamount.setValue(amount);
-					tdPropertyreceiver.setValue(receiver);
-
-					tdPropertystatus.setValue(status);
-					tdPropertypartner.setValue(partner);
-
-				}
-
-				conn.close();
-				Notification.show(x + " result(s) found",
-						Notification.Type.WARNING_MESSAGE);
-
-				if (x > 30) {
-					x = 30;
-				}
-
-				table.setPageLength(x);
-				table.setSelectable(true);
-				table.setContainerDataSource(container2);
-
-			} catch (SQLException | ClassNotFoundException
-					| InstantiationException | IllegalAccessException
-					| NullPointerException e) {
-				errorHandler(e);
-			}
-
-			// searchform.removeAllComponents();
-			// searchform.addComponent(SettlementForm());
-
-		} else if (selectedId
-				.equalsIgnoreCase("Transaction Report(Only Today)")) {
-
-			IndexedContainer container2 = new IndexedContainer();
-			container2.addContainerProperty("S/N", String.class, "");
-			container2.addContainerProperty("Transaction ID", String.class, "");
-			container2.addContainerProperty("Date", Date.class, "");
-
-			container2
-					.addContainerProperty("Amount (\u20A6)", String.class, "");
-			container2.addContainerProperty("Agent/Sender", String.class, "");
-
-			container2.addContainerProperty("Receiver", String.class, "");
-
-			container2.addContainerProperty("Partner", String.class, "");
-
-			container2.addContainerProperty("Transaction Type", String.class,
-					"");
-			container2.addContainerProperty("Status", String.class, "");
-
-			searchform.removeAllComponents();
-			searchform.addComponent(Transactions());
-			ds = container2;
-			if (!container2.removeAllItems()) {
-				return;
-			}
-
-			String drivers = "com.mysql.jdbc.Driver";
-			try {
-
-				Class<?> driver_class = Class.forName(drivers);
-				Driver driver = (Driver) driver_class.newInstance();
-				DriverManager.registerDriver(driver);
-
-				Connection conn = DriverManager.getConnection(
-						MatsWebPortalUI.conf.DB, MatsWebPortalUI.conf.UN,
-						MatsWebPortalUI.conf.PW);
-
-				Statement stmt = conn.createStatement();
-
-				ResultSet rs;
-				int x = 0;
-				Object itemId;
-				Item trItem;
-
-				Calendar cal = Calendar.getInstance();
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-				String dm = sdf.format(cal.getTime());
-
 				StringBuilder trxnsqld = new StringBuilder();
-
-				trxnsqld.append("select * from (SELECT txn.transactionid AS 'TransactionID', txn.lastupdate AS 'Timestamps','N/A' as 'Amount',txn.userresourceid as ");
+				trxnsqld.append(" SELECT txn.transactionid AS 'TransactionID', txn.lastupdate AS 'Timestamps','N/A' as 'Amount',txn.userresourceid as ");
 				trxnsqld.append(" 'Sender','N/A' as 'Reciever','N/A' as 'Partner', txnt.name AS 'Transaction Type', txnst.transactionstatusname AS 'Status' ");
-				trxnsqld.append(" FROM transactions txn, transactionstatus txnst, transactiontypes txnt WHERE ");
-				trxnsqld.append(" txnst.transactionstatusid = txn.transactionstatusid AND txnt.transactiontypeid = txn.transactiontypeid and txn.transactionid not in (select txn1.transactionid from ");
+				trxnsqld.append(" FROM transactions txn, transactionstatus txnst, transactiontypes txnt WHERE txn.lastupdate >= '"
+						+ d1 + "' and txn.lastupdate <=  ");
+				trxnsqld.append("  DATE_ADD('"
+						+ d2
+						+ "', INTERVAL 1 DAY) and txnst.transactionstatusid = txn.transactionstatusid ");
+				trxnsqld.append(" AND txnt.transactiontypeid = txn.transactiontypeid and txn.transactionid not in (select txn1.transactionid from  ");
 				trxnsqld.append(" accounttransactions txn1 group by txn1.transactionid) ");
 
-				trxnsqld.append("  UNION ");
+				trxnsqld.append(" UNION ");
 
-				trxnsqld.append("  SELECT txn.transactionid AS 'Transaction ID', txn.lastupdate AS 'Timestamps',(actxn.amount * -1) as 'Amount',");
-				trxnsqld.append(" txn.userresourceid as 'Sender',acth.username as 'Reciever', 'N/A' as 'Partner', txnt.name AS 'Transaction Type', ");
-				trxnsqld.append(" txnst.transactionstatusname AS 'Status' FROM transactions txn, ");
-				trxnsqld.append("  transactionstatus txnst, transactiontypes txnt,accounttransactions actxn join accountholders acth on acth.accountholderid = actxn.userresourceid ");
-				trxnsqld.append("  WHERE txnst.transactionstatusid = txn.transactionstatusid AND txnt.transactiontypeid = txn.transactiontypeid and ");
-				trxnsqld.append("  actxn.transactionid = txn.transactionid and txnt.name = 'DEPOSIT' AND txn.transactionid not in (SELECT txn.transactionid FROM transactions txn, ");
-				trxnsqld.append("  transactionstatus txnst, transactiontypes txnt,accounttransactions actxn join accountholders acth on acth.accountholderid = actxn.userresourceid ");
-				trxnsqld.append("  WHERE txnst.transactionstatusid = txn.transactionstatusid AND txnt.transactiontypeid = txn.transactiontypeid and ");
+				trxnsqld.append("  SELECT txn.transactionid AS 'Transaction ID', txn.lastupdate AS 'Timestamps',(actxn.amount * -1) as 'Amount', ");
+				trxnsqld.append(" txn.userresourceid as 'Sender',acth.username as 'Reciever', 'N/A' as 'Partner', txnt.name AS 'Transaction Type',  ");
+				trxnsqld.append(" txnst.transactionstatusname AS 'Status' FROM transactions txn,  ");
+				trxnsqld.append("  transactionstatus txnst, transactiontypes txnt,accounttransactions actxn join accountholders acth on acth.accountholderid = actxn.userresourceid  ");
+				trxnsqld.append("  WHERE txn.lastupdate >= '" + d1
+						+ "' and txn.lastupdate <=  DATE_ADD('" + d2
+						+ "', INTERVAL 1 DAY) and txnst.transactionstatusid  ");
+				trxnsqld.append("  = txn.transactionstatusid AND txnt.transactiontypeid = txn.transactiontypeid and  ");
+				trxnsqld.append("  actxn.transactionid = txn.transactionid and txnt.name = 'DEPOSIT' AND txn.transactionid not in (SELECT txn.transactionid FROM transactions txn,  ");
+				trxnsqld.append("  transactionstatus txnst, transactiontypes txnt,accounttransactions actxn join accountholders acth on acth.accountholderid = actxn.userresourceid  ");
+				trxnsqld.append("  WHERE txnst.transactionstatusid = txn.transactionstatusid AND txnt.transactiontypeid = txn.transactiontypeid and  ");
 				trxnsqld.append("   acth.profileid <> 14 and actxn.transactionid = txn.transactionid and txnt.name = 'DEPOSIT' group by actxn.transactionid) group by actxn.transactionid ");
 
 				trxnsqld.append("  UNION ");
 
 				trxnsqld.append("  SELECT txn.transactionid AS 'Transaction ID', txn.lastupdate AS 'Timestamps',actxn.amount as 'Amount', ");
 				trxnsqld.append("  txn.userresourceid as 'Sender',acth.username as 'Reciever','N/A' as 'Partner', txnt.name AS 'Transaction Type',  ");
-				trxnsqld.append(" txnst.transactionstatusname AS 'Status' FROM transactions txn, ");
-				trxnsqld.append("  transactionstatus txnst, transactiontypes txnt,accounttransactions actxn join accountholders acth on acth.accountholderid = actxn.userresourceid ");
-				trxnsqld.append("  WHERE txnst.transactionstatusid = txn.transactionstatusid AND txnt.transactiontypeid = txn.transactiontypeid and ");
-				trxnsqld.append("   acth.profileid <> 14 and actxn.transactionid = txn.transactionid and txnt.name = 'DEPOSIT' group by actxn.transactionid ");
+				trxnsqld.append(" txnst.transactionstatusname AS 'Status' FROM transactions txn,  ");
+				trxnsqld.append("  transactionstatus txnst, transactiontypes txnt,accounttransactions actxn join accountholders acth on acth.accountholderid = actxn.userresourceid  ");
+				trxnsqld.append("  WHERE txn.lastupdate >= '" + d1
+						+ "' and txn.lastupdate <= DATE_ADD('" + d2
+						+ "', INTERVAL 1 DAY) and txnst.transactionstatusid  ");
+				trxnsqld.append("  = txn.transactionstatusid AND txnt.transactiontypeid = txn.transactiontypeid and  ");
+				trxnsqld.append("   acth.profileid <> 14 and actxn.transactionid = txn.transactionid and txnt.name = 'DEPOSIT' group by actxn.transactionid  ");
 
-				trxnsqld.append(" UNION ");
+				trxnsqld.append(" UNION  ");
 
-				trxnsqld.append(" SELECT txn.transactionid AS 'TransactionID', txn.lastupdate AS 'Timestamps',(actxn.amount * -1) as 'Amount', ");
-				trxnsqld.append(" txnvo.toreceivinguserresource as 'Sender', extpay.refrence1 as 'Reciever',extpay.resourceid as 'Partner', txnt.name AS 'Transaction Type', ");
+				trxnsqld.append(" SELECT txn.transactionid AS 'TransactionID', txn.lastupdate AS 'Timestamps',(actxn.amount * -1) as 'Amount',  ");
+				trxnsqld.append(" txnvo.toreceivinguserresource as 'Sender', extpay.refrence1 as 'Reciever',extpay.resourceid as 'Partner', txnt.name AS 'Transaction Type',  ");
 				trxnsqld.append(" txnst.transactionstatusname AS 'Status' FROM transactions txn,transactionvalueoperations txnvo, ");
-				trxnsqld.append("  transactionstatus txnst, transactiontypes txnt,accounttransactions actxn,externalpaymentreference extpay WHERE ");
-				trxnsqld.append("  txnst.transactionstatusid = txn.transactionstatusid AND txnt.transactiontypeid = txn.transactiontypeid and ");
-				trxnsqld.append("  actxn.amount < 0 and actxn.transactionid = txn.transactionid and extpay.transactionid = txn.transactionid and txnvo.transactionid = txn.transactionid group by ");
+				trxnsqld.append("  transactionstatus txnst, transactiontypes txnt,accounttransactions actxn,externalpaymentreference extpay WHERE  ");
+				trxnsqld.append("  txn.lastupdate >= '" + d1
+						+ "' and txn.lastupdate <= DATE_ADD('" + d2
+						+ "', INTERVAL 1 DAY) and txnst.transactionstatusid = ");
+				trxnsqld.append("  txn.transactionstatusid AND txnt.transactiontypeid = txn.transactiontypeid and  ");
+				trxnsqld.append("  actxn.amount < 0 and actxn.transactionid = txn.transactionid and extpay.transactionid = txn.transactionid and txnvo.transactionid = txn.transactionid group by  ");
 				trxnsqld.append("  actxn.transactionid ");
 
 				trxnsqld.append("  UNION ");
 
-				trxnsqld.append(" (SELECT txn.transactionid AS 'TransactionID', txn.lastupdate AS 'Timestamps',(actxn.amount * -1) as 'Amount', ");
+				trxnsqld.append(" 	(SELECT txn.transactionid AS 'TransactionID', txn.lastupdate AS 'Timestamps',(actxn.amount * -1) as 'Amount', ");
 				trxnsqld.append(" 'N/A' as 'Sender','N/A' as 'Reciever',txn.userresourceid as 'Partner', txnt.name AS 'Transaction Type',  ");
-				trxnsqld.append(" txnst.transactionstatusname AS 'Status' FROM transactions txn, ");
-				trxnsqld.append(" transactionstatus txnst, transactiontypes txnt,accounttransactions actxn WHERE ");
-				trxnsqld.append(" txnst.transactionstatusid = txn.transactionstatusid AND txnt.transactiontypeid = txn.transactiontypeid and ");
-				trxnsqld.append(" actxn.amount < 0 and actxn.transactionid = txn.transactionid and txnt.name <> 'DEPOSIT' and txn.transactionid ");
-				trxnsqld.append(" not in (select extpay.transactionid from ");
-				trxnsqld.append(" externalpaymentreference extpay group by extpay.transactionid) group by txn.transactionid) ORDER BY TransactionID,Timestamps) as a ");
-
-				trxnsqld.append(" WHERE ");
-				trxnsqld.append(" CAST(a.Timestamps as DATE) = '" + dm + "';");
+				trxnsqld.append(" txnst.transactionstatusname AS 'Status' FROM transactions txn,  ");
+				trxnsqld.append("  transactionstatus txnst, transactiontypes txnt,accounttransactions actxn WHERE txn.lastupdate >= '"
+						+ d1 + "' and txn.lastupdate <=  ");
+				trxnsqld.append("  DATE_ADD('" + d2 + "', INTERVAL 1 DAY) and ");
+				trxnsqld.append("  txnst.transactionstatusid = txn.transactionstatusid AND txnt.transactiontypeid = txn.transactiontypeid and  ");
+				trxnsqld.append("  actxn.amount < 0 and actxn.transactionid = txn.transactionid and txnt.name <> 'DEPOSIT' and txn.transactionid  ");
+				trxnsqld.append("  not in (select extpay.transactionid from  ");
+				trxnsqld.append(" externalpaymentreference extpay group by extpay.transactionid) group by txn.transactionid) ");
+				trxnsqld.append("  ORDER BY TransactionID,Timestamps; ");
 
 				rs = stmt.executeQuery(trxnsqld.toString());
 				cD.setVisible(true);
@@ -1074,22 +862,13 @@ public class Reportform extends VerticalLayout {
 
 					String transactiontype = rs.getString("Transaction Type");
 					// String amount = rs.getString("Amount");
-					String createdon = rs.getString("Timestamps");
+					Date date = rs.getDate("Timestamps");
 					String transactionID = rs.getString("TransactionID");
 					String sender = rs.getString("Sender");
 					String status = rs.getString("Status");
 					String amount = rs.getString("Amount");
 					String receiver = rs.getString("Reciever");
 					String partner = rs.getString("Partner");
-					String d = createdon;
-
-					Date date = null;
-					try {
-						date = sdf.parse(d);
-					} catch (ParseException e) {
-
-						e.printStackTrace();
-					}
 
 					if (!ht.containsKey("Agent/Sender")) {
 						TreeSet<String> arrL = new TreeSet<>();
@@ -1233,19 +1012,40 @@ public class Reportform extends VerticalLayout {
 
 				StringBuilder summarysql = new StringBuilder();
 
+				/*
+				 * summarysql .append(
+				 * "SELECT CAST(txn.lastupdate as DATE) AS 'TransactionDate'" +
+				 * ",txnt.name AS 'Transaction Type'" +
+				 * ",sum(actxn.amount) as 'Amount'" +
+				 * " FROM transactions txn, transactionstatus txnst, transactiontypes txnt,accounttransactions"
+				 * +
+				 * " actxn,externalpaymentreference extpay, accountholders acth WHERE  txnst.transactionstatusid = txn.transactionstatusid"
+				 * + " AND txnt.transactiontypeid = txn.transactiontypeid and "
+				 * +
+				 * "actxn.amount > 0 and actxn.transactionid = txn.transactionid and acth.accountholderid = actxn.userresourceid "
+				 * +
+				 * "and acth.profileid <> 14 and extpay.transactionid = txn.transactionid group by txnt.name, CAST(txn.lastupdate as DATE) order by TransactionDate desc"
+				 * );
+				 */
 				summarysql
-						.append("SELECT CAST(txn.lastupdate as DATE) AS 'TransactionDate'"
-								+ ",txnt.name AS 'Transaction Type'"
-								+ ",sum(actxn.amount) as 'Amount'"
-								+ " FROM transactions txn, transactionstatus txnst, transactiontypes txnt,accounttransactions"
-								+ " actxn,externalpaymentreference extpay, accountholders acth WHERE  txnst.transactionstatusid = txn.transactionstatusid"
-								+ " AND txnt.transactiontypeid = txn.transactiontypeid and "
-								+ "actxn.amount > 0 and actxn.transactionid = txn.transactionid and acth.accountholderid = actxn.userresourceid "
-								+ "and acth.profileid <> 14 and extpay.transactionid = txn.transactionid group by txnt.name, CAST(txn.lastupdate as DATE) order by TransactionDate desc");
+						.append(" SELECT CAST(txn.lastupdate as DATE) AS 'TransactionDate',txnt.name AS 'Transaction Type',sum(actxn.amount) as 'Amount' ");
+				summarysql
+						.append("FROM transactions txn, transactionstatus txnst, transactiontypes txnt,accounttransactions actxn,externalpaymentreference extpay,  ");
+				summarysql
+						.append("accountholders acth WHERE  txnst.transactionstatusid = txn.transactionstatusid AND txnt.transactiontypeid = txn.transactiontypeid  ");
+				summarysql
+						.append("and actxn.amount > 0 and actxn.transactionid = txn.transactionid and acth.accountholderid = actxn.userresourceid  ");
+				summarysql
+						.append("and acth.profileid <> 14 and txn.lastupdate >= '"
+								+ d1 + "' and txn.lastupdate <=  ");
+				summarysql
+						.append(" DATE_ADD('"
+								+ d2
+								+ "', INTERVAL 1 DAY) and extpay.transactionid = txn.transactionid group by txnt.name, CAST(txn.lastupdate as DATE)  ");
+				summarysql.append("order by TransactionDate desc ");
 
 				rs = stmt.executeQuery(summarysql.toString());
 
-				// System.out.println(summarysql.toString());
 				cD.setVisible(true);
 				while (rs.next()) {
 					x = x + 1;
@@ -1254,23 +1054,7 @@ public class Reportform extends VerticalLayout {
 					String amount = rs.getString("Amount");
 					// String nooftransactions = rs
 					// .getString("No of transactions");
-					String createdon = rs.getString("TransactionDate");
-					// String status = rs.getString("Status");
-					// System.out.println(nooftransactions);
-					// System.out.println(amount);
-					// System.out.println(createdon);
-					// String name = rs.getString("Username");
-
-					String d = createdon;
-
-					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-					Date date = null;
-					try {
-						date = sdf.parse(d);
-					} catch (ParseException e) {
-
-						e.printStackTrace();
-					}
+					Date date = rs.getDate("TransactionDate");
 
 					if (!ht.containsKey("Transaction Type")) {
 						TreeSet<String> arrL = new TreeSet<>();
@@ -1392,29 +1176,25 @@ public class Reportform extends VerticalLayout {
 				Item trItem;
 
 				StringBuilder sb = new StringBuilder();
-				// sb.append("select trx1.transactionid as txid,trxtyp.name as 'Transaction Type','MATS_TOTAL_FEE&COMMISSION' as 'Commission Account',acts1.amount as commission,");
 
-				// sb.append("acth.username as 'Fees Account',acts2.amount as 'Adjusted Fees',acts2.amount+acts1.amount as 'Original Fees',acts3.amount as amount,acts1.datecreated as 'DoC' from accounttransactions acts1,  transactions trx1, transactiontypes trxtyp, accounttransactions acts2, accounttransactions acts3, accountholders");
-
-				// sb.append(" acth, accountholders acth2, accounts act1, accounts act2, profiles pf1, profiles pf2 where acts1.transactionid = trx1.transactionid and act1.profileid = pf1.profileid and acts2.transactionid = trx1.transactionid and acts2.userresourceid = acth.accountholderid and acts1.accountresourceid = act1.accountid and act2.profileid = pf2.profileid and acts2.accountresourceid = act2.accountid and acts3.userresourceid = acth2.accountholderid and acts3.transactionid = trx1.transactionid and trx1.transactiontypeid = trxtyp.transactiontypeid and acts1.accountresourceid = 12 and acts2.accountresourceid in");
-
-				// sb.append(" (select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from accountholders where profileid = 15 and accounttypeid = 2)) and acts3.accountresourceid in (select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from accountholders where (profileid = 11 or profileid = 6) and accounttypeid = 1))");
-
-				sb.append(" select trx1.transactionid as txid,trxtyp.name as 'Transaction Type',acts1.datecreated as TransactionDate, ");
-				sb.append(" acts3.amount as Amount,txnvo.toreceivinguserresource as 'Agent ID',acts2.amount as 'Adjusted Fees',acts2.amount+acts1.amount as ");
-				sb.append(" 'Original Fees',acts1.amount as commission, (acts1.amount * 0.25) as 'MATS Comm.', (acts1.amount * 0.75) as 'Total Commission', acth.username as ");
-				sb.append(" 'Partner' from accounttransactions acts1, transactionvalueoperations txnvo, transactions trx1, transactiontypes trxtyp, accounttransactions acts2, ");
-				sb.append(" accounttransactions acts3, accountholders acth, accountholders acth2, accounts act1, accounts act2, profiles pf1, ");
-				sb.append(" profiles pf2 where acts1.transactionid = trx1.transactionid and act1.profileid = pf1.profileid and acts2.transactionid = ");
-				sb.append(" trx1.transactionid and acts2.userresourceid = acth.accountholderid and acts1.accountresourceid = act1.accountid and ");
-				sb.append(" act2.profileid = pf2.profileid and acts2.accountresourceid = act2.accountid and acts3.userresourceid = ");
-				sb.append(" acth2.accountholderid and acts3.transactionid = trx1.transactionid and txnvo.transactionid = trx1.transactionid and trx1.transactiontypeid = ");
-				sb.append(" trxtyp.transactiontypeid and acts1.accountresourceid = 12 and acts2.accountresourceid in ");
-				sb.append(" (select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from ");
-				sb.append(" accountholders where profileid = 15 and accounttypeid = 2)) and acts3.accountresourceid in ");
+				sb.append(" select trx1.transactionid as txid,trxtyp.name as 'Transaction Type',acts1.datecreated as TransactionDate,  ");
+				sb.append(" acts3.amount as Amount,txnvo.toreceivinguserresource as 'Agent ID',acts2.amount as 'Adjusted Fees',acts2.amount+acts1.amount as  ");
+				sb.append(" 'Original Fees',acts1.amount as commission, (acts1.amount  * 0.25) as 'MATS Comm.', (acts1.amount  * 0.75) as 'Total Commission', acth.username as  ");
+				sb.append(" 'Partner' from accounttransactions acts1, transactionvalueoperations txnvo, transactions trx1, transactiontypes trxtyp, accounttransactions acts2,  ");
+				sb.append(" accounttransactions acts3, accountholders acth, accountholders acth2, accounts act1, accounts act2, profiles pf1,  ");
+				sb.append(" profiles pf2 WHERE acts1.datecreated >= '" + d1
+						+ "' and acts1.datecreated <=  DATE_ADD('" + d2
+						+ "', INTERVAL 1 DAY)  ");
+				sb.append(" and acts1.transactionid = trx1.transactionid and act1.profileid = pf1.profileid and acts2.transactionid =  ");
+				sb.append(" trx1.transactionid and acts2.userresourceid = acth.accountholderid and acts1.accountresourceid = act1.accountid and  ");
+				sb.append(" act2.profileid = pf2.profileid and acts2.accountresourceid = act2.accountid and acts3.userresourceid =  ");
+				sb.append(" acth2.accountholderid and acts3.transactionid = trx1.transactionid and txnvo.transactionid = trx1.transactionid and trx1.transactiontypeid =  ");
+				sb.append(" trxtyp.transactiontypeid and acts1.accountresourceid = 12 and acts2.accountresourceid in  ");
+				sb.append(" (select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from  ");
+				sb.append(" accountholders where profileid = 15 and accounttypeid = 2)) and acts3.accountresourceid in  ");
 				sb.append(" (select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from ");
 				sb.append(" accountholders where (profileid = 11 or profileid = 6) and accounttypeid = 1)) order by TransactionDate desc; ");
-				// System.out.println(sb.toString());
+
 				rs = stmt.executeQuery(sb.toString());
 
 				while (rs.next()) {
@@ -1426,7 +1206,7 @@ public class Reportform extends VerticalLayout {
 
 					String transID = rs.getString("txid");
 
-					String sdate = rs.getString("TransactionDate");
+					Date date = rs.getDate("TransactionDate");
 
 					String commission = rs.getString("commission");
 
@@ -1502,17 +1282,7 @@ public class Reportform extends VerticalLayout {
 					Property<Date> tdPropertydate = trItem
 							.getItemProperty("Date");
 
-					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-					Date date = null;
-					try {
-						date = sdf.parse(sdate);
-					} catch (ParseException e) {
-
-						e.printStackTrace();
-					}
-
 					tdPropertyserial.setValue(String.valueOf(x));
-
 					tdPropertyCommAcc.setValue(commissionAccount);
 					tdPropertyFeesAcc.setValue(feesAccount);
 					tdPropertyAFees.setValue(afees);
@@ -1546,11 +1316,14 @@ public class Reportform extends VerticalLayout {
 		} else if (selectedId
 				.equalsIgnoreCase("Fees / Commission Summary Report")) {
 
-			cD.setVisible(false);
+			cD.setVisible(true);
 
 			IndexedContainer feesCommissionContainer = new IndexedContainer();
 			feesCommissionContainer.addContainerProperty("S/N", String.class,
 					"");
+			feesCommissionContainer
+					.addContainerProperty("Date", Date.class, "");
+
 			feesCommissionContainer.addContainerProperty("Partner",
 					String.class, "");
 			feesCommissionContainer.addContainerProperty("Commission (\u20A6)",
@@ -1565,10 +1338,6 @@ public class Reportform extends VerticalLayout {
 			searchform.removeAllComponents();
 			searchform.addComponent(Transactions());
 			ds = feesCommissionContainer;
-
-			if (!feesCommissionContainer.removeAllItems()) {
-				return;
-			}
 
 			String drivers = "com.mysql.jdbc.Driver";
 			try {
@@ -1588,20 +1357,24 @@ public class Reportform extends VerticalLayout {
 				Item trItem;
 
 				StringBuilder sb = new StringBuilder();
+				sb.append(" select acth.username as 'Partner', acts1.datecreated as 'date', sum(acts1.amount) as commission, sum(acts2.amount) as 'Adjusted Fees', ");
+				sb.append(" sum(acts2.amount+acts1.amount) as 'Original Fees',sum(acts3.amount) as amount from  ");
+				sb.append(" accounttransactions acts1,  transactions trx1, transactiontypes trxtyp, accounttransactions acts2, accounttransactions  ");
+				sb.append(" acts3, accountholders acth, accountholders acth2, accounts act1, accounts act2, profiles pf1, profiles pf2 where  ");
+				sb.append(" acts1.datecreated >= '" + d1
+						+ "' and acts1.datecreated <= DATE_ADD('" + d2
+						+ "', INTERVAL 1 DAY) and  ");
+				sb.append(" acts1.transactionid = trx1.transactionid and act1.profileid = pf1.profileid and acts2.transactionid =  ");
+				sb.append(" trx1.transactionid and acts2.userresourceid = acth.accountholderid and acts1.accountresourceid = act1.accountid and  ");
+				sb.append(" act2.profileid = pf2.profileid and acts2.accountresourceid = act2.accountid and acts3.userresourceid =  ");
+				sb.append(" acth2.accountholderid and acts3.transactionid = trx1.transactionid and trx1.transactiontypeid =  ");
+				sb.append(" trxtyp.transactiontypeid and acts1.accountresourceid = 12 and acts2.accountresourceid in  ");
+				sb.append(" (select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from  ");
+				sb.append(" accountholders where profileid = 15 and accounttypeid = 2)) and acts3.accountresourceid in ");
+				sb.append(" (select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from ");
+				sb.append(" accountholders where (profileid = 11 or profileid = 6) and accounttypeid = 1)) group by acth.username; ");
 
-				sb.append("select acth.username as 'Partner', sum(acts1.amount) as commission, sum(acts2.amount) as 'Adjusted Fees',");
-				sb.append("sum(acts2.amount+acts1.amount) as 'Original Fees',sum(acts3.amount) as amount from ");
-				sb.append("accounttransactions acts1,  transactions trx1, transactiontypes trxtyp, accounttransactions acts2, accounttransactions ");
-				sb.append("acts3, accountholders acth, accountholders acth2, accounts act1, accounts act2, profiles pf1, profiles pf2 where ");
-				sb.append("acts1.transactionid = trx1.transactionid and act1.profileid = pf1.profileid and acts2.transactionid = ");
-				sb.append("trx1.transactionid and acts2.userresourceid = acth.accountholderid and acts1.accountresourceid = act1.accountid and ");
-				sb.append("act2.profileid = pf2.profileid and acts2.accountresourceid = act2.accountid and acts3.userresourceid = ");
-				sb.append("acth2.accountholderid and acts3.transactionid = trx1.transactionid and trx1.transactiontypeid = ");
-				sb.append("trxtyp.transactiontypeid and acts1.accountresourceid = 12 and acts2.accountresourceid in ");
-				sb.append("(select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from ");
-				sb.append("accountholders where profileid = 15 and accounttypeid = 2)) and acts3.accountresourceid in ");
-				sb.append("(select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from ");
-				sb.append("accountholders where (profileid = 11 or profileid = 6) and accounttypeid = 1)) group by acth.username;");
+				// System.out.println(sb.toString());
 
 				rs = stmt.executeQuery(sb.toString());
 
@@ -1617,6 +1390,8 @@ public class Reportform extends VerticalLayout {
 					String ofees = rs.getString("Original Fees");
 
 					String amount = rs.getString("amount");
+
+					Date date = rs.getDate("date");
 
 					if (!ht.containsKey("Partner")) {
 						TreeSet<String> arrL = new TreeSet<>();
@@ -1646,13 +1421,16 @@ public class Reportform extends VerticalLayout {
 					Property<String> tdPropertyamount = trItem
 							.getItemProperty("Amount (\u20A6)");
 
-					tdPropertyserial.setValue(String.valueOf(x));
+					Property<Date> tdPropertydate = trItem
+							.getItemProperty("Date");
 
+					tdPropertyserial.setValue(String.valueOf(x));
 					tdPropertyPartner.setValue(partner);
 					tdPropertyAFees.setValue(afees);
 					tdPropertyOFees.setValue(ofees);
 					tdPropertyCommission.setValue(commission);
 					tdPropertyamount.setValue(amount);
+					tdPropertydate.setValue(date);
 
 				}
 
@@ -1675,6 +1453,7 @@ public class Reportform extends VerticalLayout {
 		}
 
 		addFilter();
+		btnReload.setVisible(true);
 
 	}
 
@@ -1810,7 +1589,7 @@ public class Reportform extends VerticalLayout {
 	public void addDFilters() {
 		dat.setComponentError(null);
 		dat2.setComponentError(null);
-		isCriteriaChanged = true;
+		// isCriteriaChanged = true;
 		if (ds == null)
 			return;
 		try {

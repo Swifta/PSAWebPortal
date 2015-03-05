@@ -204,19 +204,21 @@ public class Login extends VerticalLayout implements View {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				LoginService loginService = new LoginService();
 				try {
 					fg.commit();
 				} catch (Exception e) {
 					return;
 				}
+				LoginService loginService = new LoginService();
 				logger.info("---------------Before validating the username and password"
 						+ tfUsername.getValue());
 				curuname = tfUsername.getValue();
 				// if (validCredentials()) {
 				try {
-					if (loginService.authenticateUser(tfUsername.getValue(),
-							tfPassword.getValue()).equals("true")) {
+
+					String status = loginService.authenticateUser(
+							tfUsername.getValue(), tfPassword.getValue());
+					if (status.equals("true")) {
 						logger.info("---------------Validation successful");
 						UI.getCurrent().getSession()
 								.setAttribute("user", tfUsername.getValue());
@@ -235,9 +237,7 @@ public class Login extends VerticalLayout implements View {
 
 					} else {
 
-						if (loginService.authenticateUser(
-								tfUsername.getValue(), tfPassword.getValue())
-								.equals("false")) {
+						if (status.equals("false")) {
 							lPrompt.setValue("Invalid Username or Password.");
 
 						} else if (loginService.authenticateUser(
@@ -261,6 +261,9 @@ public class Login extends VerticalLayout implements View {
 						logger.info("---------------The authentication FAILED!!!!!!!!!!!!!!");
 
 					}
+
+					// Notification.show(status,
+					// Notification.Type.ERROR_MESSAGE);
 				} catch (AxisFault e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
