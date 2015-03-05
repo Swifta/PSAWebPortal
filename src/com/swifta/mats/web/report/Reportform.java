@@ -293,16 +293,19 @@ public class Reportform extends VerticalLayout {
 				Calendar cal = Calendar.getInstance();
 
 				SimpleDateFormat sdf = new SimpleDateFormat(
-						"dd-MM-yyyy_HH.mm.ss");
+						"dd-MM-yyyy_HH_mm_ss");
 
 				StringBuilder builder = new StringBuilder();
-				builder.append(table.getCaption());
+
+				builder.append(table.getCaption().replace(' ', '_'));
 				builder.append("_");
 				builder.append(sdf.format(cal.getTime()));
 
 				ExcelExport excelExport = new ExcelExport(table);
 				excelExport.setReportTitle(table.getCaption());
 				excelExport.setExportFileName(builder.toString() + ".xls");
+				Notification.show(builder.toString(),
+						Notification.Type.ERROR_MESSAGE);
 
 				excelExport.setDisplayTotals(false);
 				excelExport.export();
@@ -647,7 +650,8 @@ public class Reportform extends VerticalLayout {
 				agentsql.append(" sum(actxns.closingbalance) - sum(actxns.openingbalance) as cashbalance, actxns.datecreated ");
 				agentsql.append(" as datecreated, acts.profileid as profileid, actxns.transactionid as transactionid from");
 				agentsql.append(" accounttransactions actxns, transactions trx,accounts acts where actxns.transactionid = trx.transactionid and trx.transactionstatusid = 1 and trx.transactiontypeid=1 and  actxns.accountresourceid = acts.accountid and ");
-				agentsql.append(" acts.profileid = 12 group by CAST(actxns.datecreated as DATE),actxns.userresourceid) tbl1 join cashtransactions ctrs on ctrs.transactionid = tbl1.transactionid where ach.profileid = 11 and tbl1.cashacctid = ach.accountholderid and achd.accountdetailsid = ach.accountholderdetailid order by date desc;");
+				agentsql.append(" acts.profileid = 12 group by CAST(actxns.datecreated as DATE),actxns.userresourceid) tbl1 join cashtransactions ctrs on ctrs.transactionid = tbl1.transactionid where ach.profileid = 11 and tbl1.cashacctid = ach.accountholderid and achd.accountdetailsid = ach.accountholderdetailid and date="
+						+ dm + " order by date desc;");
 
 				rs = stmt.executeQuery(agentsql.toString());
 
