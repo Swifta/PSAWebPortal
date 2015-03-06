@@ -294,8 +294,6 @@ public class Reportform extends VerticalLayout {
 				ExcelExport excelExport = new ExcelExport(table);
 				excelExport.setReportTitle(table.getCaption());
 				excelExport.setExportFileName(builder.toString() + ".xls");
-				Notification.show(builder.toString(),
-						Notification.Type.ERROR_MESSAGE);
 
 				excelExport.setDisplayTotals(false);
 				excelExport.export();
