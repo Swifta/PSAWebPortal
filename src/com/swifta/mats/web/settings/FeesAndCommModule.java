@@ -81,6 +81,8 @@ public class FeesAndCommModule {
 
 	private boolean ischanged = true;
 	private VerticalLayout cCX;
+	private Double dfamt;
+	private Double dcamt;
 
 	// private boolean isExistingInit = false;
 	// private boolean isOthersInit = false;
@@ -1381,12 +1383,12 @@ public class FeesAndCommModule {
 
 		VerticalLayout cItemContentTier = new VerticalLayout();
 		cArrLItemContent.add(cItemContentTier);
-		lbAttr = new Label("Tier(Fees)");
+		Table tb = getPseudoTableFees(hmOpx.get(op), hmTxType.get(type));
+		lbAttr = new Label("Tier(Fees), Total Amount: " + dfamt + " \u20A6");
 		lbAttr.setSizeFull();
 		lbAttr.setStyleName("label_add_user attr");
 		cItemContentTier.addComponent(lbAttr);
-		cItemContentTier.addComponent(getPseudoTableFees(hmOpx.get(op),
-				hmTxType.get(type)));
+		cItemContentTier.addComponent(tb);
 		cAttrItem.addComponent(cItemContentTier);
 
 		cAttr.addComponent(cAttrItem);
@@ -1429,12 +1431,13 @@ public class FeesAndCommModule {
 
 		VerticalLayout cItemContentTier = new VerticalLayout();
 		cArrLItemContent.add(cItemContentTier);
-		lbAttr = new Label("Tier(Commission)");
+		Table tb = getCommissionPseudoTable(hmOpx.get(op), hmTxType.get(type));
+		lbAttr = new Label("Tier(Commission), Total Amount: " + dcamt
+				+ " \u20A6");
 		lbAttr.setSizeFull();
 		lbAttr.setStyleName("label_add_user attr");
 		cItemContentTier.addComponent(lbAttr);
-		cItemContentTier.addComponent(getCommissionPseudoTable(hmOpx.get(op),
-				hmTxType.get(type)));
+		cItemContentTier.addComponent(tb);
 		cAttrItem.addComponent(cItemContentTier);
 
 		cAttr.addComponent(cAttrItem);
@@ -1460,6 +1463,7 @@ public class FeesAndCommModule {
 
 		ResultSet rs = getResultsFees(op, txtype);
 		int x = 0;
+		dfamt = 0D;
 		try {
 			while (rs.next()) {
 				x++;
@@ -1485,6 +1489,13 @@ public class FeesAndCommModule {
 
 				pct = rct.getItemProperty("Last Updated");
 				pct.setValue(date);
+
+				try {
+					Double d = Double.valueOf(amt);
+					dfamt = dfamt + d;
+				} catch (Exception e) {
+
+				}
 
 			}
 
@@ -1522,6 +1533,8 @@ public class FeesAndCommModule {
 
 		ResultSet rs = getResultsCommission(op, txtype);
 		int x = 0;
+
+		dcamt = 0d;
 		try {
 			while (rs.next()) {
 				x++;
@@ -1547,6 +1560,13 @@ public class FeesAndCommModule {
 
 				pct = rct.getItemProperty("Last Updated");
 				pct.setValue(date);
+
+				try {
+					Double d = Double.valueOf(amt);
+					dcamt = dcamt + d;
+				} catch (Exception e) {
+
+				}
 
 			}
 
@@ -1583,7 +1603,7 @@ public class FeesAndCommModule {
 				+ op);
 		sb.append(" and txnt.transactiontypeid = " + txtype + ";");
 
-		System.out.println(sb.toString());
+		// System.out.println(sb.toString());
 
 		ResultSet rs = null;
 

@@ -1,7 +1,6 @@
 package com.swifta.mats.web.usermanagement;
 
 import com.jensjansson.pagedtable.PagedTable;
-import com.jensjansson.pagedtable.PagedTableContainer;
 import com.vaadin.data.Container;
 import com.vaadin.data.validator.IntegerRangeValidator;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -20,12 +19,14 @@ public class PagedTableCustom extends PagedTable {
 	 * 
 	 */
 	private static final long serialVersionUID = 7906821925280944742L;
-	private PagedTableContainer container;
+
 	private ComboBox itemsPerPageSelect;
 	private Button previous;
 	private Button next;
 	private Button first;
 	private Button last;
+	private Label lbSize;
+	private Label lbAmount;
 
 	public PagedTableCustom() {
 		super(null);
@@ -56,6 +57,14 @@ public class PagedTableCustom extends PagedTable {
 		return next;
 	}
 
+	public Label getLabel() {
+		return lbSize;
+	}
+
+	public Label getAmountLabel() {
+		return lbAmount;
+	}
+
 	public Button getLastPageBtn() {
 		return last;
 	}
@@ -76,7 +85,6 @@ public class PagedTableCustom extends PagedTable {
 		pagedTableContainer.setPageLength(getPageLength());
 		super.setContainerDataSource(pagedTableContainer);
 		super.setContainerDataSource(newDataSource);
-		this.container = pagedTableContainer;
 
 	}
 
@@ -137,6 +145,9 @@ public class PagedTableCustom extends PagedTable {
 		HorizontalLayout controlBar = new HorizontalLayout();
 		HorizontalLayout pageSize = new HorizontalLayout();
 		HorizontalLayout pageManagement = new HorizontalLayout();
+		HorizontalLayout cSize = new HorizontalLayout();
+		lbSize = new Label();
+		cSize.addComponent(lbSize);
 		first = new Button("<<", new ClickListener() {
 			private static final long serialVersionUID = -355520120491283992L;
 
@@ -204,6 +215,7 @@ public class PagedTableCustom extends PagedTable {
 		pageManagement.addComponent(currentPageTextField);
 		pageManagement.addComponent(separatorLabel);
 		pageManagement.addComponent(totalPagesLabel);
+
 		pageManagement.addComponent(next);
 		pageManagement.addComponent(last);
 		pageManagement.setComponentAlignment(first, Alignment.MIDDLE_LEFT);
@@ -220,11 +232,19 @@ public class PagedTableCustom extends PagedTable {
 		pageManagement.setWidth(null);
 		pageManagement.setSpacing(true);
 		controlBar.addComponent(pageSize);
+
+		lbAmount = new Label();
+		controlBar.addComponent(lbAmount);
+		controlBar.setComponentAlignment(lbAmount, Alignment.MIDDLE_LEFT);
+
+		controlBar.addComponent(cSize);
+		controlBar.setComponentAlignment(cSize, Alignment.MIDDLE_CENTER);
 		controlBar.addComponent(pageManagement);
-		controlBar.setComponentAlignment(pageManagement,
-				Alignment.MIDDLE_CENTER);
+
+		controlBar
+				.setComponentAlignment(pageManagement, Alignment.MIDDLE_RIGHT);
 		controlBar.setWidth("100%");
-		controlBar.setExpandRatio(pageSize, 1);
+		// controlBar.setExpandRatio(pageSize, 1);
 		addListener(new PageChangeListener() {
 			public void pageChanged(PagedTableChangeEvent event) {
 				// first.setEnabled(container.getStartIndex() > 0);

@@ -1,5 +1,6 @@
 package com.swifta.mats.web.report;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
@@ -57,25 +58,23 @@ public class Reportform extends VerticalLayout {
 	private static final long serialVersionUID = 252829471857525213L;
 	VerticalLayout searchform = new VerticalLayout();
 
-	PagedTableCustom table = new PagedTableCustom() {
+	PagedTableCustom table = new PagedTableCustom();
 
-		private static final long serialVersionUID = 1257822354631333070L;
-
-		@Override
-		protected String formatPropertyValue(Object rowId, Object colId,
-				Property<?> property) {
-			Object v = property.getValue();
-			if (v instanceof Date) {
-				Date dateValue = (Date) v;
-				Calendar cal = Calendar.getInstance();
-				cal.setTime(dateValue);
-				return (cal.get(Calendar.MONTH) + 1 + "/"
-						+ cal.get(Calendar.DATE) + "/" + cal.get(Calendar.YEAR));
-			}
-			return super.formatPropertyValue(rowId, colId, property);
-		}
-
-	};
+	/*
+	 * {
+	 * 
+	 * private static final long serialVersionUID = 1257822354631333070L;
+	 * 
+	 * @Override protected String formatPropertyValue(Object rowId, Object
+	 * colId, Property<?> property) { Object v = property.getValue(); if (v
+	 * instanceof Date) { Date dateValue = (Date) v; Calendar cal =
+	 * Calendar.getInstance(); cal.setTime(dateValue); return
+	 * (cal.get(Calendar.MONTH) + 1 + "/" + cal.get(Calendar.DATE) + "/" +
+	 * cal.get(Calendar.YEAR)); } return super.formatPropertyValue(rowId, colId,
+	 * property); }
+	 * 
+	 * };
+	 */
 
 	HorizontalLayout pnUserSearchResults;
 	HorizontalLayout pnUserSearchResults2;
@@ -97,6 +96,13 @@ public class Reportform extends VerticalLayout {
 	private boolean isFirstCriteriaChanged = true;
 	private Label lb;
 	private Button btnReload;
+	private Label lbSizeTop;
+	private Label lbSizeBottom;
+	private Label lbAmountTop;
+	private Label lbAmountBottom;
+	private BigDecimal bdAmt = new BigDecimal(0.00);
+	private Date minD;
+	private Date maxD;
 
 	private class ValidateRange implements Validator {
 		private static final long serialVersionUID = -5454180295673067279L;
@@ -127,6 +133,8 @@ public class Reportform extends VerticalLayout {
 	public void reportformat() {
 
 		// table.setRowHeaderMode(RowHeaderMode.INDEX);
+
+		bdAmt.setScale(2);
 
 		setMargin(true);
 		reportType = new ComboBox("Search by Report Type");
@@ -233,6 +241,12 @@ public class Reportform extends VerticalLayout {
 				if (!dat2.isValid())
 					return;
 
+				if (minD != null && dat.getValue().compareTo(minD) >= 0
+						&& maxD != null && dat2.getValue().compareTo(maxD) <= 0
+						&& ds != null && ds.size() >= 0) {
+					addDFilters();
+					return;
+				}
 				loadData(reportType.getValue(), dat.getValue(), dat2.getValue());
 
 			}
@@ -250,7 +264,10 @@ public class Reportform extends VerticalLayout {
 			public void valueChange(ValueChangeEvent event) {
 				if (reportType.getValue() == null)
 					return;
-				loadData(reportType.getValue(), dat.getValue(), dat2.getValue());
+				dat.setValue(Calendar.getInstance().getTime());
+				dat2.setValue(Calendar.getInstance().getTime());
+				// loadData(reportType.getValue(), dat.getValue(),
+				// dat2.getValue());
 			}
 
 		});
@@ -297,7 +314,6 @@ public class Reportform extends VerticalLayout {
 
 				excelExport.setDisplayTotals(false);
 				excelExport.export();
-
 			}
 		});
 
@@ -326,7 +342,24 @@ public class Reportform extends VerticalLayout {
 		// table.setContainerDataSource(container);
 
 		pnUserSearchResults = table.createControls();
+		lbSizeTop = table.getLabel();
+		lbAmountTop = table.getAmountLabel();
 		pnUserSearchResults2 = table.createControls();
+		lbSizeBottom = table.getLabel();
+		lbAmountBottom = table.getAmountLabel();
+
+		lbSizeTop.setStyleName("label_search_user");
+		lbSizeBottom.setStyleName("label_search_user");
+
+		lbSizeTop.setVisible(false);
+		lbSizeBottom.setVisible(false);
+
+		lbAmountTop.setStyleName("label_search_user");
+		lbAmountBottom.setStyleName("label_search_user");
+
+		lbAmountTop.setVisible(false);
+		lbAmountBottom.setVisible(false);
+
 		addComponent(searchform);
 
 		addComponent(pnUserSearchResults);
@@ -457,7 +490,8 @@ public class Reportform extends VerticalLayout {
 		Property<String> tdPropertyagentid = trItem.getItemProperty("Agent ID");
 		Property<String> tdPropertydealerid = trItem
 				.getItemProperty("Dealer ID");
-		Property<String> tdPropertyamount = trItem.getItemProperty("Amount");
+		Property<String> tdPropertyamount = trItem
+				.getItemProperty("Amount (\u20A6)");
 
 		tdPropertyserial.setValue(serialnumber);
 		tdPropertytransactionid.setValue(transactionid);
@@ -538,14 +572,48 @@ public class Reportform extends VerticalLayout {
 
 			table.setContainerDataSource(ds);
 			int x = ds.size();
+			int t = x;
 			if (x > 30)
 				x = 30;
 			table.setPageLength(x);
+			bdAmt = new BigDecimal(0.00);
+
+			Iterator<Collection<?>> itr = (Iterator<Collection<?>>) table
+					.getItemIds().iterator();
+			int i = 0;
+			while (itr.hasNext()) {
+				i++;
+				Object itemid = itr.next();
+				Item item = table.getItem(itemid);
+				Property<String> p = item.getItemProperty("S/N");
+				p.setValue(i + "");
+
+				try {
+					Double nd = Double.valueOf(item
+							.getItemProperty("Amount (\u20A6)").getValue()
+							.toString());
+					bdAmt = BigDecimal.valueOf(bdAmt.doubleValue() + nd);
+				} catch (Exception e) {
+
+				}
+
+			}
+
+			lbSizeTop.setValue("Total of: " + t + " result(s).");
+			lbSizeBottom.setValue("Total of: " + t + " result(s).");
+
+			lbAmountTop.setValue("Total Amount: " + bdAmt.doubleValue()
+					+ "  \u20A6.");
+			lbAmountBottom.setValue("Total Amount: " + bdAmt.doubleValue()
+					+ "  \u20A6.");
 
 			return;
 		}
 
 		ds.removeAllContainerFilters();
+		bdAmt = new BigDecimal(0.00);
+		bdAmt.setScale(2);
+
 		Iterator<Entry<String, String>> itrc = cMap.entrySet().iterator();
 		while (itrc.hasNext()) {
 			Entry<String, String> e = itrc.next();
@@ -559,11 +627,13 @@ public class Reportform extends VerticalLayout {
 
 		table.setContainerDataSource(ds);
 		int t = ds.size();
+		int x = t;
 		if (t > 30) {
 			t = 30;
 		}
 
 		table.setPageLength(t);
+		bdAmt = new BigDecimal(0.00);
 		Iterator<Collection<?>> itr = (Iterator<Collection<?>>) table
 				.getItemIds().iterator();
 		int i = 0;
@@ -574,7 +644,24 @@ public class Reportform extends VerticalLayout {
 			Property<String> p = item.getItemProperty("S/N");
 			p.setValue(i + "");
 
+			try {
+				Double nd = Double.valueOf(item
+						.getItemProperty("Amount (\u20A6)").getValue()
+						.toString());
+				bdAmt = BigDecimal.valueOf(bdAmt.doubleValue() + nd);
+			} catch (Exception e) {
+
+			}
+
 		}
+
+		lbSizeTop.setValue("Total of: " + x + " result(s).");
+		lbSizeBottom.setValue("Total of: " + x + " result(s).");
+
+		lbAmountTop.setValue("Total Amount: " + bdAmt.doubleValue()
+				+ "  \u20A6.");
+		lbAmountBottom.setValue("Total Amount: " + bdAmt.doubleValue()
+				+ "  \u20A6.");
 
 	}
 
@@ -599,17 +686,23 @@ public class Reportform extends VerticalLayout {
 		String d1 = ((dat == null) ? curd : sdf.format(dat));
 		String d2 = ((dat == null) ? curd : sdf.format(dat2));
 
+		minD = (Date) dat;
+		maxD = (Date) dat2;
+
 		table.setCaption(selectedId);
 		if (selectedId.equalsIgnoreCase("Float Management Report")) {
 
 			IndexedContainer container = new IndexedContainer();
 
 			container.addContainerProperty("S/N", String.class, "");
-			container.addContainerProperty("Date", Date.class, "");
+			container.addContainerProperty("Date", String.class, "");
 			container.addContainerProperty("Agent ID", String.class, "");
 			container.addContainerProperty("Dealer ID", String.class, "");
 			container.addContainerProperty("Full Name", String.class, "");
 			container.addContainerProperty("Amount (\u20A6)", String.class, "");
+
+			bdAmt = new BigDecimal(0.00);
+			bdAmt.setScale(2);
 
 			ds = container;
 			String drivers = "com.mysql.jdbc.Driver";
@@ -634,11 +727,6 @@ public class Reportform extends VerticalLayout {
 				}
 
 				StringBuilder agentsql = new StringBuilder();
-
-				// Calendar cal = Calendar.getInstance();
-				// Date dx = cal.getTime();
-				// sdf = new SimpleDateFormat("yyyy-MM-dd");
-				// String dm = sdf.format(dx);
 
 				agentsql.append(" select cast(tbl1.datecreated as DATE) as datecreated, ctrs.operatorid as aid, ach.username as did, concat(achd.firstname,' ',achd.lastname) as fullname, ");
 				agentsql.append(" tbl1.cashbalance as amount from accountholders ach, accountholderdetails achd, ( select actxns.userresourceid as cashacctid, sum(actxns.closingbalance) -  ");
@@ -673,7 +761,7 @@ public class Reportform extends VerticalLayout {
 					Property<String> tdPropertyevalueamount = trItem
 							.getItemProperty("Amount (\u20A6)");
 
-					Property<Date> tdPropertydate = trItem
+					Property<String> tdPropertydate = trItem
 							.getItemProperty("Date");
 
 					Property<String> tdPropertyfullname = trItem
@@ -683,7 +771,7 @@ public class Reportform extends VerticalLayout {
 					String amt = rs.getString("amount");
 					String fullname = rs.getString("fullname");
 
-					Date date = rs.getDate("datecreated");
+					String date = rs.getString("datecreated");
 
 					if (!ht.containsKey("Dealer ID")) {
 						TreeSet<String> arrL = new TreeSet<>();
@@ -700,6 +788,12 @@ public class Reportform extends VerticalLayout {
 					} else {
 						ht.get("Agent ID").add(aid);
 					}
+					try {
+						Double dn = Double.valueOf(amt);
+						bdAmt = BigDecimal.valueOf(dn + bdAmt.doubleValue());
+					} catch (Exception e) {
+
+					}
 
 					tdPropertyserial.setValue(x + "");
 					tdPropertydealerid.setValue(did);
@@ -711,9 +805,6 @@ public class Reportform extends VerticalLayout {
 				}
 
 				conn.close();
-
-				Notification.show(x + " result(s) found",
-						Notification.Type.WARNING_MESSAGE);
 
 				if (x > 30) {
 					x = 30;
@@ -737,7 +828,7 @@ public class Reportform extends VerticalLayout {
 			IndexedContainer container2 = new IndexedContainer();
 			container2.addContainerProperty("S/N", String.class, "");
 			container2.addContainerProperty("Transaction ID", String.class, "");
-			container2.addContainerProperty("Date", Date.class, "");
+			container2.addContainerProperty("Date", String.class, "");
 
 			container2
 					.addContainerProperty("Amount (\u20A6)", String.class, "");
@@ -842,13 +933,14 @@ public class Reportform extends VerticalLayout {
 
 				rs = stmt.executeQuery(trxnsqld.toString());
 				cD.setVisible(true);
+				bdAmt = new BigDecimal(0.00);
 
 				while (rs.next()) {
 					x = x + 1;
 
 					String transactiontype = rs.getString("Transaction Type");
 					// String amount = rs.getString("Amount");
-					Date date = rs.getDate("Timestamps");
+					String date = rs.getString("Timestamps");
 					String transactionID = rs.getString("TransactionID");
 					String sender = rs.getString("Sender");
 					String status = rs.getString("Status");
@@ -895,7 +987,7 @@ public class Reportform extends VerticalLayout {
 					Property<String> tdPropertyserial = trItem
 							.getItemProperty("S/N");
 
-					Property<Date> tdPropertytransactiondate = trItem
+					Property<String> tdPropertytransactiondate = trItem
 							.getItemProperty("Date");
 					Property<String> tdPropertytransactionid = trItem
 							.getItemProperty("Transaction ID");
@@ -922,6 +1014,13 @@ public class Reportform extends VerticalLayout {
 					Property<String> tdPropertypartner = trItem
 							.getItemProperty("Partner");
 
+					try {
+						Double dn = Double.valueOf(amount);
+						bdAmt = BigDecimal.valueOf(dn + bdAmt.doubleValue());
+					} catch (Exception e) {
+
+					}
+
 					tdPropertyserial.setValue(String.valueOf(x));
 					tdPropertytransactionid.setValue(transactionID);
 					tdPropertytransactiondate.setValue(date);
@@ -937,8 +1036,6 @@ public class Reportform extends VerticalLayout {
 				}
 
 				conn.close();
-				Notification.show(x + " result(s) found",
-						Notification.Type.WARNING_MESSAGE);
 
 				if (x > 30) {
 					x = 30;
@@ -963,7 +1060,7 @@ public class Reportform extends VerticalLayout {
 			container3.addContainerProperty("S/N", String.class, "");
 			// container3.addContainerProperty("Name", String.class,
 			// "");
-			container3.addContainerProperty("Date", Date.class, "");
+			container3.addContainerProperty("Date", String.class, "");
 			container3.addContainerProperty("Transaction Type", String.class,
 					"");
 			// container3.addContainerProperty("Transaction Count",
@@ -975,9 +1072,7 @@ public class Reportform extends VerticalLayout {
 
 			ds = container3;
 
-			if (!container3.removeAllItems()) {
-				return;
-			}
+			bdAmt = new BigDecimal(0.00);
 
 			String drivers = "com.mysql.jdbc.Driver";
 			try {
@@ -1040,7 +1135,7 @@ public class Reportform extends VerticalLayout {
 					String amount = rs.getString("Amount");
 					// String nooftransactions = rs
 					// .getString("No of transactions");
-					Date date = rs.getDate("TransactionDate");
+					String date = rs.getString("TransactionDate");
 
 					if (!ht.containsKey("Transaction Type")) {
 						TreeSet<String> arrL = new TreeSet<>();
@@ -1058,7 +1153,7 @@ public class Reportform extends VerticalLayout {
 							.getItemProperty("S/N");
 					// Property<String> tdPropertyname = trItem
 					// .getItemProperty("Name");
-					Property<Date> tdPropertytransactiondate = trItem
+					Property<String> tdPropertytransactiondate = trItem
 							.getItemProperty("Date");
 					Property<String> tdPropertytransactiontype = trItem
 							.getItemProperty("Transaction Type");
@@ -1070,6 +1165,14 @@ public class Reportform extends VerticalLayout {
 					// .getItemProperty("Status");
 
 					// tdPropertyname.setValue(name);
+
+					try {
+						Double dn = Double.valueOf(amount);
+						bdAmt = BigDecimal.valueOf(dn + bdAmt.doubleValue());
+					} catch (Exception e) {
+
+					}
+
 					tdPropertyserial.setValue(String.valueOf(x));
 					tdPropertytransactiondate.setValue(date);
 					tdPropertytransactiontype.setValue(transactiontype);
@@ -1079,8 +1182,6 @@ public class Reportform extends VerticalLayout {
 				}
 
 				conn.close();
-				Notification.show(x + " result(s) found",
-						Notification.Type.WARNING_MESSAGE);
 
 				if (x > 30) {
 					x = 30;
@@ -1110,8 +1211,8 @@ public class Reportform extends VerticalLayout {
 			feesCommissionContainer.addContainerProperty("Transaction Type",
 					String.class, "");
 
-			feesCommissionContainer
-					.addContainerProperty("Date", Date.class, "");
+			feesCommissionContainer.addContainerProperty("Date", String.class,
+					"");
 
 			feesCommissionContainer.addContainerProperty("Amount (\u20A6)",
 					String.class, "");
@@ -1183,6 +1284,8 @@ public class Reportform extends VerticalLayout {
 
 				rs = stmt.executeQuery(sb.toString());
 
+				bdAmt = new BigDecimal(0.00);
+
 				while (rs.next()) {
 					x = x + 1;
 
@@ -1192,7 +1295,7 @@ public class Reportform extends VerticalLayout {
 
 					String transID = rs.getString("txid");
 
-					Date date = rs.getDate("TransactionDate");
+					String date = rs.getString("TransactionDate");
 
 					String commission = rs.getString("commission");
 
@@ -1265,8 +1368,15 @@ public class Reportform extends VerticalLayout {
 					Property<String> tdPropertytcomm = trItem
 							.getItemProperty("Total Commission (\u20A6)");
 
-					Property<Date> tdPropertydate = trItem
+					Property<String> tdPropertydate = trItem
 							.getItemProperty("Date");
+
+					try {
+						Double dn = Double.valueOf(amount);
+						bdAmt = BigDecimal.valueOf(dn + bdAmt.doubleValue());
+					} catch (Exception e) {
+
+					}
 
 					tdPropertyserial.setValue(String.valueOf(x));
 					tdPropertyCommAcc.setValue(commissionAccount);
@@ -1284,8 +1394,6 @@ public class Reportform extends VerticalLayout {
 				}
 
 				conn.close();
-				Notification.show(x + " result(s) found",
-						Notification.Type.WARNING_MESSAGE);
 
 				table.setContainerDataSource(feesCommissionContainer);
 
@@ -1307,8 +1415,8 @@ public class Reportform extends VerticalLayout {
 			IndexedContainer feesCommissionContainer = new IndexedContainer();
 			feesCommissionContainer.addContainerProperty("S/N", String.class,
 					"");
-			feesCommissionContainer
-					.addContainerProperty("Date", Date.class, "");
+			feesCommissionContainer.addContainerProperty("Date", String.class,
+					"");
 
 			feesCommissionContainer.addContainerProperty("Partner",
 					String.class, "");
@@ -1324,6 +1432,7 @@ public class Reportform extends VerticalLayout {
 			searchform.removeAllComponents();
 			searchform.addComponent(Transactions());
 			ds = feesCommissionContainer;
+			bdAmt = new BigDecimal(0.00);
 
 			String drivers = "com.mysql.jdbc.Driver";
 			try {
@@ -1377,7 +1486,7 @@ public class Reportform extends VerticalLayout {
 
 					String amount = rs.getString("amount");
 
-					Date date = rs.getDate("date");
+					String date = rs.getString("date");
 
 					if (!ht.containsKey("Partner")) {
 						TreeSet<String> arrL = new TreeSet<>();
@@ -1407,8 +1516,15 @@ public class Reportform extends VerticalLayout {
 					Property<String> tdPropertyamount = trItem
 							.getItemProperty("Amount (\u20A6)");
 
-					Property<Date> tdPropertydate = trItem
+					Property<String> tdPropertydate = trItem
 							.getItemProperty("Date");
+
+					try {
+						Double dn = Double.valueOf(amount);
+						bdAmt = BigDecimal.valueOf(dn + bdAmt.doubleValue());
+					} catch (Exception e) {
+
+					}
 
 					tdPropertyserial.setValue(String.valueOf(x));
 					tdPropertyPartner.setValue(partner);
@@ -1421,8 +1537,6 @@ public class Reportform extends VerticalLayout {
 				}
 
 				conn.close();
-				Notification.show(x + " result(s) found",
-						Notification.Type.WARNING_MESSAGE);
 
 				table.setContainerDataSource(feesCommissionContainer);
 
@@ -1439,6 +1553,19 @@ public class Reportform extends VerticalLayout {
 		}
 
 		addFilter();
+		int x = ds.size();
+		lbSizeTop.setValue("Total of: " + x + " result(s).");
+		lbSizeBottom.setValue("Total of: " + x + " result(s).");
+		lbSizeTop.setVisible(true);
+		lbSizeBottom.setVisible(true);
+
+		lbAmountTop.setValue("Total Amount: " + bdAmt.doubleValue()
+				+ "  \u20A6.");
+		lbAmountBottom.setValue("Total Amount: " + bdAmt.doubleValue()
+				+ "  \u20A6.");
+		lbAmountTop.setVisible(true);
+		lbAmountBottom.setVisible(true);
+
 		btnReload.setVisible(true);
 
 	}
@@ -1584,25 +1711,40 @@ public class Reportform extends VerticalLayout {
 			Date start = dat.getValue();
 			Date end = dat2.getValue();
 
-			// Notification.show(start.get);
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			String s = sdf.format(start);
+			String e = sdf.format(end);
+
+			try {
+				start = sdf.parse(s);
+				end = sdf.parse(e);
+			} catch (Exception ex) {
+
+			}
+
+			Notification
+					.show(start.toString(), Notification.Type.ERROR_MESSAGE);
 
 			if (start != null && end != null) {
 
 				ds.removeContainerFilter(dFilter);
 
-				dFilter = new And(new GreaterOrEqual("Date", start),
-						new LessOrEqual("Date", end));
+				dFilter = new And(new GreaterOrEqual("Date", s),
+						new LessOrEqual("Date", e));
 				ds.addContainerFilter(dFilter);
 				table.setContainerDataSource(ds);
 				int t = ds.size();
+				int x = t;
 				if (t > 30)
 					t = 30;
-				table.setPageLength(t);
 
 				table.setPageLength(t);
+
 				Iterator<Collection<?>> itr = (Iterator<Collection<?>>) table
 						.getItemIds().iterator();
 				int i = 0;
+
+				bdAmt = new BigDecimal(0.00);
 				while (itr.hasNext()) {
 					i++;
 					Object itemid = itr.next();
@@ -1610,7 +1752,24 @@ public class Reportform extends VerticalLayout {
 					Property<String> p = item.getItemProperty("S/N");
 					p.setValue(i + "");
 
+					try {
+						Double nd = Double.valueOf(item
+								.getItemProperty("Amount (\u20A6)").getValue()
+								.toString());
+						bdAmt = BigDecimal.valueOf(bdAmt.doubleValue() + nd);
+					} catch (Exception en) {
+
+					}
+
 				}
+
+				lbSizeTop.setValue("Total of: " + x + " result(s).");
+				lbSizeBottom.setValue("Total of: " + x + " result(s).");
+
+				lbAmountTop.setValue("Total Amount: " + bdAmt.doubleValue()
+						+ "  \u20A6.");
+				lbAmountBottom.setValue("Total Amount: " + bdAmt.doubleValue()
+						+ "  \u20A6.");
 
 			}
 
