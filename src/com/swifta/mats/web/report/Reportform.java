@@ -191,6 +191,10 @@ public class Reportform extends VerticalLayout {
 		dat.setImmediate(true);
 		dat2.setImmediate(true);
 
+		SimpleDateFormat sdfd = new SimpleDateFormat("dd-MM-yyyy");
+		dat.setDateFormat("M/d/yyyy");
+		dat2.setDateFormat("M/d/yyyy");
+
 		dat.setValue(Calendar.getInstance().getTime());
 		dat2.setValue(Calendar.getInstance().getTime());
 
@@ -223,7 +227,7 @@ public class Reportform extends VerticalLayout {
 
 				dat.setComponentError(null);
 				dat2.setComponentError(null);
-				// dat2.va
+
 				if (dat2.getValue() == null || dat.getValue() == null)
 					return;
 				if (!dat2.isValid())
