@@ -622,8 +622,8 @@ public class Reportform extends VerticalLayout {
 			ds.addContainerFilter(cFilter);
 		}
 
-		dat.setValue(null);
-		dat2.setValue(null);
+		// dat.setValue(null);
+		// dat2.setValue(null);
 
 		table.setContainerDataSource(ds);
 		int t = ds.size();
@@ -1706,26 +1706,24 @@ public class Reportform extends VerticalLayout {
 		if (ds == null)
 			return;
 		try {
+
 			dat2.validate();
 
 			Date start = dat.getValue();
 			Date end = dat2.getValue();
 
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-			String s = sdf.format(start);
-			String e = sdf.format(end);
-
-			try {
-				start = sdf.parse(s);
-				end = sdf.parse(e);
-			} catch (Exception ex) {
-
-			}
-
-			Notification
-					.show(start.toString(), Notification.Type.ERROR_MESSAGE);
-
 			if (start != null && end != null) {
+
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+				String s = sdf.format(start);
+				String e = sdf.format(end);
+
+				try {
+					start = sdf.parse(s);
+					end = sdf.parse(e);
+				} catch (Exception ex) {
+
+				}
 
 				ds.removeContainerFilter(dFilter);
 
