@@ -31,7 +31,6 @@ import com.vaadin.data.util.filter.And;
 import com.vaadin.data.util.filter.Compare.GreaterOrEqual;
 import com.vaadin.data.util.filter.Compare.LessOrEqual;
 import com.vaadin.data.util.filter.SimpleStringFilter;
-import com.vaadin.data.validator.DateRangeValidator;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.server.FontAwesome;
@@ -113,21 +112,16 @@ public class Reportform extends VerticalLayout {
 		public void validate(Object value) throws InvalidValueException {
 			Date s = start.getValue();
 			Date e = end.getValue();
-			end.removeAllValidators();
+
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
 			if (s == null || e == null)
 				return;
 
-			DateRangeValidator drv = new DateRangeValidator(
-					"Invalid date range", s, e, null);
-
-			end.setComponentError(null);
-			start.setComponentError(null);
-			start.addValidator(drv);
-			end.addValidator(drv);
-
+			if (s.compareTo(e) > 0) {
+				throw new InvalidValueException("Invalid date range.");
+			}
 		}
-
 	}
 
 	public void reportformat() {
@@ -200,8 +194,8 @@ public class Reportform extends VerticalLayout {
 		dat.setValue(Calendar.getInstance().getTime());
 		dat2.setValue(Calendar.getInstance().getTime());
 
-		// dat.addValidator(new ValidateRange(dat, dat2));
-		// dat2.addValidator(new ValidateRange(dat, dat2));
+		dat.addValidator(new ValidateRange(dat, dat2));
+		dat2.addValidator(new ValidateRange(dat, dat2));
 
 		btnReload.setVisible(false);
 
@@ -229,22 +223,12 @@ public class Reportform extends VerticalLayout {
 
 				dat.setComponentError(null);
 				dat2.setComponentError(null);
-				dat2.removeAllValidators();
-				dat.removeAllValidators();
-
+				// dat2.va
 				if (dat2.getValue() == null || dat.getValue() == null)
 					return;
-				DateRangeValidator drv = new DateRangeValidator(
-						"Invalid date range", dat.getValue(), dat2.getValue(),
-						null);
+				if (!dat2.isValid())
+					return;
 
-				dat.addValidator(drv);
-				dat2.addValidator(drv);
-				try {
-					dat2.validate();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
 				loadData(reportType.getValue(), dat.getValue(), dat2.getValue());
 
 			}
