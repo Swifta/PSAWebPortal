@@ -27,6 +27,7 @@ import com.vaadin.event.FieldEvents.FocusEvent;
 import com.vaadin.event.FieldEvents.FocusListener;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -871,28 +872,54 @@ public class UserDetailsModule {
 		tFStreet.setRequired(true);
 		// physicalC.addComponent(tF);
 
-		addDatum("Street", hm.get("Street"), physicalC);
+		StringBuilder sbAddr = new StringBuilder(hm.get("Street"));
+		String strp = hm.get("Postal Code");
+		sbAddr.append((strp == null || strp.trim().isEmpty()) ? "" : ", \n"
+				+ strp);
+
+		strp = hm.get("Province");
+		sbAddr.append((strp == null || strp.trim().isEmpty()) ? "" : ", \n"
+				+ strp);
+
+		strp = hm.get("City");
+		sbAddr.append((strp == null || strp.trim().isEmpty()) ? "" : ", "
+				+ strp);
+
+		strp = hm.get("Country");
+		sbAddr.append((strp == null || strp.trim().isEmpty()) ? "" : ", "
+				+ strp);
+
+		Label lb = new Label();
+		lb.setContentMode(ContentMode.HTML);
+		lb.setImmediate(true);
+		lb.setStyleName("label_ud");
+		lb.setCaption(sbAddr.toString());
+		// lb.setValue(sbAddr.toString());
+
+		physicalC.addComponent(lb);
+
+		// addDatum("Street", hm.get("Street"), physicalC);
 
 		tF = new TextField("Postal Code");
 		tF.setValue("23");
 		tFPostalCode = tF;
 		// physicalC.addComponent(tF);
 
-		addDatum("Postal Code", hm.get("Postal Code"), physicalC);
+		// addDatum("Postal Code", hm.get("Postal Code"), physicalC);
 
 		tF = new TextField("City");
 		tF.setValue("Kampala");
 		tFCity = tF;
 		tFCity.setRequired(true);
 		// physicalC.addComponent(tF);
-		addDatum("City", hm.get("City"), physicalC);
+		// addDatum("City", hm.get("City"), physicalC);
 
 		tF = new TextField("Province");
 		tF.setValue("Central");
 		tFProv = tF;
 		// physicalC.addComponent(tF);
 
-		addDatum("Province", hm.get("Province"), physicalC);
+		// addDatum("Province", hm.get("Province"), physicalC);
 
 		cC.addComponent(physicalC);
 		cC.addComponent(cBtnEditCancel);
