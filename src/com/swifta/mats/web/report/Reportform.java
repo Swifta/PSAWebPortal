@@ -51,7 +51,6 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Window.CloseListener;
-import com.vaadin.ui.themes.ValoTheme;
 
 public class Reportform extends VerticalLayout {
 
@@ -119,8 +118,6 @@ public class Reportform extends VerticalLayout {
 			Date s = start.getValue();
 			Date e = end.getValue();
 
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-
 			if (s == null || e == null)
 				return;
 
@@ -131,26 +128,29 @@ public class Reportform extends VerticalLayout {
 	}
 
 	public void reportformat() {
-
-		// table.setRowHeaderMode(RowHeaderMode.INDEX);
+		setSpacing(true);
+		table.setWidth("100%");
+		table.setHeightUndefined();
+		table.setPageLength(1);
+		table.setSelectable(true);
+		table.setImmediate(true);
 
 		bdAmt.setScale(2);
-
 		setMargin(true);
-		reportType = new ComboBox("Search by Report Type");
-		Button export = new Button("Export result");
-		// reportType.addItem("Transaction Report(Only Today)");
+		reportType = new ComboBox("Please select a report");
+		Button export = new Button("Export Report");
+		export.setStyleName("btn_link");
+
 		reportType.addItem("Transaction Report");
 		reportType.addItem("Transaction Summary Report");
 		reportType.addItem("Fees / Commission Report");
 		reportType.addItem("Fees / Commission Summary Report");
 		reportType.addItem("Float Management Report");
 
-		// reportType.setNullSelectionAllowed(false);
-		// reportType.setTextInputAllowed(false);
 		reportType.setInputPrompt("Select Report Type");
 
 		VerticalLayout cF = new VerticalLayout();
+		cF.setSizeUndefined();
 		cD = new HorizontalLayout();
 		cD.setSpacing(true);
 		cD.setVisible(false);
@@ -158,19 +158,70 @@ public class Reportform extends VerticalLayout {
 		lb.setSizeUndefined();
 		lb.setVisible(false);
 		lb.setStyleName("label_search_user");
-		cF.addComponent(lb);
-
-		// dat.setDateFormat("mm-dd-yy");
 
 		cD.addComponent(dat);
 		cD.addComponent(dat2);
 
 		cByAndVal = new HorizontalLayout();
-		btnApply = new Button("Apply");
-		btnApply.setStyleName(ValoTheme.LINK_LARGE + " btn_s_rx");
+		btnApply = new Button("Filter");
+		btnApply.setStyleName("btn_link");
 		btnApply.setDescription("Apply selected filters.");
 
 		btnApply.setVisible(false);
+
+		btnReload = new Button("Reload");
+		btnReload.setStyleName("btn_link");
+
+		cF.setSpacing(true);
+		cByAndVal.setSpacing(true);
+
+		HorizontalLayout cRAndFilters = new HorizontalLayout();
+		cRAndFilters.addComponent(reportType);
+
+		VerticalLayout cBtn = new VerticalLayout();
+		cBtn.addComponent(lb);
+		cBtn.setHeight("100%");
+		cBtn.setComponentAlignment(lb, Alignment.BOTTOM_RIGHT);
+		cRAndFilters.addComponent(cBtn);
+		cRAndFilters.addComponent(cByAndVal);
+
+		cBtn = new VerticalLayout();
+		cBtn.addComponent(btnApply);
+		cBtn.setHeight("100%");
+		cBtn.setComponentAlignment(btnApply, Alignment.BOTTOM_LEFT);
+		cRAndFilters.addComponent(cBtn);
+		cF.addComponent(cRAndFilters);
+		cRAndFilters.setSpacing(true);
+
+		HorizontalLayout cDFAndReload = new HorizontalLayout();
+		cDFAndReload.setSpacing(true);
+		cDFAndReload.addComponent(cD);
+
+		cBtn = new VerticalLayout();
+		cBtn.addComponent(btnReload);
+		cBtn.setHeight("100%");
+		cBtn.setComponentAlignment(btnReload, Alignment.BOTTOM_LEFT);
+		cDFAndReload.addComponent(cBtn);
+		cF.addComponent(cDFAndReload);
+
+		addComponent(cF);
+		setComponentAlignment(cF, Alignment.TOP_CENTER);
+		setSizeFull();
+
+		dat.setImmediate(true);
+		dat2.setImmediate(true);
+
+		dat.setDateFormat("M/d/yyyy");
+		dat2.setDateFormat("M/d/yyyy");
+
+		dat.setValue(Calendar.getInstance().getTime());
+		dat2.setValue(Calendar.getInstance().getTime());
+
+		dat.addValidator(new ValidateRange(dat, dat2));
+		dat2.addValidator(new ValidateRange(dat, dat2));
+
+		btnReload.setVisible(false);
+
 		btnApply.addClickListener(new Button.ClickListener() {
 			private static final long serialVersionUID = 6233032315069180601L;
 
@@ -183,34 +234,6 @@ public class Reportform extends VerticalLayout {
 				isFirstCriteriaChanged = false;
 			}
 		});
-
-		cF.addComponent(cByAndVal);
-
-		cF.addComponent(cD);
-
-		btnReload = new Button("Reload");
-		cF.addComponent(btnReload);
-
-		cF.setSpacing(true);
-		cByAndVal.setSpacing(true);
-
-		addComponent(reportType);
-		addComponent(cF);
-
-		dat.setImmediate(true);
-		dat2.setImmediate(true);
-
-		SimpleDateFormat sdfd = new SimpleDateFormat("dd-MM-yyyy");
-		dat.setDateFormat("M/d/yyyy");
-		dat2.setDateFormat("M/d/yyyy");
-
-		dat.setValue(Calendar.getInstance().getTime());
-		dat2.setValue(Calendar.getInstance().getTime());
-
-		dat.addValidator(new ValidateRange(dat, dat2));
-		dat2.addValidator(new ValidateRange(dat, dat2));
-
-		btnReload.setVisible(false);
 
 		dat.addValueChangeListener(new ValueChangeListener() {
 
@@ -267,8 +290,6 @@ public class Reportform extends VerticalLayout {
 					return;
 				dat.setValue(Calendar.getInstance().getTime());
 				dat2.setValue(Calendar.getInstance().getTime());
-				// loadData(reportType.getValue(), dat.getValue(),
-				// dat2.getValue());
 			}
 
 		});
@@ -318,14 +339,6 @@ public class Reportform extends VerticalLayout {
 			}
 		});
 
-		setSpacing(true);
-
-		table.setWidth("100%");
-		table.setHeightUndefined();
-		table.setPageLength(0);
-		table.setSelectable(true);
-		table.setImmediate(true);
-
 		table.addItemClickListener(new ItemClickListener() {
 			private static final long serialVersionUID = 5064674940597899639L;
 
@@ -336,11 +349,6 @@ public class Reportform extends VerticalLayout {
 			}
 
 		});
-
-		// table.setEditable(true);
-		// table.setSelectable(true);
-
-		// table.setContainerDataSource(container);
 
 		pnUserSearchResults = table.createControls();
 		lbSizeTop = table.getLabel();
@@ -362,14 +370,12 @@ public class Reportform extends VerticalLayout {
 		lbAmountBottom.setVisible(false);
 
 		addComponent(searchform);
-
 		addComponent(pnUserSearchResults);
 		addComponent(table);
 		addComponent(pnUserSearchResults2);
 
 		addComponent(export);
 		setComponentAlignment(export, Alignment.BOTTOM_RIGHT);
-		// reportType.setValue("Transaction Report(Only Today)");
 
 	}
 
@@ -403,11 +409,6 @@ public class Reportform extends VerticalLayout {
 		floatmanagement.addComponent(search);
 
 		return floatmanagement;
-	}
-
-	public VerticalLayout Transactions() {
-		VerticalLayout transactions = new VerticalLayout();
-		return transactions;
 	}
 
 	public VerticalLayout Commission() {
@@ -527,7 +528,6 @@ public class Reportform extends VerticalLayout {
 			cByAndVal.addComponent(combo);
 		}
 
-		cByAndVal.addComponent(btnApply);
 		if (ds.size() == 0) {
 			btnApply.setVisible(false);
 			cD.setVisible(true);
@@ -843,8 +843,8 @@ public class Reportform extends VerticalLayout {
 					"");
 			container2.addContainerProperty("Status", String.class, "");
 
-			searchform.removeAllComponents();
-			searchform.addComponent(Transactions());
+			// searchform.removeAllComponents();
+			// searchform.addComponent(Transactions());
 			ds = container2;
 			if (!container2.removeAllItems()) {
 				return;
@@ -1052,9 +1052,6 @@ public class Reportform extends VerticalLayout {
 				errorHandler(e);
 			}
 
-			// searchform.removeAllComponents();
-			// searchform.addComponent(SettlementForm());
-
 		} else if (selectedId.equalsIgnoreCase("Transaction Summary Report")) {
 			IndexedContainer container3 = new IndexedContainer();
 
@@ -1198,9 +1195,6 @@ public class Reportform extends VerticalLayout {
 				errorHandler(e);
 			}
 
-			// searchform.removeAllComponents();
-			// searchform.addComponent(SettlementForm());
-
 		} else if (selectedId.equalsIgnoreCase("Fees / Commission Report")) {
 			cD.setVisible(true);
 
@@ -1238,8 +1232,8 @@ public class Reportform extends VerticalLayout {
 			feesCommissionContainer.addContainerProperty("Partner",
 					String.class, "");
 
-			searchform.removeAllComponents();
-			searchform.addComponent(Transactions());
+			// searchform.removeAllComponents();
+			// searchform.addComponent(Transactions());
 			ds = feesCommissionContainer;
 
 			if (!feesCommissionContainer.removeAllItems()) {
@@ -1430,8 +1424,8 @@ public class Reportform extends VerticalLayout {
 					"Original Fees (\u20A6)", String.class, "");
 			feesCommissionContainer.addContainerProperty("Amount (\u20A6)",
 					String.class, "");
-			searchform.removeAllComponents();
-			searchform.addComponent(Transactions());
+			// searchform.removeAllComponents();
+			// searchform.addComponent(Transactions());
 			ds = feesCommissionContainer;
 			bdAmt = new BigDecimal(0.00);
 

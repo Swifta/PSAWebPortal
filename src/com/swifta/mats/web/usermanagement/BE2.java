@@ -29,6 +29,7 @@ import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.data.util.filter.Compare;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.server.Page;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
@@ -39,6 +40,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.JavaScript;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.PasswordField;
@@ -1291,6 +1293,7 @@ public class BE2 {
 					try {
 						s = UserManagementService.lockUserAccountByAdmin(
 								inituser, uname);
+
 					} catch (AxisFault e) {
 						Notification.show(
 								"Sorry! Error occured while Locking user.",
@@ -1309,15 +1312,21 @@ public class BE2 {
 						e.printStackTrace();
 					}
 
-					Notification.show(s, Notification.Type.WARNING_MESSAGE);
-					System.out.println(s);
-					if (s != null && s.contains("LOCKED")) {
-						event.getButton().setIcon(FontAwesome.LOCK);
-						event.getButton().setDescription("Lock user.");
-					} else {
-						event.getButton().setIcon(FontAwesome.UNLOCK);
-						event.getButton().setDescription("Unlock user.");
-					}
+				}
+
+				JavaScript.getCurrent().execute("alert('hello');");
+				Page.getCurrent().getJavaScript().execute("alert('Hi.');");
+
+				Notification.show(s, Notification.Type.WARNING_MESSAGE);
+				if (s != null
+						&& s.trim().equals("ACCOUNT UNLOCKED SUCCESSFULLY")) {
+					event.getButton().setIcon(FontAwesome.LOCK);
+					event.getButton().setDescription("Lock user.");
+
+				} else {
+
+					event.getButton().setIcon(FontAwesome.UNLOCK);
+					event.getButton().setDescription("Unlock user.");
 				}
 
 			}
@@ -1911,6 +1920,7 @@ public class BE2 {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				// TODO Auto-generated method stub
+				container.removeAllItems();
 				getDBData(container);
 				tb.setContainerDataSource(container);
 				int x = container.size();
