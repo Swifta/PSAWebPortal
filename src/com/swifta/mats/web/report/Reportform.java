@@ -168,6 +168,7 @@ public class Reportform extends VerticalLayout {
 		cByAndVal = new HorizontalLayout();
 		btnApply = new Button("Apply");
 		btnApply.setStyleName(ValoTheme.LINK_LARGE + " btn_s_rx");
+		btnApply.setDescription("Apply selected filters.");
 
 		btnApply.setVisible(false);
 		btnApply.addClickListener(new Button.ClickListener() {

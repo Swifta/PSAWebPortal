@@ -175,7 +175,7 @@ public class BE2 {
 		tb.setSelectable(true);
 		tb.setContainerDataSource(container);
 
-		int t = tb.size();
+		int t = container.size();
 
 		if (t > 30) {
 			t = 30;
@@ -972,7 +972,10 @@ public class BE2 {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				tb.setPageLength(tb.getVisibleItemIds().size());
+				int t = container.size();
+				if (t > 30)
+					t = 30;
+				tb.setPageLength(t);
 				chkCount = 0;
 				isSingleChange = true;
 				for (CheckBox c : arrLChkBulk)
@@ -986,10 +989,11 @@ public class BE2 {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				int t = tb.size();
+				int t = container.size();
 				if (t > 30)
 					t = 30;
 				tb.setPageLength(t);
+
 				chkCount = 0;
 				isSingleChange = true;
 				for (CheckBox c : arrLChkBulk)
@@ -1003,7 +1007,7 @@ public class BE2 {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				int t = tb.size();
+				int t = tb.getContainerDataSource().size();
 				if (t > 30)
 					t = 30;
 				tb.setPageLength(t);
@@ -1020,7 +1024,10 @@ public class BE2 {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				tb.setPageLength(tb.getVisibleItemIds().size());
+				int t = tb.getContainerDataSource().size();
+				if (t > 30)
+					t = 30;
+				tb.setPageLength(t);
 				chkCount = 0;
 				isSingleChange = true;
 				for (CheckBox c : arrLChkBulk)
@@ -1304,7 +1311,7 @@ public class BE2 {
 
 					Notification.show(s, Notification.Type.WARNING_MESSAGE);
 					System.out.println(s);
-					if (s.contains("LOCKED")) {
+					if (s != null && s.contains("LOCKED")) {
 						event.getButton().setIcon(FontAwesome.LOCK);
 						event.getButton().setDescription("Lock user.");
 					} else {

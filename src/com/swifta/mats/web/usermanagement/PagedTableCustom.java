@@ -145,9 +145,7 @@ public class PagedTableCustom extends PagedTable {
 		HorizontalLayout controlBar = new HorizontalLayout();
 		HorizontalLayout pageSize = new HorizontalLayout();
 		HorizontalLayout pageManagement = new HorizontalLayout();
-		HorizontalLayout cSize = new HorizontalLayout();
-		lbSize = new Label();
-		cSize.addComponent(lbSize);
+
 		first = new Button("<<", new ClickListener() {
 			private static final long serialVersionUID = -355520120491283992L;
 
@@ -233,9 +231,16 @@ public class PagedTableCustom extends PagedTable {
 		pageManagement.setSpacing(true);
 		controlBar.addComponent(pageSize);
 
+		HorizontalLayout cSize = new HorizontalLayout();
+		cSize.setSpacing(true);
+		lbSize = new Label();
+		cSize.addComponent(lbSize);
+
 		lbAmount = new Label();
-		controlBar.addComponent(lbAmount);
-		controlBar.setComponentAlignment(lbAmount, Alignment.MIDDLE_LEFT);
+		cSize.addComponent(lbAmount);
+		cSize.setSizeUndefined();
+		// controlBar.addComponent(lbAmount);
+		// controlBar.setComponentAlignment(lbAmount, Alignment.MIDDLE_LEFT);
 
 		controlBar.addComponent(cSize);
 		controlBar.setComponentAlignment(cSize, Alignment.MIDDLE_CENTER);
@@ -244,7 +249,9 @@ public class PagedTableCustom extends PagedTable {
 		controlBar
 				.setComponentAlignment(pageManagement, Alignment.MIDDLE_RIGHT);
 		controlBar.setWidth("100%");
-		// controlBar.setExpandRatio(pageSize, 1);
+		controlBar.setHeightUndefined();
+
+		// controlBar.setExpandRatio(pageManagement, 1);
 		addListener(new PageChangeListener() {
 			public void pageChanged(PagedTableChangeEvent event) {
 				// first.setEnabled(container.getStartIndex() > 0);

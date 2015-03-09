@@ -588,7 +588,7 @@ public class UserDetailsModule {
 		Label lbB = new Label();
 		lbB.setCaption("General");
 		lbB.setStyleName("label_search_user u_d_t");
-		// lbB.setStyleName("lb_frm_add_user");
+
 		cBasic.addComponent(lbB);
 		String cap = "First Name";
 		TextField tF = new TextField(cap);
@@ -602,140 +602,22 @@ public class UserDetailsModule {
 
 		addDatum("Username", hm.get("Username"), cBasic);
 		addDatum("Profile", strProf, cBasic);
-
-		addDatum("Full Name", hm.get("Full Name"), cBasic);
 		addDatum("First Name", hm.get("First Name"), cBasic);
 
-		// cBasic.addComponent(tF);
-
 		tF = new TextField("Middle Name");
-
-		tF.setValue("Pwndz");
-		tFMN = tF;
-		tFMN.setRequired(true);
 		addDatum("Middle Name", hm.get("Middle Name"), cBasic);
-		// cBasic.addComponent(lb);
-
-		tF = new TextField("Last Name");
-		tF.setValue("Kigozi");
-		tFLN = tF;
-		tFLN.setRequired(true);
-
 		addDatum("Last Name", hm.get("Last Name"), cBasic);
-
-		OptionGroup opt = new OptionGroup("Gender");
-
-		opt.addItem("FEMALE");
-		// opt.setItemCaption(1, "Female");
-
-		opt.addItem("MALE");
-		// opt.setItemCaption(2, "Male");
-		opt.select("MALE");
-		optSex = opt;
-		optSex.setRequired(true);
-
 		addDatum("Gender", hm.get("Gender"), cBasic);
-
-		ComboBox combo = new ComboBox("Prefix");
-		combo.addItem("Mr. ");
-		combo.addItem("Mrs. ");
-		combo.addItem("Dr. ");
-		combo.addItem("Eng. ");
-		combo.addItem("Prof. ");
-		comboPref = combo;
-		comboPref.select("Eng. ");
-		// cBasic.addComponent(combo);
-
-		combo = new ComboBox("Suffix");
-		combo.addItem("Ph.D");
-		combo.addItem("M.B.A");
-		combo.addItem("RA");
-		combo.addItem("CISA ");
-		combo.select("Ph.D");
-		comboSuff = combo;
-
-		// lb = new Label();
-		// lb.setValue("Last Name: " + "Kigozi");
-		// cBasic.addComponent(lb);
-		// cBasic.addComponent(combo);
-
-		combo = new ComboBox("Language");
-		combo.addItem(1);
-		combo.select(1);
-		combo.setItemCaption(1, "en-US");
-		combo.addItem(2);
-		combo.setItemCaption(2, "en-UK");
-		combo.addItem(3);
-		combo.setItemCaption(3, "fr");
-		comboLang = combo;
-		comboLang.setRequired(true);
-
-		addDatum("Language", "en-UK", cBasic);
-		// cBasic.addComponent(combo);
-
-		tF = new TextField("Occupation");
-		tF.setValue("Software Engineer");
-		tFOcc = tF;
-		tFOcc.setRequired(true);
-
 		addDatum("Occupation", hm.get("Occupation"), cBasic);
-
-		// cBasic.addComponent(lb);
-		// cBasic.addComponent(tF);
-
-		tF = new TextField("Employer");
-		tF.setValue("Swifta");
-		tFEmp = tF;
-
-		addDatum("Employer", hm.get("Employer"), cBasic);
-
-		// cBasic.addComponent(lb);
-		// cBasic.addComponent(tF);
-
-		PopupDateField dF = new PopupDateField("DoB");
-		cal = Calendar.getInstance();
-		cal.set(1988, 11, 12);
-		dF.setValue(cal.getTime());
-		dFDoB = dF;
-
 		addDatum("Date of Birth", hm.get("Date of Birth"), cBasic);
-		// cBasic.addComponent(dF);
-
-		combo = new ComboBox("Country");
-
-		comboCountry = combo;
-		comboCountry.setRequired(true);
-
-		// cBasic.addComponent(combo);
 		addDatum("Country", hm.get("Country"), cBasic);
-
-		combo = new ComboBox("State");
-		comboState = combo;
-		comboState.setRequired(true);
-		comboState.setNullSelectionAllowed(false);
-
-		// cBasic.addComponent(combo);
 		addDatum("State", hm.get("State"), cBasic);
-
-		combo = new ComboBox("Local Government");
-
-		// combo.addItem(1);
-		// combo.setItemCaption(1, "Ca. LG");
-		// combo.select(1);
-		comboLG = combo;
-		comboLG.setRequired(true);
-
-		// cBasic.addComponent(lb);
-
 		addDatum("Local Government", hm.get("Local Government"), cBasic);
 
 		VerticalLayout cC = new VerticalLayout();
 
 		HorizontalLayout cBAndCAndAcc = new HorizontalLayout();
 		cBAndCAndAcc.addComponent(cBasic);
-
-		// cBAndCAndAcc.addComponent(ctfx);
-
 		cBAndCAndAcc.addComponent(cC);
 
 		FormLayout cCompany = new FormLayout();
@@ -756,127 +638,42 @@ public class UserDetailsModule {
 		comboIDType.setRequired(true);
 
 		cCompany.addComponent(lbC);
-		// cCompany.setSpacing(true);
-
 		addDatum("ID Type", hm.get("ID Type"), cCompany);
-
-		tF = new TextField("ID No.");
-		tF.setValue("001");
-		tFIDNo = tF;
-		tFIDNo.setRequired(true);
-
 		addDatum("ID No.", hm.get("ID No."), cCompany);
-		// cCompany.addComponent(lb);
-
-		tF = new TextField("Issuer");
-		tFIssuer = tF;
-		tFIssuer.setValue("Republic of Uganda");
-
-		// cCompany.addComponent(tF);
 		addDatum("Issuer", hm.get("Issuer"), cCompany);
-
-		dF = new PopupDateField("Issue Date");
-		// cal = Calendar.getInstance();
-		cal.set(12, 12, 12);
-		dF.setValue(cal.getTime());
-		dFDoI = dF;
-		// cCompany.addComponent(dF);
-
 		addDatum("Issue Date", hm.get("Issue Date"), cCompany);
-
-		dF = new PopupDateField("Expiry Date");
-		// cal = Calendar.getInstance();
-		cal.set(14, 12, 12);
-		dF.setValue(cal.getTime());
-		dF.setValue(cal.getTime());
-		dFDoE = dF;
-		dFDoE.setRequired(true);
-		dFDoE.setImmediate(true);
-
-		// cCompany.addComponent(dF);
 		addDatum("Expiry Date", hm.get("Expiry Date"), cCompany);
 		cC.addComponent(cCompany);
 
 		FormLayout pC = new FormLayout();
-		// pC.setSpacing(true);
 		lbC = new Label();
 		lbC.setCaption("Primary Contacts");
 		lbC.setStyleName("label_search_user u_d_t");
-
 		pC.addComponent(lbC);
-
-		tF = new TextField("Mobile Phone No.");
-		tF.setValue("+256704191152");
-		tFPMNo = tF;
-
-		// pC.addComponent(tF);
 		addDatum("Mobile Phone No.", hm.get("P-Mobile Phone No."), pC);
-
-		tF = new TextField("Alt. Phone No.");
-		tF.setValue("+1704191152");
-		tFPANo = tF;
-		// pC.addComponent(tF);
-
 		addDatum("Alt. Phone No.", hm.get("P-Alt. Phone No."), pC);
-
-		tF = new TextField("Email Address");
-		tF.setValue("pwndz172@gmail.com");
-		tFPEmail = tF;
-		// pC.addComponent(tF);
-
 		addDatum("Email Address", hm.get("Email"), pC);
-
 		cC.addComponent(pC);
 
 		FormLayout sC = new FormLayout();
-		// sC.setSpacing(true);
 		lbC = new Label();
 		lbC.setCaption("Secondary Contacts");
 		lbC.setStyleName("label_search_user lb_frm_add_user u_d_t");
 		sC.addComponent(lbC);
-
-		tF = new TextField("Mobile Phone No.");
-		tF.setValue("+256804191152");
-		tFSMNo = tF;
-		// sC.addComponent(tF);
-
 		addDatum("Mobile Phone No.", hm.get("S-Mobile Phone No."), sC);
-
-		tF = new TextField("Alt. Phone No.");
-		tF.setValue("+1804191152");
-		tFSANo = tF;
-
-		// sC.addComponent(tF);
-
 		addDatum("Alt. Phone No.", hm.get("S-Alt. Phone No."), sC);
-
-		tF = new TextField("E-mail Address");
-		tF.setValue("pkigozi@swifta.com");
-		tFSEmail = tF;
-		// sC.addComponent(tF);
-
 		addDatum("Email Address", hm.get("Email"), sC);
-
 		cC.addComponent(sC);
 
 		FormLayout physicalC = new FormLayout();
-		// physicalC.setSpacing(true);
 		lbC = new Label();
 		lbC.setCaption("Physical Address");
 		lbC.setStyleName("label_search_user lb_frm_add_user u_d_t");
 		physicalC.addComponent(lbC);
-
-		tF = new TextField("Street");
-		tF.setValue("Yusuf Lule Rd.");
-		tFStreet = tF;
-		tFStreet.setRequired(true);
-		// physicalC.addComponent(tF);
-
 		StringBuilder sbAddr = new StringBuilder(hm.get("Street"));
 		String strp = hm.get("Postal Code");
 		sbAddr.append((strp == null || strp.trim().isEmpty()) ? "" : ", \n"
 				+ strp);
-
 		strp = hm.get("Province");
 		sbAddr.append((strp == null || strp.trim().isEmpty()) ? "" : ", \n"
 				+ strp);
@@ -894,110 +691,11 @@ public class UserDetailsModule {
 		lb.setImmediate(true);
 		lb.setStyleName("label_ud");
 		lb.setCaption(sbAddr.toString());
-		// lb.setValue(sbAddr.toString());
 
 		physicalC.addComponent(lb);
 
-		// addDatum("Street", hm.get("Street"), physicalC);
-
-		tF = new TextField("Postal Code");
-		tF.setValue("23");
-		tFPostalCode = tF;
-		// physicalC.addComponent(tF);
-
-		// addDatum("Postal Code", hm.get("Postal Code"), physicalC);
-
-		tF = new TextField("City");
-		tF.setValue("Kampala");
-		tFCity = tF;
-		tFCity.setRequired(true);
-		// physicalC.addComponent(tF);
-		// addDatum("City", hm.get("City"), physicalC);
-
-		tF = new TextField("Province");
-		tF.setValue("Central");
-		tFProv = tF;
-		// physicalC.addComponent(tF);
-
-		// addDatum("Province", hm.get("Province"), physicalC);
-
 		cC.addComponent(physicalC);
 		cC.addComponent(cBtnEditCancel);
-
-		// TODO Need to copy this for accounts
-
-		/*
-		 * VerticalLayout cAcc = new VerticalLayout(); Label lbAcc = new
-		 * Label("Account"); lbAcc.setStyleName("lb_frm_add_user");
-		 * cAcc.addComponent(lbAcc); ComboBox comboHierarchy = null;
-		 * 
-		 * comboHierarchy = new ComboBox("Profile");
-		 * 
-		 * comboHierarchy.addItem(1); comboHierarchy.setItemCaption(1,
-		 * "MATS_ADMIN_USER_PROFILE"); comboHierarchy.select(1); comboProfile =
-		 * comboHierarchy; /*comboProfile.setRequired(true); //
-		 * cAcc.addComponent(comboHierarchy);
-		 * 
-		 * // addDatum("Profile", "MATS_ADMIN_USER_PROFILE", cAcc);
-		 * 
-		 * /* final VerticalLayout cLBody = new VerticalLayout();
-		 * 
-		 * tF = new TextField("Username"); tF.setValue("Livepwndz"); tFUN = tF;
-		 * tFUN.setRequired(true); // cLBody.addComponent(tF);
-		 * 
-		 * addDatum("Username", "Livepwndz", cLBody);
-		 * 
-		 * tF = new TextField("MSISDN"); tF.setValue("+256774191152"); tFMSISDN
-		 * = tF; tFMSISDN.setRequired(true); // cLBody.addComponent(tF);
-		 * 
-		 * addDatum("MSISDN", "+256774191152", cLBody);
-		 * 
-		 * // / tF = new TextField("PIN"); // / cLBody.addComponent(tF);
-		 * 
-		 * tF = new TextField("Email"); tFAccEmail = tF;
-		 * tFAccEmail.setRequired(true);
-		 * tFAccEmail.setValue("ppounds1@gmail.com"); //
-		 * cLBody.addComponent(tF); addDatum("Email", "ppounds1@gmail.com",
-		 * cLBody);
-		 * 
-		 * combo = new ComboBox("Bank Domain"); combo.addItem("Stanbic Bank");
-		 * combo.select("Stanbic Bank"); comboBDomain = combo; //
-		 * cLBody.addComponent(combo); addDatum("Bank Domain", "Heritage Bank",
-		 * cLBody);
-		 * 
-		 * combo = new ComboBox("Bank Code ID"); combo.addItem("001");
-		 * combo.select("001"); comboBID = combo; // cLBody.addComponent(combo);
-		 * addDatum("Bank Code ID", "001", cLBody);
-		 * 
-		 * tF = new TextField("Bank Account"); tF.setValue("00232333452315");
-		 * tFBAcc = tF; // tFBAcc.setValidationVisible(true); //
-		 * tFBAcc.addValidator(new NoNull()); // cLBody.addComponent(tF);
-		 * addDatum("Bank Account", "00122269066745682", cLBody);
-		 * 
-		 * combo.addItem(1); combo.setItemCaption(1, "US Dollars");
-		 * combo.select(1); comboCur = combo; // cLBody.addComponent(combo);
-		 * 
-		 * addDatum("Currency", "US Dollars", cLBody);
-		 * 
-		 * tF = new TextField("Clearing Number"); tF.setValue("00212"); tFClrNo
-		 * = tF; // cLBody.addComponent(tF); addDatum("Clearing No. ", "00212",
-		 * cLBody);
-		 * 
-		 * String strNameCap = "Username";
-		 * 
-		 * tF = new TextField(strNameCap);
-		 * 
-		 * HorizontalLayout cAccBody = new HorizontalLayout();
-		 * cAccBody.addComponent(cLBody);
-		 * 
-		 * cLBody.setStyleName("c_body_visible");
-		 * 
-		 * cAcc.addComponent(cAccBody);
-		 */
-
-		// cBAndCAndAcc.addComponent(cAcc);
-
-		// TODO End of copy....................z..............xxx
 
 		cC.setMargin(new MarginInfo(false, true, false, true));
 		cAgentInfo.addComponent(cBAndCAndAcc);
