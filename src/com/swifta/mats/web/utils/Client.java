@@ -16,7 +16,8 @@ public class Client {
 		// Client.unlockAccount();
 
 		// Client.authenticate();
-		Client.authenticate();
+		// Client.authenticate();
+		Client.activate();
 
 		// System.out.println(result);
 
@@ -112,20 +113,21 @@ public class Client {
 		 * 'readycash','0000000000001' 'fets','00000012' 'fortis','000001234'
 		 * 'Livepwndz','001' 'Livepwissndz','00173737' 'Livepwndzzz','001878787'
 		 */
-		String[] cred = { "paulmugo", "0093939", "teasymobile", "009878",
-				"90oooio", "0909", "olumide", "092302934", "onir", "0982273",
-				"oniru", "09827273", "dare", "09827273/09923823",
-				"matsdealerone", "100100", "matsagentone", "100101",
-				"matsadminone", "100102", "systems", "123453", "pocketmoni",
-				"123456", "166735", "166735", "Livep", "2111", "deejah",
-				"6890", "kenza", "89989889", "comfy", "98989889", "username",
-				"98989898989", "kdkkdkd", "9d989d8989", "dealer2", "dealer01",
-				"jdjjd", "kdkjkdk", "ldkkdkldkld", "lkkl" };
+		String[] cred = { "readycash", "0000000000001", "fets", "00000012",
+				"fortis", "000001234", "Livepwndz", "001", "Livepwissndz",
+				"00173737", "Livepwndzzz", "001878787", "paulmugo", "0093939",
+				"teasymobile", "009878", "90oooio", "0909", "olumide",
+				"092302934", "onir", "0982273", "oniru", "09827273", "dare",
+				"09827273/09923823", "matsdealerone", "100100", "matsagentone",
+				"100101", "matsadminone", "100102", "systems", "123453",
+				"pocketmoni", "123456", "166735", "166735", "Livep", "2111",
+				"deejah", "6890", "kenza", "89989889", "comfy", "98989889",
+				"username", "98989898989", "kdkkdkd", "9d989d8989", "dealer2",
+				"dealer01", "jdjjd", "kdkjkdk", "ldkkdkldkld", "lkkl" };
 
-		for (int i = 0; i < cred.length;) {
+		for (int i = 0; i < cred.length; i += 2) {
 
 			String userresourceid = cred[i];
-			i = i + 1;
 			String bankdomainid = "0";
 			String IDnumber = cred[i];
 			String SecurityAns = "Mrs.fd X";
@@ -140,7 +142,7 @@ public class Client {
 					+ IDnumber);
 
 			System.out.println(ret);
-			i = i + 1;
+			;
 		}
 
 	}
@@ -160,7 +162,7 @@ public class Client {
 				"username", "98989898989", "kdkkdkd", "9d989d8989", "dealer2",
 				"dealer01", "jdjjd", "kdkjkdk", "ldkkdkldkld", "lkkl" };
 
-		for (int i = 0; i < cred.length; i = i + 2) {
+		for (int i = 0; i < cred.length; i += 2) {
 
 			String userresourceid = cred[i];
 			String bankdomainid = "0";

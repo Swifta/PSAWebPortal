@@ -1151,9 +1151,9 @@ public class BE2 {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void addRow(IndexedContainer container, String sn, String strUID,
-			String strUname, String strFname, String strLname, String strProf,
-			String status, String email, String msisdn) {
+	private void addRow(String sn, String strUID, String strUname,
+			String strFname, String strLname, String strProf, String status,
+			String email, String msisdn) {
 
 		actionsC = new HorizontalLayout();
 		actionsC.setSizeUndefined();
@@ -1469,31 +1469,7 @@ public class BE2 {
 	}
 
 	private IndexedContainer getTable() {
-		IndexedContainer container = new IndexedContainer();
-		container.addContainerProperty(" ", CheckBox.class, null);
-		container.addContainerProperty("S/N", String.class, "000");
-		// container.addContainerProperty("UID", String.class, "000");
-		container.addContainerProperty("Username", String.class, "");
-
-		container.addContainerProperty("First Name", String.class, "");
-		container.addContainerProperty("Last Name", String.class, "");
-
-		container.addContainerProperty("Profile Type", String.class, "");
-
-		container.addContainerProperty("Email", String.class, "");
-
-		container.addContainerProperty("MSISDN", String.class, "");
-
-		container.addContainerProperty("Actions", HorizontalLayout.class, null);
-		arrLChkBulk = new ArrayList<>();
-		arrLCombos = new ArrayList<>();
-		getDBData(container);
-
-		/*
-		 * IndexedContainer container, String strUID, String strUname, String
-		 * strFname, String strLname, String strProf
-		 */
-
+		getDBData();
 		return container;
 	}
 
@@ -1928,9 +1904,12 @@ public class BE2 {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				// TODO Auto-generated method stub
-				container.removeAllItems();
-				getDBData(container);
+				Collection<Filter> fs = container.getContainerFilters();
+				getDBData();
+
+				for (Filter f : fs) {
+					container.addContainerFilter(f);
+				}
 				tb.setContainerDataSource(container);
 				int x = container.size();
 				if (x > 30)
@@ -2073,7 +2052,26 @@ public class BE2 {
 
 	}
 
-	private void getDBData(IndexedContainer container) {
+	private void getDBData() {
+
+		container = new IndexedContainer();
+		container.addContainerProperty(" ", CheckBox.class, null);
+		container.addContainerProperty("S/N", String.class, "000");
+
+		container.addContainerProperty("Username", String.class, "");
+
+		container.addContainerProperty("First Name", String.class, "");
+		container.addContainerProperty("Last Name", String.class, "");
+
+		container.addContainerProperty("Profile Type", String.class, "");
+
+		container.addContainerProperty("Email", String.class, "");
+
+		container.addContainerProperty("MSISDN", String.class, "");
+
+		container.addContainerProperty("Actions", HorizontalLayout.class, null);
+		arrLChkBulk = new ArrayList<>();
+		arrLCombos = new ArrayList<>();
 
 		String drivers = "com.mysql.jdbc.Driver";
 		Connection conn = null;
@@ -2105,8 +2103,7 @@ public class BE2 {
 				String ln = rs.getString("ln");
 
 				String status = rs.getString("status");
-				addRow(container, sn, id, un, fn, ln, prof, status, email,
-						msisdn);
+				addRow(sn, id, un, fn, ln, prof, status, email, msisdn);
 
 			}
 
