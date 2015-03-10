@@ -170,8 +170,10 @@ public class Reportform extends VerticalLayout {
 
 		btnApply.setVisible(false);
 
-		btnReload = new Button("Reload");
+		btnReload = new Button();
 		btnReload.setStyleName("btn_link");
+		btnReload.setIcon(FontAwesome.REPEAT);
+		btnReload.setDescription("Reload table data.");
 
 		cF.setSpacing(true);
 		cByAndVal.setSpacing(true);
@@ -191,6 +193,14 @@ public class Reportform extends VerticalLayout {
 		cBtn.setHeight("100%");
 		cBtn.setComponentAlignment(btnApply, Alignment.BOTTOM_LEFT);
 		cRAndFilters.addComponent(cBtn);
+
+		cBtn = new VerticalLayout();
+		cBtn.addComponent(btnReload);
+		cBtn.setHeight("100%");
+		cBtn.setComponentAlignment(btnReload, Alignment.BOTTOM_LEFT);
+		cRAndFilters.addComponent(cBtn);
+		cRAndFilters.setComponentAlignment(cBtn, Alignment.TOP_RIGHT);
+
 		cF.addComponent(cRAndFilters);
 		cRAndFilters.setSpacing(true);
 
@@ -198,11 +208,9 @@ public class Reportform extends VerticalLayout {
 		cDFAndReload.setSpacing(true);
 		cDFAndReload.addComponent(cD);
 
-		cBtn = new VerticalLayout();
-		cBtn.addComponent(btnReload);
-		cBtn.setHeight("100%");
-		cBtn.setComponentAlignment(btnReload, Alignment.BOTTOM_LEFT);
-		cDFAndReload.addComponent(cBtn);
+		// cDFAndReload.addComponent(cBtn);
+		// cDFAndReload.setWidth("100%");
+		// cDFAndReload.setComponentAlignment(cBtn, Alignment.TOP_RIGHT);
 		cF.addComponent(cDFAndReload);
 
 		addComponent(cF);
@@ -773,7 +781,8 @@ public class Reportform extends VerticalLayout {
 					String amt = rs.getString("amount");
 					String fullname = rs.getString("fullname");
 
-					String date = rs.getString("datecreated");
+					Date date = rs.getDate("datecreated");
+					String d = sdf.format(date);
 
 					if (!ht.containsKey("Dealer ID")) {
 						TreeSet<String> arrL = new TreeSet<>();
@@ -801,7 +810,7 @@ public class Reportform extends VerticalLayout {
 					tdPropertydealerid.setValue(did);
 					tdPropertyagentid.setValue(aid);
 					tdPropertyevalueamount.setValue(amt);
-					tdPropertydate.setValue(date);
+					tdPropertydate.setValue(d);
 					tdPropertyfullname.setValue(fullname);
 
 				}
@@ -942,7 +951,8 @@ public class Reportform extends VerticalLayout {
 
 					String transactiontype = rs.getString("Transaction Type");
 					// String amount = rs.getString("Amount");
-					String date = rs.getString("Timestamps");
+					Date date = rs.getDate("Timestamps");
+					String d = sdf.format(date);
 					String transactionID = rs.getString("TransactionID");
 					String sender = rs.getString("Sender");
 					String status = rs.getString("Status");
@@ -1025,7 +1035,7 @@ public class Reportform extends VerticalLayout {
 
 					tdPropertyserial.setValue(String.valueOf(x));
 					tdPropertytransactionid.setValue(transactionID);
-					tdPropertytransactiondate.setValue(date);
+					tdPropertytransactiondate.setValue(d);
 					tdPropertytransactiontype.setValue(transactiontype);
 					// tdPropertyamount.setValue(amount);
 					tdPropertysender.setValue(sender);
@@ -1134,7 +1144,8 @@ public class Reportform extends VerticalLayout {
 					String amount = rs.getString("Amount");
 					// String nooftransactions = rs
 					// .getString("No of transactions");
-					String date = rs.getString("TransactionDate");
+					Date date = rs.getDate("TransactionDate");
+					String d = sdf.format(date);
 
 					if (!ht.containsKey("Transaction Type")) {
 						TreeSet<String> arrL = new TreeSet<>();
@@ -1173,7 +1184,7 @@ public class Reportform extends VerticalLayout {
 					}
 
 					tdPropertyserial.setValue(String.valueOf(x));
-					tdPropertytransactiondate.setValue(date);
+					tdPropertytransactiondate.setValue(d);
 					tdPropertytransactiontype.setValue(transactiontype);
 					tdPropertyamount.setValue(amount);
 					// tdPropertytransactioncount.setValue(nooftransactions);
@@ -1291,7 +1302,7 @@ public class Reportform extends VerticalLayout {
 
 					String transID = rs.getString("txid");
 
-					String date = rs.getString("TransactionDate");
+					Date date = rs.getDate("TransactionDate");
 
 					String commission = rs.getString("commission");
 
@@ -1329,6 +1340,7 @@ public class Reportform extends VerticalLayout {
 						ht.get("Agent ID").add(commissionAccount);
 					}
 
+					String d = sdf.format(date);
 					itemId = feesCommissionContainer.addItem();
 
 					trItem = feesCommissionContainer.getItem(itemId);
@@ -1385,7 +1397,7 @@ public class Reportform extends VerticalLayout {
 					tdPropertyamount.setValue(amount);
 					tdPropertymcomm.setValue(mcomm);
 					tdPropertytcomm.setValue(tcomm);
-					tdPropertydate.setValue(date);
+					tdPropertydate.setValue(d);
 
 				}
 
@@ -1482,7 +1494,8 @@ public class Reportform extends VerticalLayout {
 
 					String amount = rs.getString("amount");
 
-					String date = rs.getString("date");
+					Date date = rs.getDate("date");
+					String d = sdf.format(date);
 
 					if (!ht.containsKey("Partner")) {
 						TreeSet<String> arrL = new TreeSet<>();
@@ -1528,7 +1541,7 @@ public class Reportform extends VerticalLayout {
 					tdPropertyOFees.setValue(ofees);
 					tdPropertyCommission.setValue(commission);
 					tdPropertyamount.setValue(amount);
-					tdPropertydate.setValue(date);
+					tdPropertydate.setValue(d);
 
 				}
 
