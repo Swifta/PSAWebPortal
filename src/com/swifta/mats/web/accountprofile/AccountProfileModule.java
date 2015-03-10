@@ -18,8 +18,7 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 public class AccountProfileModule {
-
-	HorizontalLayout udc;
+	private HorizontalLayout udc;
 
 	public AccountProfileModule() {
 
@@ -31,8 +30,6 @@ public class AccountProfileModule {
 		addUserContainer.setWidthUndefined();
 		addUserContainer.setWidthUndefined();
 		addUserContainer.setMargin(new MarginInfo(true, true, true, true));
-		// addUserContainer.setStyleName("c_add_user");
-
 		FormLayout addUserForm = new FormLayout();
 		addUserForm.setSizeUndefined();
 		addUserForm.setSpacing(true);

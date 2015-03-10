@@ -45,6 +45,7 @@ import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
+//import com.vaadin.ui.Notification;
 import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -1775,15 +1776,11 @@ public class Reportform extends VerticalLayout {
 	}
 
 	private void errorHandler(Exception e) {
-		if (e instanceof NullPointerException) {
-			Notification.show(
-					"Oops... something happened while generating reports.",
-					Notification.Type.WARNING_MESSAGE);
-			e.printStackTrace();
-		} else {
-			e.printStackTrace();
-			Notification.show("Error Establishing DBConnection = " + e,
-					Notification.Type.ERROR_MESSAGE);
-		}
+
+		Notification.show(
+				"Oops... something wrong happened while generating reports.",
+				Notification.Type.WARNING_MESSAGE);
+		e.printStackTrace();
+
 	}
 }

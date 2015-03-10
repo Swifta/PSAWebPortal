@@ -38,6 +38,9 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
+//import com.vaadin.ui.Notification;
+//import com.vaadin.ui.Notification;
+//import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.Upload;
@@ -112,15 +115,9 @@ public class Settings extends VerticalLayout {
 	Label lbel1 = new Label("Account Management");
 	int y = 0;
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -2467595854268829523L;
 
 	public HorizontalLayout Addlabel() {
-
-		// TODO Auto-generated method stub
-		// setSizeFull();
 		setMargin(true);
 		AddIcons icon1 = new AddIcons();
 
@@ -320,7 +317,8 @@ public class Settings extends VerticalLayout {
 
 						}
 					} else {
-						Notification.show("Table is empty");
+						Notification.show("Table is empty",
+								Notification.Type.WARNING_MESSAGE);
 					}
 				} else {
 					for (int i = 0; i < t; i++) {
@@ -394,12 +392,14 @@ public class Settings extends VerticalLayout {
 							x = 29;
 						tb.setPageLength(x + 1);
 					} else {
-						Notification.show("No result found, table is empty");
+						Notification.show("No result found, table is empty",
+								Notification.Type.WARNING_MESSAGE);
 					}
 
 				} else {
 					if (container.size() == 0) {
-						Notification.show("Table is Empty");
+						Notification.show("Table is Empty",
+								Notification.Type.WARNING_MESSAGE);
 					}
 					tb.setContainerDataSource(container);
 					int x = tb.getContainerDataSource().size();
@@ -561,7 +561,8 @@ public class Settings extends VerticalLayout {
 								laying.addComponent(searchResultsContainer);
 								laying.setExpandRatio(searchResultsContainer, 1);
 								BulkImport.setEnabled(true);
-								Notification.show("Done");
+								Notification.show("Done",
+										Notification.Type.WARNING_MESSAGE);
 							}
 
 							reader.close();
@@ -725,6 +726,7 @@ public class Settings extends VerticalLayout {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	public IndexedContainer het1click(String a, String b, String e, String c,
 			String d, IndexedContainer tabContainer, int id) {
 
@@ -757,7 +759,8 @@ public class Settings extends VerticalLayout {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				Notification.show("btnDetails Clicked");
+				Notification.show("btnDetails Clicked",
+						Notification.Type.WARNING_MESSAGE);
 
 			}
 		});
@@ -841,7 +844,8 @@ public class Settings extends VerticalLayout {
 					String reti2 = tb.getContainerDataSource()
 							.getContainerProperty(reti, "Name").getValue()
 							.toString();
-					Notification.show(reti2 + " Account Disabled");
+					Notification.show(reti2 + " Account Disabled",
+							Notification.Type.WARNING_MESSAGE);
 				} else if (Idd == "Enable Account") {
 
 					event.getButton().setDescription("Disable Account");
@@ -851,10 +855,12 @@ public class Settings extends VerticalLayout {
 					String reta2 = tb.getContainerDataSource()
 							.getContainerProperty(reta, "Name").getValue()
 							.toString();
-					Notification.show(reta2 + " Account Enabled");
+					Notification.show(reta2 + " Account Enabled",
+							Notification.Type.WARNING_MESSAGE);
 				} else {
 
-					Notification.show("No description on Button");
+					Notification.show("No description on Button",
+							Notification.Type.WARNING_MESSAGE);
 				}
 
 				int x = container.size();
@@ -892,8 +898,6 @@ public class Settings extends VerticalLayout {
 		actionsC.addComponent(btnDetails);
 		actionsC.addComponent(btnEdit);
 		actionsC.addComponent(btnLink);
-		// actionsC.addComponent(btnDelete);
-		// actionsC.addComponent(btnMoreActions);
 
 		Property<CheckBox> tdPropertyCheck = trItem.getItemProperty(" ");
 		Property<String> tdPropertyUID = trItem.getItemProperty("Date Created");
@@ -951,7 +955,8 @@ public class Settings extends VerticalLayout {
 						b.setIcon(FontAwesome.CHECK);
 					}
 				} else {
-					Notification.show("Unknown State");
+					Notification.show("Unknown State",
+							Notification.Type.WARNING_MESSAGE);
 				}
 			}
 			if (c instanceof HasComponents) {

@@ -11,20 +11,6 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 public class WorkSpaceManageFeesAndComm {
-	// public static final String SESSION_WSMP = "manage_commission_and_fees";
-	// public static final String SESSION_WSMP_CUR_ACTION =
-	// "manage_profile_cur_action";
-	// static String SESSION_VAR_WSMP_PERSONAL = "personal";
-	// public static String SESSION_VAR_WSMP_AUTH = "cur_user_auth";
-	// static String SESSION_VAR_WSMP_LOG = "log";
-	// public static String SESSION_VAR_WSMP_ACT_LOG = "act_log";
-	// public static String SESSION_VAR_WSMP_ACC_LOG = "acc_log";
-
-	// public static String SESSION_UDM_TABLE_LOG = "cur_user_log_table";
-	// public static String SESSION_UDM_LOG = "cur_user_log";
-	// public static String SESSION_UDM_IS_LOG = "cur_user_log";
-	// public static String SESSION_VAR_UDM_LOG = "true";
-
 	private VerticalLayout cParent;
 	private VerticalLayout cMenu;
 	private HorizontalLayout cContent;

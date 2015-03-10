@@ -37,6 +37,8 @@ import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
+//import com.vaadin.ui.Notification;
+//import com.vaadin.ui.Notification;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.TextField;
@@ -1611,8 +1613,6 @@ public class UserDetailsModule {
 	private HashMap<Integer, String> getCountries() {
 		HashMap<Integer, String> c = new HashMap<>();
 		String qx = "SELECT countryname as cname, countryid as cid FROM psadatasourcetest.country;";
-		String Uname = "psaproduser";
-		String Pword = "psaproduser@2015";
 		String drivers = "com.mysql.jdbc.Driver";
 		try {
 			Class<?> driver_class = Class.forName(drivers);
@@ -1635,10 +1635,7 @@ public class UserDetailsModule {
 		} catch (SQLException | ClassNotFoundException | InstantiationException
 				| IllegalAccessException e) {
 
-			e.printStackTrace();
-			Notification.show("DB Connection",
-					"Error Establishing DBConnection:  " + e.getMessage(),
-					Notification.Type.ERROR_MESSAGE);
+			errorHandler(e);
 		}
 
 		return c;
@@ -1834,10 +1831,8 @@ public class UserDetailsModule {
 		} catch (SQLException | ClassNotFoundException | InstantiationException
 				| IllegalAccessException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
-			Notification.show("DB Connection",
-					"Error Establishing DBConnection:  " + e.getMessage(),
-					Notification.Type.ERROR_MESSAGE);
+			errorHandler(e);
+
 		}
 
 		return s;
@@ -1872,10 +1867,7 @@ public class UserDetailsModule {
 
 		} catch (SQLException | ClassNotFoundException | InstantiationException
 				| IllegalAccessException e) {
-			e.printStackTrace();
-			Notification.show("DB Connection",
-					"Error Establishing DBConnection:  " + e.getMessage(),
-					Notification.Type.ERROR_MESSAGE);
+			errorHandler(e);
 		}
 
 		return s;
@@ -2063,6 +2055,12 @@ public class UserDetailsModule {
 			Notification.show("Response: " + strResponse,
 					Notification.Type.ERROR_MESSAGE);
 
+	}
+
+	private void errorHandler(Exception e) {
+		e.printStackTrace();
+		Notification.show("DB Connection", "Error connecting to the DB:  ",
+				Notification.Type.ERROR_MESSAGE);
 	}
 
 }

@@ -1,6 +1,5 @@
 package com.swifta.mats.web;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 
 import com.vaadin.annotations.PreserveOnRefresh;
@@ -38,16 +37,6 @@ public class MatsWebPortalUI extends UI {
 
 		@Override
 		protected void servletInitialized() {
-
-			try {
-				super.servletInitialized();
-			} catch (ServletException e) {
-				Notification.show(e.getMessage(),
-						Notification.Type.ERROR_MESSAGE);
-				e.printStackTrace();
-			}
-			// PreparedStatement s = new PreparedStatement();
-			// getService().addSessionDestroyListener(this);
 
 			getService().setSystemMessagesProvider(
 					new SystemMessagesProvider() {

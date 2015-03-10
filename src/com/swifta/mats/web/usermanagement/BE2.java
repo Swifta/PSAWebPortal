@@ -29,7 +29,6 @@ import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.data.util.filter.Compare;
 import com.vaadin.server.FontAwesome;
-import com.vaadin.server.Page;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
@@ -40,7 +39,6 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.JavaScript;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.PasswordField;
@@ -1314,19 +1312,30 @@ public class BE2 {
 
 				}
 
-				JavaScript.getCurrent().execute("alert('hello');");
-				Page.getCurrent().getJavaScript().execute("alert('Hi.');");
+				// JavaScript.getCurrent().execute("alert('" + s + "');");
+				// Page.getCurrent().getJavaScript().execute("alert('Hi.');");
 
-				Notification.show(s, Notification.Type.WARNING_MESSAGE);
+				System.out.println(s + " : ");
+
 				if (s != null
 						&& s.trim().equals("ACCOUNT UNLOCKED SUCCESSFULLY")) {
 					event.getButton().setIcon(FontAwesome.LOCK);
 					event.getButton().setDescription("Lock user.");
+					Notification.show(s, Notification.Type.WARNING_MESSAGE);
 
-				} else {
+				} else if (s != null
+						&& s.trim().equals("ACCOUNT LOCKED SUCCESSFULLY")) {
 
 					event.getButton().setIcon(FontAwesome.UNLOCK);
 					event.getButton().setDescription("Unlock user.");
+					Notification.show(s, Notification.Type.WARNING_MESSAGE);
+				} else if (s != null && s.trim().isEmpty()) {
+					Notification.show("Operation failed. No response received",
+							Notification.Type.ERROR_MESSAGE);
+				} else {
+					Notification.show("Operation failed. No response received",
+							Notification.Type.ERROR_MESSAGE);
+
 				}
 
 			}
