@@ -486,27 +486,11 @@ public class UserManagementService {
 
 			statusMessage = firstelement.getFirstElement().getText();
 
-			try {
-				System.out
-						.println("HTTP status code: "
-								+ sender.getLastOperationContext()
-										.getMessageContext(
-												WSDLConstants.MESSAGE_LABEL_IN_VALUE)
-										.getProperty(
-												HTTPConstants.MC_HTTP_STATUS_CODE));
-				Integer statuscode = (Integer) sender
-						.getLastOperationContext()
-						.getMessageContext(WSDLConstants.MESSAGE_LABEL_IN_VALUE)
-						.getProperty(HTTPConstants.MC_HTTP_STATUS_CODE);
-				if (statuscode == 202) {
-					statusMessage = "ACCOUNT UNLOCKED SUCCESSFULLY";
-				} else {
-					statusMessage = "REQUEST CANNOT BE COMPLETED AT THIS MOMENT, TRY AGAIN LATER1";
-				}
-			} catch (Exception e1) {
-				statusMessage = "REQUEST CANNOT BE COMPLETED AT THIS MOMENT, TRY AGAIN LATER";
-				e1.printStackTrace();
-			}
+			System.out.println("HTTP status code: "
+					+ sender.getLastOperationContext()
+							.getMessageContext(
+									WSDLConstants.MESSAGE_LABEL_IN_VALUE)
+							.getProperty(HTTPConstants.MC_HTTP_STATUS_CODE));
 
 			return statusMessage;
 
@@ -575,36 +559,11 @@ public class UserManagementService {
 			OMElement firstelement = result.getFirstElement();
 
 			statusMessage = firstelement.getFirstElement().getText();
-
-			System.out.println(statusMessage + ": JJJJJJJJJ");
-
 			System.out.println("HTTP status code: "
 					+ sender.getLastOperationContext()
 							.getMessageContext(
 									WSDLConstants.MESSAGE_LABEL_IN_VALUE)
 							.getProperty(HTTPConstants.MC_HTTP_STATUS_CODE));
-
-			try {
-				System.out
-						.println("HTTP status code: "
-								+ sender.getLastOperationContext()
-										.getMessageContext(
-												WSDLConstants.MESSAGE_LABEL_IN_VALUE)
-										.getProperty(
-												HTTPConstants.MC_HTTP_STATUS_CODE));
-				Integer statuscode = (Integer) sender
-						.getLastOperationContext()
-						.getMessageContext(WSDLConstants.MESSAGE_LABEL_IN_VALUE)
-						.getProperty(HTTPConstants.MC_HTTP_STATUS_CODE);
-				if (statuscode == 202) {
-					statusMessage = "ACCOUNT LOCKED SUCCESSFULLY";
-				} else {
-					statusMessage = "REQUEST CANNOT BE COMPLETED AT THIS MOMENT, TRY AGAIN LATER1";
-				}
-			} catch (Exception e1) {
-				statusMessage = "REQUEST CANNOT BE COMPLETED AT THIS MOMENT, TRY AGAIN LATER";
-				e1.printStackTrace();
-			}
 
 			return statusMessage;
 

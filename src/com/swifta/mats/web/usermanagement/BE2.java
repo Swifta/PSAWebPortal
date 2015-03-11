@@ -1333,8 +1333,12 @@ public class BE2 {
 					Notification.show("Operation failed. No response received",
 							Notification.Type.ERROR_MESSAGE);
 				} else {
-					Notification.show("Operation failed. No response received",
-							Notification.Type.ERROR_MESSAGE);
+					if (s != null && !s.trim().isEmpty())
+						Notification.show(s, Notification.Type.ERROR_MESSAGE);
+					if (s != null && s.trim().isEmpty())
+						Notification.show(
+								"Operation failed. No response received",
+								Notification.Type.ERROR_MESSAGE);
 
 				}
 
