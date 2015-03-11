@@ -112,8 +112,9 @@ public class Reportform extends VerticalLayout {
 
 	private class ValidateRange implements Validator {
 		private static final long serialVersionUID = -5454180295673067279L;
-		DateField start;
-		DateField end;
+		private DateField start;
+		private DateField end;
+		private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
 		ValidateRange(DateField dat, DateField dat2) {
 			this.start = dat;
@@ -128,7 +129,10 @@ public class Reportform extends VerticalLayout {
 			if (s == null || e == null)
 				return;
 
-			if (s.compareTo(e) > 0) {
+			String sx = sdf.format(s);
+			String ex = sdf.format(e);
+
+			if (sx.compareTo(ex) > 0) {
 				throw new InvalidValueException("Invalid date range.");
 			}
 		}
@@ -624,10 +628,10 @@ public class Reportform extends VerticalLayout {
 			lbSizeTop.setValue("Total of: " + t + " result(s).");
 			lbSizeBottom.setValue("Total of: " + t + " result(s).");
 
-			lbAmountTop.setValue("Total Amount: " + bdAmt.doubleValue()
-					+ "  \u20A6.");
-			lbAmountBottom.setValue("Total Amount: " + bdAmt.doubleValue()
-					+ "  \u20A6.");
+			lbAmountTop.setValue("Total Amount: "
+					+ nf.format(bdAmt.doubleValue()));
+			lbAmountBottom.setValue("Total Amount: "
+					+ nf.format(bdAmt.doubleValue()));
 
 			return;
 		}
@@ -680,10 +684,9 @@ public class Reportform extends VerticalLayout {
 		lbSizeTop.setValue("Total of: " + x + " result(s).");
 		lbSizeBottom.setValue("Total of: " + x + " result(s).");
 
-		lbAmountTop.setValue("Total Amount: " + bdAmt.doubleValue()
-				+ "  \u20A6.");
-		lbAmountBottom.setValue("Total Amount: " + bdAmt.doubleValue()
-				+ "  \u20A6.");
+		lbAmountTop.setValue("Total Amount: " + nf.format(bdAmt.doubleValue()));
+		lbAmountBottom.setValue("Total Amount: "
+				+ nf.format(bdAmt.doubleValue()));
 
 	}
 
@@ -1784,10 +1787,10 @@ public class Reportform extends VerticalLayout {
 				lbSizeTop.setValue("Total of: " + x + " result(s).");
 				lbSizeBottom.setValue("Total of: " + x + " result(s).");
 
-				lbAmountTop.setValue("Total Amount: " + bdAmt.doubleValue()
-						+ "  \u20A6.");
-				lbAmountBottom.setValue("Total Amount: " + bdAmt.doubleValue()
-						+ "  \u20A6.");
+				lbAmountTop.setValue("Total Amount: "
+						+ nf.format(bdAmt.doubleValue()));
+				lbAmountBottom.setValue("Total Amount: "
+						+ nf.format(bdAmt.doubleValue()));
 
 			}
 
