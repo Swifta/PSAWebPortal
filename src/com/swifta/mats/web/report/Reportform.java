@@ -7,12 +7,16 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
@@ -103,6 +107,8 @@ public class Reportform extends VerticalLayout {
 	private BigDecimal bdAmt = new BigDecimal(0.00);
 	private Date minD;
 	private Date maxD;
+	private NumberFormat nf;
+	private DecimalFormatSymbols dfs;
 
 	private class ValidateRange implements Validator {
 		private static final long serialVersionUID = -5454180295673067279L;
@@ -129,6 +135,12 @@ public class Reportform extends VerticalLayout {
 	}
 
 	public void reportformat() {
+
+		nf = NumberFormat.getCurrencyInstance(Locale.ROOT);
+		dfs = new DecimalFormatSymbols();
+		dfs.setCurrencySymbol("\u20A6");
+		((DecimalFormat) nf).setDecimalFormatSymbols(dfs);
+
 		setSpacing(true);
 		table.setWidth("100%");
 		table.setHeightUndefined();
@@ -940,7 +952,7 @@ public class Reportform extends VerticalLayout {
 				trxnsqld.append("  actxn.amount < 0 and actxn.transactionid = txn.transactionid and txnt.name <> 'DEPOSIT' and txn.transactionid  ");
 				trxnsqld.append("  not in (select extpay.transactionid from  ");
 				trxnsqld.append(" externalpaymentreference extpay group by extpay.transactionid) group by txn.transactionid) ");
-				trxnsqld.append("  ORDER BY TransactionID,Timestamps; ");
+				trxnsqld.append("  ORDER BY Timestamps desc; ");
 
 				rs = stmt.executeQuery(trxnsqld.toString());
 				cD.setVisible(true);
@@ -1475,7 +1487,7 @@ public class Reportform extends VerticalLayout {
 				sb.append(" (select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from  ");
 				sb.append(" accountholders where profileid = 15 and accounttypeid = 2)) and acts3.accountresourceid in ");
 				sb.append(" (select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from ");
-				sb.append(" accountholders where (profileid = 11 or profileid = 6) and accounttypeid = 1)) group by acth.username; ");
+				sb.append(" accountholders where (profileid = 11 or profileid = 6) and accounttypeid = 1)) group by acth.username order by date desc; ");
 
 				// System.out.println(sb.toString());
 
@@ -1568,10 +1580,9 @@ public class Reportform extends VerticalLayout {
 		lbSizeTop.setVisible(true);
 		lbSizeBottom.setVisible(true);
 
-		lbAmountTop.setValue("Total Amount: " + bdAmt.doubleValue()
-				+ "  \u20A6.");
-		lbAmountBottom.setValue("Total Amount: " + bdAmt.doubleValue()
-				+ "  \u20A6.");
+		lbAmountTop.setValue("Total Amount: " + nf.format(bdAmt.doubleValue()));
+		lbAmountBottom.setValue("Total Amount: "
+				+ nf.format(bdAmt.doubleValue()));
 		lbAmountTop.setVisible(true);
 		lbAmountBottom.setVisible(true);
 

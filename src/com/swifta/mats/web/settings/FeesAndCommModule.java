@@ -7,8 +7,12 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -81,11 +85,18 @@ public class FeesAndCommModule {
 	private VerticalLayout cCX;
 	private Double dfamt;
 	private Double dcamt;
+	private NumberFormat nf;
+	private DecimalFormatSymbols dfs;
 
 	// private boolean isExistingInit = false;
 	// private boolean isOthersInit = false;
 
 	public FeesAndCommModule() {
+
+		nf = NumberFormat.getCurrencyInstance(Locale.ROOT);
+		dfs = new DecimalFormatSymbols();
+		dfs.setCurrencySymbol("\u20A6");
+		((DecimalFormat) nf).setDecimalFormatSymbols(dfs);
 
 		hmTxType.put("CASHIN", 4);
 		hmTxType.put("CASHOUT", 5);
@@ -1382,7 +1393,7 @@ public class FeesAndCommModule {
 		VerticalLayout cItemContentTier = new VerticalLayout();
 		cArrLItemContent.add(cItemContentTier);
 		Table tb = getPseudoTableFees(hmOpx.get(op), hmTxType.get(type));
-		lbAttr = new Label("Tier(Fees), Total Amount: " + dfamt + " \u20A6");
+		lbAttr = new Label("Tier(Fees), Total Amount: " + nf.format(dfamt));
 		lbAttr.setSizeFull();
 		lbAttr.setStyleName("label_add_user attr");
 		cItemContentTier.addComponent(lbAttr);
@@ -1430,8 +1441,8 @@ public class FeesAndCommModule {
 		VerticalLayout cItemContentTier = new VerticalLayout();
 		cArrLItemContent.add(cItemContentTier);
 		Table tb = getCommissionPseudoTable(hmOpx.get(op), hmTxType.get(type));
-		lbAttr = new Label("Tier(Commission), Total Amount: " + dcamt
-				+ " \u20A6");
+		lbAttr = new Label("Tier(Commission), Total Amount: "
+				+ nf.format(dcamt));
 		lbAttr.setSizeFull();
 		lbAttr.setStyleName("label_add_user attr");
 		cItemContentTier.addComponent(lbAttr);
