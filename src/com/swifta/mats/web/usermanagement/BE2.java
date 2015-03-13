@@ -1243,7 +1243,7 @@ public class BE2 {
 		// actionsC.addComponent(btnSetParent);
 		actionsC.addComponent(btnSetDefaultAcc);
 		actionsC.addComponent(btnLink);
-		actionsC.addComponent(btnLock);
+		// actionsC.addComponent(btnLock);
 		actionsC.addComponent(btnDetails);
 		actionsC.addComponent(btnEdit);
 		actionsC.addComponent(btnDelete);
