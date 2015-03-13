@@ -6,6 +6,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.NumberFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -89,7 +90,7 @@ public class AddUserModule {
 	private OptionGroup optSex;
 	private boolean isValidatorAdded = false;
 	boolean isCSelected = false;
-	private Calendar cal = null;
+	NumberFormat nf = NumberFormat.getNumberInstance();
 
 	public AddUserModule() {
 
@@ -160,7 +161,7 @@ public class AddUserModule {
 		// tF.setValue("Pwndz");
 		tFMN = tF;
 		tF.setImmediate(true);
-		tFMN.setRequired(true);
+		tFMN.setRequired(false);
 		cBasic.addComponent(tF);
 
 		tF = new TextField("Last Name");
@@ -442,6 +443,8 @@ public class AddUserModule {
 		 * tF = new TextField("Physical Address"); cC.addComponent(tF);
 		 */
 
+		tFPostalCode.setImmediate(true);
+
 		VerticalLayout cAcc = new VerticalLayout();
 		Label lbAcc = new Label("Account");
 		lbAcc.setStyleName("lb_frm_add_user");
@@ -557,6 +560,28 @@ public class AddUserModule {
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				// Notification.show(event.getProperty().getValue().toString());
+
+			}
+
+		});
+
+		tFPostalCode.addValidator(new Validator() {
+
+			private static final long serialVersionUID = 9193817369890607387L;
+
+			@Override
+			public void validate(Object value) throws InvalidValueException {
+				if (value.toString().trim().isEmpty())
+					return;
+
+				try {
+					Long.parseLong(tFPostalCode.getValue());
+				} catch (Exception e) {
+					tFPostalCode.focus();
+					throw new InvalidValueException(
+							"Only digits in Postal Code field.");
+
+				}
 
 			}
 
@@ -783,7 +808,6 @@ public class AddUserModule {
 				UserManagementService ums = new UserManagementService();
 
 				String strResponse = "";
-
 				String idtype = "";
 
 				try {
@@ -1028,8 +1052,7 @@ public class AddUserModule {
 		String qx = "SELECT state as s, countrystateid as sid FROM "
 				+ MatsWebPortalUI.conf.dbin
 				+ ".countrystate where countryid = " + cid + ";";
-		String Uname = "psaproduser";
-		String Pword = "psaproduser@2015";
+
 		String drivers = "com.mysql.jdbc.Driver";
 		try {
 			Class<?> driver_class = Class.forName(drivers);
@@ -1138,7 +1161,7 @@ public class AddUserModule {
 	private void reset() {
 
 		clearField(tFFN);
-		clearField(tFMN);
+		// clearField(tFMN);
 		clearField(tFLN);
 		clearField(tFOcc);
 		// tFEmp.addValidator(new NoNull());
@@ -1154,6 +1177,7 @@ public class AddUserModule {
 		// tFPostalCode.addValidator(new NoNull());
 		clearField(tFStreet);
 		clearField(tFCity);
+		// clearField(tFPostalCode);
 		// tFProv.addValidator(new NoNull());
 		// tFSMNo.addValidator(new NoNull());
 		// tFSANo.addValidator(new NoNull());
@@ -1204,8 +1228,10 @@ public class AddUserModule {
 		dFDoB.setValue(date);
 		tFPEmail.setComponentError(null);
 		tFSEmail.setComponentError(null);
+		tFPostalCode.setComponentError(null);
 
-		Notification.show("Fields reset.", Notification.Type.WARNING_MESSAGE);
+		// Notification.show("Fields reset.",
+		// Notification.Type.WARNING_MESSAGE);
 
 		/*
 		 * ArrayList<Object> arrLAllFields = new ArrayList<>();
@@ -1254,7 +1280,7 @@ public class AddUserModule {
 		// tFPMNo.setRequired(false);
 		// tFPANo.setRequired(false);
 		// tFPEmail.setRequired(false);
-		// tFPostalCode.setRequired(false);
+		tFPostalCode.setRequired(false);
 		tFStreet.setRequired(false);
 		tFCity.setRequired(false);
 		// tFProv.setRequired(false);
@@ -1285,7 +1311,7 @@ public class AddUserModule {
 		optSex.setRequired(false);
 
 		tFFN.addValidator(new NoNull(tFFN));
-		tFMN.addValidator(new NoNull(tFMN));
+		// tFMN.addValidator(new NoNull(tFMN));
 		tFLN.addValidator(new NoNull(tFLN));
 		tFOcc.addValidator(new NoNull(tFOcc));
 		// tFEmp.addValidator(new NoNull());
@@ -1335,7 +1361,7 @@ public class AddUserModule {
 	private void validate() {
 
 		tFFN.validate();
-		tFMN.validate();
+		// tFMN.validate();
 		tFLN.validate();
 		tFOcc.validate();
 		tFEmp.validate();
@@ -1379,6 +1405,7 @@ public class AddUserModule {
 		optSex.validate();
 		tFPEmail.setComponentError(null);
 		tFSEmail.setComponentError(null);
+		tFPostalCode.validate();
 
 		if (tFPEmail.getValue() != null
 				&& !tFPEmail.getValue().trim().isEmpty())
@@ -1437,31 +1464,6 @@ public class AddUserModule {
 			return;
 		}
 
-	}
-
-	private class IDDateValidator implements Validator {
-
-		private PopupDateField dIssue, dExpiry;
-
-		IDDateValidator(PopupDateField d1, PopupDateField d2) {
-			this.dIssue = d1;
-			this.dExpiry = d2;
-
-		}
-
-		@Override
-		public void validate(Object value) throws InvalidValueException {
-			if (dIssue.getValue() == null)
-				return;
-			if (dExpiry.getValue() == null)
-				return;
-			Calendar cal = Calendar.getInstance();
-			Date dToday = cal.getTime();
-			// DateValidator d = new DateRangeValidator(null, dToday, dToday,
-			// null);
-			// if(dIssue)
-
-		}
 	}
 
 }

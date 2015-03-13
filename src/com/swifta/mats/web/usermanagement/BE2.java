@@ -1007,7 +1007,7 @@ public class BE2 {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				int t = tb.getContainerDataSource().size();
+				int t = container.size();
 				if (t > 30)
 					t = 30;
 				tb.setPageLength(t);
@@ -1024,7 +1024,7 @@ public class BE2 {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				int t = tb.getContainerDataSource().size();
+				int t = container.size();
 				if (t > 30)
 					t = 30;
 				tb.setPageLength(t);

@@ -486,6 +486,8 @@ public class UserManagementService {
 
 			statusMessage = firstelement.getFirstElement().getText();
 
+			System.out.println("From util: " + statusMessage);
+
 			System.out.println("HTTP status code: "
 					+ sender.getLastOperationContext()
 							.getMessageContext(
@@ -559,6 +561,8 @@ public class UserManagementService {
 			OMElement firstelement = result.getFirstElement();
 
 			statusMessage = firstelement.getFirstElement().getText();
+			System.out.println("From util: " + statusMessage);
+
 			System.out.println("HTTP status code: "
 					+ sender.getLastOperationContext()
 							.getMessageContext(

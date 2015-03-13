@@ -1273,13 +1273,26 @@ public class FeesAndCommModule {
 
 			@Override
 			public void focus(FocusEvent event) {
+				if (SettingsView.inSettings) {
+					getOperators();
+					Set<Entry<String, Integer>> es = (Set<Entry<String, Integer>>) hmOpx
+							.entrySet();
+					for (Entry<String, Integer> e : es) {
+						comboOp.addItem(e.getValue());
+						comboOp.setItemCaption(e.getValue(), e.getKey());
+					}
 
-				getOperators();
-				Set<Entry<String, Integer>> es = (Set<Entry<String, Integer>>) hmOpx
-						.entrySet();
-				for (Entry<String, Integer> e : es) {
-					comboOp.addItem(e.getValue());
-					comboOp.setItemCaption(e.getValue(), e.getKey());
+					SettingsView.inSettings = false;
+
+				} else {
+					if (hmOpx == null || hmOpx.size() == 0)
+						return;
+					Set<Entry<String, Integer>> es = (Set<Entry<String, Integer>>) hmOpx
+							.entrySet();
+					for (Entry<String, Integer> e : es) {
+						comboOp.addItem(e.getValue());
+						comboOp.setItemCaption(e.getValue(), e.getKey());
+					}
 				}
 
 			}

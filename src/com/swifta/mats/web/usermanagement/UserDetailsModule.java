@@ -598,12 +598,9 @@ public class UserDetailsModule {
 		tFFN.setRequired(true);
 		tF.setValue(hm.get(cap));
 
-		TextField tFx = new TextField("Name of Name");
-		FormLayout ctfx = new FormLayout();
-		ctfx.addComponent(tFx);
-
 		addDatum("Username", hm.get("Username"), cBasic);
 		addDatum("Profile", strProf, cBasic);
+		addDatum("Account Status", hm.get("Status"), cBasic);
 		addDatum("First Name", hm.get("First Name"), cBasic);
 
 		tF = new TextField("Middle Name");

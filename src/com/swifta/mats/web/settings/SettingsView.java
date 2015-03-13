@@ -22,6 +22,7 @@ public class SettingsView extends VerticalLayout implements View {
 	private TabSheet ts;
 	private VerticalLayout tab = null;
 	String id = null;
+	public static boolean inSettings = false;
 
 	public SettingsView(TabSheet ts) {
 		this.ts = ts;
@@ -34,7 +35,7 @@ public class SettingsView extends VerticalLayout implements View {
 
 	@Override
 	public void enter(ViewChangeEvent event) {
-
+		inSettings = true;
 		ts.setSelectedTab(5);
 		addMenu();
 
