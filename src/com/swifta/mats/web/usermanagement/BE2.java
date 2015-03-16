@@ -414,12 +414,6 @@ public class BE2 {
 			@Override
 			public void buttonClick(ClickEvent event) {
 
-				/*
-				 * String bankdomainid, String currency, String IDnumber, String
-				 * resourceid, String SecurityAns, String firstPin, String
-				 * confirmPin
-				 */
-
 				if (isSent)
 					return;
 
@@ -1238,12 +1232,12 @@ public class BE2 {
 		btnSetParent.setDescription("Set Parent Account");
 		btnSetDefaultAcc.setStyleName("btn_link");
 		btnSetParent.setStyleName("btn_link");
-
 		actionsC.addComponent(btnActivate);
 		// actionsC.addComponent(btnSetParent);
 		actionsC.addComponent(btnSetDefaultAcc);
 		actionsC.addComponent(btnLink);
-		// actionsC.addComponent(btnLock);
+		if (MatsWebPortalUI.conf.env.equals("testing"))
+			actionsC.addComponent(btnLock);
 		actionsC.addComponent(btnDetails);
 		actionsC.addComponent(btnEdit);
 		actionsC.addComponent(btnDelete);
@@ -1256,7 +1250,6 @@ public class BE2 {
 		if (status.equals("BLOCKED")) {
 			btnLock.setIcon(FontAwesome.UNLOCK);
 			btnLock.setDescription("Unlock account.");
-
 			btnActivate.setIcon(null);
 			btnActivate.setCaption("R");
 			btnActivate.setStyleName("btn_link");
