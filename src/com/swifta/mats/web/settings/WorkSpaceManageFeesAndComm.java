@@ -15,7 +15,7 @@ public class WorkSpaceManageFeesAndComm {
 	private VerticalLayout cMenu;
 	private HorizontalLayout cContent;
 	public FeesAndCommModule apm;
-	VerticalLayout cC;
+	private VerticalLayout cC;
 	public static ArrayList<String> prevSearchFrag = new ArrayList<>();
 
 	public WorkSpaceManageFeesAndComm() {

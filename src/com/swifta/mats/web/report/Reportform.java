@@ -51,6 +51,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 //import com.vaadin.ui.Notification;
 import com.vaadin.ui.PopupDateField;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -60,7 +61,8 @@ import com.vaadin.ui.Window.CloseListener;
 public class Reportform extends VerticalLayout {
 
 	private static final long serialVersionUID = 252829471857525213L;
-	VerticalLayout searchform = new VerticalLayout();
+	private VerticalLayout searchform = new VerticalLayout();
+	private boolean isReportTypeChanged = false;
 
 	PagedTableCustom table = new PagedTableCustom();
 
@@ -80,20 +82,19 @@ public class Reportform extends VerticalLayout {
 	 * };
 	 */
 
-	HorizontalLayout pnUserSearchResults;
-	HorizontalLayout pnUserSearchResults2;
+	private HorizontalLayout pnUserSearchResults;
+	private HorizontalLayout pnUserSearchResults2;
 
-	ComboBox agent;
-	LinkedHashMap<String, TreeSet<String>> ht = new LinkedHashMap<>();
+	private ComboBox agent;
+	private LinkedHashMap<String, TreeSet<String>> ht = new LinkedHashMap<>();
 
-	IndexedContainer ds;
-	ComboBox reportType;
-	// private boolean isCriteriaChanged = false;
+	private IndexedContainer ds;
+	private ComboBox reportType;
 	private PopupDateField dat = new PopupDateField("From: ");
 	private PopupDateField dat2 = new PopupDateField("To: ");
-	HorizontalLayout cD;
-	Filter cFilter;
-	Filter dFilter;
+	private HorizontalLayout cD;
+	private Filter cFilter;
+	private Filter dFilter;
 	private HorizontalLayout cByAndVal;
 	private Button btnApply;
 	private TreeMap<String, String> cMap = new TreeMap<>();
@@ -109,6 +110,10 @@ public class Reportform extends VerticalLayout {
 	private Date maxD;
 	private NumberFormat nf;
 	private DecimalFormatSymbols dfs;
+	private HorizontalLayout cByTID;
+	private boolean isTIDChanged = false;
+
+	private TextField tFTID;
 
 	private class ValidateRange implements Validator {
 		private static final long serialVersionUID = -5454180295673067279L;
@@ -180,14 +185,14 @@ public class Reportform extends VerticalLayout {
 		cD.addComponent(dat2);
 
 		cByAndVal = new HorizontalLayout();
-		btnApply = new Button("Filter");
-		btnApply.setStyleName("btn_link");
-		btnApply.setDescription("Apply selected filters.");
+		btnApply = new Button("Apply");
+		btnApply.setStyleName("btn_link btn_offset");
+		btnApply.setDescription("Apply selected operations.");
 
-		btnApply.setVisible(false);
+		// btnApply.setVisible(false);
 
 		btnReload = new Button();
-		btnReload.setStyleName("btn_link");
+		btnReload.setStyleName("btn_link btn_offset");
 		btnReload.setIcon(FontAwesome.REPEAT);
 		btnReload.setDescription("Reload table data.");
 
@@ -204,31 +209,50 @@ public class Reportform extends VerticalLayout {
 		cRAndFilters.addComponent(cBtn);
 		cRAndFilters.addComponent(cByAndVal);
 
+		cF.addComponent(cRAndFilters);
+		cRAndFilters.setSpacing(true);
+
+		HorizontalLayout cDFAndReload = new HorizontalLayout();
+		cDFAndReload.setWidth("100%");
+		cDFAndReload.setSpacing(true);
+		cDFAndReload.addComponent(cD);
+
+		HorizontalLayout cBtns = new HorizontalLayout();
+		cBtns.setSizeUndefined();
+		cBtns.setSpacing(true);
+
+		cByTID = new HorizontalLayout();
+
+		tFTID = new TextField("Transaction ID");
+		tFTID.setImmediate(true);
+		Label lbOr = new Label();
+		lbOr.setValue(" And/Or Specify: ");
+		lbOr.setStyleName("label_search_user lb_off");
+		cByTID.addComponent(lbOr);
+		cByTID.addComponent(tFTID);
+		cByTID.setSpacing(true);
+		cByTID.setVisible(false);
+		cBtns.addComponent(cByTID);
+		cBtns.setComponentAlignment(cByTID, Alignment.MIDDLE_RIGHT);
+		// kkk
+
 		cBtn = new VerticalLayout();
 		cBtn.addComponent(btnApply);
 		cBtn.setHeight("100%");
 		cBtn.setComponentAlignment(btnApply, Alignment.BOTTOM_LEFT);
-		cRAndFilters.addComponent(cBtn);
+		cBtns.addComponent(cBtn);
+		// btnApply.setVisible(true);
 
 		cBtn = new VerticalLayout();
 		cBtn.addComponent(btnReload);
 		cBtn.setHeight("100%");
 		cBtn.setComponentAlignment(btnReload, Alignment.BOTTOM_LEFT);
-		cRAndFilters.addComponent(cBtn);
-		cRAndFilters.setComponentAlignment(cBtn, Alignment.TOP_RIGHT);
+		cBtns.addComponent(cBtn);
 
-		cF.addComponent(cRAndFilters);
-		cRAndFilters.setSpacing(true);
+		cDFAndReload.addComponent(cBtns);
+		cDFAndReload.setComponentAlignment(cBtns, Alignment.MIDDLE_RIGHT);
 
-		HorizontalLayout cDFAndReload = new HorizontalLayout();
-		cDFAndReload.setSpacing(true);
-		cDFAndReload.addComponent(cD);
-
-		// cDFAndReload.addComponent(cBtn);
-		// cDFAndReload.setWidth("100%");
-		// cDFAndReload.setComponentAlignment(cBtn, Alignment.TOP_RIGHT);
 		cF.addComponent(cDFAndReload);
-
 		addComponent(cF);
 		setComponentAlignment(cF, Alignment.TOP_CENTER);
 		setSizeFull();
@@ -247,12 +271,41 @@ public class Reportform extends VerticalLayout {
 
 		btnReload.setVisible(false);
 
+		tFTID.addValueChangeListener(new ValueChangeListener() {
+
+			private static final long serialVersionUID = 4792221698725213906L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				if (tFTID.getValue() == null
+						|| tFTID.getValue().trim().isEmpty())
+					return;
+				if (!isTIDChanged)
+					isTIDChanged = true;
+
+			}
+
+		});
 		btnApply.addClickListener(new Button.ClickListener() {
 			private static final long serialVersionUID = 6233032315069180601L;
 
 			@Override
 			public void buttonClick(ClickEvent event) {
+				if (isTIDChanged) {
+					isTIDChanged = false;
+					getTByID();
+					return;
+				}
+				if (isReportTypeChanged) {
+					dat.setValue(Calendar.getInstance().getTime());
+					dat2.setValue(Calendar.getInstance().getTime());
+					return;
+				}
 
+				if (dat2.getValue() == null) {
+					dat2.setValue(Calendar.getInstance().getTime());
+					return;
+				}
 				if (!isFirstCriteriaChanged)
 					return;
 				refine();
@@ -289,6 +342,12 @@ public class Reportform extends VerticalLayout {
 					return;
 				if (!dat2.isValid())
 					return;
+				if (isReportTypeChanged) {
+					loadData(reportType.getValue(), dat.getValue(),
+							dat2.getValue());
+					isReportTypeChanged = false;
+					return;
+				}
 
 				if (minD != null && dat.getValue().compareTo(minD) >= 0
 						&& maxD != null && dat2.getValue().compareTo(maxD) <= 0
@@ -313,8 +372,13 @@ public class Reportform extends VerticalLayout {
 			public void valueChange(ValueChangeEvent event) {
 				if (reportType.getValue() == null)
 					return;
-				dat.setValue(Calendar.getInstance().getTime());
-				dat2.setValue(Calendar.getInstance().getTime());
+				if (reportType.getValue().toString()
+						.equals("Transaction Report"))
+					cByTID.setVisible(true);
+				else
+					cByTID.setVisible(false);
+				isReportTypeChanged = true;
+
 			}
 
 		});
@@ -554,11 +618,11 @@ public class Reportform extends VerticalLayout {
 		}
 
 		if (ds.size() == 0) {
-			btnApply.setVisible(false);
+			// btnApply.setVisible(false);
 			cD.setVisible(true);
 			lb.setVisible(true);
 		} else {
-			btnApply.setVisible(true);
+			// btnApply.setVisible(true);
 			lb.setVisible(true);
 			cD.setVisible(true);
 		}
@@ -585,6 +649,276 @@ public class Reportform extends VerticalLayout {
 			}
 
 		});
+
+	}
+
+	@SuppressWarnings("unchecked")
+	private void getTByID() {
+
+		boolean incurtable = table.getCaption() != null
+				&& table.getCaption().equals("Transaction Report");
+		if (!incurtable)
+			incurtable = ds != null;
+
+		if (incurtable) {
+
+			ds.removeAllContainerFilters();
+			Filter f = new SimpleStringFilter("Transaction ID",
+					tFTID.getValue(), false, false);
+			ds.addContainerFilter(f);
+			int t = ds.size();
+			if (t > 0) {
+				table.setContainerDataSource(ds);
+				table.setPageLength(t);
+
+				Iterator<Collection<?>> itr = (Iterator<Collection<?>>) table
+						.getItemIds().iterator();
+				int i = 0;
+
+				bdAmt = new BigDecimal(0.00);
+				while (itr.hasNext()) {
+					i++;
+					Object itemid = itr.next();
+					Item item = table.getItem(itemid);
+					Property<String> p = item.getItemProperty("S/N");
+					p.setValue(i + "");
+
+					try {
+						Double nd = Double.valueOf(item
+								.getItemProperty("Amount (\u20A6)").getValue()
+								.toString());
+						bdAmt = BigDecimal.valueOf(bdAmt.doubleValue() + nd);
+					} catch (Exception en) {
+
+					}
+
+				}
+
+				lbSizeTop.setValue("Total of: " + t + " result(s).");
+				lbSizeBottom.setValue("Total of: " + t + " result(s).");
+
+				lbAmountTop.setValue("Total Amount: "
+						+ nf.format(bdAmt.doubleValue()));
+				lbAmountBottom.setValue("Total Amount: "
+						+ nf.format(bdAmt.doubleValue()));
+			} else {
+				loadTByID();
+
+			}
+
+		} else {
+			loadTByID();
+		}
+
+		table.setCaption((ds.size() == 0) ? "No such transaction with ID: "
+				+ tFTID.getValue() : "Transaction of ID: " + tFTID.getValue());
+		tFTID.setValue("");
+
+	}
+
+	@SuppressWarnings("unchecked")
+	private void loadTByID() {
+
+		IndexedContainer container2 = new IndexedContainer();
+		container2.addContainerProperty("S/N", String.class, "");
+		container2.addContainerProperty("Transaction ID", String.class, "");
+		container2.addContainerProperty("Date", String.class, "");
+
+		container2.addContainerProperty("Amount (\u20A6)", String.class, "");
+		container2.addContainerProperty("Agent/Sender", String.class, "");
+
+		container2.addContainerProperty("Receiver", String.class, "");
+
+		container2.addContainerProperty("Partner", String.class, "");
+
+		container2.addContainerProperty("Transaction Type", String.class, "");
+		container2.addContainerProperty("Status", String.class, "");
+		ds = container2;
+		if (!container2.removeAllItems()) {
+			return;
+		}
+
+		String drivers = "com.mysql.jdbc.Driver";
+		try {
+
+			Class<?> driver_class = Class.forName(drivers);
+			Driver driver = (Driver) driver_class.newInstance();
+			DriverManager.registerDriver(driver);
+
+			Connection conn = DriverManager.getConnection(
+					MatsWebPortalUI.conf.DB, MatsWebPortalUI.conf.UN,
+					MatsWebPortalUI.conf.PW);
+
+			Statement stmt = conn.createStatement();
+
+			ResultSet rs = null;
+			int x = 0;
+			Object itemId;
+			Item trItem;
+			StringBuilder trxnsqld = new StringBuilder();
+
+			cD.setVisible(false);
+			bdAmt = new BigDecimal(0.00);
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+			trxnsqld.append(" SELECT txn.transactionid AS 'TransactionID', txn.lastupdate AS 'Timestamps','N/A' as 'Amount',txn.userresourceid as  ");
+			trxnsqld.append(" 'Sender','N/A' as 'Reciever','N/A' as 'Partner', txnt.name AS 'Transaction Type', txnst.transactionstatusname AS 'Status' ");
+			trxnsqld.append(" FROM transactions txn, transactionstatus txnst, transactiontypes txnt WHERE txn.transactionid = '"
+					+ tFTID.getValue() + "' ");
+			trxnsqld.append("  and txnst.transactionstatusid = txn.transactionstatusid ");
+			trxnsqld.append(" AND txnt.transactiontypeid = txn.transactiontypeid and txn.transactionid not in (select txn1.transactionid from  ");
+			trxnsqld.append(" accounttransactions txn1 group by txn1.transactionid) ");
+
+			trxnsqld.append(" UNION ");
+
+			trxnsqld.append("  SELECT txn.transactionid AS 'Transaction ID', txn.lastupdate AS 'Timestamps',(actxn.amount * -1) as 'Amount', ");
+			trxnsqld.append(" txn.userresourceid as 'Sender',acth.username as 'Reciever', 'N/A' as 'Partner', txnt.name AS 'Transaction Type',  ");
+			trxnsqld.append(" txnst.transactionstatusname AS 'Status' FROM transactions txn,  ");
+			trxnsqld.append("  transactionstatus txnst, transactiontypes txnt,accounttransactions actxn join accountholders acth on acth.accountholderid = actxn.userresourceid  ");
+			trxnsqld.append("  WHERE txn.transactionid = '" + tFTID.getValue()
+					+ "' and txnst.transactionstatusid  ");
+			trxnsqld.append("  = txn.transactionstatusid AND txnt.transactiontypeid = txn.transactiontypeid and  ");
+			trxnsqld.append("  actxn.transactionid = txn.transactionid and txnt.name = 'DEPOSIT' AND txn.transactionid not in (SELECT txn.transactionid FROM transactions txn,  ");
+			trxnsqld.append("  transactionstatus txnst, transactiontypes txnt,accounttransactions actxn join accountholders acth on acth.accountholderid = actxn.userresourceid  ");
+			trxnsqld.append("  WHERE txnst.transactionstatusid = txn.transactionstatusid AND txnt.transactiontypeid = txn.transactiontypeid and  ");
+			trxnsqld.append("  acth.profileid <> 14 and actxn.transactionid = txn.transactionid and txnt.name = 'DEPOSIT' group by actxn.transactionid) group by actxn.transactionid ");
+
+			trxnsqld.append("  UNION ");
+
+			trxnsqld.append("  SELECT txn.transactionid AS 'Transaction ID', txn.lastupdate AS 'Timestamps',actxn.amount as 'Amount', ");
+			trxnsqld.append("  txn.userresourceid as 'Sender',acth.username as 'Reciever','N/A' as 'Partner', txnt.name AS 'Transaction Type',  ");
+			trxnsqld.append(" txnst.transactionstatusname AS 'Status' FROM transactions txn,  ");
+			trxnsqld.append(" transactionstatus txnst, transactiontypes txnt,accounttransactions actxn join accountholders acth on acth.accountholderid = actxn.userresourceid  ");
+			trxnsqld.append("  WHERE txn.transactionid = '" + tFTID.getValue()
+					+ "' and txnst.transactionstatusid  ");
+			trxnsqld.append("  = txn.transactionstatusid AND txnt.transactiontypeid = txn.transactiontypeid and  ");
+			trxnsqld.append("   acth.profileid <> 14 and actxn.transactionid = txn.transactionid and txnt.name = 'DEPOSIT' group by actxn.transactionid ");
+
+			trxnsqld.append(" UNION ");
+
+			trxnsqld.append(" SELECT txn.transactionid AS 'TransactionID', txn.lastupdate AS 'Timestamps',(actxn.amount * -1) as 'Amount', ");
+			trxnsqld.append(" txnvo.toreceivinguserresource as 'Sender', extpay.refrence1 as 'Reciever',extpay.resourceid as 'Partner', txnt.name AS 'Transaction Type',  ");
+			trxnsqld.append(" txnst.transactionstatusname AS 'Status' FROM transactions txn,transactionvalueoperations txnvo, ");
+			trxnsqld.append("  transactionstatus txnst, transactiontypes txnt,accounttransactions actxn,externalpaymentreference extpay WHERE  ");
+			trxnsqld.append("  txn.transactionid = '" + tFTID.getValue()
+					+ "' and txnst.transactionstatusid = ");
+			trxnsqld.append(" txn.transactionstatusid AND txnt.transactiontypeid = txn.transactiontypeid and  ");
+			trxnsqld.append(" actxn.amount < 0 and actxn.transactionid = txn.transactionid and extpay.transactionid = txn.transactionid and txnvo.transactionid = txn.transactionid group by  ");
+			trxnsqld.append("  actxn.transactionid ");
+
+			trxnsqld.append("  UNION ");
+
+			trxnsqld.append(" (SELECT txn.transactionid AS 'TransactionID', txn.lastupdate AS 'Timestamps',(actxn.amount * -1) as 'Amount', ");
+			trxnsqld.append(" 'N/A' as 'Sender','N/A' as 'Reciever',txn.userresourceid as 'Partner', txnt.name AS 'Transaction Type',  ");
+			trxnsqld.append(" txnst.transactionstatusname AS 'Status' FROM transactions txn, ");
+			trxnsqld.append(" transactionstatus txnst, transactiontypes txnt,accounttransactions actxn WHERE txn.transactionid = '"
+					+ tFTID.getValue() + "' and ");
+			trxnsqld.append("  txnst.transactionstatusid = txn.transactionstatusid AND txnt.transactiontypeid = txn.transactiontypeid and ");
+			trxnsqld.append("  actxn.amount < 0 and actxn.transactionid = txn.transactionid and txnt.name <> 'DEPOSIT' and txn.transactionid ");
+			trxnsqld.append(" not in (select extpay.transactionid from ");
+			trxnsqld.append(" externalpaymentreference extpay group by extpay.transactionid) group by txn.transactionid) ");
+			trxnsqld.append("  ORDER BY TransactionID,Timestamps;");
+
+			rs = stmt.executeQuery(trxnsqld.toString());
+
+			while (rs.next()) {
+				x = x + 1;
+
+				String transactiontype = rs.getString("Transaction Type");
+				// String amount = rs.getString("Amount");
+				Date date = rs.getDate("Timestamps");
+				String d = sdf.format(date);
+				String transactionID = rs.getString("TransactionID");
+				String sender = rs.getString("Sender");
+				String status = rs.getString("Status");
+				String amount = rs.getString("Amount");
+				String receiver = rs.getString("Reciever");
+				String partner = rs.getString("Partner");
+
+				itemId = container2.addItem();
+
+				trItem = container2.getItem(itemId);
+
+				Property<String> tdPropertyserial = trItem
+						.getItemProperty("S/N");
+
+				Property<String> tdPropertytransactiondate = trItem
+						.getItemProperty("Date");
+				Property<String> tdPropertytransactionid = trItem
+						.getItemProperty("Transaction ID");
+				Property<String> tdPropertyamount = trItem
+						.getItemProperty("Amount (\u20A6)");
+
+				Property<String> tdPropertyreceiver = trItem
+						.getItemProperty("Receiver");
+				Property<String> tdPropertytransactiontype = trItem
+						.getItemProperty("Transaction Type");
+				// Property<String> tdPropertyamount = trItem
+				// .getItemProperty("Amount (\u20A6)");
+				Property<String> tdPropertysender = trItem
+						.getItemProperty("Agent/Sender");
+				// Property<String> tdPropertysenderonbehalfof = trItem
+				// .getItemProperty("Sent_on_behalf_of");
+
+				// Property<String> tdPropertyreceiver = trItem
+				// .getItemProperty("Receiver");
+				// Property<String> tdPropertyreceiveronbehalfof = trItem
+				// .getItemProperty("Received_on_behalf_of");
+				Property<String> tdPropertystatus = trItem
+						.getItemProperty("Status");
+				Property<String> tdPropertypartner = trItem
+						.getItemProperty("Partner");
+
+				try {
+					Double dn = Double.valueOf(amount);
+					bdAmt = BigDecimal.valueOf(dn + bdAmt.doubleValue());
+				} catch (Exception e) {
+
+				}
+
+				tdPropertyserial.setValue(String.valueOf(x));
+				tdPropertytransactionid.setValue(transactionID);
+				tdPropertytransactiondate.setValue(d);
+				tdPropertytransactiontype.setValue(transactiontype);
+				// tdPropertyamount.setValue(amount);
+				tdPropertysender.setValue(sender);
+				tdPropertyamount.setValue(amount);
+				tdPropertyreceiver.setValue(receiver);
+
+				tdPropertystatus.setValue(status);
+				tdPropertypartner.setValue(partner);
+
+			}
+
+			conn.close();
+
+			if (x > 30) {
+				x = 30;
+			}
+
+			table.setPageLength(x);
+			table.setSelectable(true);
+			table.setContainerDataSource(container2);
+			cByAndVal.setVisible(false);
+
+			lbSizeTop.setValue("Total of: " + x + " result(s).");
+			lbSizeBottom.setValue("Total of: " + x + " result(s).");
+			lbSizeTop.setVisible(true);
+			lbSizeBottom.setVisible(true);
+
+			lbAmountTop.setValue("Total Amount: "
+					+ nf.format(bdAmt.doubleValue()));
+			lbAmountBottom.setValue("Total Amount: "
+					+ nf.format(bdAmt.doubleValue()));
+			lbAmountTop.setVisible(true);
+			lbAmountBottom.setVisible(true);
+
+			btnReload.setVisible(true);
+
+		} catch (SQLException | ClassNotFoundException | InstantiationException
+				| IllegalAccessException | NullPointerException e) {
+			errorHandler(e);
+		}
 
 	}
 
@@ -692,6 +1026,7 @@ public class Reportform extends VerticalLayout {
 
 	@SuppressWarnings("unchecked")
 	private void loadData(Object ft, Object dat, Object dat2) {
+
 		if (searchform != null)
 			searchform.removeAllComponents();
 		if (ft == null)
@@ -710,6 +1045,7 @@ public class Reportform extends VerticalLayout {
 
 		String d1 = ((dat == null) ? curd : sdf.format(dat));
 		String d2 = ((dat == null) ? curd : sdf.format(dat2));
+		cByAndVal.setVisible(true);
 
 		minD = (Date) dat;
 		maxD = (Date) dat2;
