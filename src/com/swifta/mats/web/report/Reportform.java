@@ -33,6 +33,7 @@ import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.Validator;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.data.util.filter.And;
+import com.vaadin.data.util.filter.Compare.Equal;
 import com.vaadin.data.util.filter.Compare.GreaterOrEqual;
 import com.vaadin.data.util.filter.Compare.LessOrEqual;
 import com.vaadin.data.util.filter.SimpleStringFilter;
@@ -296,6 +297,7 @@ public class Reportform extends VerticalLayout {
 					getTByID();
 					return;
 				}
+
 				if (isReportTypeChanged) {
 					dat.setValue(Calendar.getInstance().getTime());
 					dat2.setValue(Calendar.getInstance().getTime());
@@ -319,6 +321,7 @@ public class Reportform extends VerticalLayout {
 
 			@Override
 			public void valueChange(ValueChangeEvent event) {
+
 				dat.setComponentError(null);
 				dat2.setComponentError(null);
 				Date d = null;
@@ -663,8 +666,7 @@ public class Reportform extends VerticalLayout {
 		if (incurtable) {
 
 			ds.removeAllContainerFilters();
-			Filter f = new SimpleStringFilter("Transaction ID",
-					tFTID.getValue(), false, false);
+			Filter f = new Equal("Transaction ID", tFTID.getValue());
 			ds.addContainerFilter(f);
 			int t = ds.size();
 			if (t > 0) {
@@ -713,6 +715,8 @@ public class Reportform extends VerticalLayout {
 		table.setCaption((ds.size() == 0) ? "No such transaction with ID: "
 				+ tFTID.getValue() : "Transaction of ID: " + tFTID.getValue());
 		tFTID.setValue("");
+		Date d = null;
+		dat2.setValue(d);
 
 	}
 
