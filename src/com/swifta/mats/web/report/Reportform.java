@@ -113,6 +113,9 @@ public class Reportform extends VerticalLayout {
 	private DecimalFormatSymbols dfs;
 	private HorizontalLayout cByTID;
 	private boolean isTIDChanged = false;
+	private boolean isTransactionReport = false;
+	private Filter fByID;
+	private boolean isFilterByID = false;
 
 	private TextField tFTID;
 
@@ -304,6 +307,23 @@ public class Reportform extends VerticalLayout {
 					return;
 				}
 
+				if (isFilterByID) {
+
+					isFilterByID = false;
+					if (ds == null)
+						return;
+					ds.removeContainerFilter(fByID);
+					if (isFirstCriteriaChanged) {
+						refine();
+						isFirstCriteriaChanged = false;
+						return;
+					}
+					int t = ds.size();
+					modifyDataSource(t);
+					return;
+
+				}
+
 				if (dat2.getValue() == null) {
 					dat2.setValue(Calendar.getInstance().getTime());
 					return;
@@ -378,8 +398,16 @@ public class Reportform extends VerticalLayout {
 				if (reportType.getValue().toString()
 						.equals("Transaction Report"))
 					cByTID.setVisible(true);
+
 				else
 					cByTID.setVisible(false);
+
+				if (table.getCaption() != null
+						&& table.getCaption().equals(
+								reportType.getValue().toString()))
+					cByAndVal.setVisible(true);
+				else
+					cByAndVal.setVisible(false);
 				isReportTypeChanged = true;
 
 			}
@@ -655,7 +683,6 @@ public class Reportform extends VerticalLayout {
 
 	}
 
-	@SuppressWarnings("unchecked")
 	private void getTByID() {
 
 		boolean incurtable = table.getCaption() != null
@@ -666,43 +693,13 @@ public class Reportform extends VerticalLayout {
 		if (incurtable) {
 
 			ds.removeAllContainerFilters();
-			Filter f = new Equal("Transaction ID", tFTID.getValue());
-			ds.addContainerFilter(f);
+			fByID = new Equal("Transaction ID", tFTID.getValue());
+			ds.addContainerFilter(fByID);
 			int t = ds.size();
 			if (t > 0) {
-				table.setContainerDataSource(ds);
-				table.setPageLength(t);
+				isFilterByID = true;
+				modifyDataSource(t);
 
-				Iterator<Collection<?>> itr = (Iterator<Collection<?>>) table
-						.getItemIds().iterator();
-				int i = 0;
-
-				bdAmt = new BigDecimal(0.00);
-				while (itr.hasNext()) {
-					i++;
-					Object itemid = itr.next();
-					Item item = table.getItem(itemid);
-					Property<String> p = item.getItemProperty("S/N");
-					p.setValue(i + "");
-
-					try {
-						Double nd = Double.valueOf(item
-								.getItemProperty("Amount (\u20A6)").getValue()
-								.toString());
-						bdAmt = BigDecimal.valueOf(bdAmt.doubleValue() + nd);
-					} catch (Exception en) {
-
-					}
-
-				}
-
-				lbSizeTop.setValue("Total of: " + t + " result(s).");
-				lbSizeBottom.setValue("Total of: " + t + " result(s).");
-
-				lbAmountTop.setValue("Total Amount: "
-						+ nf.format(bdAmt.doubleValue()));
-				lbAmountBottom.setValue("Total Amount: "
-						+ nf.format(bdAmt.doubleValue()));
 			} else {
 				loadTByID();
 
@@ -715,14 +712,13 @@ public class Reportform extends VerticalLayout {
 		table.setCaption((ds.size() == 0) ? "No such transaction with ID: "
 				+ tFTID.getValue() : "Transaction of ID: " + tFTID.getValue());
 		tFTID.setValue("");
-		Date d = null;
-		dat2.setValue(d);
 
 	}
 
 	@SuppressWarnings("unchecked")
 	private void loadTByID() {
-
+		isTransactionReport = true;
+		isReportTypeChanged = true;
 		IndexedContainer container2 = new IndexedContainer();
 		container2.addContainerProperty("S/N", String.class, "");
 		container2.addContainerProperty("Transaction ID", String.class, "");
@@ -1031,6 +1027,8 @@ public class Reportform extends VerticalLayout {
 	@SuppressWarnings("unchecked")
 	private void loadData(Object ft, Object dat, Object dat2) {
 
+		isTransactionReport = false;
+
 		if (searchform != null)
 			searchform.removeAllComponents();
 		if (ft == null)
@@ -1228,6 +1226,8 @@ public class Reportform extends VerticalLayout {
 			}
 
 		} else if (selectedId.equalsIgnoreCase("Transaction Report")) {
+
+			isTransactionReport = true;
 
 			IndexedContainer container2 = new IndexedContainer();
 			container2.addContainerProperty("S/N", String.class, "");
@@ -1973,10 +1973,7 @@ public class Reportform extends VerticalLayout {
 
 	@SuppressWarnings("unchecked")
 	private void showDetailsPop(Item row) {
-		if (table.getCaption() == null)
-			return;
-
-		if (!table.getCaption().equals("Transaction Report"))
+		if (!isTransactionReport)
 			return;
 
 		table.setSelectable(false);
@@ -2187,5 +2184,41 @@ public class Reportform extends VerticalLayout {
 				Notification.Type.WARNING_MESSAGE);
 		e.printStackTrace();
 
+	}
+
+	@SuppressWarnings("unchecked")
+	private void modifyDataSource(int t) {
+		table.setContainerDataSource(ds);
+		table.setPageLength(t);
+
+		Iterator<Collection<?>> itr = (Iterator<Collection<?>>) table
+				.getItemIds().iterator();
+		int i = 0;
+
+		bdAmt = new BigDecimal(0.00);
+		while (itr.hasNext()) {
+			i++;
+			Object itemid = itr.next();
+			Item item = table.getItem(itemid);
+			Property<String> p = item.getItemProperty("S/N");
+			p.setValue(i + "");
+
+			try {
+				Double nd = Double.valueOf(item
+						.getItemProperty("Amount (\u20A6)").getValue()
+						.toString());
+				bdAmt = BigDecimal.valueOf(bdAmt.doubleValue() + nd);
+			} catch (Exception en) {
+
+			}
+
+		}
+
+		lbSizeTop.setValue("Total of: " + t + " result(s).");
+		lbSizeBottom.setValue("Total of: " + t + " result(s).");
+
+		lbAmountTop.setValue("Total Amount: " + nf.format(bdAmt.doubleValue()));
+		lbAmountBottom.setValue("Total Amount: "
+				+ nf.format(bdAmt.doubleValue()));
 	}
 }

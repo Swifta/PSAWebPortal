@@ -22,7 +22,7 @@ public class ProfileView extends VerticalLayout implements View {
 	String dCat;
 	private TabSheet ts;
 	private VerticalLayout tab = null;
-	String id = null;
+	private String id = null;
 
 	public ProfileView(TabSheet ts) {
 
