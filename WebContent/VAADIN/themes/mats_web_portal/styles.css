@@ -1486,6 +1486,14 @@ div.v-layout.v-horizontal.v-widget {
 	font-weight: 300;
 }
 
+.lb_off {
+	margin-top: 22px;
+}
+
+.btn_offset {
+	margin-top: -60px !important;
+}
+
 .mats_web_portal.v-app, .mats_web_portal.v-app-loading {
 	font: 300 16px/1.55 "Open Sans", sans-serif;
 	color: #464646;

@@ -15,7 +15,7 @@ public class WorkSpaceManageFeesAndComm {
 	private VerticalLayout cMenu;
 	private HorizontalLayout cContent;
 	public FeesAndCommModule apm;
-	VerticalLayout cC;
+	private VerticalLayout cC;
 	public static ArrayList<String> prevSearchFrag = new ArrayList<>();
 
 	public WorkSpaceManageFeesAndComm() {
@@ -25,9 +25,6 @@ public class WorkSpaceManageFeesAndComm {
 				.addUriFragmentChangedListener(
 						new Page.UriFragmentChangedListener() {
 
-							/**
-					 * 
-					 */
 							private static final long serialVersionUID = 5491313193057079077L;
 
 							@Override

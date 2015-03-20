@@ -37,11 +37,29 @@ public class UserDetailsBackEnd {
 					MatsWebPortalUI.conf.DB, MatsWebPortalUI.conf.UN,
 					MatsWebPortalUI.conf.PW);
 
-			String sql = "SELECT  acth.username AS un, acth.msisdn AS msisdn, acth.email AS email, acthd.gender AS gender, acthd.occupation AS occupation, acthd.employer AS employer, CAST(acthd.dateofbirth as DATE) AS dateofbirth, pf.profilename AS prof, acths.accountholderstatusname AS status, acthd.firstname AS fn, acthd.lastname AS ln, c.countryname AS country, cs.state AS state, csl.lganame AS lg, idtype.identificationdescr AS idtype, id.identificationnumber AS id, ad.streetaddress AS street, id.isssuer as issuer, CAST(id.issuedate as DATE) as issuedate, CAST(id.expirydate as DATE) as expirydate,  pc.name as primarycontactname, pc.mobilenumber as primarymobilenumber,  pc.phonenumber as primaryphonenumber, sc.name as secondarycontactname, sc.mobilenumber as secondarymobilenumber,  sc.phonenumber as secondaryphonenumber FROM accountholders acth, accountholderdetails acthd, accountholderstatus acths, identificationattribute id, address ad,  profiles pf, identificationtypes idtype, country c, countrystate cs, countrystatelga csl,  primarycontactinfo pc, secondarycontactinfo sc  WHERE acth.accountholderdetailid = acthd.accountdetailsid AND acth.accountholderstatusid = acths.accountholderstatusid AND acthd.identificationid = id.identificationattrid AND acthd.addressid = ad.addressid AND pf.profileid = acth.profileid AND id.identificationtypeid = idtype.identificationtypeid AND acthd.countryid = c.countryid AND acthd.countrystateid = cs.countrystateid AND acthd.countrystatelgaid = csl.countrystatelgaid AND acthd.primarycontactinfoid = pc.primarycontactinfoid  AND acthd.secondarycontactinfoid = sc.secondarycontactinfoid AND pf.profiletypeid = 1  AND acth.username = '"
-					+ strUID + "';";
+			StringBuilder sb = new StringBuilder();
+
+			sb.append(" SELECT  acth.username AS un, acth.msisdn AS msisdn, acth.email AS email, acthd.gender AS gender, acthd.occupation AS occupation, ");
+			sb.append(" acthd.employer AS employer, CAST(acthd.dateofbirth as DATE) AS dateofbirth, pf.profilename AS prof, acths.accountholderstatusname  ");
+			sb.append(" AS status, acthd.firstname AS fn, acthd.lastname AS ln, c.countryname AS country, cs.state AS state, csl.lganame AS lg,  ");
+			sb.append(" idtype.identificationdescr AS idtype, id.identificationnumber AS id, ad.streetaddress AS street, id.isssuer as issuer, CAST(id.issuedate as  ");
+			sb.append(" DATE) as issuedate, CAST(id.expirydate as DATE) as expirydate,  pc.name as primarycontactname, pc.mobilenumber as primarymobilenumber,   ");
+			sb.append(" pc.phonenumber as primaryphonenumber, sc.name as secondarycontactname, sc.mobilenumber as secondarymobilenumber,  sc.phonenumber as  ");
+			sb.append(" secondaryphonenumber, addy.province as province, addy.postalCode as postalcode, addy.city as city FROM accountholders acth, accountholderdetails acthd, accountholderstatus acths, identificationattribute id, address ad, ");
+			sb.append("   profiles pf, identificationtypes idtype, country c, countrystate cs, countrystatelga csl,  primarycontactinfo pc, secondarycontactinfo sc, ");
+			sb.append("  address addy WHERE acth.accountholderdetailid = acthd.accountdetailsid AND acth.accountholderstatusid = acths.accountholderstatusid AND  ");
+			sb.append("  acthd.identificationid = id.identificationattrid AND acthd.addressid = ad.addressid AND pf.profileid = acth.profileid AND  ");
+			sb.append("  id.identificationtypeid = idtype.identificationtypeid AND acthd.countryid = c.countryid AND acthd.countrystateid = cs.countrystateid AND  ");
+			sb.append("   acthd.countrystatelgaid = csl.countrystatelgaid AND acthd.primarycontactinfoid = pc.primarycontactinfoid  AND acthd.secondarycontactinfoid ");
+			sb.append("   = sc.secondarycontactinfoid AND pf.profiletypeid = 1 and addy.addressid = acthd.addressid AND acth.username = '"
+					+ strUID + "'; ");
+
+			// String sql =
+			// "SELECT  acth.username AS un, acth.msisdn AS msisdn, acth.email AS email, acthd.gender AS gender, acthd.occupation AS occupation, acthd.employer AS employer, CAST(acthd.dateofbirth as DATE) AS dateofbirth, pf.profilename AS prof, acths.accountholderstatusname AS status, acthd.firstname AS fn, acthd.lastname AS ln, c.countryname AS country, cs.state AS state, csl.lganame AS lg, idtype.identificationdescr AS idtype, id.identificationnumber AS id, ad.streetaddress AS street, id.isssuer as issuer, CAST(id.issuedate as DATE) as issuedate, CAST(id.expirydate as DATE) as expirydate,  pc.name as primarycontactname, pc.mobilenumber as primarymobilenumber,  pc.phonenumber as primaryphonenumber, sc.name as secondarycontactname, sc.mobilenumber as secondarymobilenumber,  sc.phonenumber as secondaryphonenumber FROM accountholders acth, accountholderdetails acthd, accountholderstatus acths, identificationattribute id, address ad,  profiles pf, identificationtypes idtype, country c, countrystate cs, countrystatelga csl,  primarycontactinfo pc, secondarycontactinfo sc  WHERE acth.accountholderdetailid = acthd.accountdetailsid AND acth.accountholderstatusid = acths.accountholderstatusid AND acthd.identificationid = id.identificationattrid AND acthd.addressid = ad.addressid AND pf.profileid = acth.profileid AND id.identificationtypeid = idtype.identificationtypeid AND acthd.countryid = c.countryid AND acthd.countrystateid = cs.countrystateid AND acthd.countrystatelgaid = csl.countrystatelgaid AND acthd.primarycontactinfoid = pc.primarycontactinfoid  AND acthd.secondarycontactinfoid = sc.secondarycontactinfoid AND pf.profiletypeid = 1  AND acth.username = '"
+			// + strUID + "';";
 			Statement stmt = conn.createStatement();
 
-			ResultSet rs = stmt.executeQuery(sql);
+			ResultSet rs = stmt.executeQuery(sb.toString());
 			Calendar cal = Calendar.getInstance();
 			Date dob = null;
 			String sdob = null;
@@ -60,10 +78,11 @@ public class UserDetailsBackEnd {
 
 				cal.clear();
 				dob = rs.getDate("issuedate");
+				Date d = null;
 
 				if (dob != null) {
 
-					cal.setTime((dob != null) ? dob : new Date(null));
+					cal.setTime((dob != null) ? dob : d);
 					sdoi = cal.get(Calendar.DATE) + "/"
 							+ cal.get(Calendar.MONTH) + "/"
 							+ cal.get(Calendar.YEAR);
@@ -101,6 +120,9 @@ public class UserDetailsBackEnd {
 				hm.put("Country", rs.getString("country"));
 				hm.put("State", rs.getString("state"));
 				hm.put("Local Government", rs.getString("lg"));
+				hm.put("City", rs.getString("city"));
+				hm.put("Province", rs.getString("province"));
+				hm.put("Postal Code", rs.getString("postalcode"));
 				hm.put("MSISDN", rs.getString("msisdn"));
 				hm.put("Email", rs.getString("email"));
 				hm.put("Full Name",
@@ -118,5 +140,4 @@ public class UserDetailsBackEnd {
 
 		return hm;
 	}
-
 }

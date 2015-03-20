@@ -135,29 +135,10 @@ public class UserDetailsModule {
 		cUPersonalDetails.setSizeUndefined();
 		cDetailsAndOperations.addComponent(cUPersonalDetails);
 
-		/*
-		 * TODO Do not Delete brother.
-		 * 
-		 * cUDetails = new VerticalLayout(); cUDetails.setMargin(new
-		 * MarginInfo(false, true, true, true));
-		 * 
-		 * cUDetails.setStyleName("c_u_details"); cUDetails.setSizeUndefined();
-		 * cUDetails.addComponent(new Label(" NO Data Available!"));
-		 * 
-		 * cUPersonalDetails.addComponent(cUDetails); uDetailsEditStatus =
-		 * false;
-		 */
-
 		arrLAllFormFields = new ArrayList<Object>();
 
 		final String btnEditId = "edit";
-
-		// Holders of editable form components
-
 		arrLAllEditableFields = new ArrayList<Object>();
-
-		// Holders of editable form components original values to be
-		// used for undoing/resetting the form.
 		arrLTfEditableVals = new ArrayList<String>();
 
 		final Button btnEdit = new Button();
@@ -669,25 +650,28 @@ public class UserDetailsModule {
 		lbC.setCaption("Physical Address");
 		lbC.setStyleName("label_search_user lb_frm_add_user u_d_t");
 		physicalC.addComponent(lbC);
-		StringBuilder sbAddr = new StringBuilder(hm.get("Street"));
-		String strp = hm.get("Postal Code");
-		sbAddr.append((strp == null || strp.trim().isEmpty()) ? "" : ", \n"
-				+ strp);
-		strp = hm.get("Province");
-		sbAddr.append((strp == null || strp.trim().isEmpty()) ? "" : ", \n"
-				+ strp);
+		StringBuilder sbAddr = new StringBuilder();
 
-		strp = hm.get("City");
-		sbAddr.append((strp == null || strp.trim().isEmpty()) ? "" : ", "
-				+ strp);
+		String strp = hm.get("Postal Code");
+		sbAddr.append((strp == null || strp.trim().isEmpty()) ? "" : "P.O.Box "
+				+ strp + ", ");
+		strp = hm.get("Street");
+		sbAddr.append((strp == null || strp.trim().isEmpty()) ? "" : strp
+				+ ", ");
+		strp = hm.get("Province");
+		sbAddr.append((strp == null || strp.trim().isEmpty()) ? "" : strp
+				+ ", ");
+
+		strp = hm.get("State");
+		sbAddr.append((strp == null || strp.trim().isEmpty()) ? "" : strp
+				+ ", ");
 
 		strp = hm.get("Country");
-		sbAddr.append((strp == null || strp.trim().isEmpty()) ? "" : ", "
-				+ strp);
+		sbAddr.append((strp == null || strp.trim().isEmpty()) ? "." : strp);
 
 		Label lb = new Label();
-		lb.setContentMode(ContentMode.HTML);
-		lb.setImmediate(true);
+		lbC.setContentMode(ContentMode.HTML);
+
 		lb.setStyleName("label_ud");
 		lb.setCaption(sbAddr.toString());
 
@@ -1878,10 +1862,6 @@ public class UserDetailsModule {
 		lb.setStyleName("label_ud");
 		lb.setCaption(cap + ": ");
 		lb.setValue(val);
-		// lb.setContentMode(ContentMode.HTML);
-		// lb.setValue("<span class = 'label_cap_custom_ud'> " + cap
-		// + ":  </span>" + "<div class = 'label_val_custom_ud'>" + val
-		// + "</div>");
 		if (container instanceof HorizontalLayout) {
 			((HorizontalLayout) container).addComponent(lb);
 		} else if (container instanceof FormLayout) {
