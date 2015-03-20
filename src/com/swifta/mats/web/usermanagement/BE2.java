@@ -1236,6 +1236,7 @@ public class BE2 {
 		// actionsC.addComponent(btnSetParent);
 		actionsC.addComponent(btnSetDefaultAcc);
 		actionsC.addComponent(btnLink);
+		actionsC.addComponent(btnLock);
 		if (MatsWebPortalUI.conf.env.equals("testing"))
 			actionsC.addComponent(btnLock);
 		actionsC.addComponent(btnDetails);
