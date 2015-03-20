@@ -1062,8 +1062,9 @@ public class Reportform extends VerticalLayout {
 			container.addContainerProperty("Agent ID", String.class, "");
 			container.addContainerProperty("Dealer ID", String.class, "");
 			container.addContainerProperty("Full Name", String.class, "");
-			container.addContainerProperty("Province", String.class, "");
-			container.addContainerProperty("City", String.class, "");
+			container.addContainerProperty("Zone", String.class, "");
+			container.addContainerProperty("Sales Area", String.class, "");
+			container.addContainerProperty("Territory", String.class, "");
 			container.addContainerProperty("Amount (\u20A6)", String.class, "");
 
 			bdAmt = new BigDecimal(0.00);
@@ -1143,10 +1144,12 @@ public class Reportform extends VerticalLayout {
 							.getItemProperty("Dealer ID");
 					Property<String> tdPropertyagentid = trItem
 							.getItemProperty("Agent ID");
+					Property<String> tdPropertyagentStreet = trItem
+							.getItemProperty("Zone");
 					Property<String> tdPropertyagentprovince = trItem
-							.getItemProperty("Province");
+							.getItemProperty("Sales Area");
 					Property<String> tdPropertycity = trItem
-							.getItemProperty("City");
+							.getItemProperty("Territory");
 					Property<String> tdPropertyevalueamount = trItem
 							.getItemProperty("Amount (\u20A6)");
 
@@ -1159,34 +1162,43 @@ public class Reportform extends VerticalLayout {
 					String did = rs.getString("did");
 					String amt = rs.getString("amount");
 					String fullname = rs.getString("fullname");
+					String street = rs.getString("street");
 					String province = rs.getString("province");
 					String city = rs.getString("city");
 
 					Date date = rs.getDate("datecreated");
 					String d = sdf.format(date);
 
-					if (!ht.containsKey("Dealer ID")) {
+					if (!ht.containsKey("Dealer")) {
 						TreeSet<String> arrL = new TreeSet<>();
 						arrL.add(did);
-						ht.put("Dealer ID", arrL);
+						ht.put("Dealer", arrL);
 					} else {
-						ht.get("Dealer ID").add(did);
+						ht.get("Dealer").add(did);
 					}
 
-					if (!ht.containsKey("Province")) {
+					if (!ht.containsKey("Zone")) {
+						TreeSet<String> arrL = new TreeSet<>();
+						arrL.add(street);
+						ht.put("Zone", arrL);
+					} else {
+						ht.get("Zone").add(street);
+					}
+
+					if (!ht.containsKey("Sales Area")) {
 						TreeSet<String> arrL = new TreeSet<>();
 						arrL.add(province);
-						ht.put("Province", arrL);
+						ht.put("Sales Area", arrL);
 					} else {
-						ht.get("Province").add(province);
+						ht.get("Sales Area").add(province);
 					}
 
-					if (!ht.containsKey("City")) {
+					if (!ht.containsKey("Territory")) {
 						TreeSet<String> arrL = new TreeSet<>();
 						arrL.add(city);
-						ht.put("City", arrL);
+						ht.put("Territory", arrL);
 					} else {
-						ht.get("City").add(city);
+						ht.get("Territory").add(city);
 					}
 					try {
 						Double dn = Double.valueOf(amt);
@@ -1201,6 +1213,7 @@ public class Reportform extends VerticalLayout {
 					tdPropertyevalueamount.setValue(amt);
 					tdPropertydate.setValue(d);
 					tdPropertyfullname.setValue(fullname);
+					tdPropertyagentStreet.setValue(street);
 					tdPropertyagentprovince.setValue(province);
 					tdPropertycity.setValue(city);
 
