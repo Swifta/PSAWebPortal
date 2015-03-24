@@ -1280,6 +1280,7 @@ public class AddUserModule {
 		tFSEmail.setComponentError(null);
 		tFPostalCode.setComponentError(null);
 		tFMN.setValue("");
+
 		clearFields();
 
 	}

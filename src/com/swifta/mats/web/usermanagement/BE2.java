@@ -1903,10 +1903,11 @@ public class BE2 {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				Collection<Filter> fs = container.getContainerFilters();
+				container.removeAllContainerFilters();
 				getDBData();
 
 				for (Filter f : fs) {
-					container.addContainerFilter(f);
+					// container.addContainerFilter(f);
 				}
 				tb.setContainerDataSource(container);
 				int x = container.size();

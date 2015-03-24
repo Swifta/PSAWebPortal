@@ -57,7 +57,7 @@ public class Login extends VerticalLayout implements View {
 		VerticalLayout logoContainer = new VerticalLayout();
 		logoContainer.setSizeUndefined();
 		logoContainer.setStyleName("logo_and_slogan_container");
-		ThemeResource rLogo = new ThemeResource("img/logon.png");
+		ThemeResource rLogo = new ThemeResource("img/logo.png");
 		Embedded emb = new Embedded(null, rLogo);
 		emb.setDescription("MATS Logo");
 		logoContainer.addComponent(emb);

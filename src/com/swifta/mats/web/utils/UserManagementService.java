@@ -49,6 +49,11 @@ import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Setparen
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.SetparentaccountResponse;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.SetparentaccountResponseE;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Setparentrequestresponse;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.UnLinkaccountresponse;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Unlinkaccountrequest;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.UnlinkaccountrequestE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.UnlinkaccountrequestResponse;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.UnlinkaccountrequestResponseE;
 
 public class UserManagementService {
 
@@ -597,6 +602,48 @@ public class UserManagementService {
 		}
 		return statusMessage;
 
+	}
+
+	public String unlinkUser(String paraentaccountresourceid, String profileid,
+			String initiatinguserresourceid, String childuserresourceid)
+			throws RemoteException {
+		String statusMessage = "";
+		matsStub = new ProvisioningStub(esbendpoint);
+
+		UnlinkaccountrequestE unlinkaccountrequest = new UnlinkaccountrequestE();
+		Unlinkaccountrequest unlinkrequest = new Unlinkaccountrequest();
+		unlinkrequest.setChilduserresourceid(childuserresourceid);
+		unlinkrequest.setParaentaccountresourceid(paraentaccountresourceid);
+		unlinkrequest.setProfileid(profileid);
+		unlinkrequest.setInitiatinguserresourceid(paraentaccountresourceid);
+
+		unlinkaccountrequest.setUnlinkaccountrequest(unlinkrequest);
+
+		UnlinkaccountrequestResponseE response = matsStub
+				.unlinkaccountrequest(unlinkaccountrequest);
+
+		if (response != null) {
+			UnlinkaccountrequestResponse response2 = response
+					.getUnlinkaccountrequestResponse();
+			if (response2 != null) {
+				UnLinkaccountresponse response3 = response2.get_return();
+				if (response3 != null) {
+					statusMessage = response3.getResponsemessage();
+				}
+
+				else {
+					statusMessage = "Response3 is empty";
+				}
+
+			} else {
+				statusMessage = "unLink request Response is empty";
+			}
+
+		} else {
+			statusMessage = "unLink request Response is empty";
+		}
+
+		return statusMessage;
 	}
 
 }

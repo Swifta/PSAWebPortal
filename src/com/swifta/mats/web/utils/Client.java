@@ -17,7 +17,8 @@ public class Client {
 
 		// Client.authenticate();
 		// Client.authenticate();
-		Client.activate();
+		// Client.activate();
+		Client.linkuser();
 
 		// System.out.println(result);
 
@@ -198,10 +199,14 @@ public class Client {
 	public static void linkuser() throws RemoteException {
 		UserManagementService linkuser = new UserManagementService();
 
-		String parent = "166735";
+		// 166735
+		// 0000000000001
+		// 0909
+		// matsdealerone//100100
+		String parent = "100100";
 		String profileid = "8";
-		String initiatinguserresourceid = "backoffice";
-		String childuserresourceid = "oniru";
+		String initiatinguserresourceid = "admin";
+		String childuserresourceid = "matsagentone";
 
 		String ret = linkuser.linkUser(parent, profileid,
 				initiatinguserresourceid, childuserresourceid);
