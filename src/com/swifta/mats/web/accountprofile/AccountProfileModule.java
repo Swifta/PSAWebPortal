@@ -3,7 +3,6 @@ package com.swifta.mats.web.accountprofile;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Embedded;
@@ -11,6 +10,7 @@ import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.TextField;
@@ -26,6 +26,9 @@ public class AccountProfileModule {
 
 	public HorizontalLayout getProfileContainer() {
 
+		Panel p1 = new Panel();
+		Panel p2 = new Panel();
+
 		VerticalLayout addUserContainer = new VerticalLayout();
 		addUserContainer.setWidthUndefined();
 		addUserContainer.setWidthUndefined();
@@ -34,7 +37,7 @@ public class AccountProfileModule {
 		addUserForm.setSizeUndefined();
 		addUserForm.setSpacing(true);
 		addUserForm.setMargin(true);
-		addUserForm.setStyleName("frm_add_user");
+		addUserForm.setStyleName("frm_user_prof");
 
 		Embedded emb = new Embedded(null, new ThemeResource(
 				"img/add_user_small.png"));
@@ -47,12 +50,12 @@ public class AccountProfileModule {
 		// addUserHeader.setMargin(new MarginInfo(true, true, true, true));
 		addUserHeader.setSpacing(true);
 
-		addUserHeader.addComponent(emb);
-		addUserHeader.setComponentAlignment(emb, Alignment.TOP_RIGHT);
+		// addUserHeader.addComponent(emb);
+		// addUserHeader.setComponentAlignment(emb, Alignment.TOP_RIGHT);
 
 		addUserForm.addComponent(addUserHeader);
 		Label lbAddUser = new Label("Add New User...");
-		lbAddUser.setStyleName("label_add_user");
+		lbAddUser.setStyleName("label_user_profile");
 		lbAddUser.setSizeUndefined();
 
 		TextField tfFName = new TextField();
@@ -88,23 +91,36 @@ public class AccountProfileModule {
 		btnSave.setWidth("100%");
 		btnSave.setIcon(FontAwesome.SAVE);
 
-		addUserForm.addComponent(lbAddUser);
+		// HorizontalLayout ch = new HorizontalLayout();
+		VerticalLayout cC = new VerticalLayout();
+		cC.addComponent(lbAddUser);
+
+		// addUserForm.addComponent(lbAddUser);
 		addUserForm.addComponent(tfFName);
 		addUserForm.addComponent(tfLName);
 		addUserForm.addComponent(optSex);
 		addUserForm.addComponent(doc);
 		addUserForm.addComponent(comboAccountType);
-		addUserForm.addComponent(tfUName);
+		cC.addComponent(addUserForm);
+		// p1.setContent(addUserForm);
 
-		addUserForm.addComponent(tfPass);
-		addUserForm.addComponent(tfRePass);
-		addUserForm.addComponent(btnSave);
+		FormLayout vc = new FormLayout();
+		vc.addComponent(tfUName);
+		vc.addComponent(tfPass);
+		vc.addComponent(tfRePass);
+		vc.addComponent(btnSave);
 
-		addUserContainer.addComponent(addUserForm);
+		// p2.setContent(vc);
+
+		addUserContainer.addComponent(cC);
+		addUserContainer.addComponent(vc);
+
+		HorizontalLayout c = new HorizontalLayout();
+		c.addComponent(addUserContainer);
 
 		// udc = udm.getDetailsForm("personal", "001",false, false);
 
-		return udc;
+		return c;
 	}
 
 	public void apmModifier(String strTbName, HorizontalLayout cContent) {

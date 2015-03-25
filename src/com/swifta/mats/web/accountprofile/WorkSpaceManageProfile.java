@@ -46,9 +46,9 @@ public class WorkSpaceManageProfile {
 
 		ManageProfileModule mpm = new ManageProfileModule();
 		cMenu = mpm.getMenu();
-		cC.addComponent(cMenu);
-		cMenu.setSizeUndefined();
-		cC.setComponentAlignment(cMenu, Alignment.TOP_LEFT);
+		// cC.addComponent(cMenu);
+		// cMenu.setSizeUndefined();
+		// cC.setComponentAlignment(cMenu, Alignment.TOP_LEFT);
 
 		cC.addComponent(cContent);
 		cC.setExpandRatio(cContent, 1.0f);

@@ -8,21 +8,28 @@ import org.apache.axis2.AxisFault;
 public class Client {
 
 	public static void main(String args[]) throws Exception {
+		try {
 
-		// String result = Client.passreset();
+			// String result = Client.passreset();
 
-		// Client.passreset();
+			// Client.passreset();
 
-		// Client.unlockAccount();
+			// Client.unlockAccount();
 
-		// Client.authenticate();
-		// Client.authenticate();
-		// Client.activate();
-		Client.linkuser();
+			// Client.authenticate();
+			// Client.authenticate();
+			// Client.activate();
+			// Client.linkuser();
+			Client.unlinkuser();
 
-		// System.out.println(result);
+			// System.out.println(result);
 
-		// Client.sql();
+			// Client.sql();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+
+		}
 
 	}
 
@@ -206,12 +213,83 @@ public class Client {
 		String parent = "100100";
 		String profileid = "8";
 		String initiatinguserresourceid = "admin";
+		String childuserresourceid = "oniru";
+		String[] cred = { "readycash", "0000000000001", "fets", "00000012",
+				"fortis", "000001234", "Livepwndz", "001", "Livepwissndz",
+				"00173737", "Livepwndzzz", "001878787", "paulmugo", "0093939",
+				"teasymobile", "009878", "90oooio", "0909", "olumide",
+				"092302934", "onir", "0982273", "oniru", "09827273", "dare",
+				"09827273/09923823", "matsdealerone", "100100", "matsagentone",
+				"100101", "matsadminone", "100102", "systems", "123453",
+				"pocketmoni", "123456", "166735", "166735", "Livep", "2111",
+				"deejah", "6890", "kenza", "89989889", "comfy", "98989889",
+				"username", "98989898989", "kdkkdkd", "9d989d8989", "dealer2",
+				"dealer01", "jdjjd", "kdkjkdk", "ldkkdkldkld", "lkkl" };
+
+		for (int i = 0; i < cred.length; i++) {
+
+			for (int j = 0; j < cred.length; j++) {
+
+				childuserresourceid = cred[i];
+				String parentresourceid = cred[j];
+
+				String ret = "No response";
+				ret = linkuser.linkUser(parentresourceid, profileid,
+						initiatinguserresourceid, childuserresourceid);
+				System.out.println("Linking Child: " + childuserresourceid
+						+ " to Parent: " + parentresourceid);
+				System.out.println(ret);
+			}
+
+		}
+	}
+
+	public static void unlinkuser() throws RemoteException {
+		UserManagementService linkuser = new UserManagementService();
+
+		// 166735
+		// 0000000000001
+		// 0909
+		// matsdealerone//100100
+		String parent = "100100";
+		String profileid = "8";
+		String initiatinguserresourceid = "admin";
 		String childuserresourceid = "matsagentone";
 
-		String ret = linkuser.linkUser(parent, profileid,
-				initiatinguserresourceid, childuserresourceid);
+		parent = "166735";
+		profileid = "8";
+		initiatinguserresourceid = "backoffice";
+		childuserresourceid = "oniru";
 
-		System.out.println(ret);
+		String[] cred = { "readycash", "0000000000001", "fets", "00000012",
+				"fortis", "000001234", "Livepwndz", "001", "Livepwissndz",
+				"00173737", "Livepwndzzz", "001878787", "paulmugo", "0093939",
+				"teasymobile", "009878", "90oooio", "0909", "olumide",
+				"092302934", "onir", "0982273", "oniru", "09827273", "dare",
+				"09827273/09923823", "matsdealerone", "100100", "matsagentone",
+				"100101", "matsadminone", "100102", "systems", "123453",
+				"pocketmoni", "123456", "166735", "166735", "Livep", "2111",
+				"deejah", "6890", "kenza", "89989889", "comfy", "98989889",
+				"username", "98989898989", "kdkkdkd", "9d989d8989", "dealer2",
+				"dealer01", "jdjjd", "kdkjkdk", "ldkkdkldkld", "lkkl" };
+
+		for (int i = 0; i < cred.length; i++) {
+
+			for (int j = 0; j < cred.length; j++) {
+
+				childuserresourceid = cred[i];
+				String parentresourceid = cred[j];
+
+				String ret = "No response";
+				ret = linkuser.unlinkUser(parentresourceid, profileid,
+						initiatinguserresourceid, childuserresourceid);
+				System.out.println("Linking Child: " + childuserresourceid
+						+ " to Parent: " + parentresourceid);
+				System.out.println(ret);
+			}
+
+		}
+
 	}
 
 	public static void setdefault() throws RemoteException {

@@ -113,7 +113,7 @@ public class CommissionService {
 				.setServicefeemodel(ServiceFeeModelTypes.TIERED);
 		logger.info("--------------------------After service fee model "
 				+ "TIERED");
-		// setupservicefeesandcommission.setSpaccountholderid(mmoId);
+		setupservicefeesandcommission.setUserresourceid(mmoId);
 		logger.info("--------------------------After setting mmoId " + mmoId);
 		setupservicefeesandcommissionE
 				.setSetupservicefeesandcommission(setupservicefeesandcommission);
