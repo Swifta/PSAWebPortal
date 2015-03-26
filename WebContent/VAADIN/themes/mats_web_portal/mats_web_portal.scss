@@ -1223,10 +1223,64 @@ ul.empty li{
 .label_user_profile{
 	color: #197DE1;
 	padding: 10px;
-	background: #FFF;
+	//background: #FFF;
 	padding-bottom: 1px;
+	margin-top: 30px;
+	min-width: 100% !important;
+	border-bottom: 1px solid #197DE1;
+	
 }
 
+.sp_user_prof{
+	background: #000;
+	border: 1px solid #F00;
+	min-width: 100% !important;
+}
+
+
+
+
+
+.lb_tst{
+	//background: #000 !important;
+	padding-top: 5px !important;
+	padding-right: 20px !important;
+	margin: 0 !important
+}
+
+.label_user_profile_head{
+	color: #197DE1;
+	padding: 10px;
+	background: #FFF;
+	margin-top: 4px;
+}
+
+.c_edit_password{
+	margin-top:40px;
+	margin-bottom: 40px;
+	border-bottom: 1px solid #197DE1;
+	border-top: 1px solid #197DE1;
+	
+}
+
+.c_edit_pass_placeholder_visible{
+	display:block;
+}
+
+.c_edit_pass_placeholder_hidden{
+	display:none;
+}
+
+.c_edit_pass_btns{
+	margin-bottom: 4px;
+}
+
+.lb_edit_pass_error{
+	color: #F00;
+	//font-style: italic;
+	font-size: 12px;
+	background: #FFF;
+}
 
 	
 

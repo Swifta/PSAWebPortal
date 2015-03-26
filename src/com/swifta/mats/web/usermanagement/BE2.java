@@ -2083,6 +2083,7 @@ public class BE2 {
 					MatsWebPortalUI.conf.UN, MatsWebPortalUI.conf.PW);
 
 			String qx = "SELECT acth.username as un, acth.msisdn as msisdn, acth.email as email,pf.profilename as prof, acths.accountholderstatusname as status,acthd.firstname as fn ,acthd.lastname as ln,id.identificationnumber as id,ad.streetaddress as street from accountholders acth, accountholderdetails acthd, accountholderstatus acths, identificationattribute id, address ad, profiles pf where acth.accountholderdetailid = acthd.accountdetailsid and acth.accountholderstatusid = acths.accountholderstatusid and acthd.identificationid = id.identificationattrid and acthd.addressid = ad.addressid and pf.profileid = acth.profileid and pf.profiletypeid = 1;";
+			// System.out.println("Search users query: " + qx);
 
 			Statement stmt = conn.createStatement();
 

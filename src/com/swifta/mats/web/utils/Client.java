@@ -226,22 +226,27 @@ public class Client {
 				"username", "98989898989", "kdkkdkd", "9d989d8989", "dealer2",
 				"dealer01", "jdjjd", "kdkjkdk", "ldkkdkldkld", "lkkl" };
 
-		for (int i = 0; i < cred.length; i++) {
+		/*
+		 * for (int i = 0; i < cred.length; i++) {
+		 * 
+		 * for (int j = 0; j < cred.length; j++) {
+		 * 
+		 * childuserresourceid = cred[i]; String parentresourceid = cred[j];
+		 * 
+		 * String ret = "No response"; ret = linkuser.linkUser(parentresourceid,
+		 * profileid, initiatinguserresourceid, childuserresourceid);
+		 * System.out.println("Linking Child: " + childuserresourceid +
+		 * " to Parent: " + parentresourceid); System.out.println(ret); }
+		 * 
+		 * }
+		 */
 
-			for (int j = 0; j < cred.length; j++) {
-
-				childuserresourceid = cred[i];
-				String parentresourceid = cred[j];
-
-				String ret = "No response";
-				ret = linkuser.linkUser(parentresourceid, profileid,
-						initiatinguserresourceid, childuserresourceid);
-				System.out.println("Linking Child: " + childuserresourceid
-						+ " to Parent: " + parentresourceid);
-				System.out.println(ret);
-			}
-
-		}
+		String ret = "No response";
+		ret = linkuser.linkUser(parent, profileid, initiatinguserresourceid,
+				childuserresourceid);
+		System.out.println("Linking Child: " + childuserresourceid
+				+ " to Parent: " + parent);
+		System.out.println(ret);
 	}
 
 	public static void unlinkuser() throws RemoteException {
@@ -251,10 +256,10 @@ public class Client {
 		// 0000000000001
 		// 0909
 		// matsdealerone//100100
-		String parent = "100100";
+		String parent = "teasymobile";
 		String profileid = "8";
 		String initiatinguserresourceid = "admin";
-		String childuserresourceid = "matsagentone";
+		String childuserresourceid = "oniru";
 
 		parent = "166735";
 		profileid = "8";
@@ -273,22 +278,28 @@ public class Client {
 				"username", "98989898989", "kdkkdkd", "9d989d8989", "dealer2",
 				"dealer01", "jdjjd", "kdkjkdk", "ldkkdkldkld", "lkkl" };
 
-		for (int i = 0; i < cred.length; i++) {
+		/*
+		 * for (int i = 0; i < cred.length; i++) {
+		 * 
+		 * for (int j = 0; j < cred.length; j++) {
+		 * 
+		 * childuserresourceid = cred[i]; String parentresourceid = cred[j];
+		 * 
+		 * String ret = "No response"; ret =
+		 * linkuser.unlinkUser(parentresourceid, profileid,
+		 * initiatinguserresourceid, childuserresourceid);
+		 * System.out.println("Linking Child: " + childuserresourceid +
+		 * " to Parent: " + parentresourceid); System.out.println(ret); }
+		 * 
+		 * }
+		 */
 
-			for (int j = 0; j < cred.length; j++) {
-
-				childuserresourceid = cred[i];
-				String parentresourceid = cred[j];
-
-				String ret = "No response";
-				ret = linkuser.unlinkUser(parentresourceid, profileid,
-						initiatinguserresourceid, childuserresourceid);
-				System.out.println("Linking Child: " + childuserresourceid
-						+ " to Parent: " + parentresourceid);
-				System.out.println(ret);
-			}
-
-		}
+		String ret = "No response";
+		ret = linkuser.unlinkUser(parent, profileid, initiatinguserresourceid,
+				childuserresourceid);
+		System.out.println("UNLinking Child: " + childuserresourceid
+				+ " from Parent: " + parent);
+		System.out.println(ret);
 
 	}
 
