@@ -1,7 +1,10 @@
 package com.swifta.mats.web.accountprofile;
 
+import java.util.Map;
+
 import org.apache.axis2.AxisFault;
 
+import com.swifta.mats.web.usermanagement.UserDetailsBackEnd;
 import com.swifta.mats.web.utils.LoginService;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
@@ -23,13 +26,14 @@ import com.vaadin.ui.VerticalLayout;
 
 public class AccountProfileModule {
 	private HorizontalLayout udc;
-	private boolean issaving = false;
 
 	public AccountProfileModule() {
 
 	}
 
 	public HorizontalLayout getProfileContainer() {
+
+		Map<String, String> hm = getUD();
 
 		HorizontalLayout c = new HorizontalLayout();
 		VerticalLayout cC = new VerticalLayout();
@@ -166,8 +170,39 @@ public class AccountProfileModule {
 		// cEditPass.setSpacing(t);
 
 		Label lb = new Label();
-		lb.setCaption("Username: ");
-		lb.setValue("livepwndz");
+		// lb.setCaption("Username: ");
+		// lb.setValue("livepwndz");
+
+		/*
+		 * addDatum("Username", hm.get("Username"), cBasic); addDatum("Profile",
+		 * strProf, cBasic); addDatum("Account Status", hm.get("Status"),
+		 * cBasic); addDatum("First Name", hm.get("First Name"), cBasic);
+		 * 
+		 * tF = new TextField("Middle Name"); addDatum("Middle Name",
+		 * hm.get("Middle Name"), cBasic); addDatum("Last Name",
+		 * hm.get("Last Name"), cBasic); addDatum("Gender", hm.get("Gender"),
+		 * cBasic); addDatum("Occupation", hm.get("Occupation"), cBasic);
+		 * addDatum("Date of Birth", hm.get("Date of Birth"), cBasic);
+		 * addDatum("Country", hm.get("Country"), cBasic); addDatum("State",
+		 * hm.get("State"), cBasic); addDatum("Local Government",
+		 * hm.get("Local Government"), cBasic);
+		 * 
+		 * addDatum("ID Type", hm.get("ID Type"), cCompany); addDatum("ID No.",
+		 * hm.get("ID No."), cCompany); addDatum("Issuer", hm.get("Issuer"),
+		 * cCompany); addDatum("Issue Date", hm.get("Issue Date"), cCompany);
+		 * addDatum("Expiry Date", hm.get("Expiry Date"), cCompany);
+		 * 
+		 * addDatum("Mobile Phone No.", hm.get("P-Mobile Phone No."), pC);
+		 * addDatum("Alt. Phone No.", hm.get("P-Alt. Phone No."), pC);
+		 * addDatum("Email Address", hm.get("Email"), pC);
+		 * 
+		 * 
+		 * addDatum("Mobile Phone No.", hm.get("S-Mobile Phone No."), sC);
+		 * addDatum("Alt. Phone No.", hm.get("S-Alt. Phone No."), sC);
+		 * addDatum("Email Address", hm.get("Email"), sC);
+		 */
+
+		addDatum("Username", hm.get("Username"), cAcc);
 
 		Label lbPass = new Label();
 		lbPass.setSizeUndefined();
@@ -440,6 +475,32 @@ public class AccountProfileModule {
 		// udc = udm.getDetailsForm(strTbName, "001", false, false);
 		cContent.addComponent(udc);
 		return;
+
+	}
+
+	private Map<String, String> getUD() {
+		UserDetailsBackEnd udbe = new UserDetailsBackEnd();
+		return udbe.getUD(UI.getCurrent().getSession().getAttribute("user")
+				.toString());
+
+	}
+
+	private void addDatum(String cap, String val, Object container) {
+
+		Label lb = new Label();
+		lb.setImmediate(true);
+		lb.setStyleName("label_ud");
+		lb.setCaption(cap + ": ");
+		lb.setValue(val);
+		if (container instanceof HorizontalLayout) {
+			((HorizontalLayout) container).addComponent(lb);
+		} else if (container instanceof FormLayout) {
+			((FormLayout) container).addComponent(lb);
+			((FormLayout) container).setSpacing(false);
+		} else {
+			((VerticalLayout) container).addComponent(lb);
+			((VerticalLayout) container).setSpacing(false);
+		}
 
 	}
 }

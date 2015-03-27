@@ -2208,7 +2208,7 @@ public class UserDetailsModule {
 		sb.append(" and ah.accountholderdetailid = ahd.accountdetailsid ");
 		sb.append(" and pl.childuserresourceid = ah.accountholderid ");
 		sb.append(" and parentuserresourceid in (select accountholderid from accountholders ");
-		sb.append(" where (username = '166735'))");
+		sb.append(" where (username = '" + curUser + "'))");
 
 		String drivers = "com.mysql.jdbc.Driver";
 		try {

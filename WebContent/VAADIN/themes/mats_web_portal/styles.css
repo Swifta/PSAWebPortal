@@ -12719,3 +12719,19 @@ div.v-layout.v-horizontal.v-widget {
 .mats_web_portal .w_delete_user {
 	padding: 20px 20px 20px 20px;
 }
+
+
+
+.mats_web_portal .v-window-outerheader{
+	background: #55ACEE;
+}
+
+.mats_web_portal .v-window-header {
+	color: #FFF !important;
+}
+
+
+.mats_web_portal .v-window-closebox, .mats_web_portal .v-window-maximizebox, .mats_web_portal .v-window-restorebox {
+    background: none;
+    color: #FFF;
+}
