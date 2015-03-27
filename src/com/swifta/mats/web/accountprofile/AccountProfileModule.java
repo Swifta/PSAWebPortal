@@ -168,40 +168,6 @@ public class AccountProfileModule {
 		cEditPass.addComponent(cBtns);
 		cEditPass.setComponentAlignment(cBtns, Alignment.BOTTOM_RIGHT);
 		// cEditPass.setSpacing(t);
-
-		Label lb = new Label();
-		// lb.setCaption("Username: ");
-		// lb.setValue("livepwndz");
-
-		/*
-		 * addDatum("Username", hm.get("Username"), cBasic); addDatum("Profile",
-		 * strProf, cBasic); addDatum("Account Status", hm.get("Status"),
-		 * cBasic); addDatum("First Name", hm.get("First Name"), cBasic);
-		 * 
-		 * tF = new TextField("Middle Name"); addDatum("Middle Name",
-		 * hm.get("Middle Name"), cBasic); addDatum("Last Name",
-		 * hm.get("Last Name"), cBasic); addDatum("Gender", hm.get("Gender"),
-		 * cBasic); addDatum("Occupation", hm.get("Occupation"), cBasic);
-		 * addDatum("Date of Birth", hm.get("Date of Birth"), cBasic);
-		 * addDatum("Country", hm.get("Country"), cBasic); addDatum("State",
-		 * hm.get("State"), cBasic); addDatum("Local Government",
-		 * hm.get("Local Government"), cBasic);
-		 * 
-		 * addDatum("ID Type", hm.get("ID Type"), cCompany); addDatum("ID No.",
-		 * hm.get("ID No."), cCompany); addDatum("Issuer", hm.get("Issuer"),
-		 * cCompany); addDatum("Issue Date", hm.get("Issue Date"), cCompany);
-		 * addDatum("Expiry Date", hm.get("Expiry Date"), cCompany);
-		 * 
-		 * addDatum("Mobile Phone No.", hm.get("P-Mobile Phone No."), pC);
-		 * addDatum("Alt. Phone No.", hm.get("P-Alt. Phone No."), pC);
-		 * addDatum("Email Address", hm.get("Email"), pC);
-		 * 
-		 * 
-		 * addDatum("Mobile Phone No.", hm.get("S-Mobile Phone No."), sC);
-		 * addDatum("Alt. Phone No.", hm.get("S-Alt. Phone No."), sC);
-		 * addDatum("Email Address", hm.get("Email"), sC);
-		 */
-
 		addDatum("Username", hm.get("Username"), cAcc);
 
 		Label lbPass = new Label();
@@ -223,33 +189,22 @@ public class AccountProfileModule {
 		cLb.addComponent(lbPass);
 		cLb.setStyleName("c_modify");
 
-		// cLb.setComponentAlignment(lbPass, Alignment.MIDDLE_LEFT);
-
 		cModify.addComponent(cLb);
 		cModify.addComponent(btnEdit);
 
-		Label lbEmail = new Label();
-		lbEmail.setCaption("Email: ");
-		lbEmail.setValue("pkkgkkdd@swifta.com");
-
-		Label lbMSISDN = new Label();
-		lbMSISDN.setCaption("MSISDN: ");
-		lbMSISDN.setValue("+2337041827367");
-
 		final HorizontalLayout cPlaceHolder = new HorizontalLayout();
 		cPlaceHolder.setStyleName("c_edit_pass_placeholder_hidden");
-		// HorizontalLayout cDivider = new HorizontalLayout();
 		FormLayout cFormLow = new FormLayout();
 
-		cAcc.addComponent(lb);
+		addDatum("Email", hm.get("Email"), cFormLow);
+		addDatum("MSISDN", hm.get("MSISDN"), cFormLow);
+
 		cAcc.addComponent(cModify);
 		cC.addComponent(cAcc);
 
 		cC.addComponent(cPlaceHolder);
 		cPlaceHolder.addComponent(cEditPass);
 
-		cFormLow.addComponent(lbEmail);
-		cFormLow.addComponent(lbMSISDN);
 		cC.addComponent(cFormLow);
 
 		tFCurPass.addValueChangeListener(new ValueChangeListener() {
@@ -405,14 +360,26 @@ public class AccountProfileModule {
 		lbAddUser.setStyleName("label_user_profile");
 
 		cC.addComponent(lbAddUser);
-
 		FormLayout cBasic = new FormLayout();
-		// cBasic.setStyleName("frm_user_prof");
-		lb = new Label();
-		lb.setCaption("Names: ");
-		lb.setValue("Paul Kigozi Livepwndz");
-		cBasic.addComponent(lb);
 		cC.addComponent(cBasic);
+
+		addDatum("Profile", hm.get("Profile Type"), cBasic);
+		addDatum("Account Status", hm.get("Status"), cBasic);
+		addDatum("First Name", hm.get("First Name"), cBasic);
+		addDatum("Last Name", hm.get("Last Name"), cBasic);
+		addDatum("Middle Name", hm.get("Middle Name"), cBasic);
+		addDatum("Gender", hm.get("Gender"), cBasic);
+		addDatum("Occupation", hm.get("Occupation"), cBasic);
+		addDatum("Date of Birth", hm.get("Date of Birth"), cBasic);
+		addDatum("Country", hm.get("Country"), cBasic);
+		addDatum("State", hm.get("State"), cBasic);
+		addDatum("Local Government", hm.get("Local Government"), cBasic);
+
+		addDatum("ID Type", hm.get("ID Type"), cBasic);
+		addDatum("ID No.", hm.get("ID No."), cBasic);
+		addDatum("Issuer", hm.get("Issuer"), cBasic);
+		addDatum("Issue Date", hm.get("Issue Date"), cBasic);
+		addDatum("Expiry Date", hm.get("Expiry Date"), cBasic);
 
 		lbAddUser = new Label("Contact Details");
 		lbAddUser.setStyleName("label_user_profile");
@@ -420,10 +387,14 @@ public class AccountProfileModule {
 
 		FormLayout cContact = new FormLayout();
 		// cContact.setStyleName("frm_user_prof");
-		lb = new Label();
-		lb.setCaption("Street: ");
-		lb.setValue("William str.");
-		cContact.addComponent(lb);
+
+		addDatum("Mobile Phone No.", hm.get("P-Mobile Phone No."), cContact);
+		addDatum("Alt. Phone No.", hm.get("P-Alt. Phone No."), cContact);
+		addDatum("Email Address", hm.get("Email"), cContact);
+
+		addDatum("Mobile Phone No.", hm.get("S-Mobile Phone No."), cContact);
+		addDatum("Alt. Phone No.", hm.get("S-Alt. Phone No."), cContact);
+		addDatum("Email Address", hm.get("Email"), cContact);
 		cC.addComponent(cContact);
 
 		c.addComponent(cC);
