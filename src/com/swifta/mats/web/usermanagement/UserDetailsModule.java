@@ -311,7 +311,7 @@ public class UserDetailsModule {
 		btnPersonal.setStyleName("btn_tab_like btn_tab_like_active");
 		btnPersonal.setEnabled(false);
 
-		final BtnTabLike btnLinks = new BtnTabLike("Links", null);
+		final BtnTabLike btnLinks = new BtnTabLike("Manage Downlines", null);
 
 		final BtnTabLike btnAccount = new BtnTabLike("Account", null);
 		// BtnTabLike btnAuth = new BtnTabLike("Authentication", null);
