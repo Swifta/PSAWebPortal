@@ -2164,7 +2164,7 @@ public class UserDetailsModule {
 		tb = new Table("Linked child accounts");
 		tb.setContainerDataSource(getLinksTable());
 		cLBody.addComponent(tb);
-		tb.setPageLength(1);
+		tb.setPageLength(0);
 		tb.setSelectable(true);
 
 		cAgentInfo.addComponent(cLBody);
@@ -2195,6 +2195,7 @@ public class UserDetailsModule {
 	private IndexedContainer getLinksTable() {
 
 		container.addContainerProperty("S/N", Integer.class, 0);
+		container.addContainerProperty("Name", String.class, null);
 		container.addContainerProperty("Username", String.class, null);
 		container.addContainerProperty("MSISDN", String.class, null);
 		container.addContainerProperty("Email", String.class, null);
@@ -2225,12 +2226,14 @@ public class UserDetailsModule {
 			ResultSet rs = stmt.executeQuery(sb.toString());
 
 			int x = 0;
+			Property<String> pName;
 			Property<String> pUn;
 			Property<String> pMsisdn;
 			Property<String> pEmail;
 			Property<Integer> pSn;
 			Property<Button> pBtn;
 
+			String name;
 			String un;
 			String msisdn;
 			String email;
@@ -2242,6 +2245,7 @@ public class UserDetailsModule {
 
 				x++;
 
+				name = rs.getString("Name");
 				un = rs.getString("username");
 				msisdn = rs.getString("msisdn");
 				email = rs.getString("email");
@@ -2250,6 +2254,7 @@ public class UserDetailsModule {
 				r = container.getItem(rid);
 
 				pSn = r.getItemProperty("S/N");
+				pName = r.getItemProperty("Name");
 				pUn = r.getItemProperty("Username");
 				pMsisdn = r.getItemProperty("MSISDN");
 				pEmail = r.getItemProperty("Email");
@@ -2263,6 +2268,7 @@ public class UserDetailsModule {
 				btnLink.setData(rid);
 
 				pSn.setValue(x);
+				pName.setValue(name);
 				pUn.setValue(un);
 				pMsisdn.setValue(msisdn);
 				pEmail.setValue(email);
@@ -2340,7 +2346,7 @@ public class UserDetailsModule {
 		String username = curUser;
 
 		Label lbActivationPrompt = new Label(
-				"<span style='text-align: center;'>Please enter Childred Resource ID to link to"
+				"<span style='text-align: center;'>Please enter Children Resource ID to link to"
 						+ username + "'s Account</span>");
 		lbActivationPrompt.setContentMode(ContentMode.HTML);
 		lbActivationPrompt.setWidth("300px");
@@ -2496,12 +2502,15 @@ public class UserDetailsModule {
 			ResultSet rs = stmt.executeQuery(sb.toString());
 
 			int x = 0;
+
+			Property<String> pName;
 			Property<String> pUn;
 			Property<String> pMsisdn;
 			Property<String> pEmail;
 			Property<Integer> pSn;
 			Property<Button> pBtn;
 
+			String name;
 			String msisdn;
 			String email;
 			Object rid;
@@ -2512,6 +2521,7 @@ public class UserDetailsModule {
 
 				x++;
 
+				name = rs.getString("Name");
 				un = rs.getString("username");
 				msisdn = rs.getString("msisdn");
 				email = rs.getString("email");
@@ -2519,6 +2529,7 @@ public class UserDetailsModule {
 				rid = container.addItem();
 				r = container.getItem(rid);
 
+				pName = r.getItemProperty("Name");
 				pSn = r.getItemProperty("S/N");
 				pUn = r.getItemProperty("Username");
 				pMsisdn = r.getItemProperty("MSISDN");
@@ -2532,6 +2543,7 @@ public class UserDetailsModule {
 				btnLink.setId(un);
 				btnLink.setData(rid);
 
+				pName.setValue(name);
 				pSn.setValue(x);
 				pUn.setValue(un);
 				pMsisdn.setValue(msisdn);
