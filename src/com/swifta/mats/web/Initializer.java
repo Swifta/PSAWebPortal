@@ -47,8 +47,7 @@ public class Initializer {
 
 		VerticalLayout ap = new VerticalLayout();
 		ap.setId("ap_init");
-		m.addTab(ap, "Account Profile");
-		// m.getTab(ap).setEnabled(false);
+		m.addTab(ap, "My Profile");
 
 		VerticalLayout st = new VerticalLayout();
 		st.setId("st_init");
