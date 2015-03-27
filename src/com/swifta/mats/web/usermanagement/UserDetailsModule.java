@@ -1,5 +1,6 @@
 package com.swifta.mats.web.usermanagement;
 
+import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
@@ -19,10 +20,13 @@ import java.util.Set;
 import com.swifta.mats.web.MatsWebPortalUI;
 import com.swifta.mats.web.utils.UserManagementService;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub;
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.Validator;
 import com.vaadin.data.Validator.InvalidValueException;
+import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.event.FieldEvents.FocusEvent;
 import com.vaadin.event.FieldEvents.FocusListener;
 import com.vaadin.server.FontAwesome;
@@ -31,6 +35,7 @@ import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
@@ -41,7 +46,9 @@ import com.vaadin.ui.Notification;
 //import com.vaadin.ui.Notification;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.PopupDateField;
+import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
@@ -53,11 +60,14 @@ public class UserDetailsModule {
 	private HorizontalLayout cDetailsAndOperations;
 	private HorizontalLayout cP;
 	private HorizontalLayout cA;
+	private HorizontalLayout cL;
+	private HorizontalLayout p;
 	private HorizontalLayout prevL;
 	private boolean isfromsub = false;
 
 	private HorizontalLayout cLP;
 	private HorizontalLayout cLA;
+	private UserManagementService ums;
 
 	private ComboBox combo;
 	private HorizontalLayout cPerAccAuthInfo;
@@ -119,6 +129,15 @@ public class UserDetailsModule {
 	private UserDetailsBackEnd bee;
 	private Map<String, String> hm;
 	private Window cpop;
+	private String curUser = null;
+	private HorizontalLayout cPlaceholder = new HorizontalLayout();
+
+	private IndexedContainer container = new IndexedContainer();
+	private Button btnLink;
+	private Table tb;
+	private IndexedContainer xcontainer;
+	private Object xrid;
+	private TextField tFU;
 
 	public UserDetailsModule() {
 
@@ -222,7 +241,11 @@ public class UserDetailsModule {
 	}
 
 	public VerticalLayout getUserDetailsContainer(String strUID,
-			String strAction, Window pop) {
+			String strAction, Window pop, Object xrid,
+			IndexedContainer xcontainer) {
+		this.xrid = xrid;
+		this.xcontainer = xcontainer;
+		curUser = strUID;
 		cpop = pop;
 		cUDetails = new VerticalLayout();
 		cUDetails.setMargin(new MarginInfo(false, false, false, false));
@@ -288,11 +311,17 @@ public class UserDetailsModule {
 		btnPersonal.setStyleName("btn_tab_like btn_tab_like_active");
 		btnPersonal.setEnabled(false);
 
+		final BtnTabLike btnLinks = new BtnTabLike("Links", null);
+
 		final BtnTabLike btnAccount = new BtnTabLike("Account", null);
 		// BtnTabLike btnAuth = new BtnTabLike("Authentication", null);
 		final BtnTabLike btnLog = new BtnTabLike("Log", null);
 		cManageAndAddTab.addComponent(btnPersonal);
 		cManageAndAddTab.addComponent(btnAccount);
+		if (xcontainer.getItem(xrid).getItemProperty("Profile Type").getValue()
+				.toString().equals("MATS_DEALER_USER_PROFILE"))
+			cManageAndAddTab.addComponent(btnLinks);
+
 		// cManageAndAddTab.addComponent(btnAuth);
 		cManageAndAddTab.addComponent(btnLog);
 
@@ -303,7 +332,7 @@ public class UserDetailsModule {
 		ArrayList<HorizontalLayout> arrLSubTabs = new ArrayList<HorizontalLayout>();
 
 		final HorizontalLayout cManUserSubMenu = getAddUserSubMenu(btnLog,
-				btnPersonal, btnAccount);
+				btnPersonal, btnAccount, btnLinks);
 
 		arrLSubTabs.add(cManUserSubMenu);
 
@@ -323,12 +352,20 @@ public class UserDetailsModule {
 				btnPersonal.setEnabled(false);
 				btnPersonal.setStyleName("btn_tab_like btn_tab_like_active");
 
+				if (!btnAccount.isEnabled())
+					p = cA;
+				if (!btnLinks.isEnabled())
+					p = cL;
+
 				btnAccount.setEnabled(true);
 				btnAccount.setStyleName("btn_tab_like");
 
+				btnLinks.setEnabled(true);
+				btnLinks.setStyleName("btn_tab_like");
+
 				if (!isfromsub) {
-					cA = (HorizontalLayout) cPerAccAuthInfo.getComponent(0);
-					cPerAccAuthInfo.replaceComponent(cA, cP);
+					p = (HorizontalLayout) cPerAccAuthInfo.getComponent(0);
+					cPerAccAuthInfo.replaceComponent(p, cP);
 				} else {
 					prevL = (HorizontalLayout) cPerAccAuthInfo.getComponent(0);
 					cPerAccAuthInfo.replaceComponent(prevL, cP);
@@ -353,23 +390,79 @@ public class UserDetailsModule {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
+
 				btnAccount.setEnabled(false);
 				btnAccount.setStyleName("btn_tab_like btn_tab_like_active");
 
+				if (!btnPersonal.isEnabled())
+					p = cP;
+				if (!btnLinks.isEnabled())
+					p = cL;
+
 				btnPersonal.setEnabled(true);
 				btnPersonal.setStyleName("btn_tab_like");
+
+				btnLinks.setEnabled(true);
+				btnLinks.setStyleName("btn_tab_like");
+
 				if (!isfromsub) {
 					if (cA == null)
 						cA = getADC();
-
-					cP = (HorizontalLayout) cPerAccAuthInfo.getComponent(0);
-					cPerAccAuthInfo.replaceComponent(cP, cA);
+					p = (HorizontalLayout) cPerAccAuthInfo.getComponent(0);
+					cPerAccAuthInfo.replaceComponent(p, cA);
 
 				} else {
 					if (cA == null)
 						cA = getADC();
 					prevL = (HorizontalLayout) cPerAccAuthInfo.getComponent(0);
 					cPerAccAuthInfo.replaceComponent(prevL, cA);
+
+					isfromsub = false;
+					btnLog.setEnabled(true);
+					btnLog.setStyleName("btn_tab_like");
+					cManUserSubMenu.setStyleName("c_sub_menu_invisible");
+
+				}
+
+				cpop.center();
+
+			}
+		});
+
+		btnLinks.addClickListener(new Button.ClickListener() {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				btnLinks.setEnabled(false);
+				btnLinks.setStyleName("btn_tab_like btn_tab_like_active");
+
+				if (!btnPersonal.isEnabled())
+					p = cP;
+				if (!btnAccount.isEnabled())
+					p = cA;
+
+				btnPersonal.setEnabled(true);
+				btnPersonal.setStyleName("btn_tab_like");
+
+				btnAccount.setEnabled(true);
+				btnAccount.setStyleName("btn_tab_like");
+				if (!isfromsub) {
+					if (cL == null)
+						cL = getLC();
+
+					p = (HorizontalLayout) cPerAccAuthInfo.getComponent(0);
+					cPerAccAuthInfo.replaceComponent(p, cL);
+
+				} else {
+					if (cL == null)
+						cL = getLC();
+					prevL = (HorizontalLayout) cPerAccAuthInfo.getComponent(0);
+					cPerAccAuthInfo.replaceComponent(prevL, cL);
 
 					isfromsub = false;
 					btnLog.setEnabled(true);
@@ -390,7 +483,8 @@ public class UserDetailsModule {
 	}
 
 	private HorizontalLayout getAddUserSubMenu(final BtnTabLike btnAddUser,
-			final BtnTabLike btnPersonal, final BtnTabLike btnAccount) {
+			final BtnTabLike btnPersonal, final BtnTabLike btnAccount,
+			final BtnTabLike btnLinks) {
 		final HorizontalLayout cAddUserSubMenu = new HorizontalLayout();
 		cAddUserSubMenu.setStyleName("c_sub_menu_invisible");
 		cAddUserSubMenu.setSizeUndefined();
@@ -445,6 +539,24 @@ public class UserDetailsModule {
 					btnAccount.setEnabled(true);
 					btnAccount.setStyleName("btn_tab_like");
 					cA = p;
+					if (cLP == null && prevL == null) {
+						btnAct.setEnabled(false);
+						btnAct.setStyleName("btn_tab_like btn_tab_like_active");
+
+						btnAcc.setEnabled(true);
+						btnAcc.setStyleName("btn_tab_like");
+
+						cLP = getActLog();
+						cPerAccAuthInfo.replaceComponent(p, cLP);
+					} else {
+						cPerAccAuthInfo.replaceComponent(p, prevL);
+					}
+
+				} else if (!btnLinks.isEnabled()) {
+
+					btnLinks.setEnabled(true);
+					btnLinks.setStyleName("btn_tab_like");
+					cL = p;
 					if (cLP == null && prevL == null) {
 						btnAct.setEnabled(false);
 						btnAct.setStyleName("btn_tab_like btn_tab_like_active");
@@ -2040,4 +2152,405 @@ public class UserDetailsModule {
 				Notification.Type.ERROR_MESSAGE);
 	}
 
+	private HorizontalLayout getLC() {
+
+		VerticalLayout cAgentInfo = new VerticalLayout();
+		cAgentInfo.setMargin(new MarginInfo(true, true, true, true));
+		cAgentInfo.setStyleName("c_details_test");
+
+		final VerticalLayout cLBody = new VerticalLayout();
+
+		cLBody.setStyleName("c_body_visible");
+		tb = new Table("Linked child accounts");
+		tb.setContainerDataSource(getLinksTable());
+		cLBody.addComponent(tb);
+		tb.setPageLength(1);
+		tb.setSelectable(true);
+
+		cAgentInfo.addComponent(cLBody);
+
+		btnLink = new Button("Add New Link");
+		btnLink.setIcon(FontAwesome.LINK);
+		btnLink.setDescription("Link new account.");
+
+		cLBody.addComponent(btnLink);
+		cLBody.setComponentAlignment(btnLink, Alignment.TOP_LEFT);
+		btnLink.addClickListener(new LinkClickHandler());
+
+		cPlaceholder.setVisible(false);
+		addLinkUserContainer();
+		cPlaceholder.setWidth("100%");
+
+		cLBody.addComponent(cPlaceholder);
+		cLBody.setComponentAlignment(cPlaceholder, Alignment.TOP_CENTER);
+
+		HorizontalLayout c = new HorizontalLayout();
+		c.addComponent(cAgentInfo);
+
+		return c;
+
+	}
+
+	@SuppressWarnings("unchecked")
+	private IndexedContainer getLinksTable() {
+
+		container.addContainerProperty("S/N", Integer.class, 0);
+		container.addContainerProperty("Username", String.class, null);
+		container.addContainerProperty("MSISDN", String.class, null);
+		container.addContainerProperty("Email", String.class, null);
+		container.addContainerProperty("Action", Button.class, null);
+
+		StringBuilder sb = new StringBuilder();
+
+		sb.append(" SELECT concat(ahd.firstname,' ',ahd.lastname) as Name, ah.username as 'username', ah.msisdn as msisdn, ah.email as email ");
+		sb.append(" FROM psadatasourcetest.linkaccountrelations pl, accountholders ah, accountholderdetails ahd ");
+		sb.append(" where linkstatus = 'LINKED' ");
+		sb.append(" and ah.accountholderdetailid = ahd.accountdetailsid ");
+		sb.append(" and pl.childuserresourceid = ah.accountholderid ");
+		sb.append(" and parentuserresourceid in (select accountholderid from accountholders ");
+		sb.append(" where (username = '166735'))");
+
+		String drivers = "com.mysql.jdbc.Driver";
+		try {
+			Class<?> driver_class = Class.forName(drivers);
+			Driver driver = (Driver) driver_class.newInstance();
+			DriverManager.registerDriver(driver);
+
+			Connection conn = DriverManager.getConnection(
+					MatsWebPortalUI.conf.DB, MatsWebPortalUI.conf.UN,
+					MatsWebPortalUI.conf.PW);
+
+			Statement stmt = conn.createStatement();
+
+			ResultSet rs = stmt.executeQuery(sb.toString());
+
+			int x = 0;
+			Property<String> pUn;
+			Property<String> pMsisdn;
+			Property<String> pEmail;
+			Property<Integer> pSn;
+			Property<Button> pBtn;
+
+			String un;
+			String msisdn;
+			String email;
+			Object rid;
+			Button btnLink;
+			Item r;
+
+			while (rs.next()) {
+
+				x++;
+
+				un = rs.getString("username");
+				msisdn = rs.getString("msisdn");
+				email = rs.getString("email");
+
+				rid = container.addItem();
+				r = container.getItem(rid);
+
+				pSn = r.getItemProperty("S/N");
+				pUn = r.getItemProperty("Username");
+				pMsisdn = r.getItemProperty("MSISDN");
+				pEmail = r.getItemProperty("Email");
+				pBtn = r.getItemProperty("Action");
+				btnLink = new Button();
+				btnLink.setIcon(FontAwesome.UNLINK);
+				btnLink.setStyleName("btn_link");
+				btnLink.setDescription("Unlink this account.");
+				btnLink.addClickListener(new UNLinkClickHandler());
+				btnLink.setId(un);
+				btnLink.setData(rid);
+
+				pSn.setValue(x);
+				pUn.setValue(un);
+				pMsisdn.setValue(msisdn);
+				pEmail.setValue(email);
+				pBtn.setValue(btnLink);
+
+			}
+
+		} catch (SQLException | ClassNotFoundException | InstantiationException
+				| IllegalAccessException e) {
+
+			errorHandler(e);
+		}
+
+		return container;
+
+	}
+
+	private class LinkClickHandler implements Button.ClickListener {
+		private static final long serialVersionUID = -5209804624332851343L;
+
+		@Override
+		public void buttonClick(ClickEvent event) {
+			btnLink.setVisible(false);
+			cPlaceholder.setVisible(true);
+			tFU.setValue("");
+		}
+	}
+
+	private class UNLinkClickHandler implements Button.ClickListener {
+		private static final long serialVersionUID = -5209804624332851343L;
+
+		@Override
+		public void buttonClick(ClickEvent event) {
+			if (ums == null)
+				ums = new UserManagementService();
+
+			Object rid = event.getButton().getData();
+
+			String un = event.getButton().getId();
+			un = container.getItem(rid).getItemProperty("Username").getValue()
+					.toString();
+
+			String status = "No response.";
+			try {
+				status = ums.unlinkUser(curUser, "8", UI.getCurrent()
+						.getSession().getAttribute("user").toString(), un);
+
+				if (status.equals("The operation was successful and completed")) {
+					container.removeItem(rid);
+					NotifCustom.show("Unlink", status);
+
+				} else {
+					Notification.show(status, Notification.Type.ERROR_MESSAGE);
+				}
+
+			} catch (RemoteException e) {
+				Notification.show(
+						"Oops... Something is wrong. Please try again later.",
+						Notification.Type.ERROR_MESSAGE);
+				e.printStackTrace();
+			}
+
+		}
+	}
+
+	private void addLinkUserContainer() {
+
+		VerticalLayout cDeletePrompt = new VerticalLayout();
+		cPlaceholder.addComponent(cDeletePrompt);
+		cPlaceholder.setComponentAlignment(cDeletePrompt,
+				Alignment.MIDDLE_CENTER);
+		// cDeletePrompt.setWidth("100%");
+		cDeletePrompt.setStyleName("c_link");
+		cDeletePrompt.setSpacing(true);
+		String username = curUser;
+
+		Label lbActivationPrompt = new Label(
+				"<span style='text-align: center;'>Please enter Childred Resource ID to link to"
+						+ username + "'s Account</span>");
+		lbActivationPrompt.setContentMode(ContentMode.HTML);
+		lbActivationPrompt.setWidth("300px");
+		lbActivationPrompt.setStyleName("lb_link_user");
+
+		cDeletePrompt.addComponent(lbActivationPrompt);
+		cDeletePrompt.setComponentAlignment(lbActivationPrompt,
+				Alignment.TOP_LEFT);
+
+		VerticalLayout frmDeleteReason = new VerticalLayout();
+		frmDeleteReason.setSizeUndefined();
+		frmDeleteReason.setSpacing(true);
+		frmDeleteReason.setMargin(true);
+		cDeletePrompt.addComponent(frmDeleteReason);
+		cDeletePrompt.setComponentAlignment(frmDeleteReason,
+				Alignment.TOP_CENTER);
+
+		tFU = new TextField("Child Resource ID");
+		tFU.setRequired(true);
+
+		final ComboBox comboUProf = new ComboBox("Select Profile");
+		comboUProf.setNullSelectionAllowed(false);
+		comboUProf.setRequired(true);
+		comboUProf.addItem(8);
+		comboUProf.setItemCaption(8, "DEPOSIT_ONLY");
+
+		comboUProf.addItem(9);
+		comboUProf.setItemCaption(9, "DEPOSIT_AND_WITHDRAWAL");
+
+		comboUProf.select(8);
+
+		final TextField tFP = new TextField("Parent Account ID");
+		tFP.setValue(username);
+		tFP.setEnabled(false);
+
+		final TextField tFInitUser = new TextField("Initiating User");
+		tFInitUser.setValue(UI.getCurrent().getSession().getAttribute("user")
+				.toString());
+		tFInitUser.focus();
+		tFInitUser.setEnabled(false);
+
+		frmDeleteReason.addComponent(tFU);
+		frmDeleteReason.addComponent(comboUProf);
+		frmDeleteReason.addComponent(tFP);
+		frmDeleteReason.addComponent(tFInitUser);
+
+		HorizontalLayout cPopupBtns = new HorizontalLayout();
+		cPopupBtns.setSizeUndefined();
+		cPopupBtns.setSpacing(true);
+
+		final Button btnCancel = new Button();
+		btnCancel.setIcon(FontAwesome.UNDO);
+		btnCancel.setStyleName("btn_link");
+		btnCancel.setDescription("Cancel");
+
+		final Button btnSet = new Button("Link");
+		btnSet.setDescription("Link specified account.");
+		btnSet.setIcon(FontAwesome.LINK);
+		cPopupBtns.addComponent(btnSet);
+		cPopupBtns.addComponent(btnCancel);
+		frmDeleteReason.addComponent(cPopupBtns);
+
+		cDeletePrompt.setComponentAlignment(frmDeleteReason,
+				Alignment.MIDDLE_CENTER);
+
+		btnSet.addClickListener(new Button.ClickListener() {
+
+			private static final long serialVersionUID = -6318666715385643538L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+
+				tFU.validate();
+
+				btnSet.setEnabled(false);
+				btnCancel.setEnabled(false);
+
+				Button btn = event.getButton();
+
+				if (ums == null)
+					ums = new UserManagementService();
+				btn.setEnabled(false);
+
+				String strResponse = null;
+				try {
+
+					strResponse = ums.linkUser(tFP.getValue(), comboUProf
+							.getValue().toString(), tFInitUser.getValue(), tFU
+							.getValue());
+
+					if (strResponse
+							.equals("The operation was successful and completed")) {
+
+						updateLinksTable(tFU.getValue());
+						cPlaceholder.setVisible(false);
+						tFU.setValue("");
+						btnLink.setVisible(true);
+
+						NotifCustom.show("Link", strResponse);
+
+					} else {
+						NotifCustom.show("Link", strResponse);
+					}
+
+				} catch (RemoteException e) {
+
+					e.printStackTrace();
+
+				}
+
+				btnSet.setEnabled(true);
+				btnCancel.setEnabled(true);
+
+			}
+		});
+
+		btnCancel.addClickListener(new ClickListener() {
+			private static final long serialVersionUID = 7161821652386306043L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				btnLink.setVisible(true);
+				cPlaceholder.setVisible(false);
+
+			}
+
+		});
+
+	}
+
+	@SuppressWarnings("unchecked")
+	private void updateLinksTable(String un) {
+		StringBuilder sb = new StringBuilder();
+
+		sb.append(" SELECT concat(ahd.firstname,' ',ahd.lastname) as Name, ah.username as 'username', ah.msisdn as msisdn, ah.email as email ");
+		sb.append(" FROM psadatasourcetest.linkaccountrelations pl, accountholders ah, accountholderdetails ahd ");
+		sb.append(" where linkstatus = 'LINKED' and username = '" + un + "'");
+		sb.append(" and ah.accountholderdetailid = ahd.accountdetailsid ");
+		sb.append(" and pl.childuserresourceid = ah.accountholderid");
+
+		String drivers = "com.mysql.jdbc.Driver";
+		try {
+			Class<?> driver_class = Class.forName(drivers);
+			Driver driver = (Driver) driver_class.newInstance();
+			DriverManager.registerDriver(driver);
+
+			Connection conn = DriverManager.getConnection(
+					MatsWebPortalUI.conf.DB, MatsWebPortalUI.conf.UN,
+					MatsWebPortalUI.conf.PW);
+
+			Statement stmt = conn.createStatement();
+
+			ResultSet rs = stmt.executeQuery(sb.toString());
+
+			int x = 0;
+			Property<String> pUn;
+			Property<String> pMsisdn;
+			Property<String> pEmail;
+			Property<Integer> pSn;
+			Property<Button> pBtn;
+
+			String msisdn;
+			String email;
+			Object rid;
+			Button btnLink;
+			Item r;
+
+			while (rs.next()) {
+
+				x++;
+
+				un = rs.getString("username");
+				msisdn = rs.getString("msisdn");
+				email = rs.getString("email");
+
+				rid = container.addItem();
+				r = container.getItem(rid);
+
+				pSn = r.getItemProperty("S/N");
+				pUn = r.getItemProperty("Username");
+				pMsisdn = r.getItemProperty("MSISDN");
+				pEmail = r.getItemProperty("Email");
+				pBtn = r.getItemProperty("Action");
+				btnLink = new Button();
+				btnLink.setIcon(FontAwesome.UNLINK);
+				btnLink.setStyleName("btn_link");
+				btnLink.setDescription("Unlink this account.");
+				btnLink.addClickListener(new UNLinkClickHandler());
+				btnLink.setId(un);
+				btnLink.setData(rid);
+
+				pSn.setValue(x);
+				pUn.setValue(un);
+				pMsisdn.setValue(msisdn);
+				pEmail.setValue(email);
+				pBtn.setValue(btnLink);
+
+			}
+
+			tb.setContainerDataSource(container);
+			int t = container.size();
+			if (t > 30)
+				t = 30;
+			tb.setPageLength(t);
+
+		} catch (SQLException | ClassNotFoundException | InstantiationException
+				| IllegalAccessException e) {
+
+			errorHandler(e);
+		}
+
+	}
 }

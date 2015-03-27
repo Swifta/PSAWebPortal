@@ -17,12 +17,13 @@ import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.TextField;
+import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 public class AccountProfileModule {
 	private HorizontalLayout udc;
+	private boolean issaving = false;
 
 	public AccountProfileModule() {
 
@@ -68,30 +69,14 @@ public class AccountProfileModule {
 		lbError.setVisible(false);
 
 		FormLayout cEditPassForm = new FormLayout();
-		final TextField tFCurPass = new TextField("Current: ");
-		final TextField tFNewPass = new TextField("New: ");
-		final TextField tFNewRePass = new TextField("Re-type New: ");
+		final PasswordField tFCurPass = new PasswordField("Current: ");
+		final PasswordField tFNewPass = new PasswordField("New: ");
+		final PasswordField tFNewRePass = new PasswordField("Re-type New: ");
 		cEditPassForm.addComponent(tFCurPass);
 		cEditPassForm.addComponent(tFNewPass);
 		cEditPassForm.addComponent(tFNewRePass);
 
-		tFCurPass.addValidator(new Validator() {
-
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void validate(Object value) throws InvalidValueException {
-				tFCurPass.setComponentError(null);
-				if (value == null || value.toString().trim().isEmpty()) {
-
-					tFCurPass.focus();
-					throw new InvalidValueException(
-							"Please enter Current password.");
-				}
-
-			}
-
-		});
+		tFCurPass.setImmediate(false);
 
 		tFNewPass.addValidator(new Validator() {
 			private static final long serialVersionUID = 1L;
@@ -160,11 +145,14 @@ public class AccountProfileModule {
 		HorizontalLayout cBtns = new HorizontalLayout();
 		cBtns.setStyleName("c_edit_pass_btns");
 		cBtns.setSpacing(true);
-		Button btnSave = new Button();
+		final Button btnSave = new Button();
 		btnSave.setIcon(FontAwesome.SAVE);
 
 		Button btnCancel = new Button();
 		btnCancel.setIcon(FontAwesome.UNDO);
+
+		btnCancel.setDescription("Cancel");
+		btnSave.setDescription("Save new password.");
 
 		btnSave.setStyleName("btn_link");
 		btnCancel.setStyleName("btn_link");
@@ -265,13 +253,25 @@ public class AccountProfileModule {
 
 		});
 
-		tFCurPass.setComponentError(null);
-
 		btnSave.addClickListener(new Button.ClickListener() {
 			private static final long serialVersionUID = 1626092932482012474L;
 
 			@Override
 			public void buttonClick(ClickEvent event) {
+
+				try {
+					finalEditPassValidator(tFCurPass, tFNewPass, tFNewRePass);
+				} catch (Exception e) {
+					lbError.setStyleName("lb_edit_pass_error");
+					lbError.setVisible(true);
+					lbError.setValue(e.getMessage());
+					return;
+
+				}
+
+				lbError.setValue("");
+				lbError.setVisible(false);
+				btnSave.setEnabled(false);
 
 				Object user = UI.getCurrent().getSession().getAttribute("user");
 				if (user == null) {
@@ -279,6 +279,9 @@ public class AccountProfileModule {
 							Notification.Type.ERROR_MESSAGE);
 					return;
 				}
+
+				lbError.setStyleName("lb_edit_pass_normal");
+				lbError.setValue("Saving new Password. Pleas wait...");
 
 				LoginService ls = new LoginService();
 				try {
@@ -292,32 +295,44 @@ public class AccountProfileModule {
 						// .show("The specified \"Current password\" is INVALID.",
 						// Notification.Type.ERROR_MESSAGE);
 						tFCurPass.focus();
+						lbError.setStyleName("lb_edit_pass_error");
 						lbError.setVisible(true);
 						lbError.setValue("Error: INVALID <span style = 'font-weight: bold;'>Current password</span>.");
+						btnSave.setEnabled(true);
 						return;
 
 					} else if (status.equals("locked")) {
-
-						Notification
-								.show("Account is Locked. Password change is not possible.",
-										Notification.Type.ERROR_MESSAGE);
+						lbError.setStyleName("lb_edit_pass_error");
+						lbError.setVisible(true);
+						lbError.setValue("Info: Account is Locked. Password change is not possible.");
+						btnSave.setEnabled(true);
 						return;
 
 					} else {
-						Notification
-								.show("Sorry...You can not change password right now.",
-										Notification.Type.ERROR_MESSAGE);
+						lbError.setStyleName("lb_edit_pass_error");
+						lbError.setVisible(true);
+						lbError.setValue("Info: Sorry...You can not change password right now.");
+						btnSave.setEnabled(true);
 						return;
 					}
 				} catch (AxisFault e) {
-					Notification
-							.show("Oops... Error occured updating password. Please try again later.",
-									Notification.Type.ERROR_MESSAGE);
+					lbError.setStyleName("lb_edit_pass_error");
+					lbError.setVisible(true);
+					lbError.setValue("Error: Oops... Error occured updating password. Please try again later.");
 					e.printStackTrace();
+					btnSave.setEnabled(true);
+					return;
+
 				}
 
 				cPlaceHolder.setStyleName("c_edit_pass_placeholder_hidden");
 				btnEdit.setVisible(true);
+				lbError.setVisible(false);
+				lbError.setStyleName("lb_edit_pass_error");
+				tFCurPass.setValue("");
+				tFNewPass.setValue("");
+				tFNewRePass.setValue("");
+				btnSave.setEnabled(true);
 
 			}
 		});
@@ -330,6 +345,11 @@ public class AccountProfileModule {
 			public void buttonClick(ClickEvent event) {
 				cPlaceHolder.setStyleName("c_edit_pass_placeholder_hidden");
 				btnEdit.setVisible(true);
+				lbError.setValue("");
+				lbError.setVisible(false);
+				tFCurPass.setValue("");
+				tFNewPass.setValue("");
+				tFNewRePass.setValue("");
 
 			}
 		});
@@ -345,11 +365,6 @@ public class AccountProfileModule {
 
 			}
 		});
-
-		/*
-		 * sp = new HorizontalLayout(); sp.setStyleName("frm_user_prof");
-		 * sp.setWidth("100%"); sp.setHeight("20px"); cC.addComponent(sp);
-		 */
 
 		lbAddUser = new Label("Basic Details");
 		lbAddUser.setStyleName("label_user_profile");
@@ -380,6 +395,38 @@ public class AccountProfileModule {
 		return c;
 	}
 
+	private void finalEditPassValidator(PasswordField tFCurPass,
+			PasswordField tFNewPass, PasswordField tFNewRePass)
+			throws Exception {
+
+		if (tFCurPass.getValue() == null) {
+			tFCurPass.focus();
+			throw new Exception("Please enter current password.");
+		}
+
+		if (tFCurPass.getValue().trim().isEmpty()) {
+			tFCurPass.focus();
+			throw new Exception("Please enter current password.");
+		}
+
+		if (tFNewPass.getValue() == null
+				|| tFNewPass.getValue().trim().isEmpty()) {
+			tFNewPass.focus();
+			throw new Exception("Please enter new password.");
+		}
+
+		if (tFNewRePass.getValue() == null
+				|| tFNewRePass.getValue().trim().isEmpty()) {
+			tFNewRePass.focus();
+			throw new Exception("Please retype new password.");
+		}
+
+		tFCurPass.validate();
+		tFNewPass.validate();
+		tFNewRePass.validate();
+
+	}
+
 	public void apmModifier(String strTbName, HorizontalLayout cContent) {
 
 		if (UI.getCurrent().getSession()
@@ -395,5 +442,4 @@ public class AccountProfileModule {
 		return;
 
 	}
-
 }

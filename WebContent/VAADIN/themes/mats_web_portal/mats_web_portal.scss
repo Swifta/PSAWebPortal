@@ -1265,10 +1265,12 @@ ul.empty li{
 
 .c_edit_pass_placeholder_visible{
 	display:block;
+	//background: #F00;
 }
 
 .c_edit_pass_placeholder_hidden{
 	display:none;
+	//background: #F00;
 }
 
 .c_edit_pass_btns{
@@ -1280,6 +1282,27 @@ ul.empty li{
 	//font-style: italic;
 	font-size: 12px;
 	background: #FFF;
+}
+
+.lb_edit_pass_normal{
+	color: #0F0;
+	//font-style: italic;
+	font-size: 12px;
+	background: #FFF;
+}
+
+.lb_link_user{
+		text-align: center !important;
+}
+
+.c_link{
+	border-bottom: 1px solid #197DE1;
+	border-top: 1px solid #197DE1;
+	margin-top: 30px;
+	//background: #F0F;
+	margin-left: auto;
+	margin-rign: auto;
+	
 }
 
 	

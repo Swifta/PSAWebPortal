@@ -26,28 +26,25 @@ public class ProfileView extends VerticalLayout implements View {
 
 	public ProfileView(TabSheet ts) {
 
-		ts.setSelectedTab(4);
+		/*
+		 * ts.setSelectedTab(4); this.ts = ts; id = ts.getSelectedTab().getId();
+		 * tab = (VerticalLayout) ts.getSelectedTab(); if (id != null &&
+		 * id.equals("ap")) { addHeader(); addMenu(); } else { addHeader();
+		 * addMenu(); d(); tab.setId("ap"); }
+		 */
+
 		this.ts = ts;
-		id = ts.getSelectedTab().getId();
 		tab = (VerticalLayout) ts.getSelectedTab();
-		if (id != null && id.equals("ap")) {
-			addHeader();
-			addMenu();
-		} else {
-			addHeader();
-			addMenu();
-			d();
-			tab.setId("ap");
-		}
+		addHeader();
+		addMenu();
+		d();
 
 	}
 
 	@Override
 	public void enter(ViewChangeEvent event) {
-
 		ts.setSelectedTab(4);
 		addMenu();
-
 	}
 
 	private void addHeader() {

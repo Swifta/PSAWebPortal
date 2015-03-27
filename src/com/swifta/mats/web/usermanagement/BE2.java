@@ -1182,6 +1182,7 @@ public class BE2 {
 		tdPropertyActions.setValue(actionsC);
 
 		btnDetails = new BtnActions("Details");
+		btnDetails.setData(x);
 		btnDetails.setIcon(FontAwesome.ALIGN_JUSTIFY);
 
 		btnEdit = new BtnActions("Edit");
@@ -1235,7 +1236,7 @@ public class BE2 {
 		actionsC.addComponent(btnActivate);
 		// actionsC.addComponent(btnSetParent);
 		actionsC.addComponent(btnSetDefaultAcc);
-		actionsC.addComponent(btnLink);
+		// actionsC.addComponent(btnLink);
 		actionsC.addComponent(btnLock);
 		if (MatsWebPortalUI.conf.env.equals("testing"))
 			actionsC.addComponent(btnLock);
@@ -1351,7 +1352,8 @@ public class BE2 {
 				String[] arrID = event.getButton().getId().split("_");
 				arrLBulkIDs = new ArrayList<>();
 				arrLBulkIDs.add(arrID[2]);
-				showUserDetailsContainer(arrLBulkIDs, arrID);
+				showUserDetailsContainer(arrLBulkIDs, arrID, event.getButton()
+						.getData());
 
 			}
 		});
@@ -1772,7 +1774,7 @@ public class BE2 {
 	}
 
 	private void showUserDetailsContainer(final ArrayList<String> arrLBulkIDs,
-			final String[] arrID) {
+			final String[] arrID, Object rid) {
 
 		isPopupShowing = true;
 		isSent = false;
@@ -1809,7 +1811,7 @@ public class BE2 {
 
 		UserDetailsModule udm = new UserDetailsModule();
 		VerticalLayout cUD = udm.getUserDetailsContainer(arrID[3],
-				"view_details", popup);
+				"view_details", popup, rid, container);
 
 		cDeletePrompt.addComponent(cUD);
 		cDeletePrompt.setComponentAlignment(cUD, Alignment.MIDDLE_CENTER);
