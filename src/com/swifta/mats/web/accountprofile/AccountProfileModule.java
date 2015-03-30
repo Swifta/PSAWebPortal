@@ -6,6 +6,7 @@ import org.apache.axis2.AxisFault;
 
 import com.swifta.mats.web.usermanagement.UserDetailsBackEnd;
 import com.swifta.mats.web.utils.LoginService;
+import com.swifta.mats.web.utils.UserManagementService;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.Validator;
@@ -26,6 +27,8 @@ import com.vaadin.ui.VerticalLayout;
 
 public class AccountProfileModule {
 	private HorizontalLayout udc;
+	private UserManagementService ums;
+	private Label lbPass;
 
 	public AccountProfileModule() {
 
@@ -141,11 +144,6 @@ public class AccountProfileModule {
 
 		});
 
-		// tFNewPass.addValidator(new EditPassValidator(tFCurPass, tFNewPass,
-		// tFNewRePass));
-		// tFNewRePass.addValidator(new EditPassValidator(tFCurPass, tFNewPass,
-		// tFNewRePass));
-
 		HorizontalLayout cBtns = new HorizontalLayout();
 		cBtns.setStyleName("c_edit_pass_btns");
 		cBtns.setSpacing(true);
@@ -170,7 +168,7 @@ public class AccountProfileModule {
 		// cEditPass.setSpacing(t);
 		addDatum("Username", hm.get("Username"), cAcc);
 
-		Label lbPass = new Label();
+		lbPass = new Label();
 		lbPass.setSizeUndefined();
 		// lbPass.setCaption("was set and active.");
 		lbPass.setValue("was set and active.");
@@ -277,13 +275,30 @@ public class AccountProfileModule {
 				try {
 					String status = ls.authenticateUser(user.toString(),
 							tFCurPass.getValue());
-					if (status.equals(true)) {
+					if (status.equals("true")) {
+
+						String initu = UI.getCurrent().getSession()
+								.getAttribute("user").toString();
+						String response = UserManagementService
+								.passwordResetByAdmin(initu, initu,
+										tFNewPass.getValue());
+						if (response != null
+								&& response
+										.equals("PASSWORD_RESET_WAS_SUCCESSFUL")) {
+							lbPass.setValue("updated.");
+						} else {
+
+							lbError.setStyleName("lb_edit_pass_error");
+							lbError.setVisible(true);
+							lbError.setValue("Oops... Update failed.("
+									+ response + ")");
+
+							btnSave.setEnabled(true);
+							return;
+
+						}
 
 					} else if (status.equals("false")) {
-
-						// Notification
-						// .show("The specified \"Current password\" is INVALID.",
-						// Notification.Type.ERROR_MESSAGE);
 						tFCurPass.focus();
 						lbError.setStyleName("lb_edit_pass_error");
 						lbError.setVisible(true);

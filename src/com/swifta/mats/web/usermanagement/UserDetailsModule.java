@@ -29,6 +29,7 @@ import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.event.FieldEvents.FocusEvent;
 import com.vaadin.event.FieldEvents.FocusListener;
+import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -2162,9 +2163,8 @@ public class UserDetailsModule {
 
 		cLBody.setStyleName("c_body_visible");
 		tb = new Table("Linked child accounts");
-		tb.setContainerDataSource(getLinksTable());
+		addLinksTable();
 		cLBody.addComponent(tb);
-		tb.setPageLength(0);
 		tb.setSelectable(true);
 
 		cAgentInfo.addComponent(cLBody);
@@ -2192,10 +2192,9 @@ public class UserDetailsModule {
 	}
 
 	@SuppressWarnings("unchecked")
-	private IndexedContainer getLinksTable() {
+	private void addLinksTable() {
 
 		container.addContainerProperty("S/N", Integer.class, 0);
-		container.addContainerProperty("Name", String.class, null);
 		container.addContainerProperty("Username", String.class, null);
 		container.addContainerProperty("MSISDN", String.class, null);
 		container.addContainerProperty("Email", String.class, null);
@@ -2226,14 +2225,12 @@ public class UserDetailsModule {
 			ResultSet rs = stmt.executeQuery(sb.toString());
 
 			int x = 0;
-			Property<String> pName;
 			Property<String> pUn;
 			Property<String> pMsisdn;
 			Property<String> pEmail;
 			Property<Integer> pSn;
 			Property<Button> pBtn;
 
-			String name;
 			String un;
 			String msisdn;
 			String email;
@@ -2245,7 +2242,6 @@ public class UserDetailsModule {
 
 				x++;
 
-				name = rs.getString("Name");
 				un = rs.getString("username");
 				msisdn = rs.getString("msisdn");
 				email = rs.getString("email");
@@ -2254,7 +2250,6 @@ public class UserDetailsModule {
 				r = container.getItem(rid);
 
 				pSn = r.getItemProperty("S/N");
-				pName = r.getItemProperty("Name");
 				pUn = r.getItemProperty("Username");
 				pMsisdn = r.getItemProperty("MSISDN");
 				pEmail = r.getItemProperty("Email");
@@ -2268,7 +2263,6 @@ public class UserDetailsModule {
 				btnLink.setData(rid);
 
 				pSn.setValue(x);
-				pName.setValue(name);
 				pUn.setValue(un);
 				pMsisdn.setValue(msisdn);
 				pEmail.setValue(email);
@@ -2276,13 +2270,16 @@ public class UserDetailsModule {
 
 			}
 
+			tb.setContainerDataSource(container);
+			if (x > 30)
+				x = 30;
+			tb.setPageLength(x);
+
 		} catch (SQLException | ClassNotFoundException | InstantiationException
 				| IllegalAccessException e) {
 
 			errorHandler(e);
 		}
-
-		return container;
 
 	}
 
@@ -2300,6 +2297,7 @@ public class UserDetailsModule {
 	private class UNLinkClickHandler implements Button.ClickListener {
 		private static final long serialVersionUID = -5209804624332851343L;
 
+		@SuppressWarnings("unchecked")
 		@Override
 		public void buttonClick(ClickEvent event) {
 			if (ums == null)
@@ -2317,8 +2315,24 @@ public class UserDetailsModule {
 						.getSession().getAttribute("user").toString(), un);
 
 				if (status.equals("The operation was successful and completed")) {
-					container.removeItem(rid);
-					NotifCustom.show("Unlink", status);
+					if (container.removeItem(rid)) {
+						List<?> ls = (List<?>) container.getItemIds();
+						Iterator<?> itr = ls.listIterator();
+						int x = 0;
+						while (itr.hasNext())
+							container.getItem(itr.next())
+									.getItemProperty("S/N").setValue(++x);
+						int t = container.size();
+						if (t > 30)
+							t = 30;
+						tb.setPageLength(t);
+
+						NotifCustom.show("Unlink", status);
+					} else {
+						Notification
+								.show("Operation was successful. Table update failed.",
+										Notification.Type.WARNING_MESSAGE);
+					}
 
 				} else {
 					Notification.show(status, Notification.Type.ERROR_MESSAGE);
@@ -2346,7 +2360,7 @@ public class UserDetailsModule {
 		String username = curUser;
 
 		Label lbActivationPrompt = new Label(
-				"<span style='text-align: center;'>Please enter Children Resource ID to link to"
+				"<span style='text-align: center;'>Please enter Childred Resource ID to link to"
 						+ username + "'s Account</span>");
 		lbActivationPrompt.setContentMode(ContentMode.HTML);
 		lbActivationPrompt.setWidth("300px");
@@ -2411,6 +2425,7 @@ public class UserDetailsModule {
 
 		cDeletePrompt.setComponentAlignment(frmDeleteReason,
 				Alignment.MIDDLE_CENTER);
+		btnSet.setClickShortcut(KeyCode.ENTER, null);
 
 		btnSet.addClickListener(new Button.ClickListener() {
 
@@ -2420,7 +2435,6 @@ public class UserDetailsModule {
 			public void buttonClick(ClickEvent event) {
 
 				tFU.validate();
-
 				btnSet.setEnabled(false);
 				btnCancel.setEnabled(false);
 
@@ -2501,16 +2515,12 @@ public class UserDetailsModule {
 
 			ResultSet rs = stmt.executeQuery(sb.toString());
 
-			int x = 0;
-
-			Property<String> pName;
 			Property<String> pUn;
 			Property<String> pMsisdn;
 			Property<String> pEmail;
 			Property<Integer> pSn;
 			Property<Button> pBtn;
 
-			String name;
 			String msisdn;
 			String email;
 			Object rid;
@@ -2518,10 +2528,7 @@ public class UserDetailsModule {
 			Item r;
 
 			while (rs.next()) {
-
-				x++;
-
-				name = rs.getString("Name");
+				int x = container.size() + 1;
 				un = rs.getString("username");
 				msisdn = rs.getString("msisdn");
 				email = rs.getString("email");
@@ -2529,7 +2536,6 @@ public class UserDetailsModule {
 				rid = container.addItem();
 				r = container.getItem(rid);
 
-				pName = r.getItemProperty("Name");
 				pSn = r.getItemProperty("S/N");
 				pUn = r.getItemProperty("Username");
 				pMsisdn = r.getItemProperty("MSISDN");
@@ -2543,7 +2549,6 @@ public class UserDetailsModule {
 				btnLink.setId(un);
 				btnLink.setData(rid);
 
-				pName.setValue(name);
 				pSn.setValue(x);
 				pUn.setValue(un);
 				pMsisdn.setValue(msisdn);

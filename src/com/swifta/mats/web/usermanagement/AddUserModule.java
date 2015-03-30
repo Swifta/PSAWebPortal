@@ -70,6 +70,7 @@ public class AddUserModule {
 	private TextField tFSEmail;
 	private TextField tFIssuer;
 	private TextField tFIDNo;
+	private TextField tFTerritory;
 
 	private CheckBox chcTAndC;
 	private ComboBox comboPref;
@@ -94,12 +95,15 @@ public class AddUserModule {
 	private boolean isCSelected = false;
 	private Component cxPC;
 	private Component cxSC;
+	private VerticalLayout cCompany;
 
 	private ArrayList<Field<?>> arrLDFields = new ArrayList<>();
 	private ArrayList<Field<?>> arrLGFields = new ArrayList<>();
 	private ArrayList<Field<?>> arrLAllFields = new ArrayList<>();
 	private ArrayList<TextField> arrLPAddr = new ArrayList<>();
 	private ArrayList<Field<?>> arrLValidatable;
+
+	private Button btnSave;
 
 	public AddUserModule() {
 
@@ -173,8 +177,8 @@ public class AddUserModule {
 		// tF.setImmediate(true);
 		tFMN.setRequired(false);
 		cBasic.addComponent(tF);
-		// arrLDFields.add(tF);
-		// arrLAllFields.add(tF);
+		arrLDFields.add(tF);
+		arrLAllFields.add(tF);
 
 		tF = new TextField("Last Name");
 		tFLN = tF;
@@ -185,6 +189,16 @@ public class AddUserModule {
 		arrLAllFields.add(tF);
 		arrLGFields.add(tF);
 
+		tF = new TextField("Territory");
+		tFTerritory = tF;
+		tFTerritory.setImmediate(true);
+		tFTerritory.setRequired(true);
+		tFTerritory.setVisible(false);
+		cBasic.addComponent(tF);
+		arrLDFields.add(tF);
+		arrLAllFields.add(tF);
+		// arrLGFields.add(tF);
+
 		OptionGroup opt = new OptionGroup("Gender");
 
 		opt.addItem("FEMALE");
@@ -193,7 +207,7 @@ public class AddUserModule {
 		optSex.setRequired(true);
 		optSex.setImmediate(true);
 		cBasic.addComponent(opt);
-		arrLDFields.add(opt);
+		// arrLDFields.add(opt);
 		arrLAllFields.add(opt);
 		arrLGFields.add(opt);
 
@@ -265,7 +279,7 @@ public class AddUserModule {
 		comboCountry = combo;
 		comboCountry.setRequired(true);
 		cBasic.addComponent(combo);
-		arrLDFields.add(combo);
+		// arrLDFields.add(combo);
 		arrLAllFields.add(combo);
 		arrLGFields.add(combo);
 
@@ -274,7 +288,7 @@ public class AddUserModule {
 		comboState.setRequired(true);
 		comboState.setNullSelectionAllowed(false);
 		cBasic.addComponent(combo);
-		arrLDFields.add(combo);
+		// arrLDFields.add(combo);
 		arrLAllFields.add(combo);
 		arrLGFields.add(combo);
 
@@ -282,7 +296,7 @@ public class AddUserModule {
 		comboLG = combo;
 		comboLG.setRequired(true);
 		cBasic.addComponent(combo);
-		arrLDFields.add(combo);
+		// arrLDFields.add(combo);
 		arrLAllFields.add(combo);
 		arrLGFields.add(combo);
 
@@ -292,7 +306,7 @@ public class AddUserModule {
 		cBAndCAndAcc.addComponent(cBasic);
 		cBAndCAndAcc.addComponent(cC);
 
-		VerticalLayout cCompany = new VerticalLayout();
+		cCompany = new VerticalLayout();
 		Label lbC = new Label("Identification");
 		lbC.setStyleName("lb_frm_add_user");
 
@@ -306,7 +320,7 @@ public class AddUserModule {
 		comboIDType.setRequired(true);
 		comboIDType.setImmediate(true);
 		cCompany.addComponent(combo);
-		arrLDFields.add(combo);
+		// arrLDFields.add(combo);
 		arrLAllFields.add(combo);
 		arrLGFields.add(combo);
 
@@ -316,7 +330,7 @@ public class AddUserModule {
 		tFIDNo.setRequired(true);
 		tFIDNo.setImmediate(true);
 		cCompany.addComponent(tF);
-		arrLDFields.add(tF);
+		// arrLDFields.add(tF);
 		arrLAllFields.add(tF);
 		arrLGFields.add(tF);
 
@@ -343,7 +357,7 @@ public class AddUserModule {
 				"Invalid issue date. Please select a date Earlier/Today.",
 				dMin, dToday, null));
 		cCompany.addComponent(dF);
-		arrLDFields.add(dF);
+		// arrLDFields.add(dF);
 		arrLAllFields.add(dF);
 		arrLGFields.add(dF);
 
@@ -363,7 +377,7 @@ public class AddUserModule {
 		dFDoE.setImmediate(true);
 
 		cCompany.addComponent(dF);
-		arrLDFields.add(dF);
+		// arrLDFields.add(dF);
 		arrLAllFields.add(dF);
 		arrLGFields.add(dF);
 
@@ -651,17 +665,29 @@ public class AddUserModule {
 						f.setRequired(true);
 					}
 
-					arrLPAddr.get(0).setCaption("Zone");
-					arrLPAddr.get(1).setCaption("Sales Area");
-					arrLPAddr.get(1).setRequired(true);
-					arrLPAddr.get(2).setCaption("Territory");
+					tFFN.setCaption("Station Name");
+					tFMN.setCaption("Zone");
+					tFLN.setCaption("Sales Area");
+
+					/*
+					 * arrLPAddr.get(0).setCaption("Zone");
+					 * arrLPAddr.get(1).setCaption("Sales Area");
+					 * arrLPAddr.get(1).setRequired(true);
+					 * arrLPAddr.get(2).setCaption("Territory");
+					 */
 					cxSC.setVisible(false);
 					cxPC.setVisible(false);
+					cCompany.setVisible(false);
 					arrLValidatable = arrLDFields;
 					reset();
+					btnSave.setEnabled(false);
 
 					return;
 				}
+				btnSave.setEnabled(true);
+				tFFN.setCaption("First Name");
+				tFMN.setCaption("Middle Name");
+				tFLN.setCaption("Last Name");
 
 				for (Field<?> f : arrLAllFields) {
 					f.setVisible(true);
@@ -670,14 +696,18 @@ public class AddUserModule {
 
 				for (Field<?> f : arrLGFields) {
 					f.setRequired(true);
+
 				}
 
-				arrLPAddr.get(0).setCaption("Street");
-				arrLPAddr.get(1).setCaption("Province");
-				arrLPAddr.get(2).setCaption("City");
+				/*
+				 * arrLPAddr.get(0).setCaption("Street");
+				 * arrLPAddr.get(1).setCaption("Province");
+				 * arrLPAddr.get(2).setCaption("City");
+				 */
 
 				cxSC.setVisible(true);
 				cxPC.setVisible(true);
+				cCompany.setVisible(true);
 				arrLValidatable = arrLGFields;
 				reset();
 
@@ -882,7 +912,7 @@ public class AddUserModule {
 		cC.setMargin(new MarginInfo(false, true, false, true));
 		cAgentInfo.addComponent(cBAndCAndAcc);
 
-		Button btnSave = new Button("Save");
+		btnSave = new Button("Save");
 		btnSave.setIcon(FontAwesome.SAVE);
 		btnSave.setStyleName("btn_link");
 
