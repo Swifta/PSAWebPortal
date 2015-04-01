@@ -279,7 +279,7 @@ public class AddUserModule {
 		comboCountry = combo;
 		comboCountry.setRequired(true);
 		cBasic.addComponent(combo);
-		// arrLDFields.add(combo);
+		arrLDFields.add(combo);
 		arrLAllFields.add(combo);
 		arrLGFields.add(combo);
 
@@ -288,7 +288,7 @@ public class AddUserModule {
 		comboState.setRequired(true);
 		comboState.setNullSelectionAllowed(false);
 		cBasic.addComponent(combo);
-		// arrLDFields.add(combo);
+		arrLDFields.add(combo);
 		arrLAllFields.add(combo);
 		arrLGFields.add(combo);
 
@@ -296,7 +296,7 @@ public class AddUserModule {
 		comboLG = combo;
 		comboLG.setRequired(true);
 		cBasic.addComponent(combo);
-		// arrLDFields.add(combo);
+		arrLDFields.add(combo);
 		arrLAllFields.add(combo);
 		arrLGFields.add(combo);
 
