@@ -98,15 +98,7 @@ public class BE2 {
 
 	public VerticalLayout queryBackEnd(String strSearchParams) {
 
-		if (container == null)
-			container = getTable();
 		hmFilter = new HashMap<>();
-		VerticalLayout searchResultsContainer = new VerticalLayout();
-		searchResultsContainer.setSizeFull();
-		searchResultsContainer.setSpacing(true);
-		searchResultsContainer
-				.setMargin(new MarginInfo(true, true, true, true));
-
 		String[] arrAllParams = strSearchParams.split("&");
 
 		StringBuilder strBuilder = new StringBuilder();
@@ -122,6 +114,15 @@ public class BE2 {
 				strBuilder.append(", ");
 			}
 		}
+
+		if (container == null)
+			container = getTable();
+
+		VerticalLayout searchResultsContainer = new VerticalLayout();
+		searchResultsContainer.setSizeFull();
+		searchResultsContainer.setSpacing(true);
+		searchResultsContainer
+				.setMargin(new MarginInfo(true, true, true, true));
 
 		int iLastIndexOfComma = strBuilder.lastIndexOf(",");
 		if (iLastIndexOfComma != -1) {
@@ -1153,8 +1154,18 @@ public class BE2 {
 		actionsC.setSizeUndefined();
 		actionsC.setStyleName("c_actions");
 
-		Object x = container.addItem();
-		Item trItem = container.getItem(x);
+		Object r = container.addItem();
+		if (r == null)
+			return;
+		Item trItem = container.getItem(r);
+
+		if (trItem == null) {
+			container.removeAllContainerFilters();
+			container.removeAllItems();
+			r = container.addItem();
+			trItem = container.getItem(r);
+		}
+
 		Property<CheckBox> tdPropertyCheck = trItem.getItemProperty(" ");
 		Property<String> tdPropertySN = trItem.getItemProperty("S/N");
 		// <String> tdPropertyUID = trItem.getItemProperty("UID");
@@ -1182,7 +1193,7 @@ public class BE2 {
 		tdPropertyActions.setValue(actionsC);
 
 		btnDetails = new BtnActions("Details");
-		btnDetails.setData(x);
+		btnDetails.setData(r);
 		btnDetails.setIcon(FontAwesome.ALIGN_JUSTIFY);
 
 		btnEdit = new BtnActions("Edit");
@@ -2041,9 +2052,13 @@ public class BE2 {
 		}
 
 		addFilters();
-		tb.setContainerDataSource(container);
-
 		int t = container.size();
+		if (t == 0) {
+			fetchData();
+		}
+
+		tb.setContainerDataSource(container);
+		t = container.size();
 
 		if (t > 30) {
 			t = 30;
@@ -2074,8 +2089,15 @@ public class BE2 {
 		arrLChkBulk = new ArrayList<>();
 		arrLCombos = new ArrayList<>();
 
+		fetchData();
+
+	}
+
+	public void fetchData() {
+
 		String drivers = "com.mysql.jdbc.Driver";
 		Connection conn = null;
+
 		try {
 			Class<?> driver_class = Class.forName(drivers);
 			Driver driver = (Driver) driver_class.newInstance();
@@ -2084,12 +2106,38 @@ public class BE2 {
 			conn = DriverManager.getConnection(MatsWebPortalUI.conf.DB,
 					MatsWebPortalUI.conf.UN, MatsWebPortalUI.conf.PW);
 
-			String qx = "SELECT acth.username as un, acth.msisdn as msisdn, acth.email as email,pf.profilename as prof, acths.accountholderstatusname as status,acthd.firstname as fn ,acthd.lastname as ln,id.identificationnumber as id,ad.streetaddress as street from accountholders acth, accountholderdetails acthd, accountholderstatus acths, identificationattribute id, address ad, profiles pf where acth.accountholderdetailid = acthd.accountdetailsid and acth.accountholderstatusid = acths.accountholderstatusid and acthd.identificationid = id.identificationattrid and acthd.addressid = ad.addressid and pf.profileid = acth.profileid and pf.profiletypeid = 1;";
-			// System.out.println("Search users query: " + qx);
+			// and acth.username = 'kenza'
+
+			String qx = "SELECT acth.username as un, acth.msisdn as msisdn, acth.email as email,pf.profilename as prof, acths.accountholderstatusname as status,acthd.firstname as fn ,acthd.lastname as ln,id.identificationnumber as id,ad.streetaddress as street from accountholders acth, accountholderdetails acthd, accountholderstatus acths, identificationattribute id, address ad, profiles pf where acth.accountholderdetailid = acthd.accountdetailsid and acth.accountholderstatusid = acths.accountholderstatusid and acthd.identificationid = id.identificationattrid and acthd.addressid = ad.addressid and pf.profileid = acth.profileid and pf.profiletypeid = 1 limit 5;";
+			String key_msisdn = "MSISDN";
+			String key_email = "Email";
+			String key_prof = "Profile Type";
+			String key_un = "Username";
+
+			String all = "ALL";
+
+			String con_prof = (hmFilter.containsKey(key_prof) && !hmFilter.get(
+					key_prof).equals(all)) ? " and pf.profilename = '"
+					+ hmFilter.get(key_prof) + "' " : "";
+
+			String con_un = hmFilter.containsKey(key_un) ? " and acth.username = '"
+					+ hmFilter.get(key_un) + "' "
+					: "";
+			String con_email = hmFilter.containsKey(key_email) ? " and acth.email = '"
+					+ hmFilter.get(key_email) + "' "
+					: "";
+			String con_msisdn = hmFilter.containsKey(key_msisdn) ? " and acth.msisdn = '"
+					+ hmFilter.get(key_msisdn) + "' "
+					: "";
+
+			qx = "SELECT acth.username as un, acth.msisdn as msisdn, acth.email as email,pf.profilename as prof, acths.accountholderstatusname as status,acthd.firstname as fn ,acthd.lastname as ln,id.identificationnumber as id,ad.streetaddress as street from accountholders acth, accountholderdetails acthd, accountholderstatus acths, identificationattribute id, address ad, profiles pf where acth.accountholderdetailid = acthd.accountdetailsid and acth.accountholderstatusid = acths.accountholderstatusid and acthd.identificationid = id.identificationattrid and acthd.addressid = ad.addressid and pf.profileid = acth.profileid and pf.profiletypeid = 1 "
+
+					+ con_un + con_msisdn + con_prof + con_email + " limit 5;";
 
 			Statement stmt = conn.createStatement();
 
 			ResultSet rs = stmt.executeQuery(qx);
+			// stmt.e
 			int x = 0;
 
 			while (rs.next()) {
@@ -2130,5 +2178,4 @@ public class BE2 {
 		}
 
 	}
-
 }

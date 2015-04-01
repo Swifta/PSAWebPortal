@@ -22,7 +22,6 @@ public class SearchUserModule {
 
 	private ArrayList<Object> arrLTfs;
 	private boolean isSearchURL = false;
-	private String curURL = null;
 
 	private Map<Integer, String> profToID;
 	private BE2 be;
@@ -106,7 +105,6 @@ public class SearchUserModule {
 			public void buttonClick(ClickEvent event) {
 
 				if (!isSearchURL) {
-					curURL = UI.getCurrent().getPage().getUriFragment();
 					isSearchURL = true;
 				}
 				StringBuilder strBuilder = new StringBuilder();
