@@ -47,6 +47,13 @@ public class SearchUserModule {
 		be.addFilters(strParams);
 	}
 
+	public void search(String strParams) {
+
+		if (be == null)
+			be = new BE2();
+		be.search(strParams);
+	}
+
 	public FormLayout getSearchForm(String strUserType) {
 
 		FormLayout searchForm = new FormLayout();

@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.apache.axis2.AxisFault;
 
@@ -37,6 +38,7 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Embedded;
+import com.vaadin.ui.Field;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -74,17 +76,18 @@ public class BE2 {
 	private ArrayList<String> arrLBulkIDs;
 
 	private ThemeResource icDelete;
-	private HashMap<String, Integer> hm;
+	private TreeMap<String, Integer> hm;
 	private HashMap<String, String> hmFilter;
 	private IndexedContainer container;
-	ArrayList<Object> arrLTfs;
-	Button btnLock;
+	private ArrayList<Object> arrLTfs;
+	private Button btnLock;
+	private boolean isFChanged = true;
 	public Window upop;
 
 	BE2() {
 		icDelete = new ThemeResource("img/ic_delete_small.png");
 		isPopupShowing = false;
-		hm = new HashMap<>();
+		hm = new TreeMap<>();
 		hm.put("ALL", 0);
 		hm.put("MATS_ADMIN_USER_PROFILE", 1);
 		hm.put("MATS_FINANCIAL_CONTROLLER_USER_PROFILE", 3);
@@ -115,8 +118,9 @@ public class BE2 {
 			}
 		}
 
+		tb = new PagedTableCustom("Results (Summary)");
 		if (container == null)
-			container = getTable();
+			getTable();
 
 		VerticalLayout searchResultsContainer = new VerticalLayout();
 		searchResultsContainer.setSizeFull();
@@ -168,8 +172,6 @@ public class BE2 {
 
 		lbSearch.setValue(+container.size() + " Result(s) " + "for: "
 				+ strSearchResultsParams);
-
-		tb = new PagedTableCustom("Results (Summary)");
 
 		tb.setColumnIcon(" ", FontAwesome.CHECK_SQUARE_O);
 		tb.setWidth("100%");
@@ -1159,9 +1161,8 @@ public class BE2 {
 			return;
 		Item trItem = container.getItem(r);
 
-		if (trItem == null) {
-			container.removeAllContainerFilters();
-			container.removeAllItems();
+		while (trItem == null) {
+			container.removeItem(r);
 			r = container.addItem();
 			trItem = container.getItem(r);
 		}
@@ -1477,31 +1478,36 @@ public class BE2 {
 
 		});
 
+		Notification.show(container.size() + ":::::x:::::::x:::::::::x:::::::",
+				Notification.Type.ERROR_MESSAGE);
+
 	}
 
-	private IndexedContainer getTable() {
+	private void getTable() {
 		getDBData();
-		return container;
+
 	}
 
 	private void addFilters() {
-
 		container.removeAllContainerFilters();
-
 		Filter f = null;
+		String prof = hmFilter.get("Profile Type");
 
-		String prof = hmFilter.remove("Profile Type");
-
-		if (!prof.equals("ALL")) {
+		if (prof != null && !prof.equals("ALL")) {
 			f = new Compare.Equal("Profile Type", prof);
 			container.addContainerFilter(f);
+			Notification.show("Profile : " + prof,
+					Notification.Type.ERROR_MESSAGE);
 		}
 
 		Entry<String, String> e = null;
 		Iterator<Entry<String, String>> itr = hmFilter.entrySet().iterator();
 
 		while (itr.hasNext()) {
+
 			e = itr.next();
+			if (e.getKey().equals("Profile Type"))
+				continue;
 			f = new Compare.Equal(e.getKey(), e.getValue());
 			container.addContainerFilter(f);
 
@@ -1876,16 +1882,9 @@ public class BE2 {
 
 		ArrayList<String> arrLTfCaptions = new ArrayList<String>();
 
-		// arrLTfCaptions.add("ID");
-		// arrLTfCaptions.add(strUserType + " ID");
-		// arrLTfCaptions.add("Type of User");
 		arrLTfCaptions.add("Username");
 		arrLTfCaptions.add("MSISDN");
 		arrLTfCaptions.add("Email");
-		// arrLTfCaptions.add("Company");
-		// arrLTfCaptions.add("First Name");
-		// arrLTfCaptions.add("Last Name");
-		// arrLTfCaptions.add("Others");
 
 		searchForm.addComponent(searchUserHeader);
 		arrLTfs = addTfs(arrLTfCaptions, searchForm);
@@ -1899,7 +1898,7 @@ public class BE2 {
 		btnReload.setDescription("Reload Table Content");
 
 		searchForm.addComponent(btnFilter);
-		btnSearch.setEnabled(false);
+		// btnSearch.setEnabled(false);
 
 		searchForm.addComponent(btnSearch);
 
@@ -1915,13 +1914,8 @@ public class BE2 {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				Collection<Filter> fs = container.getContainerFilters();
-				container.removeAllContainerFilters();
-				getDBData();
 
-				for (Filter f : fs) {
-					// container.addContainerFilter(f);
-				}
+				getDBData();
 				tb.setContainerDataSource(container);
 				int x = container.size();
 				if (x > 30)
@@ -1941,17 +1935,21 @@ public class BE2 {
 			@Override
 			public void buttonClick(ClickEvent event) {
 
+				if (!isFChanged)
+					return;
+				isFChanged = false;
+
 				StringBuilder strBuilder = new StringBuilder();
 
-				for (Object tF : arrLTfs) {
-					if (tF instanceof TextField) {
+				for (Object f : arrLTfs) {
+					if (f instanceof TextField) {
 
-						strBuilder.append(((TextField) tF).getCaption());
+						strBuilder.append(((TextField) f).getCaption());
 						strBuilder.append("=");
-						strBuilder.append(((TextField) tF).getValue());
+						strBuilder.append(((TextField) f).getValue());
 						strBuilder.append("&");
 					} else {
-						ComboBox combo = (ComboBox) tF;
+						ComboBox combo = (ComboBox) f;
 						String strProf = combo.getItemCaption(combo.getValue());
 						strBuilder.append(combo.getCaption());
 						strBuilder.append("=");
@@ -1962,9 +1960,9 @@ public class BE2 {
 
 				String strParams = strBuilder.toString();
 
-				String url = "!" + UMView.UM
-						+ "/?action=filter_search_results&" + strParams;
-				UI.getCurrent().getPage().setUriFragment(url);
+				// String url = "!" + UMView.UM
+				// + "/?action=filter_search_results&" + strParams;
+				// UI.getCurrent().getPage().setUriFragment(url);
 
 			}
 		});
@@ -1998,10 +1996,18 @@ public class BE2 {
 				}
 
 				String strSearchParams = strBuilder.toString();
-				String url = "!" + UMView.UM + "/?action=search_results&"
-						+ strSearchParams;
+				// String url = "!" + UMView.UM + "/?action=search_results&"
+				// + strSearchParams;
 
-				UI.getCurrent().getPage().setUriFragment(url);
+				// UI.getCurrent().getPage().setUriFragment(url);
+
+				search("");
+
+				/*
+				 * String url = "!" + UMView.UM +
+				 * "/?action=filter_search_results&" + strParams;
+				 * UI.getCurrent().getPage().setUriFragment(url);
+				 */
 
 			}
 		});
@@ -2015,8 +2021,9 @@ public class BE2 {
 		ArrayList<Object> arrLTfs = new ArrayList<Object>();
 		TextField tF;
 
-		ComboBox comboProfile = new ComboBox("Profile Type");
+		final ComboBox comboProfile = new ComboBox("Profile Type");
 		comboProfile.setNullSelectionAllowed(false);
+		// addVCL(comboProfile, comboProfile.getCaption());
 
 		Set<Entry<String, Integer>> set = hm.entrySet();
 
@@ -2025,41 +2032,104 @@ public class BE2 {
 			comboProfile.setItemCaption(e.getValue(), e.getKey());
 		}
 
-		comboProfile.select(0);
+		comboProfile.select(hm.get(hmFilter.get("Profile Type")));
+		comboProfile.addValueChangeListener(new ValueChangeListener() {
+
+			private static final long serialVersionUID = -8351740132669945359L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				Object obj = event.getProperty().getValue();
+				String cap = "Profile Type";
+
+				isFChanged = true;
+				if (obj == null) {
+					if (hmFilter.containsKey(cap)) {
+						hmFilter.remove(cap);
+						return;
+					}
+					return;
+				}
+
+				if (obj.toString().trim().isEmpty()) {
+					if (hmFilter.containsKey(cap)) {
+						hmFilter.remove(cap);
+						return;
+					}
+					return;
+				}
+
+				hmFilter.put(cap, comboProfile.getItemCaption(obj));
+
+			}
+
+		});
+
+		isFChanged = false;
 
 		arrLTfs.add(comboProfile);
 		searchForm.addComponent(comboProfile);
 
 		for (String tFCaption : arrLTfCaptions) {
-			tF = new TextField(tFCaption);
-			arrLTfs.add(tF);
 
+			tF = new TextField(tFCaption);
+			if (hmFilter.containsKey(tFCaption))
+				tF.setValue(hmFilter.get(tFCaption));
+			addVCL(tF, tF.getCaption());
+			arrLTfs.add(tF);
 			searchForm.addComponent(tF);
 		}
+
 		return arrLTfs;
+	}
+
+	private void addVCL(Field<?> f, final String cap) {
+		f.addValueChangeListener(new ValueChangeListener() {
+
+			private static final long serialVersionUID = 7550833698917955686L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				Object obj = event.getProperty().getValue();
+				isFChanged = true;
+				if (obj == null) {
+					if (hmFilter.containsKey(cap)) {
+						hmFilter.remove(cap);
+						return;
+					}
+					return;
+				}
+
+				if (obj.toString().trim().isEmpty()) {
+					if (hmFilter.containsKey(cap)) {
+						hmFilter.remove(cap);
+						return;
+					}
+					return;
+				}
+
+				hmFilter.put(cap, obj.toString());
+
+			}
+
+		});
 	}
 
 	public void addFilters(String strParams) {
 
-		String[] arrAllParams = strParams.split("&");
-		hmFilter.clear();
-		String[] arrP = null;
-		for (String strParam : arrAllParams) {
-			arrP = strParam.split("=");
-			if (arrP.length == 2) {
-				hmFilter.put(arrP[0], arrP[1]);
-			}
-		}
+		Notification.show(strParams, Notification.Type.ERROR_MESSAGE);
 
+		String[] arrAllParams = strParams.split("&");
+
+		/*
+		 * hmFilter.clear(); String[] arrP = null; for (String strParam :
+		 * arrAllParams) { arrP = strParam.split("="); if (arrP.length == 2) {
+		 * hmFilter.put(arrP[0], arrP[1]); } }
+		 */
 		addFilters();
 		int t = container.size();
-		if (t == 0) {
-			fetchData();
-		}
-
 		tb.setContainerDataSource(container);
 		t = container.size();
-
 		if (t > 30) {
 			t = 30;
 		}
@@ -2069,7 +2139,6 @@ public class BE2 {
 	}
 
 	private void getDBData() {
-
 		container = new IndexedContainer();
 		container.addContainerProperty(" ", CheckBox.class, null);
 		container.addContainerProperty("S/N", String.class, "000");
@@ -2116,8 +2185,8 @@ public class BE2 {
 
 			String all = "ALL";
 
-			String con_prof = (hmFilter.containsKey(key_prof) && !hmFilter.get(
-					key_prof).equals(all)) ? " and pf.profilename = '"
+			String con_prof = hmFilter.containsKey(key_prof) ? hmFilter.get(
+					key_prof).equals(all) ? "" : " and pf.profilename = '"
 					+ hmFilter.get(key_prof) + "' " : "";
 
 			String con_un = hmFilter.containsKey(key_un) ? " and acth.username = '"
@@ -2133,12 +2202,13 @@ public class BE2 {
 			qx = "SELECT acth.username as un, acth.msisdn as msisdn, acth.email as email,pf.profilename as prof, acths.accountholderstatusname as status,acthd.firstname as fn ,acthd.lastname as ln,id.identificationnumber as id,ad.streetaddress as street from accountholders acth, accountholderdetails acthd, accountholderstatus acths, identificationattribute id, address ad, profiles pf where acth.accountholderdetailid = acthd.accountdetailsid and acth.accountholderstatusid = acths.accountholderstatusid and acthd.identificationid = id.identificationattrid and acthd.addressid = ad.addressid and pf.profileid = acth.profileid and pf.profiletypeid = 1 "
 
 					+ con_un + con_msisdn + con_prof + con_email + " limit 5;";
+			System.out.println(qx);
 
 			Statement stmt = conn.createStatement();
 
 			ResultSet rs = stmt.executeQuery(qx);
 			// stmt.e
-			int x = 0;
+			int x = container.size();
 
 			while (rs.next()) {
 				x++;
@@ -2157,10 +2227,10 @@ public class BE2 {
 
 			}
 
+			tb.setContainerDataSource(container);
+
 		} catch (SQLException | ClassNotFoundException | InstantiationException
 				| IllegalAccessException | IllegalStateException e) {
-
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			if (!(e instanceof IllegalStateException)) {
 				Notification.show("DB Connection",
@@ -2176,6 +2246,36 @@ public class BE2 {
 					e.printStackTrace();
 				}
 		}
+
+	}
+
+	public void search(String strParams) {
+
+		Notification.show(strParams, Notification.Type.ERROR_MESSAGE);
+
+		String[] arrAllParams = strParams.split("&");
+
+		/*
+		 * hmFilter.clear(); String[] arrP = null; for (String strParam :
+		 * arrAllParams) { arrP = strParam.split("="); if (arrP.length == 2) {
+		 * hmFilter.put(arrP[0], arrP[1]); } }
+		 */
+		addFilters();
+		int t = container.size();
+		if (t == 0) {
+			container.removeAllContainerFilters();
+			fetchData();
+			addFilters();
+		}
+
+		tb.setContainerDataSource(container);
+		t = container.size();
+
+		if (t > 30) {
+			t = 30;
+		}
+
+		tb.setPageLength(t);
 
 	}
 }

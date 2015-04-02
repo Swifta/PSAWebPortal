@@ -322,6 +322,7 @@ public class UMView extends VerticalLayout implements View {
 				csman.addComponent(csr);
 				csman.setExpandRatio(csr, 1.0f);
 				cs.setVisible(false);
+				sum.search(strb.toString());
 				break;
 			}
 			case "filter_search_results": {
