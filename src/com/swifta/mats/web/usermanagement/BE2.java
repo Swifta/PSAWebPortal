@@ -29,6 +29,8 @@ import com.vaadin.data.Validator;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.data.util.filter.Compare;
+import com.vaadin.event.FieldEvents.FocusEvent;
+import com.vaadin.event.FieldEvents.FocusListener;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
@@ -38,7 +40,6 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Embedded;
-import com.vaadin.ui.Field;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -81,7 +82,9 @@ public class BE2 {
 	private IndexedContainer container;
 	private ArrayList<Object> arrLTfs;
 	private Button btnLock;
-	private boolean isFChanged = true;
+	// private boolean isFChanged = false;
+	private boolean isSFC = false;
+	private boolean isFFC = false;
 	public Window upop;
 
 	BE2() {
@@ -1478,9 +1481,6 @@ public class BE2 {
 
 		});
 
-		Notification.show(container.size() + ":::::x:::::::x:::::::::x:::::::",
-				Notification.Type.ERROR_MESSAGE);
-
 	}
 
 	private void getTable() {
@@ -1496,8 +1496,6 @@ public class BE2 {
 		if (prof != null && !prof.equals("ALL")) {
 			f = new Compare.Equal("Profile Type", prof);
 			container.addContainerFilter(f);
-			Notification.show("Profile : " + prof,
-					Notification.Type.ERROR_MESSAGE);
 		}
 
 		Entry<String, String> e = null;
@@ -1935,9 +1933,9 @@ public class BE2 {
 			@Override
 			public void buttonClick(ClickEvent event) {
 
-				if (!isFChanged)
+				if (!isFFC)
 					return;
-				isFChanged = false;
+				isFFC = false;
 
 				StringBuilder strBuilder = new StringBuilder();
 
@@ -1958,7 +1956,9 @@ public class BE2 {
 					}
 				}
 
+				// Notification.show("kdkdkdkdkkdkdkdkdkkdkdkd");
 				String strParams = strBuilder.toString();
+				addFilters(strParams);
 
 				// String url = "!" + UMView.UM
 				// + "/?action=filter_search_results&" + strParams;
@@ -1976,6 +1976,9 @@ public class BE2 {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
+				if (!isSFC)
+					return;
+				isSFC = false;
 				StringBuilder strBuilder = new StringBuilder();
 
 				for (Object tF : arrLTfs) {
@@ -2042,7 +2045,8 @@ public class BE2 {
 				Object obj = event.getProperty().getValue();
 				String cap = "Profile Type";
 
-				isFChanged = true;
+				isSFC = true;
+				isFFC = true;
 				if (obj == null) {
 					if (hmFilter.containsKey(cap)) {
 						hmFilter.remove(cap);
@@ -2065,7 +2069,8 @@ public class BE2 {
 
 		});
 
-		isFChanged = false;
+		isFFC = false;
+		isSFC = false;
 
 		arrLTfs.add(comboProfile);
 		searchForm.addComponent(comboProfile);
@@ -2073,6 +2078,7 @@ public class BE2 {
 		for (String tFCaption : arrLTfCaptions) {
 
 			tF = new TextField(tFCaption);
+
 			if (hmFilter.containsKey(tFCaption))
 				tF.setValue(hmFilter.get(tFCaption));
 			addVCL(tF, tF.getCaption());
@@ -2083,7 +2089,19 @@ public class BE2 {
 		return arrLTfs;
 	}
 
-	private void addVCL(Field<?> f, final String cap) {
+	private void addVCL(final TextField f, final String cap) {
+		f.addFocusListener(new FocusListener() {
+
+			private static final long serialVersionUID = 4627500848934536525L;
+
+			@Override
+			public void focus(FocusEvent event) {
+				f.selectAll();
+
+			}
+
+		});
+
 		f.addValueChangeListener(new ValueChangeListener() {
 
 			private static final long serialVersionUID = 7550833698917955686L;
@@ -2091,7 +2109,8 @@ public class BE2 {
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				Object obj = event.getProperty().getValue();
-				isFChanged = true;
+				isFFC = true;
+				isSFC = true;
 				if (obj == null) {
 					if (hmFilter.containsKey(cap)) {
 						hmFilter.remove(cap);
@@ -2117,7 +2136,7 @@ public class BE2 {
 
 	public void addFilters(String strParams) {
 
-		Notification.show(strParams, Notification.Type.ERROR_MESSAGE);
+		// Notification.show(strParams, Notification.Type.ERROR_MESSAGE);
 
 		String[] arrAllParams = strParams.split("&");
 
@@ -2177,7 +2196,7 @@ public class BE2 {
 
 			// and acth.username = 'kenza'
 
-			String qx = "SELECT acth.username as un, acth.msisdn as msisdn, acth.email as email,pf.profilename as prof, acths.accountholderstatusname as status,acthd.firstname as fn ,acthd.lastname as ln,id.identificationnumber as id,ad.streetaddress as street from accountholders acth, accountholderdetails acthd, accountholderstatus acths, identificationattribute id, address ad, profiles pf where acth.accountholderdetailid = acthd.accountdetailsid and acth.accountholderstatusid = acths.accountholderstatusid and acthd.identificationid = id.identificationattrid and acthd.addressid = ad.addressid and pf.profileid = acth.profileid and pf.profiletypeid = 1 limit 5;";
+			String qx = "SELECT acth.username as un, acth.msisdn as msisdn, acth.email as email,pf.profilename as prof, acths.accountholderstatusname as status,acthd.firstname as fn ,acthd.lastname as ln,id.identificationnumber as id,ad.streetaddress as street from accountholders acth, accountholderdetails acthd, accountholderstatus acths, identificationattribute id, address ad, profiles pf where acth.accountholderdetailid = acthd.accountdetailsid and acth.accountholderstatusid = acths.accountholderstatusid and acthd.identificationid = id.identificationattrid and acthd.addressid = ad.addressid and pf.profileid = acth.profileid and pf.profiletypeid = 1 limit 100;";
 			String key_msisdn = "MSISDN";
 			String key_email = "Email";
 			String key_prof = "Profile Type";
@@ -2201,8 +2220,12 @@ public class BE2 {
 
 			qx = "SELECT acth.username as un, acth.msisdn as msisdn, acth.email as email,pf.profilename as prof, acths.accountholderstatusname as status,acthd.firstname as fn ,acthd.lastname as ln,id.identificationnumber as id,ad.streetaddress as street from accountholders acth, accountholderdetails acthd, accountholderstatus acths, identificationattribute id, address ad, profiles pf where acth.accountholderdetailid = acthd.accountdetailsid and acth.accountholderstatusid = acths.accountholderstatusid and acthd.identificationid = id.identificationattrid and acthd.addressid = ad.addressid and pf.profileid = acth.profileid and pf.profiletypeid = 1 "
 
-					+ con_un + con_msisdn + con_prof + con_email + " limit 5;";
-			System.out.println(qx);
+					+ con_un
+					+ con_msisdn
+					+ con_prof
+					+ con_email
+					+ " limit 100;";
+			// System.out.println(qx);
 
 			Statement stmt = conn.createStatement();
 
@@ -2251,7 +2274,7 @@ public class BE2 {
 
 	public void search(String strParams) {
 
-		Notification.show(strParams, Notification.Type.ERROR_MESSAGE);
+		// Notification.show(strParams, Notification.Type.ERROR_MESSAGE);
 
 		String[] arrAllParams = strParams.split("&");
 
