@@ -337,7 +337,7 @@ public class AddUserModule {
 		tF = new TextField("Issuer");
 		tFIssuer = tF;
 		cCompany.addComponent(tF);
-		arrLDFields.add(tF);
+		// arrLDFields.add(tF);
 		arrLAllFields.add(tF);
 
 		dF = new PopupDateField("Issue Date");
@@ -655,35 +655,31 @@ public class AddUserModule {
 
 				isValidatorAdded = false;
 
-				if (comboProfile.getValue() != null
-						&& comboProfile.getValue().equals(11)) {
-					for (Field<?> f : arrLAllFields) {
-						f.setVisible(false);
-					}
-					for (Field<?> f : arrLDFields) {
-						f.setVisible(true);
-						f.setRequired(true);
-					}
-
-					tFFN.setCaption("Station Name");
-					tFMN.setCaption("Zone");
-					tFLN.setCaption("Sales Area");
-
-					/*
-					 * arrLPAddr.get(0).setCaption("Zone");
-					 * arrLPAddr.get(1).setCaption("Sales Area");
-					 * arrLPAddr.get(1).setRequired(true);
-					 * arrLPAddr.get(2).setCaption("Territory");
-					 */
-					cxSC.setVisible(false);
-					cxPC.setVisible(false);
-					cCompany.setVisible(false);
-					arrLValidatable = arrLDFields;
-					reset();
-					btnSave.setEnabled(false);
-
-					return;
-				}
+				/*
+				 * COMMENTED OUT BECAUSE THE FEATURE FOR CHANGING THE UI BASED
+				 * ON USER PROFILEL SELECTED HAS NOT BEEN FULLY TESTED if
+				 * (comboProfile.getValue() != null &&
+				 * comboProfile.getValue().equals(11)) {
+				 * btnSave.setEnabled(true); for (Field<?> f : arrLAllFields) {
+				 * f.setVisible(false); } for (Field<?> f : arrLDFields) {
+				 * f.setVisible(true); f.setRequired(true); }
+				 * 
+				 * tFFN.setCaption("Station Name"); tFMN.setCaption("Zone");
+				 * tFLN.setCaption("Sales Area");
+				 */
+				/*
+				 * arrLPAddr.get(0).setCaption("Zone");
+				 * arrLPAddr.get(1).setCaption("Sales Area");
+				 * arrLPAddr.get(1).setRequired(true);
+				 * arrLPAddr.get(2).setCaption("Territory");
+				 */
+				/*
+				 * cxSC.setVisible(false); cxPC.setVisible(false);
+				 * cCompany.setVisible(false); arrLValidatable = arrLDFields;
+				 * reset(); // btnSave.setEnabled(false);
+				 * 
+				 * return; }
+				 */
 				btnSave.setEnabled(true);
 				tFFN.setCaption("First Name");
 				tFMN.setCaption("Middle Name");

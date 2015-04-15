@@ -18,9 +18,9 @@ public class Client {
 
 			// Client.authenticate();
 			// Client.authenticate();
-			// Client.activate();
+			Client.activate();
 			// Client.linkuser();
-			Client.unlinkuser();
+			// Client.unlinkuser();
 
 			// System.out.println(result);
 
