@@ -2203,7 +2203,7 @@ public class UserDetailsModule {
 		StringBuilder sb = new StringBuilder();
 
 		sb.append(" SELECT concat(ahd.firstname,' ',ahd.lastname) as Name, ah.username as 'username', ah.msisdn as msisdn, ah.email as email ");
-		sb.append(" FROM psadatasourcetest.linkaccountrelations pl, accountholders ah, accountholderdetails ahd ");
+		sb.append(" FROM linkaccountrelations pl, accountholders ah, accountholderdetails ahd ");
 		sb.append(" where linkstatus = 'LINKED' ");
 		sb.append(" and ah.accountholderdetailid = ahd.accountdetailsid ");
 		sb.append(" and pl.childuserresourceid = ah.accountholderid ");
