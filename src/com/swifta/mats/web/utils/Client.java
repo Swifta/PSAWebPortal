@@ -18,13 +18,13 @@ public class Client {
 
 			// Client.authenticate();
 			// Client.authenticate();
-			Client.activate();
+			// Client.activate();
 			// Client.linkuser();
 			// Client.unlinkuser();
 
 			// System.out.println(result);
 
-			// Client.sql();
+			Client.sql();
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -320,12 +320,14 @@ public class Client {
 	public static void sql() {
 		StringBuilder agentsql = new StringBuilder();
 
-		agentsql.append("select ach.username, tbl1.cashbalance, tbl2.evaluebalance from accountholders ach,(select actxns.userresourceid as cashacctid,sum(actxns.closingbalance) - sum(actxns.openingbalance) as cashbalance");
-		agentsql.append(" from accounttransactions actxns, transactions trx,accounts acts where actxns.transactionid = trx.transactionid and trx.transactionstatusid = 1");
-		agentsql.append(" and actxns.accountresourceid = acts.accountid and acts.profileid = 12 group by actxns.userresourceid) tbl1,");
-		agentsql.append("(select actxns.userresourceid as evalueacctid,sum(actxns.closingbalance) - sum(actxns.openingbalance) as evaluebalance");
-		agentsql.append(" from accounttransactions actxns, transactions trx,accounts acts where actxns.transactionid = trx.transactionid and trx.transactionstatusid = 1");
-		agentsql.append(" and actxns.accountresourceid = acts.accountid and acts.profileid = 5 group by actxns.userresourceid) tbl2 where ach.accountholderid = tbl1.cashacctid and tbl1.cashacctid = tbl2.evalueacctid");
+		agentsql.append(" select cast(tbl1.datecreated as DATE) as datecreated, ctrs.operatorid as aid, ach.username as did, concat(achd.firstname,' ',achd.lastname) as fullname,  ");
+		agentsql.append(" tbl1.cashbalance as amount, addy.province as province, addy.postalCode as postalcode, addy.city as city from accountholders ach, accountholderdetails achd,address addy, ( select actxns.userresourceid as cashacctid, sum(actxns.closingbalance) - ");
+		agentsql.append(" sum(actxns.openingbalance) as cashbalance, actxns.datecreated as datecreated, acts.profileid as profileid, actxns.transactionid as transactionid from ");
+		agentsql.append(" accounttransactions actxns, transactions trx,accounts acts where actxns.transactionid = trx.transactionid and trx.transactionstatusid = 1 and ");
+		agentsql.append(" trx.transactiontypeid=1 and  actxns.accountresourceid = acts.accountid and acts.profileid = 12 group by CAST(actxns.datecreated as DATE),");
+		agentsql.append(" actxns.userresourceid) tbl1 join cashtransactions ctrs on ctrs.transactionid = tbl1.transactionid where ach.profileid = 11 and addy.addressid = achd.addressid and tbl1.cashacctid = ");
+		agentsql.append(" ach.accountholderid and achd.accountdetailsid = ach.accountholderdetailid and datecreated >= '2015-02-01' and datecreated <= DATE_ADD('2015-04-16', INTERVAL 1 DAY) ");
+		agentsql.append(" order by datecreated desc; ");
 
 		System.out.println(agentsql.toString());
 	}
