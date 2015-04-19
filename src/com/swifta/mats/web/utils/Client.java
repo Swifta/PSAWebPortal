@@ -326,9 +326,11 @@ public class Client {
 		agentsql.append(" accounttransactions actxns, transactions trx,accounts acts where actxns.transactionid = trx.transactionid and trx.transactionstatusid = 1 and ");
 		agentsql.append(" trx.transactiontypeid=1 and  actxns.accountresourceid = acts.accountid and acts.profileid = 12 group by CAST(actxns.datecreated as DATE),");
 		agentsql.append(" actxns.userresourceid) tbl1 join cashtransactions ctrs on ctrs.transactionid = tbl1.transactionid where ach.profileid = 11 and addy.addressid = achd.addressid and tbl1.cashacctid = ");
-		agentsql.append(" ach.accountholderid and achd.accountdetailsid = ach.accountholderdetailid and datecreated >= '2015-02-01' and datecreated <= DATE_ADD('2015-04-16', INTERVAL 1 DAY) ");
+		agentsql.append(" ach.accountholderid and achd.accountdetailsid = ach.accountholderdetailid and datecreated >= '"
+				+ "2015-01-01"
+				+ "' and datecreated <= DATE_ADD('"
+				+ "2015-04-01" + "', INTERVAL 1 DAY) ");
 		agentsql.append(" order by datecreated desc; ");
-
 		System.out.println(agentsql.toString());
 	}
 
