@@ -2311,8 +2311,9 @@ public class UserDetailsModule {
 
 			String status = "No response.";
 			try {
-				status = ums.unlinkUser(curUser, "8", UI.getCurrent()
-						.getSession().getAttribute("user").toString(), un);
+				status = UserManagementService.unlinkUser(curUser, 8, UI
+						.getCurrent().getSession().getAttribute("user")
+						.toString(), un);
 
 				if (status.equals("The operation was successful and completed")) {
 					if (container.removeItem(rid)) {
@@ -2447,9 +2448,10 @@ public class UserDetailsModule {
 				String strResponse = null;
 				try {
 
-					strResponse = ums.linkUser(tFP.getValue(), comboUProf
-							.getValue().toString(), tFInitUser.getValue(), tFU
-							.getValue());
+					strResponse = UserManagementService.linkUser(
+							tFP.getValue(), new Integer(comboUProf.getValue()
+									.toString()), tFInitUser.getValue(), tFU
+									.getValue());
 
 					if (strResponse
 							.equals("The operation was successful and completed")) {

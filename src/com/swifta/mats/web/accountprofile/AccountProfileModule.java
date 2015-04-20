@@ -271,17 +271,15 @@ public class AccountProfileModule {
 				lbError.setStyleName("lb_edit_pass_normal");
 				lbError.setValue("Saving new Password. Pleas wait...");
 
-				LoginService ls = new LoginService();
 				try {
-					String status = ls.authenticateUser(user.toString(),
-							tFCurPass.getValue());
+					String status = LoginService.webauthenticate(
+							user.toString(), tFCurPass.getValue());
 					if (status.equals("true")) {
 
 						String initu = UI.getCurrent().getSession()
 								.getAttribute("user").toString();
-						String response = UserManagementService
-								.passwordResetByAdmin(initu, initu,
-										tFNewPass.getValue());
+						String response = UserManagementService.passwordReset(
+								initu, tFNewPass.getValue());
 						if (response != null
 								&& response
 										.equals("PASSWORD_RESET_WAS_SUCCESSFUL")) {
@@ -328,6 +326,9 @@ public class AccountProfileModule {
 					btnSave.setEnabled(true);
 					return;
 
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 
 				cPlaceHolder.setStyleName("c_edit_pass_placeholder_hidden");

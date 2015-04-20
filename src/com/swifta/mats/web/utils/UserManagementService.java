@@ -23,23 +23,59 @@ import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Activati
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ActivationrequestResponse;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ActivationrequestResponseE;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Activationresponse;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.AddProfile;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.AddProfileE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.AddProfileResponse;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.AddProfileResponseE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.AddProfileThreshold;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.AddProfileThresholdE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.AddProfileThresholdResponse;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.AddProfileThresholdResponseE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.AddProfileThresholdrequestresponse;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.AddProfilerequestresponse;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Address;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Authenticationrequestresponse;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Credentials;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.EditProfile;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.EditProfileE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.EditProfileResponse;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.EditProfileResponseE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.EditProfilerequestresponse;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Identification;
-import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Linkaccountrequest;
-import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.LinkaccountrequestE;
-import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.LinkaccountrequestResponse;
-import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.LinkaccountrequestResponseE;
-import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Linkaccountresponse;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Linkaccount;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.LinkaccountE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.LinkaccountResponse;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.LinkaccountResponseE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Linkaccountrequestresponse;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.PasswordReset;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.PasswordResetE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.PasswordResetResponse;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.PasswordResetResponseE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.PasswordResetrequestresponse;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.PrimaryContactInfo;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Registration;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.RegistrationE;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.RegistrationResponse;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.RegistrationResponseE;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Registrationrequestresponse;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.RemoveProfile;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.RemoveProfileE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.RemoveProfilePermission;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.RemoveProfilePermissionE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.RemoveProfilePermissionResponse;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.RemoveProfilePermissionResponseE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.RemoveProfilePermissionrequestresponse;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.RemoveProfileResponse;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.RemoveProfileResponseE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.RemoveProfilerequestresponse;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.SecondaryContactInfo;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Securityquestions;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.SetDefaultaccountrequestresponse;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.SetProfilePermission;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.SetProfilePermissionE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.SetProfilePermissionResponse;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.SetProfilePermissionResponseE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.SetProfilePermissionrequestresponse;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Setdefaultaccount;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.SetdefaultaccountE;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.SetdefaultaccountResponse;
@@ -49,11 +85,16 @@ import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Setparen
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.SetparentaccountResponse;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.SetparentaccountResponseE;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Setparentrequestresponse;
-import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.UnLinkaccountresponse;
-import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Unlinkaccountrequest;
-import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.UnlinkaccountrequestE;
-import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.UnlinkaccountrequestResponse;
-import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.UnlinkaccountrequestResponseE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.UnLinkaccountrequestresponse;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Unlinkaccount;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.UnlinkaccountE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.UnlinkaccountResponse;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.UnlinkaccountResponseE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Webauthenticate;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.WebauthenticateE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.WebauthenticateResponse;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.WebauthenticateResponseE;
+import com.vaadin.ui.UI;
 
 public class UserManagementService {
 
@@ -65,14 +106,14 @@ public class UserManagementService {
 
 	final static String esbendpoint = MatsWebPortalUI.conf.ESB;
 
-	ProvisioningStub matsStub;
+	static ProvisioningStub matsStub;
 
 	org.apache.axis2.client.ServiceClient _serviceClient = null;
 
 	private static EndpointReference targetEPR = new EndpointReference(
 			esbendpoint);
 
-	public String registerUser(String bankAccount, int bankCodeid,
+	public static String registerUser(String bankAccount, int bankCodeid,
 			String bankdomainNameid, String clearingNumber, String currencyid,
 			String email, String msisdn, int profileid, String securityQuest,
 			String securityAns, String termscondition, String username,
@@ -149,6 +190,8 @@ public class UserManagementService {
 
 		String statusMessage = "";
 
+		registration.setLoggedinUser(UI.getCurrent().getSession()
+				.getAttribute("user").toString());
 		registration.setAccountholderdetails(accountholderdetails);
 		registration.setBankaccount(bankAccount);
 		registration.setBankcodeid(bankCodeid);
@@ -193,7 +236,7 @@ public class UserManagementService {
 
 	}
 
-	public String activateUser(String bankdomainid, String currency,
+	public static String activateUser(String bankdomainid, String currency,
 			String IDnumber, String resourceid, String SecurityAns,
 			String firstPin, String confirmPin) {
 
@@ -209,6 +252,8 @@ public class UserManagementService {
 
 			Activationrequest act = new Activationrequest();
 
+			act.setLoggedinUser(UI.getCurrent().getSession()
+					.getAttribute("user").toString());
 			act.setBankdomainid(bankdomainid);
 			act.setCredential(cre);
 			act.setCurrency(currency);
@@ -266,29 +311,31 @@ public class UserManagementService {
 		return statusMessage;
 	}
 
-	public String linkUser(String paraentaccountresourceid, String profileid,
-			String initiatinguserresourceid, String childuserresourceid)
-			throws RemoteException {
+	public static String linkUser(String paraentaccountresourceid,
+			int profileid, String initiatinguserresourceid,
+			String childuserresourceid) throws RemoteException {
 		String statusMessage = "";
 		matsStub = new ProvisioningStub(esbendpoint);
 
-		LinkaccountrequestE linkaccountrequest = new LinkaccountrequestE();
-		Linkaccountrequest linkrequest = new Linkaccountrequest();
+		LinkaccountE linkaccountrequest = new LinkaccountE();
+
+		Linkaccount linkrequest = new Linkaccount();
+		linkrequest.setLoggedinUser(UI.getCurrent().getSession()
+				.getAttribute("user").toString());
 		linkrequest.setChilduserresourceid(childuserresourceid);
 		linkrequest.setParaentaccountresourceid(paraentaccountresourceid);
 		linkrequest.setProfileid(profileid);
 		linkrequest.setInitiatinguserresourceid(paraentaccountresourceid);
 
-		linkaccountrequest.setLinkaccountrequest(linkrequest);
+		linkaccountrequest.setLinkaccount(linkrequest);
 
-		LinkaccountrequestResponseE response = matsStub
-				.linkaccountrequest(linkaccountrequest);
+		LinkaccountResponseE response = matsStub
+				.linkaccount(linkaccountrequest);
 
 		if (response != null) {
-			LinkaccountrequestResponse response2 = response
-					.getLinkaccountrequestResponse();
+			LinkaccountResponse response2 = response.getLinkaccountResponse();
 			if (response2 != null) {
-				Linkaccountresponse response3 = response2.get_return();
+				Linkaccountrequestresponse response3 = response2.get_return();
 				if (response3 != null) {
 					statusMessage = response3.getResponsemessage();
 				} else {
@@ -304,8 +351,8 @@ public class UserManagementService {
 		return statusMessage;
 	}
 
-	public String setParent(String parentid, String reason, String resourceid)
-			throws RemoteException {
+	public static String setParent(String parentid, String reason,
+			String resourceid) throws RemoteException {
 		String statusMessage = "";
 		matsStub = new ProvisioningStub(
 				"http://54.164.96.105:8283/services/Provisionservice");
@@ -342,7 +389,7 @@ public class UserManagementService {
 		return statusMessage;
 	}
 
-	public String setDefaultAccount(String initiatinguserresourceid,
+	public static String setDefaultAccount(String initiatinguserresourceid,
 			String childuserresourceid, String paraentaccountresourceid)
 			throws RemoteException {
 		String statusMessage = "";
@@ -350,6 +397,9 @@ public class UserManagementService {
 
 		SetdefaultaccountE setdefaultaccounte = new SetdefaultaccountE();
 		Setdefaultaccount setdefaultaccount = new Setdefaultaccount();
+
+		setdefaultaccount.setLoggedinUser(UI.getCurrent().getSession()
+				.getAttribute("user").toString());
 		setdefaultaccount.setParaentaccountresourceid(paraentaccountresourceid);
 		setdefaultaccount.setChilduserresourceid(childuserresourceid);
 		setdefaultaccount.setInitiatinguserresourceid(initiatinguserresourceid);
@@ -380,76 +430,42 @@ public class UserManagementService {
 		return statusMessage;
 	}
 
-	public static String passwordResetByAdmin(String initiatinguser,
-			String username, String newPassword) throws AxisFault {
-
-		ServiceClient sender = new ServiceClient();
+	public static String passwordReset(String username, String newPassword)
+			throws Exception {
 
 		String statusMessage = "";
-		try {
+		matsStub = new ProvisioningStub(esbendpoint);
 
-			OMFactory fac = OMAbstractFactory.getOMFactory();
+		PasswordResetE passwordResetE = new PasswordResetE();
+		PasswordReset passwordReset = new PasswordReset();
 
-			OMNamespace omNs = fac.createOMNamespace(
-					"http://service.ws.um.carbon.wso2.org", "ser");
+		passwordReset.setLoggedinUser(UI.getCurrent().getSession()
+				.getAttribute("user").toString());
+		passwordReset.setUsername(username);
+		passwordReset.setConfirmnewpassword(newPassword);
 
-			OMElement updateCredentialByAdmin = fac.createOMElement(
-					"updateCredentialByAdmin", omNs);
+		passwordResetE.setPasswordReset(passwordReset);
 
-			OMElement userNameElement = fac.createOMElement("userName", omNs);
-			userNameElement.addChild(fac
-					.createOMText(userNameElement, username));
+		PasswordResetResponseE response = matsStub
+				.passwordReset(passwordResetE);
 
-			OMElement newCredentialElement = fac.createOMElement(
-					"newCredential", omNs);
-			newCredentialElement.addChild(fac.createOMText(
-					newCredentialElement, newPassword));
-
-			updateCredentialByAdmin.addChild(userNameElement);
-			updateCredentialByAdmin.addChild(newCredentialElement);
-
-			Options options = new Options();
-			options.setTo(targetEPR);
-			options.setTransportInProtocol(Constants.TRANSPORT_HTTP);
-			options.setAction("urn:updateCredentialByAdmin");
-
-			options.setProperty(HTTPConstants.CHUNKED, Constants.VALUE_FALSE);
-
-			sender = new ServiceClient();
-			sender.setOptions(options);
-			OMElement result = sender.sendReceive(updateCredentialByAdmin);
-
-			OMElement firstelement = result.getFirstElement();
-
-			statusMessage = firstelement.getFirstElement().getText();
-
-			return statusMessage;
-
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			// e.printStackTrace();
-			try {
-				System.out
-						.println("HTTP status code: "
-								+ sender.getLastOperationContext()
-										.getMessageContext(
-												WSDLConstants.MESSAGE_LABEL_IN_VALUE)
-										.getProperty(
-												HTTPConstants.MC_HTTP_STATUS_CODE));
-				Integer statuscode = (Integer) sender
-						.getLastOperationContext()
-						.getMessageContext(WSDLConstants.MESSAGE_LABEL_IN_VALUE)
-						.getProperty(HTTPConstants.MC_HTTP_STATUS_CODE);
-				if (statuscode == 202) {
-					statusMessage = "PASSWORD_RESET_WAS_SUCCESSFUL";
+		if (response != null) {
+			PasswordResetResponse response2 = response
+					.getPasswordResetResponse();
+			if (response2 != null) {
+				PasswordResetrequestresponse response3 = response2.get_return();
+				if (response3 != null) {
+					statusMessage = response3.getResponsemessage();
 				} else {
-					statusMessage = "REQUEST CANNOT BE COMPLETED AT THIS MOMENT, TRY AGAIN LATER1";
+					statusMessage = "Response3 is empty";
 				}
-			} catch (Exception e1) {
-				statusMessage = "REQUEST CANNOT BE COMPLETED AT THIS MOMENT, TRY AGAIN LATER";
-				e1.printStackTrace();
+			} else {
+				statusMessage = "setDefaultAccount Response is empty";
 			}
+		} else {
+			statusMessage = "setDefaultAccount Response is empty";
 		}
+
 		return statusMessage;
 
 	}
@@ -604,29 +620,31 @@ public class UserManagementService {
 
 	}
 
-	public String unlinkUser(String paraentaccountresourceid, String profileid,
-			String initiatinguserresourceid, String childuserresourceid)
-			throws RemoteException {
+	public static String unlinkUser(String paraentaccountresourceid,
+			int profileid, String initiatinguserresourceid,
+			String childuserresourceid) throws RemoteException {
 		String statusMessage = "";
 		matsStub = new ProvisioningStub(esbendpoint);
 
-		UnlinkaccountrequestE unlinkaccountrequest = new UnlinkaccountrequestE();
-		Unlinkaccountrequest unlinkrequest = new Unlinkaccountrequest();
+		UnlinkaccountE unlinkaccountrequest = new UnlinkaccountE();
+		Unlinkaccount unlinkrequest = new Unlinkaccount();
+		unlinkrequest.setLoggedinUser(UI.getCurrent().getSession()
+				.getAttribute("user").toString());
 		unlinkrequest.setChilduserresourceid(childuserresourceid);
 		unlinkrequest.setParaentaccountresourceid(paraentaccountresourceid);
 		unlinkrequest.setProfileid(profileid);
 		unlinkrequest.setInitiatinguserresourceid(paraentaccountresourceid);
 
-		unlinkaccountrequest.setUnlinkaccountrequest(unlinkrequest);
+		unlinkaccountrequest.setUnlinkaccount(unlinkrequest);
 
-		UnlinkaccountrequestResponseE response = matsStub
-				.unlinkaccountrequest(unlinkaccountrequest);
+		UnlinkaccountResponseE response = matsStub
+				.unlinkaccount(unlinkaccountrequest);
 
 		if (response != null) {
-			UnlinkaccountrequestResponse response2 = response
-					.getUnlinkaccountrequestResponse();
+			UnlinkaccountResponse response2 = response
+					.getUnlinkaccountResponse();
 			if (response2 != null) {
-				UnLinkaccountresponse response3 = response2.get_return();
+				UnLinkaccountrequestresponse response3 = response2.get_return();
 				if (response3 != null) {
 					statusMessage = response3.getResponsemessage();
 				}
@@ -646,4 +664,402 @@ public class UserManagementService {
 		return statusMessage;
 	}
 
+	public static String addProfile(String profilename, int profiletypeid)
+			throws Exception {
+
+		String statusMessage = "";
+		try {
+
+			matsStub = new ProvisioningStub(esbendpoint);
+
+			AddProfileE addProfileE = new AddProfileE();
+			AddProfile addProfile = new AddProfile();
+
+			// addProfile.setLoggedinUser(UI.getCurrent().getSession()
+			// .getAttribute("user").toString());
+
+			addProfile.setLoggedinUser("admin");
+			addProfile.setProfilename(profilename);
+			addProfile.setProfiletypeid(profiletypeid);
+
+			addProfileE.setAddProfile(addProfile);
+
+			AddProfileResponseE response = matsStub.addProfile(addProfileE);
+
+			if (response != null) {
+				AddProfileResponse response2 = response.getAddProfileResponse();
+				if (response2 != null) {
+					AddProfilerequestresponse response3 = response2
+							.get_return();
+					if (response3 != null) {
+						statusMessage = response3.getResponseMessage();
+					}
+
+					else {
+						statusMessage = "Response3 is empty";
+					}
+
+				} else {
+					statusMessage = "addprofile request Response is empty";
+				}
+
+			} else {
+				statusMessage = "addprofile request Response is empty";
+			}
+
+		} catch (Exception e) {
+			try {
+				System.out
+						.println("HTTP status code: "
+								+ matsStub
+										._getServiceClient()
+										.getLastOperationContext()
+										.getMessageContext(
+												WSDLConstants.MESSAGE_LABEL_IN_VALUE)
+										.getProperty(
+												HTTPConstants.MC_HTTP_STATUS_CODE));
+				Integer statuscode = (Integer) matsStub
+						._getServiceClient()
+						.getLastOperationContext()
+						.getMessageContext(WSDLConstants.MESSAGE_LABEL_IN_VALUE)
+						.getProperty(HTTPConstants.MC_HTTP_STATUS_CODE);
+				if (statuscode == 202) {
+					statusMessage = "Profile added successfully";
+				} else {
+					statusMessage = "REQUEST CANNOT BE COMPLETED AT THIS MOMENT, TRY AGAIN LATER";
+				}
+			} catch (Exception e1) {
+				statusMessage = "REQUEST CANNOT BE COMPLETED AT THIS MOMENT, TRY AGAIN LATER";
+				e1.printStackTrace();
+			}
+		}
+
+		return statusMessage;
+
+	}
+
+	public static String addProfileThreshold(String profilename,
+			int[] transactiontypeids, int profileid, int thresholdtypeid,
+			int profiletypeid) throws Exception {
+		String statusMessage = "";
+		matsStub = new ProvisioningStub(esbendpoint);
+
+		AddProfileThresholdE addProfileThresholdE = new AddProfileThresholdE();
+		AddProfileThreshold addProfileThreshold = new AddProfileThreshold();
+
+		addProfileThreshold.setLoggedinUser(UI.getCurrent().getSession()
+				.getAttribute("user").toString());
+		addProfileThreshold.setProfilename(profilename);
+		addProfileThreshold.setProfileid(profileid);
+		addProfileThreshold.setAction(transactiontypeids);
+		addProfileThreshold.setThresholdtypeid(thresholdtypeid);
+		addProfileThreshold.setProfiletypeid(profiletypeid);
+
+		addProfileThresholdE.setAddProfileThreshold(addProfileThreshold);
+
+		AddProfileThresholdResponseE response = matsStub
+				.addProfileThreshold(addProfileThresholdE);
+
+		if (response != null) {
+			AddProfileThresholdResponse response2 = response
+					.getAddProfileThresholdResponse();
+			if (response2 != null) {
+				AddProfileThresholdrequestresponse response3 = response2
+						.get_return();
+				if (response3 != null) {
+					statusMessage = response3.getResponseMessage();
+				}
+
+				else {
+					statusMessage = "Response3 is empty";
+				}
+
+			} else {
+				statusMessage = "addprofilethreshold request Response is empty";
+			}
+
+		} else {
+			statusMessage = "addprofilethreshold request Response is empty";
+		}
+
+		return statusMessage;
+
+	}
+
+	public static String editProfile(String profilename, String oldprofilename,
+			int profileid) throws Exception {
+		String statusMessage = "";
+
+		try {
+			matsStub = new ProvisioningStub(esbendpoint);
+
+			EditProfileE editProfileE = new EditProfileE();
+			EditProfile editProfile = new EditProfile();
+
+			// editProfile.setLoggedinUser(UI.getCurrent().getSession()
+			// .getAttribute("user").toString());
+			editProfile.setLoggedinUser("admin");
+			editProfile.setProfilename(profilename);
+			editProfile.setOldprofilename(oldprofilename);
+			editProfile.setProfileid(profileid);
+
+			editProfileE.setEditProfile(editProfile);
+
+			EditProfileResponseE response = matsStub.editProfile(editProfileE);
+
+			if (response != null) {
+				EditProfileResponse response2 = response
+						.getEditProfileResponse();
+				if (response2 != null) {
+					EditProfilerequestresponse response3 = response2
+							.get_return();
+					if (response3 != null) {
+						statusMessage = response3.getResponseMessage();
+					}
+
+					else {
+						statusMessage = "Response3 is empty";
+					}
+
+				} else {
+					statusMessage = "editprofile request Response is empty";
+				}
+
+			} else {
+				statusMessage = "editprofile request Response is empty";
+			}
+		} catch (Exception e) {
+			try {
+				System.out
+						.println("HTTP status code: "
+								+ matsStub
+										._getServiceClient()
+										.getLastOperationContext()
+										.getMessageContext(
+												WSDLConstants.MESSAGE_LABEL_IN_VALUE)
+										.getProperty(
+												HTTPConstants.MC_HTTP_STATUS_CODE));
+				Integer statuscode = (Integer) matsStub
+						._getServiceClient()
+						.getLastOperationContext()
+						.getMessageContext(WSDLConstants.MESSAGE_LABEL_IN_VALUE)
+						.getProperty(HTTPConstants.MC_HTTP_STATUS_CODE);
+				if (statuscode == 202) {
+					statusMessage = "Profile renamed successfully";
+				} else {
+					statusMessage = "REQUEST CANNOT BE COMPLETED AT THIS MOMENT, TRY AGAIN LATER";
+				}
+			} catch (Exception e1) {
+				statusMessage = "REQUEST CANNOT BE COMPLETED AT THIS MOMENT, TRY AGAIN LATER";
+				e1.printStackTrace();
+			}
+
+		}
+
+		return statusMessage;
+
+	}
+
+	public static String removeProfile(String profilename, int profileid)
+			throws Exception {
+		String statusMessage = "";
+
+		try {
+			matsStub = new ProvisioningStub(esbendpoint);
+
+			RemoveProfileE removeProfileE = new RemoveProfileE();
+			RemoveProfile removeProfile = new RemoveProfile();
+
+			// removeProfile.setLoggedinUser(UI.getCurrent().getSession()
+			// .getAttribute("user").toString());
+			removeProfile.setLoggedinUser("admin");
+			removeProfile.setProfilename(profilename);
+			removeProfile.setProfileid(profileid);
+
+			removeProfileE.setRemoveProfile(removeProfile);
+
+			RemoveProfileResponseE response = matsStub
+					.removeProfile(removeProfileE);
+
+			if (response != null) {
+				RemoveProfileResponse response2 = response
+						.getRemoveProfileResponse();
+				if (response2 != null) {
+					RemoveProfilerequestresponse response3 = response2
+							.get_return();
+					if (response3 != null) {
+						statusMessage = response3.getResponseMessage();
+					}
+
+					else {
+						statusMessage = "Response3 is empty";
+					}
+
+				} else {
+					statusMessage = "removeprofile request Response is empty";
+				}
+
+			} else {
+				statusMessage = "removeprofile request Response is empty";
+			}
+		} catch (Exception e) {
+			try {
+				System.out
+						.println("HTTP status code: "
+								+ matsStub
+										._getServiceClient()
+										.getLastOperationContext()
+										.getMessageContext(
+												WSDLConstants.MESSAGE_LABEL_IN_VALUE)
+										.getProperty(
+												HTTPConstants.MC_HTTP_STATUS_CODE));
+				Integer statuscode = (Integer) matsStub
+						._getServiceClient()
+						.getLastOperationContext()
+						.getMessageContext(WSDLConstants.MESSAGE_LABEL_IN_VALUE)
+						.getProperty(HTTPConstants.MC_HTTP_STATUS_CODE);
+				if (statuscode == 202) {
+					statusMessage = "Profile removed successfully";
+				} else {
+					statusMessage = "REQUEST CANNOT BE COMPLETED AT THIS MOMENT, TRY AGAIN LATER";
+				}
+			} catch (Exception e1) {
+				statusMessage = "REQUEST CANNOT BE COMPLETED AT THIS MOMENT, TRY AGAIN LATER";
+				e1.printStackTrace();
+			}
+		}
+		return statusMessage;
+
+	}
+
+	public static String removeProfilePermission(String profilename,
+			int profileid, String[] action) throws Exception {
+		String statusMessage = "";
+		matsStub = new ProvisioningStub(esbendpoint);
+
+		RemoveProfilePermissionE removeProfilePermissionE = new RemoveProfilePermissionE();
+		RemoveProfilePermission removeProfilePermission = new RemoveProfilePermission();
+
+		removeProfilePermission.setLoggedinUser("dare");
+		removeProfilePermission.setProfilename(profilename);
+		removeProfilePermission.setProfileid(profileid);
+		removeProfilePermission.setOperation(action);
+
+		removeProfilePermissionE
+				.setRemoveProfilePermission(removeProfilePermission);
+
+		RemoveProfilePermissionResponseE response = matsStub
+				.removeProfilePermission(removeProfilePermissionE);
+
+		if (response != null) {
+			RemoveProfilePermissionResponse response2 = response
+					.getRemoveProfilePermissionResponse();
+			if (response2 != null) {
+				RemoveProfilePermissionrequestresponse response3 = response2
+						.get_return();
+				if (response3 != null) {
+					statusMessage = response3.getResponseCode();
+				}
+
+				else {
+					statusMessage = "Response3 is empty";
+				}
+
+			} else {
+				statusMessage = "removeprofilepermission request Response is empty";
+			}
+
+		} else {
+			statusMessage = "removeprofilepermission request Response is empty";
+		}
+
+		return statusMessage;
+
+	}
+
+	public static String setProfilePermission(String profilename,
+			int profileid, String[] action) throws Exception {
+		String statusMessage = "";
+		matsStub = new ProvisioningStub(esbendpoint);
+
+		SetProfilePermissionE setProfilePermissionE = new SetProfilePermissionE();
+		SetProfilePermission setProfilePermission = new SetProfilePermission();
+
+		setProfilePermission.setLoggedinUser("admin");
+		setProfilePermission.setProfilename(profilename);
+		setProfilePermission.setProfileid(profileid);
+		setProfilePermission.setOperation(action);
+
+		setProfilePermissionE.setSetProfilePermission(setProfilePermission);
+
+		SetProfilePermissionResponseE response = matsStub
+				.setProfilePermission(setProfilePermissionE);
+
+		if (response != null) {
+			SetProfilePermissionResponse response2 = response
+					.getSetProfilePermissionResponse();
+			if (response2 != null) {
+				SetProfilePermissionrequestresponse response3 = response2
+						.get_return();
+				if (response3 != null) {
+					statusMessage = response3.getResponseMessage();
+				}
+
+				else {
+					statusMessage = "Response3 is empty";
+				}
+
+			} else {
+				statusMessage = "setprofilepermission request Response is empty";
+			}
+
+		} else {
+			statusMessage = "setprofilepermission request Response is empty";
+		}
+
+		return statusMessage;
+
+	}
+
+	public static String webauthenticate(String username, String password)
+			throws Exception {
+		String statusMessage = "";
+		matsStub = new ProvisioningStub(esbendpoint);
+
+		WebauthenticateE webauthenticateE = new WebauthenticateE();
+		Webauthenticate webauthenticate = new Webauthenticate();
+
+		webauthenticate.setResourceid(username);
+		webauthenticate.setPassword(password);
+
+		webauthenticateE.setWebauthenticate(webauthenticate);
+
+		WebauthenticateResponseE response = matsStub
+				.webauthenticate(webauthenticateE);
+
+		if (response != null) {
+			WebauthenticateResponse response2 = response
+					.getWebauthenticateResponse();
+			if (response2 != null) {
+				Authenticationrequestresponse response3 = response2
+						.get_return();
+				if (response3 != null) {
+					statusMessage = response3.getResponsemessage();
+				}
+
+				else {
+					statusMessage = "Response3 is empty";
+				}
+
+			} else {
+				statusMessage = "authentication request Response is empty";
+			}
+
+		} else {
+			statusMessage = "authentication request Response is empty";
+		}
+
+		return statusMessage;
+
+	}
 }

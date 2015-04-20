@@ -61,14 +61,15 @@ public class Transfer {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				UserManagementService setDefault = new UserManagementService();
+				// UserManagementService setDefault = new
+				// UserManagementService();
 
 				try {
 					String parentresourceid = "Ore";
 					String reason = "no reason for this";
 					String userresourceid = "Adetola";
-					String ret = setDefault.setDefaultAccount(parentresourceid,
-							reason, userresourceid);
+					String ret = UserManagementService.setDefaultAccount(
+							parentresourceid, reason, userresourceid);
 
 					Label rep;
 					rep = new Label(ret);
@@ -168,15 +169,16 @@ public class Transfer {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				UserManagementService linker = new UserManagementService();
+				// UserManagementService linker = new UserManagementService();
 
 				try {
 					String parentresourceid = "Ore";
-					String profileid = "419";
+					int profileid = 419;
 					String reason = "no reason";
 					String userresourceid = "Adetola";
-					String ret = linker.linkUser(parentresourceid, profileid,
-							reason, userresourceid);
+					String ret = UserManagementService
+							.linkUser(parentresourceid, profileid, reason,
+									userresourceid);
 
 					Label rep;
 					rep = new Label(ret);
