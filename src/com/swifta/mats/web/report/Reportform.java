@@ -22,6 +22,9 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.swifta.mats.web.MatsWebPortalUI;
 import com.swifta.mats.web.usermanagement.PagedTableCustom;
 import com.vaadin.addon.tableexport.ExcelExport;
@@ -64,6 +67,8 @@ public class Reportform extends VerticalLayout {
 	private static final long serialVersionUID = 252829471857525213L;
 	private VerticalLayout searchform = new VerticalLayout();
 	private boolean isReportTypeChanged = false;
+
+	private static Log log = LogFactory.getLog(Reportform.class);
 
 	PagedTableCustom table = new PagedTableCustom();
 
@@ -1128,6 +1133,8 @@ public class Reportform extends VerticalLayout {
 				 * agentsql.append(" order by datecreated desc;  ");
 				 */
 
+				log.info(agentsql.toString());
+
 				rs = stmt.executeQuery(agentsql.toString());
 
 				cD.setVisible(true);
@@ -1163,7 +1170,7 @@ public class Reportform extends VerticalLayout {
 					String did = rs.getString("did");
 					String amt = rs.getString("amount");
 					String fullname = rs.getString("fullname");
-					String street = rs.getString("street");
+					String street = rs.getString("postalcode");
 					String province = rs.getString("province");
 					String city = rs.getString("city");
 
@@ -2196,6 +2203,7 @@ public class Reportform extends VerticalLayout {
 		Notification.show(
 				"Oops... something wrong happened while generating reports.",
 				Notification.Type.WARNING_MESSAGE);
+		log.error(e);
 		e.printStackTrace();
 
 	}

@@ -915,9 +915,10 @@ public class BE2 {
 
 				String strResponse = null;
 				try {
-					strResponse = ums.linkUser(tFP.getValue(), comboUProf
-							.getValue().toString(), tFInitUser.getValue(), tFU
-							.getValue());
+					strResponse = UserManagementService.linkUser(
+							tFP.getValue(), new Integer(comboUProf.getValue()
+									.toString()), tFInitUser.getValue(), tFU
+									.getValue());
 					isSent = true;
 				} catch (RemoteException e) {
 
@@ -1698,9 +1699,8 @@ public class BE2 {
 					for (String id : arrLBulkIDs) {
 
 						try {
-							strResponse = UserManagementService
-									.passwordResetByAdmin(inituser,
-											userresourceid, newPIN);
+							strResponse = UserManagementService.passwordReset(
+									userresourceid, newPIN);
 
 						} catch (Exception e) {
 							// TODO Auto-generated catch block

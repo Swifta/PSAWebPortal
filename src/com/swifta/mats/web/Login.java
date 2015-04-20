@@ -209,14 +209,14 @@ public class Login extends VerticalLayout implements View {
 				} catch (Exception e) {
 					return;
 				}
-				LoginService loginService = new LoginService();
+
 				logger.info("---------------Before validating the username and password"
 						+ tfUsername.getValue());
 				curuname = tfUsername.getValue();
 				// if (validCredentials()) {
 				try {
 
-					String status = loginService.authenticateUser(
+					String status = LoginService.webauthenticate(
 							tfUsername.getValue(), tfPassword.getValue());
 					if (status.equals("true")) {
 						logger.info("---------------Validation successful");
@@ -240,7 +240,7 @@ public class Login extends VerticalLayout implements View {
 						if (status.equals("false")) {
 							lPrompt.setValue("Invalid Username or Password.");
 
-						} else if (loginService.authenticateUser(
+						} else if (LoginService.webauthenticate(
 								tfUsername.getValue(), tfPassword.getValue())
 								.equals("locked")) {
 							lPrompt.setContentMode(ContentMode.HTML);
@@ -276,6 +276,10 @@ public class Login extends VerticalLayout implements View {
 
 				}
 				// }
+				catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 
 			}
 		});
