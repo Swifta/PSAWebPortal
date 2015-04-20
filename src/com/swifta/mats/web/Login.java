@@ -218,6 +218,16 @@ public class Login extends VerticalLayout implements View {
 
 					String status = LoginService.webauthenticate(
 							tfUsername.getValue(), tfPassword.getValue());
+
+					if (status == null) {
+
+						lPrompt.setValue("Sorry, can not access system right now. Contact the administrator.");
+						tfUsername.focus();
+						lPrompt.setStyleName("label_login_prompt_err");
+						lWelcome.setValue("Oops...");
+						return;
+					}
+
 					if (status.equals("true")) {
 						logger.info("---------------Validation successful");
 						UI.getCurrent().getSession()
@@ -250,7 +260,8 @@ public class Login extends VerticalLayout implements View {
 									+ ")"
 									+ " cannot login until the account is unlocked");
 						} else {
-							lPrompt.setValue("Sorry, can not access system right now.");
+
+							lPrompt.setValue(status);
 						}
 						tfUsername.focus();
 						lPrompt.setStyleName("label_login_prompt_err");
