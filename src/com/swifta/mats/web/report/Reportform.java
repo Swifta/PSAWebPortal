@@ -1106,6 +1106,7 @@ public class Reportform extends VerticalLayout {
 						+ d2
 						+ "', INTERVAL 1 DAY) ");
 				agentsql.append(" order by datecreated desc; ");
+				System.out.println(agentsql.toString());
 
 				/*
 				 * agentsql.append(

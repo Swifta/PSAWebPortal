@@ -94,7 +94,7 @@ public class Transfer {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				UserManagementService activate = new UserManagementService();
-				LoginService login = new LoginService();
+				new LoginService();
 
 				// boolean give = login.authenticateUser("Adetolami", "modupe");
 
