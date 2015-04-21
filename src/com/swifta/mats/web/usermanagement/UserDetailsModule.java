@@ -2361,7 +2361,7 @@ public class UserDetailsModule {
 		String username = curUser;
 
 		Label lbActivationPrompt = new Label(
-				"<span style='text-align: center;'>Please enter Childred Resource ID to link to"
+				"<span style='text-align: center;'>Please enter Child Username to link to "
 						+ username + "'s Account</span>");
 		lbActivationPrompt.setContentMode(ContentMode.HTML);
 		lbActivationPrompt.setWidth("300px");
@@ -2379,7 +2379,7 @@ public class UserDetailsModule {
 		cDeletePrompt.setComponentAlignment(frmDeleteReason,
 				Alignment.TOP_CENTER);
 
-		tFU = new TextField("Child Resource ID");
+		tFU = new TextField("Child Username");
 		tFU.setRequired(true);
 
 		final ComboBox comboUProf = new ComboBox("Select Profile");

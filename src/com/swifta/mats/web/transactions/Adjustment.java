@@ -3,12 +3,8 @@ package com.swifta.mats.web.transactions;
 import java.rmi.RemoteException;
 import java.util.Date;
 
-import org.apache.axis2.AxisFault;
-
 import com.swifta.mats.web.utils.TransactionsService;
 import com.swifta.mats.web.utils.UserManagementService;
-import com.swifta.sub.mats.operation.financial.v1_0.FinancialsStub.AdjustmentType;
-import com.swifta.sub.mats.operation.financial.v1_0.FinancialsStub.StatusCode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.ComboBox;
@@ -60,35 +56,7 @@ public class Adjustment {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				TransactionsService flow = new TransactionsService();
-
-				try {
-					AdjustmentType adjustmentType = null;
-					String DescResourcedesc = null;
-					String DescResourceID = null;
-					String OriginatingResourceID = null;
-					String OriginatingResourceDesc = null;
-					String Amount = null;
-					StatusCode ret = flow.AdjustAccount(adjustmentType,
-							DescResourcedesc, DescResourceID,
-							OriginatingResourceID, Amount,
-							OriginatingResourceDesc).getStatusCode();
-
-					// Label rep = new Label((String)ret);
-					// adjustPan.addComponent(rep, 0);
-				} catch (AxisFault e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-					Notification.show("Can't connect to Server " + e);
-					adjustPan.addComponent(new Label("Can't connect to Server"
-							+ e), 0);
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-					Notification.show("Server is currently not available");
-					adjustPan.addComponent(new Label(
-							"Server is currently not available"), 0);
-				}
+				new TransactionsService();
 
 				// TODO Auto-generated method stub
 

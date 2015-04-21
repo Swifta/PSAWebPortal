@@ -18,8 +18,7 @@ public class AddIcons extends VerticalLayout {
 		Image image = new Image("", iLogo);
 
 		VerticalLayout layout1 = new VerticalLayout();
-		VerticalLayout layout2 = new VerticalLayout();
-		VerticalLayout layout3 = new VerticalLayout();
+
 		Label name = new Label(write);
 
 		name.setSizeUndefined();
