@@ -22,9 +22,9 @@ public class Client {
 
 			// Client.getactive();
 
-			// Client.webauthenticate();
+			Client.webauthenticate();
 
-			Client.setProfilepermission();
+			// Client.setProfilepermission();
 
 			// Client.removeProfilePermission();
 
@@ -216,7 +216,7 @@ public class Client {
 		//
 		// System.out.println(ret);
 		//
-		String response = LoginService.webauthenticate("username", "12345");
+		String response = LoginService.webauthenticate("matsadminone", "12345");
 		System.out.println(response);
 
 		// }
@@ -402,7 +402,7 @@ public class Client {
 	}
 
 	public static void passreset() throws Exception {
-		System.out.println(UserManagementService.passwordReset("username",
+		System.out.println(UserManagementService.passwordReset("matsadminone",
 				"12345"));
 	}
 
@@ -417,7 +417,7 @@ public class Client {
 	}
 
 	public static void setProfilepermission() throws Exception {
-		String[] action = { "/deposit", "/activationrequest", "/passwordReset" };
+		String[] action = { "/deposit", "/activationrequest", "/authenticate" };
 		System.out.println(UserManagementService.setProfilePermission(
 				"MATS_ADMIN_USER_PROFILE", 1, action));
 	}
@@ -462,6 +462,6 @@ public class Client {
 
 	public static void getactive() throws Exception {
 
-		UserManagementService.getactiveprofilepermission(2);
+		UserManagementService.getactiveprofilepermission(1);
 	}
 }

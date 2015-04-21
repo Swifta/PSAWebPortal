@@ -948,42 +948,69 @@ public class UserManagementService {
 	public static String removeProfilePermission(String profilename,
 			int profileid, String[] action) throws Exception {
 		String statusMessage = "";
-		matsStub = new ProvisioningStub(esbendpoint);
+		try {
+			matsStub = new ProvisioningStub(esbendpoint);
 
-		RemoveProfilePermissionE removeProfilePermissionE = new RemoveProfilePermissionE();
-		RemoveProfilePermission removeProfilePermission = new RemoveProfilePermission();
+			RemoveProfilePermissionE removeProfilePermissionE = new RemoveProfilePermissionE();
+			RemoveProfilePermission removeProfilePermission = new RemoveProfilePermission();
 
-		removeProfilePermission.setLoggedinUser("admin");
-		removeProfilePermission.setProfilename(profilename);
-		removeProfilePermission.setProfileid(profileid);
-		removeProfilePermission.setOperation(action);
+			removeProfilePermission.setLoggedinUser("admin");
+			removeProfilePermission.setProfilename(profilename);
+			removeProfilePermission.setProfileid(profileid);
+			removeProfilePermission.setOperation(action);
 
-		removeProfilePermissionE
-				.setRemoveProfilePermission(removeProfilePermission);
+			removeProfilePermissionE
+					.setRemoveProfilePermission(removeProfilePermission);
 
-		RemoveProfilePermissionResponseE response = matsStub
-				.removeProfilePermission(removeProfilePermissionE);
+			RemoveProfilePermissionResponseE response = matsStub
+					.removeProfilePermission(removeProfilePermissionE);
 
-		if (response != null) {
-			RemoveProfilePermissionResponse response2 = response
-					.getRemoveProfilePermissionResponse();
-			if (response2 != null) {
-				RemoveProfilePermissionrequestresponse response3 = response2
-						.get_return();
-				if (response3 != null) {
-					statusMessage = response3.getResponseMessage();
-				}
+			if (response != null) {
+				RemoveProfilePermissionResponse response2 = response
+						.getRemoveProfilePermissionResponse();
+				if (response2 != null) {
+					RemoveProfilePermissionrequestresponse response3 = response2
+							.get_return();
+					if (response3 != null) {
+						statusMessage = response3.getResponseMessage();
+					}
 
-				else {
-					statusMessage = "Response3 is empty";
+					else {
+						statusMessage = "Response3 is empty";
+					}
+
+				} else {
+					statusMessage = "removeprofilepermission request Response is empty";
 				}
 
 			} else {
 				statusMessage = "removeprofilepermission request Response is empty";
 			}
-
-		} else {
-			statusMessage = "removeprofilepermission request Response is empty";
+		} catch (Exception e) {
+			try {
+				System.out
+						.println("HTTP status code: "
+								+ matsStub
+										._getServiceClient()
+										.getLastOperationContext()
+										.getMessageContext(
+												WSDLConstants.MESSAGE_LABEL_IN_VALUE)
+										.getProperty(
+												HTTPConstants.MC_HTTP_STATUS_CODE));
+				Integer statuscode = (Integer) matsStub
+						._getServiceClient()
+						.getLastOperationContext()
+						.getMessageContext(WSDLConstants.MESSAGE_LABEL_IN_VALUE)
+						.getProperty(HTTPConstants.MC_HTTP_STATUS_CODE);
+				if (statuscode == 202) {
+					statusMessage = "Profile permission removed successfully";
+				} else {
+					statusMessage = "REQUEST CANNOT BE COMPLETED AT THIS MOMENT, TRY AGAIN LATER";
+				}
+			} catch (Exception e1) {
+				statusMessage = "REQUEST CANNOT BE COMPLETED AT THIS MOMENT, TRY AGAIN LATER";
+				e1.printStackTrace();
+			}
 		}
 
 		return statusMessage;
