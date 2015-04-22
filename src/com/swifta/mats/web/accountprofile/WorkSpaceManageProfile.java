@@ -20,7 +20,6 @@ public class WorkSpaceManageProfile {
 	public static String SESSION_VAR_UDM_LOG = "true";
 
 	private VerticalLayout cParent;
-	private VerticalLayout cMenu;
 	private HorizontalLayout cContent;
 	public AccountProfileModule apm;
 
@@ -43,12 +42,6 @@ public class WorkSpaceManageProfile {
 		HorizontalLayout pf = apm.getProfileContainer();
 		cContent.addComponent(pf);
 		cContent.setComponentAlignment(pf, Alignment.TOP_LEFT);
-
-		ManageProfileModule mpm = new ManageProfileModule();
-		cMenu = mpm.getMenu();
-		// cC.addComponent(cMenu);
-		// cMenu.setSizeUndefined();
-		// cC.setComponentAlignment(cMenu, Alignment.TOP_LEFT);
 
 		cC.addComponent(cContent);
 		cC.setExpandRatio(cContent, 1.0f);
