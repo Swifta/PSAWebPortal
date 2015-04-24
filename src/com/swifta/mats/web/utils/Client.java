@@ -16,19 +16,23 @@ public class Client {
 
 			// Client.unlockAccount();
 
-			// Client.webauthenticate();
+			// Client.changepassword();
 
-			Client.setProfilepermission();
+			// Client.getnonactive();
+
+			// Client.getactive();
+
+			Client.webauthenticate();
+
+			// Client.setProfilepermission();
+
+			// Client.removeProfilePermission();
 
 			// Client.addprofile();
 
 			// Client.deleteprofile();
 
 			// Client.renameprofile();
-
-			// Client.setProfilepermission();
-
-			// Client.removeProfilePermission();
 
 			// Client.activate();
 			// Client.linkuser();
@@ -212,7 +216,7 @@ public class Client {
 		//
 		// System.out.println(ret);
 		//
-		String response = LoginService.webauthenticate("admin", "admin");
+		String response = LoginService.webauthenticate("matsadminone", "12345");
 		System.out.println(response);
 
 		// }
@@ -398,8 +402,8 @@ public class Client {
 	}
 
 	public static void passreset() throws Exception {
-		System.out.println(UserManagementService.passwordReset("olumide",
-				"1345"));
+		System.out.println(UserManagementService.passwordReset("matsadminone",
+				"12345"));
 	}
 
 	public static void unlockAccount() throws AxisFault {
@@ -413,26 +417,30 @@ public class Client {
 	}
 
 	public static void setProfilepermission() throws Exception {
-		String[] action = { "/deposit", "/activationrequest" };
+		String[] action = { "/deposit", "/activationrequest", "/authenticate" };
 		System.out.println(UserManagementService.setProfilePermission(
-				"MATS_DARE", 2, action));
+				"MATS_ADMIN_USER_PROFILE", 1, action));
 	}
 
 	public static void removeProfilePermission() throws Exception {
-		String[] action = { "/deposit", "/activationrequest" };
+		String[] action = { "/deposit", "/activationrequest", "/passwordReset" };
 		System.out.println(UserManagementService.removeProfilePermission(
-				"MATS_DARE", 2, action));
+				"MATS_ADMIN_USER_PROFILE", 1, action));
 	}
 
 	public static void addprofile() throws Exception {
 
-		System.out.println(UserManagementService.addProfile("TOTAL_USER", 2));
+		System.out.println(UserManagementService.addProfile(
+				"MATS_CUSTOMER_CARE_USER_PROFILE", 1));
 	}
 
 	public static void deleteprofile() throws Exception {
 
-		System.out.println(UserManagementService
-				.removeProfile("TOTAL_USER", 41));
+		System.out
+				.println(UserManagementService
+						.removeProfile(
+								"TOTALEntered role name is not conforming to policy.v_USER",
+								41));
 	}
 
 	public static void renameprofile() throws Exception {
@@ -440,4 +448,25 @@ public class Client {
 		System.out.println(UserManagementService.editProfile("TOTAL_USER",
 				"TOTAL_USERS", 42));
 	}
+
+	public static void changepassword() throws Exception {
+
+		System.out.println(UserManagementService.changepassword("username",
+				"12345", "modupe123"));
+	}
+
+	public static void getnonactive() throws Exception {
+
+		UserManagementService.getnonactiveprofilepermission(1);
+	}
+
+	public static void getactive() throws Exception {
+
+		UserManagementService.getactiveprofilepermission(1);
+	}
+
+	// public static void getactive() throws Exception {
+	//
+	// UserManagementService.getactiveprofilepermission(1);
+	// }
 }

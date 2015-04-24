@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.apache.axis2.AxisFault;
 
+import com.swifta.mats.web.usermanagement.NotifCustom;
 import com.swifta.mats.web.usermanagement.UserDetailsBackEnd;
 import com.swifta.mats.web.utils.LoginService;
 import com.swifta.mats.web.utils.UserManagementService;
@@ -27,8 +28,8 @@ import com.vaadin.ui.VerticalLayout;
 
 public class AccountProfileModule {
 	private HorizontalLayout udc;
-	private UserManagementService ums;
 	private Label lbPass;
+	private HorizontalLayout cModify;
 
 	public AccountProfileModule() {
 
@@ -40,7 +41,7 @@ public class AccountProfileModule {
 
 		HorizontalLayout c = new HorizontalLayout();
 		VerticalLayout cC = new VerticalLayout();
-		VerticalLayout addUserHeader = new VerticalLayout();
+		// VerticalLayout addUserHeader = new VerticalLayout();
 
 		Label lbAddUser = new Label("My Profile");
 		lbAddUser.setStyleName("label_user_profile_head");
@@ -51,8 +52,8 @@ public class AccountProfileModule {
 		emb.setDescription("Add new User.");
 		emb.setStyleName("add_user_img");
 
-		addUserHeader.addComponent(lbAddUser);
-		cC.addComponent(lbAddUser);
+		// addUserHeader.addComponent(lbAddUser);
+		// cC.addComponent(lbAddUser);
 
 		lbAddUser = new Label("Account Details");
 		lbAddUser.setStyleName("label_user_profile");
@@ -171,15 +172,17 @@ public class AccountProfileModule {
 		lbPass = new Label();
 		lbPass.setSizeUndefined();
 		// lbPass.setCaption("was set and active.");
-		lbPass.setValue("was set and active.");
+		lbPass.setCaption(null);
+		lbPass.setValue("**************");
 
 		final Button btnEdit = new Button();
 		btnEdit.setIcon(FontAwesome.EDIT);
 		btnEdit.setStyleName("btn_link");
+		btnEdit.setDescription("Reset your password.");
 
 		lbPass.setStyleName("lb_tst");
 
-		HorizontalLayout cModify = new HorizontalLayout();
+		cModify = new HorizontalLayout();
 		cModify.setStyleName("c_modifyx");
 		cModify.setCaption("Password: ");
 
@@ -192,6 +195,7 @@ public class AccountProfileModule {
 
 		final HorizontalLayout cPlaceHolder = new HorizontalLayout();
 		cPlaceHolder.setStyleName("c_edit_pass_placeholder_hidden");
+
 		FormLayout cFormLow = new FormLayout();
 
 		addDatum("Email", hm.get("Email"), cFormLow);
@@ -202,6 +206,11 @@ public class AccountProfileModule {
 
 		cC.addComponent(cPlaceHolder);
 		cPlaceHolder.addComponent(cEditPass);
+
+		lbAddUser = new Label("Email & MSISDN");
+		lbAddUser.setStyleName("label_user_profile");
+
+		cC.addComponent(lbAddUser);
 
 		cC.addComponent(cFormLow);
 
@@ -283,7 +292,9 @@ public class AccountProfileModule {
 						if (response != null
 								&& response
 										.equals("PASSWORD_RESET_WAS_SUCCESSFUL")) {
-							lbPass.setValue("updated.");
+							lbPass.setValue("**************");
+							NotifCustom.show("Password Reset",
+									"Password was successfully reset.");
 						} else {
 
 							lbError.setStyleName("lb_edit_pass_error");
@@ -332,7 +343,9 @@ public class AccountProfileModule {
 				}
 
 				cPlaceHolder.setStyleName("c_edit_pass_placeholder_hidden");
+				cModify.setVisible(true);
 				btnEdit.setVisible(true);
+				lbPass.setVisible(true);
 				lbError.setVisible(false);
 				lbError.setStyleName("lb_edit_pass_error");
 				tFCurPass.setValue("");
@@ -351,6 +364,8 @@ public class AccountProfileModule {
 			public void buttonClick(ClickEvent event) {
 				cPlaceHolder.setStyleName("c_edit_pass_placeholder_hidden");
 				btnEdit.setVisible(true);
+				cModify.setVisible(true);
+				lbPass.setVisible(true);
 				lbError.setValue("");
 				lbError.setVisible(false);
 				tFCurPass.setValue("");
@@ -368,6 +383,8 @@ public class AccountProfileModule {
 			public void buttonClick(ClickEvent event) {
 				cPlaceHolder.setStyleName("c_edit_pass_placeholder_visible");
 				btnEdit.setVisible(false);
+				lbPass.setVisible(false);
+				cModify.setVisible(false);
 
 			}
 		});

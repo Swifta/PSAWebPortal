@@ -34,7 +34,11 @@ import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.AddProfi
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.AddProfileThresholdrequestresponse;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.AddProfilerequestresponse;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Address;
-import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Authenticationrequestresponse;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Changepassword;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ChangepasswordE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ChangepasswordResponse;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ChangepasswordResponseE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Changepasswordrequestresponse;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Credentials;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.EditProfile;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.EditProfileE;
@@ -94,6 +98,13 @@ import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Webauthe
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.WebauthenticateE;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.WebauthenticateResponse;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.WebauthenticateResponseE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Webauthenticationrequestresponse;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getactivepermissionbyprofileid;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getnonactivepermissionbyprofileid;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getpermission;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getpermissions;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.GetpermissionsE;
 import com.vaadin.ui.UI;
 
 public class UserManagementService {
@@ -107,6 +118,7 @@ public class UserManagementService {
 	final static String esbendpoint = MatsWebPortalUI.conf.ESB;
 
 	static ProvisioningStub matsStub;
+	static MatsreportingserviceStub matsReportstub;
 
 	org.apache.axis2.client.ServiceClient _serviceClient = null;
 
@@ -439,8 +451,9 @@ public class UserManagementService {
 		PasswordResetE passwordResetE = new PasswordResetE();
 		PasswordReset passwordReset = new PasswordReset();
 
-		passwordReset.setLoggedinUser(UI.getCurrent().getSession()
-				.getAttribute("user").toString());
+		// passwordReset.setLoggedinUser(UI.getCurrent().getSession()
+		// .getAttribute("user").toString());
+		passwordReset.setLoggedinUser("admin");
 		passwordReset.setUsername(username);
 		passwordReset.setConfirmnewpassword(newPassword);
 
@@ -935,42 +948,69 @@ public class UserManagementService {
 	public static String removeProfilePermission(String profilename,
 			int profileid, String[] action) throws Exception {
 		String statusMessage = "";
-		matsStub = new ProvisioningStub(esbendpoint);
+		try {
+			matsStub = new ProvisioningStub(esbendpoint);
 
-		RemoveProfilePermissionE removeProfilePermissionE = new RemoveProfilePermissionE();
-		RemoveProfilePermission removeProfilePermission = new RemoveProfilePermission();
+			RemoveProfilePermissionE removeProfilePermissionE = new RemoveProfilePermissionE();
+			RemoveProfilePermission removeProfilePermission = new RemoveProfilePermission();
 
-		removeProfilePermission.setLoggedinUser("dare");
-		removeProfilePermission.setProfilename(profilename);
-		removeProfilePermission.setProfileid(profileid);
-		removeProfilePermission.setOperation(action);
+			removeProfilePermission.setLoggedinUser("admin");
+			removeProfilePermission.setProfilename(profilename);
+			removeProfilePermission.setProfileid(profileid);
+			removeProfilePermission.setOperation(action);
 
-		removeProfilePermissionE
-				.setRemoveProfilePermission(removeProfilePermission);
+			removeProfilePermissionE
+					.setRemoveProfilePermission(removeProfilePermission);
 
-		RemoveProfilePermissionResponseE response = matsStub
-				.removeProfilePermission(removeProfilePermissionE);
+			RemoveProfilePermissionResponseE response = matsStub
+					.removeProfilePermission(removeProfilePermissionE);
 
-		if (response != null) {
-			RemoveProfilePermissionResponse response2 = response
-					.getRemoveProfilePermissionResponse();
-			if (response2 != null) {
-				RemoveProfilePermissionrequestresponse response3 = response2
-						.get_return();
-				if (response3 != null) {
-					statusMessage = response3.getResponseCode();
-				}
+			if (response != null) {
+				RemoveProfilePermissionResponse response2 = response
+						.getRemoveProfilePermissionResponse();
+				if (response2 != null) {
+					RemoveProfilePermissionrequestresponse response3 = response2
+							.get_return();
+					if (response3 != null) {
+						statusMessage = response3.getResponseMessage();
+					}
 
-				else {
-					statusMessage = "Response3 is empty";
+					else {
+						statusMessage = "Response3 is empty";
+					}
+
+				} else {
+					statusMessage = "removeprofilepermission request Response is empty";
 				}
 
 			} else {
 				statusMessage = "removeprofilepermission request Response is empty";
 			}
-
-		} else {
-			statusMessage = "removeprofilepermission request Response is empty";
+		} catch (Exception e) {
+			try {
+				System.out
+						.println("HTTP status code: "
+								+ matsStub
+										._getServiceClient()
+										.getLastOperationContext()
+										.getMessageContext(
+												WSDLConstants.MESSAGE_LABEL_IN_VALUE)
+										.getProperty(
+												HTTPConstants.MC_HTTP_STATUS_CODE));
+				Integer statuscode = (Integer) matsStub
+						._getServiceClient()
+						.getLastOperationContext()
+						.getMessageContext(WSDLConstants.MESSAGE_LABEL_IN_VALUE)
+						.getProperty(HTTPConstants.MC_HTTP_STATUS_CODE);
+				if (statuscode == 202) {
+					statusMessage = "Profile permission removed successfully";
+				} else {
+					statusMessage = "REQUEST CANNOT BE COMPLETED AT THIS MOMENT, TRY AGAIN LATER";
+				}
+			} catch (Exception e1) {
+				statusMessage = "REQUEST CANNOT BE COMPLETED AT THIS MOMENT, TRY AGAIN LATER";
+				e1.printStackTrace();
+			}
 		}
 
 		return statusMessage;
@@ -980,41 +1020,68 @@ public class UserManagementService {
 	public static String setProfilePermission(String profilename,
 			int profileid, String[] action) throws Exception {
 		String statusMessage = "";
-		matsStub = new ProvisioningStub(esbendpoint);
+		try {
+			matsStub = new ProvisioningStub(esbendpoint);
 
-		SetProfilePermissionE setProfilePermissionE = new SetProfilePermissionE();
-		SetProfilePermission setProfilePermission = new SetProfilePermission();
+			SetProfilePermissionE setProfilePermissionE = new SetProfilePermissionE();
+			SetProfilePermission setProfilePermission = new SetProfilePermission();
 
-		setProfilePermission.setLoggedinUser("admin");
-		setProfilePermission.setProfilename(profilename);
-		setProfilePermission.setProfileid(profileid);
-		setProfilePermission.setOperation(action);
+			setProfilePermission.setLoggedinUser("admin");
+			setProfilePermission.setProfilename(profilename);
+			setProfilePermission.setProfileid(profileid);
+			setProfilePermission.setOperation(action);
 
-		setProfilePermissionE.setSetProfilePermission(setProfilePermission);
+			setProfilePermissionE.setSetProfilePermission(setProfilePermission);
 
-		SetProfilePermissionResponseE response = matsStub
-				.setProfilePermission(setProfilePermissionE);
+			SetProfilePermissionResponseE response = matsStub
+					.setProfilePermission(setProfilePermissionE);
 
-		if (response != null) {
-			SetProfilePermissionResponse response2 = response
-					.getSetProfilePermissionResponse();
-			if (response2 != null) {
-				SetProfilePermissionrequestresponse response3 = response2
-						.get_return();
-				if (response3 != null) {
-					statusMessage = response3.getResponseMessage();
-				}
+			if (response != null) {
+				SetProfilePermissionResponse response2 = response
+						.getSetProfilePermissionResponse();
+				if (response2 != null) {
+					SetProfilePermissionrequestresponse response3 = response2
+							.get_return();
+					if (response3 != null) {
+						statusMessage = response3.getResponseMessage();
+					}
 
-				else {
-					statusMessage = "Response3 is empty";
+					else {
+						statusMessage = "Response3 is empty";
+					}
+
+				} else {
+					statusMessage = "setprofilepermission request Response is empty";
 				}
 
 			} else {
 				statusMessage = "setprofilepermission request Response is empty";
 			}
-
-		} else {
-			statusMessage = "setprofilepermission request Response is empty";
+		} catch (Exception e) {
+			try {
+				System.out
+						.println("HTTP status code: "
+								+ matsStub
+										._getServiceClient()
+										.getLastOperationContext()
+										.getMessageContext(
+												WSDLConstants.MESSAGE_LABEL_IN_VALUE)
+										.getProperty(
+												HTTPConstants.MC_HTTP_STATUS_CODE));
+				Integer statuscode = (Integer) matsStub
+						._getServiceClient()
+						.getLastOperationContext()
+						.getMessageContext(WSDLConstants.MESSAGE_LABEL_IN_VALUE)
+						.getProperty(HTTPConstants.MC_HTTP_STATUS_CODE);
+				if (statuscode == 202) {
+					statusMessage = "Profile permission configured successfully";
+				} else {
+					statusMessage = "REQUEST CANNOT BE COMPLETED AT THIS MOMENT, TRY AGAIN LATER";
+				}
+			} catch (Exception e1) {
+				statusMessage = "REQUEST CANNOT BE COMPLETED AT THIS MOMENT, TRY AGAIN LATER";
+				e1.printStackTrace();
+			}
 		}
 
 		return statusMessage;
@@ -1041,7 +1108,7 @@ public class UserManagementService {
 			WebauthenticateResponse response2 = response
 					.getWebauthenticateResponse();
 			if (response2 != null) {
-				Authenticationrequestresponse response3 = response2
+				Webauthenticationrequestresponse response3 = response2
 						.get_return();
 				if (response3 != null) {
 					statusMessage = response3.getResponsemessage();
@@ -1060,6 +1127,96 @@ public class UserManagementService {
 		}
 
 		return statusMessage;
+
+	}
+
+	public static String changepassword(String username, String oldpassword,
+			String newpassword) throws Exception {
+		String statusMessage = "";
+		matsStub = new ProvisioningStub(esbendpoint);
+
+		ChangepasswordE changepasswordE = new ChangepasswordE();
+		Changepassword changepassword = new Changepassword();
+
+		changepassword.setLoggedinUser("admin");
+		changepassword.setUsername(username);
+		changepassword.setOldcredentials(oldpassword);
+		changepassword.setNewcredentials(newpassword);
+
+		changepasswordE.setChangepassword(changepassword);
+
+		ChangepasswordResponseE response = matsStub
+				.changepassword(changepasswordE);
+
+		if (response != null) {
+			ChangepasswordResponse response2 = response
+					.getChangepasswordResponse();
+			if (response2 != null) {
+				Changepasswordrequestresponse response3 = response2
+						.get_return();
+				if (response3 != null) {
+					statusMessage = response3.getResponsemessage();
+				}
+
+				else {
+					statusMessage = "Response3 is empty";
+				}
+
+			} else {
+				statusMessage = "changepassword request Response is empty";
+			}
+
+		} else {
+			statusMessage = "changepassword request Response is empty";
+		}
+
+		return statusMessage;
+
+	}
+
+	// reporting section - please relocate
+
+	public static void getnonactiveprofilepermission(int profileid)
+			throws Exception {
+		// String statusMessage = "";
+		matsReportstub = new MatsreportingserviceStub(esbendpoint);
+
+		Getnonactivepermissionbyprofileid getnonactivepermissionbyprofileid = new Getnonactivepermissionbyprofileid();
+
+		getnonactivepermissionbyprofileid.setProfileid(profileid);
+
+		GetpermissionsE getpermissionsE = matsReportstub
+				.getnonactivepermissionbyprofileid(getnonactivepermissionbyprofileid);
+
+		Getpermissions getpermissions = getpermissionsE.getGetpermissions();
+
+		for (Getpermission getpermission : getpermissions.getGetpermission()) {
+			System.out.println(getpermission.getPermissionid());
+			System.out.println(getpermission.getPermissions());
+			System.out.println(getpermission.getPermissionsaction());
+		}
+
+	}
+
+	public static void getactiveprofilepermission(int profileid)
+			throws Exception {
+		// String statusMessage = "";
+		matsReportstub = new MatsreportingserviceStub(esbendpoint);
+
+		Getactivepermissionbyprofileid getnonactivepermissionbyprofileid = new Getactivepermissionbyprofileid();
+
+		getnonactivepermissionbyprofileid.setProfileid(profileid);
+
+		GetpermissionsE getpermissionsE = matsReportstub
+				.getactivepermissionbyprofileid(getnonactivepermissionbyprofileid);
+
+		Getpermissions getpermissions = getpermissionsE.getGetpermissions();
+
+		for (Getpermission getpermission : getpermissions.getGetpermission()) {
+			System.out.println(getpermission.getPermissionid());
+			System.out.println(getpermission.getPermissions());
+			System.out.println(getpermission.getPermissionsaction());
+		}
 
 	}
 }

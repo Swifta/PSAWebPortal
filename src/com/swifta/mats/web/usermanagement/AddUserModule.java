@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import com.google.gwt.user.client.rpc.core.java.util.Collections;
 import com.swifta.mats.web.MatsWebPortalUI;
 import com.swifta.mats.web.utils.UserManagementService;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub;
@@ -219,6 +220,7 @@ public class AddUserModule {
 		combo.addItem("Prof. ");
 		comboPref = combo;
 		comboPref.select("Eng. ");
+		//combo.addItems();
 		cBasic.addComponent(combo);
 		// arrLDFields.add(combo);
 		arrLAllFields.add(combo);

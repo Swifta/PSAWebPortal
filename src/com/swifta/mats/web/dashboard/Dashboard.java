@@ -6,6 +6,8 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -178,7 +180,24 @@ public class Dashboard {
 
 				tType = rs.getString("Transaction Type");
 				fAcc = rs.getString("MM Operator");
-				fDoT = rs.getDate("DoT");
+				String sd = rs.getString("DoT");
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+				try {
+					fDoT = sdf.parse(sd);
+
+					System.out
+							.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx: "
+									+ sdf.format(fDoT)
+									+ " :xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+				} catch (ParseException e) {
+					System.out
+							.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx: "
+									+ sdf.format(fDoT)
+									+ " :xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+					fDoT = Calendar.getInstance().getTime();
+					e.printStackTrace();
+				}
+				// fDoT = rs.getDate("DoT");
 				status = rs.getString("Status");
 				if (status.equals("SUCCESSFUL"))
 					sc++;
