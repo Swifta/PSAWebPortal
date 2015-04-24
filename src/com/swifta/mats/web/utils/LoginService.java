@@ -12,12 +12,12 @@ import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Activati
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ActivationrequestResponse;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ActivationrequestResponseE;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Activationresponse;
-import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Authenticationrequestresponse;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Credentials;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Webauthenticate;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.WebauthenticateE;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.WebauthenticateResponse;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.WebauthenticateResponseE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Webauthenticationrequestresponse;
 
 public class LoginService {
 	private ProvisioningStub provisioningStub;
@@ -56,7 +56,7 @@ public class LoginService {
 			WebauthenticateResponse response2 = response
 					.getWebauthenticateResponse();
 			if (response2 != null) {
-				Authenticationrequestresponse response3 = response2
+				Webauthenticationrequestresponse response3 = response2
 						.get_return();
 				if (response3 != null) {
 					statusMessage = response3.getResponsemessage();
