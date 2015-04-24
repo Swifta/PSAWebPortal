@@ -314,6 +314,8 @@ public class UserDetailsModule {
 
 		final BtnTabLike btnLinks = new BtnTabLike("Manage Downlines", null);
 
+		final BtnTabLike btnProfile = new BtnTabLike("User Profile", null);
+
 		final BtnTabLike btnAccount = new BtnTabLike("Account", null);
 		// BtnTabLike btnAuth = new BtnTabLike("Authentication", null);
 		final BtnTabLike btnLog = new BtnTabLike("Log", null);
@@ -333,7 +335,7 @@ public class UserDetailsModule {
 		ArrayList<HorizontalLayout> arrLSubTabs = new ArrayList<HorizontalLayout>();
 
 		final HorizontalLayout cManUserSubMenu = getAddUserSubMenu(btnLog,
-				btnPersonal, btnAccount, btnLinks);
+				btnPersonal, btnAccount, btnLinks, btnProfile);
 
 		arrLSubTabs.add(cManUserSubMenu);
 
@@ -358,11 +360,17 @@ public class UserDetailsModule {
 				if (!btnLinks.isEnabled())
 					p = cL;
 
+				if (!btnProfile.isEnabled())
+					p = cL;
+
 				btnAccount.setEnabled(true);
 				btnAccount.setStyleName("btn_tab_like");
 
 				btnLinks.setEnabled(true);
 				btnLinks.setStyleName("btn_tab_like");
+
+				btnProfile.setEnabled(true);
+				btnProfile.setStyleName("btn_tab_like");
 
 				if (!isfromsub) {
 					p = (HorizontalLayout) cPerAccAuthInfo.getComponent(0);
@@ -400,11 +408,17 @@ public class UserDetailsModule {
 				if (!btnLinks.isEnabled())
 					p = cL;
 
+				if (!btnProfile.isEnabled())
+					p = cL;
+
 				btnPersonal.setEnabled(true);
 				btnPersonal.setStyleName("btn_tab_like");
 
 				btnLinks.setEnabled(true);
 				btnLinks.setStyleName("btn_tab_like");
+
+				btnProfile.setEnabled(true);
+				btnProfile.setStyleName("btn_tab_like");
 
 				if (!isfromsub) {
 					if (cA == null)
@@ -477,6 +491,53 @@ public class UserDetailsModule {
 			}
 		});
 
+		btnProfile.addClickListener(new Button.ClickListener() {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				btnProfile.setEnabled(false);
+				btnProfile.setStyleName("btn_tab_like btn_tab_like_active");
+
+				if (!btnPersonal.isEnabled())
+					p = cP;
+				if (!btnAccount.isEnabled())
+					p = cA;
+
+				btnPersonal.setEnabled(true);
+				btnPersonal.setStyleName("btn_tab_like");
+
+				btnAccount.setEnabled(true);
+				btnAccount.setStyleName("btn_tab_like");
+				if (!isfromsub) {
+					if (cL == null)
+						cL = getLC();
+
+					p = (HorizontalLayout) cPerAccAuthInfo.getComponent(0);
+					cPerAccAuthInfo.replaceComponent(p, cL);
+
+				} else {
+					if (cL == null)
+						cL = getLC();
+					prevL = (HorizontalLayout) cPerAccAuthInfo.getComponent(0);
+					cPerAccAuthInfo.replaceComponent(prevL, cL);
+
+					isfromsub = false;
+					btnLog.setEnabled(true);
+					btnLog.setStyleName("btn_tab_like");
+					cManUserSubMenu.setStyleName("c_sub_menu_invisible");
+
+				}
+
+				cpop.center();
+
+			}
+		});
+
 		cManUserSubMenu.setSizeUndefined();
 
 		return cManageUserMenu;
@@ -485,7 +546,7 @@ public class UserDetailsModule {
 
 	private HorizontalLayout getAddUserSubMenu(final BtnTabLike btnAddUser,
 			final BtnTabLike btnPersonal, final BtnTabLike btnAccount,
-			final BtnTabLike btnLinks) {
+			final BtnTabLike btnLinks, final BtnTabLike btnProfile) {
 		final HorizontalLayout cAddUserSubMenu = new HorizontalLayout();
 		cAddUserSubMenu.setStyleName("c_sub_menu_invisible");
 		cAddUserSubMenu.setSizeUndefined();
@@ -557,6 +618,24 @@ public class UserDetailsModule {
 
 					btnLinks.setEnabled(true);
 					btnLinks.setStyleName("btn_tab_like");
+					cL = p;
+					if (cLP == null && prevL == null) {
+						btnAct.setEnabled(false);
+						btnAct.setStyleName("btn_tab_like btn_tab_like_active");
+
+						btnAcc.setEnabled(true);
+						btnAcc.setStyleName("btn_tab_like");
+
+						cLP = getActLog();
+						cPerAccAuthInfo.replaceComponent(p, cLP);
+					} else {
+						cPerAccAuthInfo.replaceComponent(p, prevL);
+					}
+
+				} else if (!btnProfile.isEnabled()) {
+
+					btnProfile.setEnabled(true);
+					btnProfile.setStyleName("btn_tab_like");
 					cL = p;
 					if (cLP == null && prevL == null) {
 						btnAct.setEnabled(false);
