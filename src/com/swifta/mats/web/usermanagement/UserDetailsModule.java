@@ -62,6 +62,7 @@ public class UserDetailsModule {
 	private HorizontalLayout cP;
 	private HorizontalLayout cA;
 	private HorizontalLayout cL;
+	private HorizontalLayout cProf;
 	private HorizontalLayout p;
 	private HorizontalLayout prevL;
 	private boolean isfromsub = false;
@@ -139,6 +140,8 @@ public class UserDetailsModule {
 	private IndexedContainer xcontainer;
 	private Object xrid;
 	private TextField tFU;
+
+	private Window pop = new Window("Comfirm profile removal");
 
 	public UserDetailsModule() {
 
@@ -325,6 +328,8 @@ public class UserDetailsModule {
 				.toString().equals("MATS_DEALER_USER_PROFILE"))
 			cManageAndAddTab.addComponent(btnLinks);
 
+		cManageAndAddTab.addComponent(btnProfile);
+
 		// cManageAndAddTab.addComponent(btnAuth);
 		cManageAndAddTab.addComponent(btnLog);
 
@@ -361,7 +366,7 @@ public class UserDetailsModule {
 					p = cL;
 
 				if (!btnProfile.isEnabled())
-					p = cL;
+					p = cProf;
 
 				btnAccount.setEnabled(true);
 				btnAccount.setStyleName("btn_tab_like");
@@ -409,7 +414,7 @@ public class UserDetailsModule {
 					p = cL;
 
 				if (!btnProfile.isEnabled())
-					p = cL;
+					p = cProf;
 
 				btnPersonal.setEnabled(true);
 				btnPersonal.setStyleName("btn_tab_like");
@@ -460,12 +465,18 @@ public class UserDetailsModule {
 					p = cP;
 				if (!btnAccount.isEnabled())
 					p = cA;
+				if (!btnProfile.isEnabled())
+					p = cProf;
 
 				btnPersonal.setEnabled(true);
 				btnPersonal.setStyleName("btn_tab_like");
 
 				btnAccount.setEnabled(true);
 				btnAccount.setStyleName("btn_tab_like");
+
+				btnProfile.setEnabled(true);
+				btnProfile.setStyleName("btn_tab_like");
+
 				if (!isfromsub) {
 					if (cL == null)
 						cL = getLC();
@@ -507,24 +518,33 @@ public class UserDetailsModule {
 					p = cP;
 				if (!btnAccount.isEnabled())
 					p = cA;
+				if (!btnLinks.isEnabled())
+					p = cL;
+				if (btnProfile.isEnabled()) {
+					return;
+				}
 
 				btnPersonal.setEnabled(true);
 				btnPersonal.setStyleName("btn_tab_like");
 
 				btnAccount.setEnabled(true);
 				btnAccount.setStyleName("btn_tab_like");
+
+				btnLinks.setEnabled(true);
+				btnLinks.setStyleName("btn_tab_like");
+
 				if (!isfromsub) {
-					if (cL == null)
-						cL = getLC();
+					if (cProf == null)
+						cProf = getPC();
 
 					p = (HorizontalLayout) cPerAccAuthInfo.getComponent(0);
-					cPerAccAuthInfo.replaceComponent(p, cL);
+					cPerAccAuthInfo.replaceComponent(p, cProf);
 
 				} else {
-					if (cL == null)
-						cL = getLC();
+					if (cProf == null)
+						cProf = getPC();
 					prevL = (HorizontalLayout) cPerAccAuthInfo.getComponent(0);
-					cPerAccAuthInfo.replaceComponent(prevL, cL);
+					cPerAccAuthInfo.replaceComponent(prevL, cProf);
 
 					isfromsub = false;
 					btnLog.setEnabled(true);
@@ -636,7 +656,7 @@ public class UserDetailsModule {
 
 					btnProfile.setEnabled(true);
 					btnProfile.setStyleName("btn_tab_like");
-					cL = p;
+					cProf = p;
 					if (cLP == null && prevL == null) {
 						btnAct.setEnabled(false);
 						btnAct.setStyleName("btn_tab_like btn_tab_like_active");
@@ -2651,4 +2671,307 @@ public class UserDetailsModule {
 		}
 
 	}
+
+	private HorizontalLayout getPC() {
+
+		VerticalLayout cAgentInfo = new VerticalLayout();
+		final HorizontalLayout cPlaceholder = new HorizontalLayout();
+		cAgentInfo.setMargin(new MarginInfo(true, true, true, true));
+		cAgentInfo.setStyleName("c_details_test");
+
+		final VerticalLayout cLBody = new VerticalLayout();
+
+		cLBody.setStyleName("c_body_visible");
+		tb = new Table("Linked child accounts");
+		// addLinksTable();
+
+		final VerticalLayout cAllProf = new VerticalLayout();
+
+		HorizontalLayout cProfActions = new HorizontalLayout();
+		final FormLayout cProfName = new FormLayout();
+
+		cProfName.setStyleName("frm_profile_name");
+		cProfName.setSizeUndefined();
+
+		final Label lbProf = new Label();
+		final TextField tFProf = new TextField();
+
+		lbProf.setCaption("Profile Name: ");
+		lbProf.setValue("Certified Authorized User.");
+
+		tFProf.setCaption(lbProf.getCaption());
+		cProfName.addComponent(lbProf);
+
+		final Button btnEdit = new Button();
+		btnEdit.setIcon(FontAwesome.EDIT);
+		btnEdit.setStyleName("btn_link");
+		btnEdit.setDescription("Edit profile name");
+
+		final Button btnCancel = new Button();
+		btnCancel.setIcon(FontAwesome.UNDO);
+		btnCancel.setStyleName("btn_link");
+		btnCancel.setDescription("Cancel Profile name editting.");
+
+		Button btnAdd = new Button("+");
+		// btnAdd.setIcon(FontAwesome.EDIT);
+		btnAdd.setStyleName("btn_link");
+		btnAdd.setDescription("Set new profile");
+
+		Button btnRemove = new Button("-");
+		// btnRemove.setIcon(FontAwesome.EDIT);
+		btnRemove.setStyleName("btn_link");
+		btnRemove.setDescription("Remove current profile");
+
+		// cProf.addComponent(cProfName);
+		cProfActions.addComponent(btnEdit);
+		cProfActions.addComponent(btnCancel);
+		cProfActions.addComponent(btnAdd);
+		cProfActions.addComponent(btnRemove);
+
+		btnCancel.setVisible(false);
+
+		cAllProf.addComponent(cProfName);
+		cAllProf.addComponent(cProfActions);
+		cAllProf.setComponentAlignment(cProfActions, Alignment.TOP_CENTER);
+
+		cLBody.addComponent(cAllProf);
+
+		// cLBody.addComponent(tb);
+
+		tb.setSelectable(true);
+
+		cAgentInfo.addComponent(cLBody);
+
+		btnLink = new Button("Add New Link");
+		btnLink.setIcon(FontAwesome.LINK);
+		btnLink.setDescription("Link new account.");
+
+		// cLBody.addComponent(btnLink);
+		// cLBody.setComponentAlignment(btnLink, Alignment.TOP_LEFT);
+		btnLink.addClickListener(new LinkClickHandler());
+
+		cPlaceholder.setVisible(false);
+		addLinkUserContainer();
+		cPlaceholder.setWidth("100%");
+
+		cLBody.addComponent(cPlaceholder);
+		cLBody.setComponentAlignment(cPlaceholder, Alignment.TOP_CENTER);
+		HorizontalLayout c = new HorizontalLayout();
+		c.addComponent(cAgentInfo);
+
+		btnEdit.addClickListener(new Button.ClickListener() {
+
+			private static final long serialVersionUID = -8427226211153164650L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+
+				if (btnEdit.getIcon().equals(FontAwesome.EDIT)) {
+
+					tFProf.setValue(lbProf.getValue());
+					tFProf.selectAll();
+					cProfName.replaceComponent(lbProf, tFProf);
+					btnEdit.setIcon(FontAwesome.SAVE);
+					btnCancel.setVisible(true);
+					return;
+
+				} else if (btnEdit.getIcon().equals(FontAwesome.SAVE)) {
+
+					lbProf.setValue(tFProf.getValue());
+					cProfName.replaceComponent(tFProf, lbProf);
+					btnEdit.setIcon(FontAwesome.EDIT);
+					btnCancel.setVisible(false);
+
+					return;
+				}
+				lbProf.setValue(tFProf.getValue());
+				cProfName.replaceComponent(tFProf, lbProf);
+				btnEdit.setIcon(FontAwesome.EDIT);
+				btnCancel.setVisible(false);
+
+			}
+		});
+
+		btnCancel.addClickListener(new Button.ClickListener() {
+			private static final long serialVersionUID = -2870045546205986347L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				cProfName.replaceComponent(tFProf, lbProf);
+				btnEdit.setIcon(FontAwesome.EDIT);
+				btnCancel.setVisible(false);
+
+			}
+		});
+
+		btnAdd.addClickListener(new AddProfileHandler(cAllProf, cPlaceholder));
+
+		btnRemove.addClickListener(new RemoveProfileHandler(pop));
+
+		return c;
+
+	}
+
+	private class RemoveProfileHandler implements Button.ClickListener {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		private Window pop;
+		private Button btnCancel;
+		private Button btnComfirm;
+
+		RemoveProfileHandler(final Window pop) {
+			this.pop = pop;
+
+			VerticalLayout cComfirm = new VerticalLayout();
+
+			Label lbComfrim = new Label("Current user profile will be removed!");
+
+			btnComfirm = new Button("Remove Profile");
+			btnComfirm.setStyleName("btn_link");
+			btnComfirm.setDescription("Remove current profile");
+
+			btnCancel = new Button("Cancel");
+			btnCancel.setStyleName("btn_link");
+			btnCancel.setDescription("Cancel Profile removal");
+
+			HorizontalLayout cBtns = new HorizontalLayout();
+			cBtns.addComponent(btnComfirm);
+			cBtns.addComponent(btnCancel);
+
+			cBtns.setSpacing(true);
+
+			cComfirm.addComponent(lbComfrim);
+			cComfirm.addComponent(cBtns);
+
+			cComfirm.setSpacing(true);
+			cComfirm.setMargin(true);
+
+			cComfirm.setComponentAlignment(lbComfrim, Alignment.TOP_CENTER);
+			cComfirm.setComponentAlignment(cBtns, Alignment.TOP_CENTER);
+
+			pop.setContent(cComfirm);
+
+			btnComfirm.addClickListener(new Button.ClickListener() {
+
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void buttonClick(ClickEvent event) {
+
+					pop.close();
+
+				}
+			});
+
+			btnCancel.addClickListener(new Button.ClickListener() {
+
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void buttonClick(ClickEvent event) {
+
+					pop.close();
+
+				}
+			});
+
+		}
+
+		@Override
+		public void buttonClick(ClickEvent event) {
+			UI.getCurrent().addWindow(pop);
+			pop.center();
+
+		}
+
+	}
+
+	private class AddProfileHandler implements Button.ClickListener {
+
+		private static final long serialVersionUID = -9065514577173650677L;
+		private VerticalLayout cAddProf;
+		private HorizontalLayout cBtns;
+		private TextField tFProf;
+		private ComboBox combo;
+		private Button btnCancel;
+		private Button btnSave;
+		private VerticalLayout cAllProf;
+		private HorizontalLayout cPlaceholder;
+
+		AddProfileHandler(final VerticalLayout cAllProf,
+				final HorizontalLayout cPlaceholder) {
+			this.cAllProf = cAllProf;
+			this.cPlaceholder = cPlaceholder;
+			cAddProf = new VerticalLayout();
+			cBtns = new HorizontalLayout();
+			cAddProf.setMargin(new MarginInfo(true, false, false, false));
+
+			tFProf = new TextField("Profile Name");
+			combo = new ComboBox("Profile");
+			btnSave = new Button();
+			btnSave.setIcon(FontAwesome.SAVE);
+			btnSave.setStyleName("btn_link");
+			btnSave.setDescription("Save new profile");
+
+			btnCancel = new Button();
+			btnCancel.setStyleName("btn_link");
+			btnCancel.setIcon(FontAwesome.UNDO);
+			btnCancel.setDescription("Cancel setting new profile");
+
+			cAddProf.addComponent(tFProf);
+			cAddProf.addComponent(combo);
+			cBtns.addComponent(btnSave);
+			cBtns.addComponent(btnCancel);
+			cAddProf.addComponent(cBtns);
+
+			cPlaceholder.addComponent(cAddProf);
+
+			btnCancel.addClickListener(new Button.ClickListener() {
+
+				private static final long serialVersionUID = 3115121215716705673L;
+
+				@Override
+				public void buttonClick(ClickEvent event) {
+
+					cAllProf.setVisible(true);
+					cPlaceholder.setVisible(false);
+
+				}
+			});
+
+			btnSave.addClickListener(new Button.ClickListener() {
+
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 7591799098570751956L;
+
+				@Override
+				public void buttonClick(ClickEvent event) {
+
+					cAllProf.setVisible(true);
+					cPlaceholder.setVisible(false);
+
+				}
+			});
+
+		}
+
+		@Override
+		public void buttonClick(ClickEvent event) {
+			cPlaceholder.setVisible(true);
+			cAllProf.setVisible(false);
+
+		}
+
+	}
+
 }

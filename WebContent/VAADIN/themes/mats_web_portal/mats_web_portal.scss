@@ -1318,6 +1318,23 @@ ul.empty li{
 	background: #FFF;
 }
 
+
+.frm_profile_name .tbody [class*="lastrow"] > td{
+	padding-bottom: 0;
+	background: #F00;
+
+}
+
+.frm_profile_name{
+	margin-top: 5px;
+}
+
+.frm_profile_name .tbody [class*="firstrow"] > td{
+	padding-top: 0;
+	background: #F0F;
+}
+
+
 	
 
 
