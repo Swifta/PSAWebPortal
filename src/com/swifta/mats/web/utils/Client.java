@@ -464,4 +464,9 @@ public class Client {
 
 		UserManagementService.getactiveprofilepermission(1);
 	}
+
+	// public static void getactive() throws Exception {
+	//
+	// UserManagementService.getactiveprofilepermission(1);
+	// }
 }

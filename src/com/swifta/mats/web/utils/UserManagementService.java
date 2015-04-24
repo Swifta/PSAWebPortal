@@ -34,7 +34,6 @@ import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.AddProfi
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.AddProfileThresholdrequestresponse;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.AddProfilerequestresponse;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Address;
-import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Authenticationrequestresponse;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Changepassword;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ChangepasswordE;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ChangepasswordResponse;
@@ -99,6 +98,7 @@ import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Webauthe
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.WebauthenticateE;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.WebauthenticateResponse;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.WebauthenticateResponseE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Webauthenticationrequestresponse;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getactivepermissionbyprofileid;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getnonactivepermissionbyprofileid;
@@ -1108,7 +1108,7 @@ public class UserManagementService {
 			WebauthenticateResponse response2 = response
 					.getWebauthenticateResponse();
 			if (response2 != null) {
-				Authenticationrequestresponse response3 = response2
+				Webauthenticationrequestresponse response3 = response2
 						.get_return();
 				if (response3 != null) {
 					statusMessage = response3.getResponsemessage();
