@@ -2,6 +2,9 @@ package com.swifta.mats.web.utils;
 
 import java.rmi.RemoteException;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.axis2.AxisFault;
 
@@ -22,7 +25,9 @@ public class Client {
 
 			// Client.getactive();
 
-			Client.webauthenticate();
+			// Client.webauthenticate();
+
+			Client.getProfiles();
 
 			// Client.setProfilepermission();
 
@@ -465,6 +470,14 @@ public class Client {
 		UserManagementService.getactiveprofilepermission(1);
 	}
 
+	public static void getProfiles() throws Exception {
+		ReportingService rs = new ReportingService();
+		Set<Entry<String, String>> set = rs.getProfiles().entrySet();
+		Iterator<Entry<String, String>> itr = set.iterator();
+
+		for (Entry<String, String> e : set)
+			System.out.println(e.getKey() + " : " + e.getValue());
+	}
 	// public static void getactive() throws Exception {
 	//
 	// UserManagementService.getactiveprofilepermission(1);
