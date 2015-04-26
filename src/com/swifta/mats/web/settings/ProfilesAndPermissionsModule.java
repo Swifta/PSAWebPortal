@@ -9,10 +9,10 @@ import org.apache.axis2.AxisFault;
 
 import com.swifta.mats.web.usermanagement.BtnTabLike;
 import com.swifta.mats.web.utils.ReportingService;
+import com.swifta.mats.web.utils.UserManagementService;
 import com.swifta.sub.mats.reporting.DataServiceFault;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.event.FieldEvents.FocusEvent;
 import com.vaadin.event.FieldEvents.FocusListener;
 import com.vaadin.server.FontAwesome;
@@ -24,6 +24,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -40,9 +41,11 @@ public class ProfilesAndPermissionsModule {
 	private Window pop = new Window("Comfirm profile removal");
 	private boolean isfromsub;
 	private boolean isProfileNameChanged = false;
-	private IndexedContainer containerProfiles;
 	private ReportingService rs;
 	private boolean isProfilesAdded = false;
+	private ComboBox comboProfiles;
+	private HashMap<String, String> hmAllProfiles;
+	private HashMap<String, String> hmProfileTypes;
 
 	ProfilesAndPermissionsModule() {
 		addMenu();
@@ -182,7 +185,7 @@ public class ProfilesAndPermissionsModule {
 		final Label lb = new Label();
 		lb.setValue("Manage Profiles");
 		final TextField tFProf = new TextField();
-		final ComboBox comboProfiles = new ComboBox("Select Profile: ");
+		comboProfiles = new ComboBox("Select Profile: ");
 
 		lbProf.setCaption("Selected Profile Name: ");
 		lbProf.setValue("None.");
@@ -274,7 +277,7 @@ public class ProfilesAndPermissionsModule {
 			public void focus(FocusEvent event) {
 
 				if (!isProfilesAdded)
-					addContainer(comboProfiles);
+					addProfiles(comboProfiles);
 				isProfilesAdded = true;
 
 			}
@@ -311,6 +314,23 @@ public class ProfilesAndPermissionsModule {
 
 				} else if (btnEdit.getIcon().equals(FontAwesome.SAVE)) {
 
+					String pnNew = tFProf.getValue();
+					if (pnNew == null || pnNew.trim().trim().isEmpty()) {
+						Notification.show("Please provide new profile name.",
+								Notification.Type.ERROR_MESSAGE);
+						tFProf.focus();
+						return;
+					}
+
+					if (hmAllProfiles.containsKey(pnNew.trim())) {
+						Notification
+								.show(pnNew
+										+ " aleready exists. Please provide unique profile name.",
+										Notification.Type.ERROR_MESSAGE);
+						tFProf.focus();
+						return;
+					}
+
 					lbProf.setValue(tFProf.getValue());
 					cProfName.replaceComponent(tFProf, lbProf);
 					btnEdit.setIcon(FontAwesome.EDIT);
@@ -318,9 +338,25 @@ public class ProfilesAndPermissionsModule {
 
 					if (!isProfileNameChanged)
 						return;
+
 					isProfileNameChanged = false;
 
-					// TODO Save new profile name
+					Object profileName = comboProfiles.getValue();
+					Integer pid = Integer.parseInt(hmAllProfiles
+							.get(profileName.toString()));
+					String pnOld = profileName.toString();
+
+					System.out.println(" New PN: " + pnNew + " Old PN: "
+							+ pnOld + " PID:" + pid);
+
+					try {
+						UserManagementService.editProfile(pnNew, pnOld, pid);
+						comboProfiles.addItem(profileName);
+						hmAllProfiles.put(pnNew, pid.toString());
+					} catch (Exception e) {
+
+						e.printStackTrace();
+					}
 
 					return;
 				}
@@ -347,6 +383,18 @@ public class ProfilesAndPermissionsModule {
 		btnAdd.addClickListener(new AddProfileHandler(cAllProf, cPlaceholder));
 
 		btnRemove.addClickListener(new RemoveProfileHandler(pop));
+		btnRemove.addClickListener(new Button.ClickListener() {
+
+			private static final long serialVersionUID = -1842164361230795227L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+
+				event.getButton().addClickListener(
+						new RemoveProfileHandler(pop));
+
+			}
+		});
 
 		return c;
 
@@ -456,6 +504,31 @@ public class ProfilesAndPermissionsModule {
 
 			tFProf = new TextField("Profile Name");
 			combo = new ComboBox("Profile");
+			combo.setValue(null);
+			combo.setNullSelectionAllowed(false);
+			if (hmProfileTypes == null) {
+				if (rs == null)
+					try {
+						rs = new ReportingService();
+					} catch (AxisFault e1) {
+
+						e1.printStackTrace();
+					}
+				try {
+					hmProfileTypes = rs.getProfiles();
+				} catch (RemoteException | DataServiceFault e1) {
+
+					e1.printStackTrace();
+				}
+			}
+
+			Set<Entry<String, String>> set = hmProfileTypes.entrySet();
+			for (Entry<String, String> e : set) {
+				String key = e.getKey();
+				combo.addItem(key);
+				combo.setItemCaption(key, e.getValue());
+			}
+
 			btnSave = new Button();
 			btnSave.setIcon(FontAwesome.SAVE);
 			btnSave.setStyleName("btn_link");
@@ -489,13 +562,45 @@ public class ProfilesAndPermissionsModule {
 
 			btnSave.addClickListener(new Button.ClickListener() {
 
-				/**
-				 * 
-				 */
 				private static final long serialVersionUID = 7591799098570751956L;
 
 				@Override
 				public void buttonClick(ClickEvent event) {
+
+					String pn = tFProf.getValue();
+					if (pn == null || pn.trim().isEmpty()) {
+						Notification.show("Please provide a profile name",
+								Notification.Type.ERROR_MESSAGE);
+						tFProf.focus();
+						return;
+					}
+
+					if (combo.getValue() == null) {
+						Notification.show("Please select a profile",
+								Notification.Type.ERROR_MESSAGE);
+						return;
+					}
+
+					if (hmAllProfiles.containsKey(pn)) {
+						Notification
+								.show(pn
+										+ " already exists. Please provide a unique profile name.",
+										Notification.Type.ERROR_MESSAGE);
+						return;
+					}
+
+					Object profileID = combo.getValue();
+					Integer pid = Integer.parseInt(profileID.toString());
+
+					try {
+						String response = UserManagementService.addProfile(pn,
+								pid);
+						tFProf.setValue("");
+						hmAllProfiles.put(pn, pid.toString());
+					} catch (Exception e) {
+						e.printStackTrace();
+						return;
+					}
 
 					cAllProf.setVisible(true);
 					cPlaceholder.setVisible(false);
@@ -514,20 +619,52 @@ public class ProfilesAndPermissionsModule {
 
 	}
 
-	private void addContainer(ComboBox combo) {
+	private void addProfileTypes(ComboBox combo) {
 
 		if (rs == null)
 			try {
 				rs = new ReportingService();
 				try {
-					HashMap<String, String> hm = rs.getProfiles();
-					Set<Entry<String, String>> set = hm.entrySet();
+					if (hmProfileTypes != null)
+						return;
+
+					hmProfileTypes = rs.getProfiles();
+					Set<Entry<String, String>> set = hmProfileTypes.entrySet();
 					for (Entry<String, String> e : set) {
 
 						System.out.println(e.getKey() + " : " + e.getValue());
 						Object key = e.getKey();
 						combo.addItem(key);
 						combo.setItemCaption(key, e.getValue());
+
+					}
+
+				} catch (RemoteException | DataServiceFault e) {
+
+					e.printStackTrace();
+				}
+			} catch (AxisFault e) {
+
+				e.printStackTrace();
+			}
+
+	}
+
+	private void addProfiles(ComboBox combo) {
+
+		if (rs == null)
+			try {
+				rs = new ReportingService();
+				try {
+					if (hmAllProfiles != null)
+						return;
+
+					hmAllProfiles = rs.getProfiles();
+					Set<Entry<String, String>> set = hmAllProfiles.entrySet();
+					for (Entry<String, String> e : set) {
+
+						Object key = e.getValue();
+						combo.addItem(key);
 
 					}
 

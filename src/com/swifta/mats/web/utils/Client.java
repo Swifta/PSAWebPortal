@@ -28,6 +28,8 @@ public class Client {
 
 			Client.getProfiles();
 
+			// Client.getProfileTypes();
+
 			// Client.setProfilepermission();
 
 			// Client.removeProfilePermission();
@@ -472,6 +474,14 @@ public class Client {
 	public static void getProfiles() throws Exception {
 		ReportingService rs = new ReportingService();
 		Set<Entry<String, String>> set = rs.getProfiles().entrySet();
+
+		for (Entry<String, String> e : set)
+			System.out.println(e.getKey() + " : " + e.getValue());
+	}
+
+	public static void getProfileTypes() throws Exception {
+		ReportingService rs = new ReportingService();
+		Set<Entry<String, String>> set = rs.getProfileTypes().entrySet();
 
 		for (Entry<String, String> e : set)
 			System.out.println(e.getKey() + " : " + e.getValue());
