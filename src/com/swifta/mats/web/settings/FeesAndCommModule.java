@@ -71,9 +71,9 @@ public class FeesAndCommModule {
 	private String[] arrMatValues;
 	private String[] arrModelValues;
 	private String[] arrConValues;
-	FieldGroup otherfg;
 	ArrayList<FieldGroup> prfg;
 	ArrayList<FieldGroup> pmfg;
+	FieldGroup otherfg;
 	boolean isReset = false;
 	private boolean isSettingsURL = false;
 	private String curURL = null;

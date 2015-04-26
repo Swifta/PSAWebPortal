@@ -98,7 +98,7 @@ public class Reportform extends VerticalLayout {
 	private ComboBox reportType;
 	private PopupDateField dat = new PopupDateField("From: ");
 	private PopupDateField dat2 = new PopupDateField("To: ");
-	private HorizontalLayout cD;
+	private HorizontalLayout cDate;
 	private Filter cFilter;
 	private Filter dFilter;
 	private HorizontalLayout cByAndVal;
@@ -182,16 +182,16 @@ public class Reportform extends VerticalLayout {
 
 		VerticalLayout cF = new VerticalLayout();
 		cF.setSizeUndefined();
-		cD = new HorizontalLayout();
-		cD.setSpacing(true);
-		cD.setVisible(false);
+		cDate = new HorizontalLayout();
+		cDate.setSpacing(true);
+		cDate.setVisible(false);
 		lb = new Label("Filter by: ");
 		lb.setSizeUndefined();
 		lb.setVisible(false);
 		lb.setStyleName("label_search_user");
 
-		cD.addComponent(dat);
-		cD.addComponent(dat2);
+		cDate.addComponent(dat);
+		cDate.addComponent(dat2);
 
 		cByAndVal = new HorizontalLayout();
 		btnApply = new Button("Apply");
@@ -224,7 +224,7 @@ public class Reportform extends VerticalLayout {
 		HorizontalLayout cDFAndReload = new HorizontalLayout();
 		cDFAndReload.setWidth("100%");
 		cDFAndReload.setSpacing(true);
-		cDFAndReload.addComponent(cD);
+		cDFAndReload.addComponent(cDate);
 
 		HorizontalLayout cBtns = new HorizontalLayout();
 		cBtns.setSizeUndefined();
@@ -655,12 +655,12 @@ public class Reportform extends VerticalLayout {
 
 		if (ds.size() == 0) {
 			// btnApply.setVisible(false);
-			cD.setVisible(true);
+			cDate.setVisible(true);
 			lb.setVisible(true);
 		} else {
 			// btnApply.setVisible(true);
 			lb.setVisible(true);
-			cD.setVisible(true);
+			cDate.setVisible(true);
 		}
 
 	}
@@ -762,7 +762,12 @@ public class Reportform extends VerticalLayout {
 			Item trItem;
 			StringBuilder trxnsqld = new StringBuilder();
 
-			cD.setVisible(false);
+			cDate.setVisible(true);
+			Date dx = null;
+
+			dat.setValue(dx);
+			dat2.setValue(dx);
+
 			bdAmt = new BigDecimal(0.00);
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -1137,7 +1142,7 @@ public class Reportform extends VerticalLayout {
 
 				rs = stmt.executeQuery(agentsql.toString());
 
-				cD.setVisible(true);
+				cDate.setVisible(true);
 
 				while (rs.next()) {
 					x = x + 1;
@@ -1357,7 +1362,7 @@ public class Reportform extends VerticalLayout {
 				trxnsqld.append("  ORDER BY Timestamps desc; ");
 
 				rs = stmt.executeQuery(trxnsqld.toString());
-				cD.setVisible(true);
+				cDate.setVisible(true);
 				bdAmt = new BigDecimal(0.00);
 
 				while (rs.next()) {
@@ -1550,7 +1555,7 @@ public class Reportform extends VerticalLayout {
 
 				rs = stmt.executeQuery(summarysql.toString());
 
-				cD.setVisible(true);
+				cDate.setVisible(true);
 				while (rs.next()) {
 					x = x + 1;
 
@@ -1622,7 +1627,7 @@ public class Reportform extends VerticalLayout {
 			}
 
 		} else if (selectedId.equalsIgnoreCase("Fees / Commission Report")) {
-			cD.setVisible(true);
+			cDate.setVisible(true);
 
 			IndexedContainer feesCommissionContainer = new IndexedContainer();
 			feesCommissionContainer.addContainerProperty("S/N", String.class,
@@ -1832,7 +1837,7 @@ public class Reportform extends VerticalLayout {
 		} else if (selectedId
 				.equalsIgnoreCase("Fees / Commission Summary Report")) {
 
-			cD.setVisible(true);
+			cDate.setVisible(true);
 
 			IndexedContainer feesCommissionContainer = new IndexedContainer();
 			feesCommissionContainer.addContainerProperty("S/N", String.class,
