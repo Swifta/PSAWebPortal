@@ -328,7 +328,7 @@ public class UserDetailsModule {
 				.toString().equals("MATS_DEALER_USER_PROFILE"))
 			cManageAndAddTab.addComponent(btnLinks);
 
-		cManageAndAddTab.addComponent(btnProfile);
+		// cManageAndAddTab.addComponent(btnProfile);
 
 		// cManageAndAddTab.addComponent(btnAuth);
 		cManageAndAddTab.addComponent(btnLog);
@@ -337,12 +337,13 @@ public class UserDetailsModule {
 
 		btnPersonal.setEnabled(false);
 
-		ArrayList<HorizontalLayout> arrLSubTabs = new ArrayList<HorizontalLayout>();
+		// ArrayList<HorizontalLayout> arrLSubTabs = new
+		// ArrayList<HorizontalLayout>();
 
 		final HorizontalLayout cManUserSubMenu = getAddUserSubMenu(btnLog,
 				btnPersonal, btnAccount, btnLinks, btnProfile);
 
-		arrLSubTabs.add(cManUserSubMenu);
+		// arrLSubTabs.add(cManUserSubMenu);
 
 		cManageUserMenu.addComponent(cManageAndAddTab);
 		cManageUserMenu.addComponent(cManUserSubMenu);

@@ -56,8 +56,6 @@ public class Settings extends VerticalLayout {
 	Button BulkImport = new Button("Bulk Import");
 	Button back = new Button();
 
-	public WorkSpaceManageFeesAndComm wmfac;
-
 	ComboBox selection = new ComboBox();
 	Button createAccount = new Button("Create");
 	Button cancelAccount = new Button("Cancel");
@@ -117,6 +115,9 @@ public class Settings extends VerticalLayout {
 
 	private static final long serialVersionUID = -2467595854268829523L;
 
+	private WorkSpaceManageFeesAndComm wmfac;
+	private ProfilesAndPermissionsModule ppm;
+
 	public HorizontalLayout Addlabel() {
 		setMargin(true);
 		AddIcons icon1 = new AddIcons();
@@ -129,8 +130,8 @@ public class Settings extends VerticalLayout {
 		final VerticalLayout het1 = icon1.ImagesClicking("Account Management",
 				"img/use.png");
 		het1.setStyleName(ValoTheme.LINK_SMALL + " ic_hand see_lay");
-		final VerticalLayout het2 = icon1.ImagesClicking("Permissions",
-				"img/permission.png");
+		final VerticalLayout het2 = icon1.ImagesClicking(
+				"Profiles / Permissions", "img/permission.png");
 		het2.setStyleName(ValoTheme.LINK_SMALL + " ic_hand see_lay");
 		final VerticalLayout het3 = icon1.ImagesClicking("Authentication",
 				"img/auth.png");
@@ -153,6 +154,28 @@ public class Settings extends VerticalLayout {
 		cIcon.addComponent(het4);
 		cIcon.addComponent(het5);
 		cIcon.addComponent(het6);
+
+		het2.addLayoutClickListener(new LayoutClickListener() {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = -3403162468496827919L;
+
+			@Override
+			public void layoutClick(LayoutClickEvent event) {
+
+				if (ppm == null)
+					ppm = new ProfilesAndPermissionsModule();
+				VerticalLayout cppm = ppm.getMainContainer();
+				laying.removeAllComponents();
+				laying.addComponent(cppm);
+				laying.setComponentAlignment(cppm, Alignment.TOP_LEFT);
+				laying.setSizeFull();
+
+			}
+
+		});
 
 		het4.addLayoutClickListener(new LayoutClickListener() {
 

@@ -2,7 +2,6 @@ package com.swifta.mats.web.utils;
 
 import java.rmi.RemoteException;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -473,7 +472,6 @@ public class Client {
 	public static void getProfiles() throws Exception {
 		ReportingService rs = new ReportingService();
 		Set<Entry<String, String>> set = rs.getProfiles().entrySet();
-		Iterator<Entry<String, String>> itr = set.iterator();
 
 		for (Entry<String, String> e : set)
 			System.out.println(e.getKey() + " : " + e.getValue());

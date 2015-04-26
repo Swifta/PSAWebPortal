@@ -17,7 +17,7 @@ public class ReportingService {
 	private final MatsreportingserviceStub rservice;
 	final static String esbendpoint = MatsWebPortalUI.conf.ESB;
 
-	ReportingService() throws AxisFault {
+	public ReportingService() throws AxisFault {
 		rservice = new MatsreportingserviceStub(esbendpoint);
 	}
 
