@@ -26,9 +26,9 @@ public class Client {
 
 			// Client.webauthenticate();
 
-			Client.getProfiles();
+			// Client.getProfiles();
 
-			// Client.getProfileTypes();
+			Client.getProfileTypes();
 
 			// Client.setProfilepermission();
 
