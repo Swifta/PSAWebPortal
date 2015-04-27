@@ -8,11 +8,13 @@ import java.util.Set;
 import org.apache.axis2.AxisFault;
 
 import com.swifta.mats.web.usermanagement.BtnTabLike;
+import com.swifta.mats.web.usermanagement.NotifCustom;
 import com.swifta.mats.web.utils.ReportingService;
 import com.swifta.mats.web.utils.UserManagementService;
 import com.swifta.sub.mats.reporting.DataServiceFault;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.event.FieldEvents.FocusEvent;
 import com.vaadin.event.FieldEvents.FocusListener;
 import com.vaadin.server.FontAwesome;
@@ -176,6 +178,7 @@ public class ProfilesAndPermissionsModule {
 
 		final HorizontalLayout cProfActions = new HorizontalLayout();
 		cProfActions.setVisible(false);
+		HorizontalLayout cProfNameAndAddBtn = new HorizontalLayout();
 		final FormLayout cProfName = new FormLayout();
 
 		cProfName.setStyleName("frm_profile_name");
@@ -216,15 +219,18 @@ public class ProfilesAndPermissionsModule {
 		btnRemove.setStyleName("btn_link");
 		btnRemove.setDescription("Remove current profile");
 
+		cProfNameAndAddBtn.addComponent(cProfName);
+		cProfNameAndAddBtn.addComponent(btnAdd);
+
 		// cProf.addComponent(cProfName);
 		cProfActions.addComponent(btnEdit);
 		cProfActions.addComponent(btnCancel);
-		cProfActions.addComponent(btnAdd);
+		// cProfActions.addComponent(btnAdd);
 		cProfActions.addComponent(btnRemove);
 
 		btnCancel.setVisible(false);
 
-		cAllProf.addComponent(cProfName);
+		cAllProf.addComponent(cProfNameAndAddBtn);
 		cAllProf.addComponent(cProfActions);
 		cAllProf.setComponentAlignment(cProfActions, Alignment.TOP_CENTER);
 
@@ -314,6 +320,9 @@ public class ProfilesAndPermissionsModule {
 
 				} else if (btnEdit.getIcon().equals(FontAwesome.SAVE)) {
 
+					if (!isProfileNameChanged)
+						return;
+
 					String pnNew = tFProf.getValue();
 					if (pnNew == null || pnNew.trim().trim().isEmpty()) {
 						Notification.show("Please provide new profile name.",
@@ -324,8 +333,9 @@ public class ProfilesAndPermissionsModule {
 
 					if (hmAllProfiles.containsKey(pnNew.trim())) {
 						Notification
-								.show(pnNew
-										+ " aleready exists. Please provide unique profile name.",
+								.show("\""
+										+ pnNew
+										+ "\" already exists. Please provide unique profile name.",
 										Notification.Type.ERROR_MESSAGE);
 						tFProf.focus();
 						return;
@@ -335,9 +345,6 @@ public class ProfilesAndPermissionsModule {
 					cProfName.replaceComponent(tFProf, lbProf);
 					btnEdit.setIcon(FontAwesome.EDIT);
 					btnCancel.setVisible(false);
-
-					if (!isProfileNameChanged)
-						return;
 
 					isProfileNameChanged = false;
 
@@ -350,9 +357,17 @@ public class ProfilesAndPermissionsModule {
 							+ pnOld + " PID:" + pid);
 
 					try {
-						UserManagementService.editProfile(pnNew, pnOld, pid);
-						comboProfiles.addItem(profileName);
+						// TODO UserManagementService.editProfile(pnNew, pnOld,
+						// pid);
+
+						comboProfiles.addItem(pnNew);
+						comboProfiles.removeItem(profileName);
+						comboProfiles.select(pnNew);
+						hmAllProfiles.remove(pnOld);
 						hmAllProfiles.put(pnNew, pid.toString());
+
+						// hmAllProfiles.replace(pnOld, pnNew);
+
 					} catch (Exception e) {
 
 						e.printStackTrace();
@@ -383,18 +398,6 @@ public class ProfilesAndPermissionsModule {
 		btnAdd.addClickListener(new AddProfileHandler(cAllProf, cPlaceholder));
 
 		btnRemove.addClickListener(new RemoveProfileHandler(pop));
-		btnRemove.addClickListener(new Button.ClickListener() {
-
-			private static final long serialVersionUID = -1842164361230795227L;
-
-			@Override
-			public void buttonClick(ClickEvent event) {
-
-				event.getButton().addClickListener(
-						new RemoveProfileHandler(pop));
-
-			}
-		});
 
 		return c;
 
@@ -408,13 +411,14 @@ public class ProfilesAndPermissionsModule {
 		private Window pop;
 		private Button btnCancel;
 		private Button btnComfirm;
+		private Label lbComfirm;
 
 		RemoveProfileHandler(final Window pop) {
 			this.pop = pop;
 
 			VerticalLayout cComfirm = new VerticalLayout();
 
-			Label lbComfrim = new Label("Current user profile will be removed!");
+			lbComfirm = new Label();
 
 			btnComfirm = new Button("Remove Profile");
 			btnComfirm.setStyleName("btn_link");
@@ -430,13 +434,13 @@ public class ProfilesAndPermissionsModule {
 
 			cBtns.setSpacing(true);
 
-			cComfirm.addComponent(lbComfrim);
+			cComfirm.addComponent(lbComfirm);
 			cComfirm.addComponent(cBtns);
 
 			cComfirm.setSpacing(true);
 			cComfirm.setMargin(true);
 
-			cComfirm.setComponentAlignment(lbComfrim, Alignment.TOP_CENTER);
+			cComfirm.setComponentAlignment(lbComfirm, Alignment.TOP_CENTER);
 			cComfirm.setComponentAlignment(cBtns, Alignment.TOP_CENTER);
 
 			pop.setContent(cComfirm);
@@ -452,6 +456,36 @@ public class ProfilesAndPermissionsModule {
 				public void buttonClick(ClickEvent event) {
 
 					pop.close();
+
+					String pn = comboProfiles.getValue().toString();
+					Integer pid = Integer.parseInt(hmAllProfiles.get(pn));
+					String response = null;
+					try {
+						response = UserManagementService.removeProfile(pn, pid);
+					} catch (Exception e) {
+						Notification.show(e.getMessage(),
+								Notification.Type.ERROR_MESSAGE);
+						e.printStackTrace();
+						return;
+					}
+
+					if (response == null || response.trim().isEmpty()) {
+						Notification.show("No response from the server.",
+								Notification.Type.ERROR_MESSAGE);
+						return;
+					}
+
+					if (response.toUpperCase().contains("SUCCESSFUL")) {
+						comboProfiles.select(null);
+						comboProfiles.removeItem(pn);
+						hmAllProfiles.remove(pn);
+						NotifCustom.show("Remove response", pn
+								+ " removed successfully.");
+
+					} else {
+						Notification.show(response,
+								Notification.Type.ERROR_MESSAGE);
+					}
 
 				}
 			});
@@ -476,10 +510,10 @@ public class ProfilesAndPermissionsModule {
 		@Override
 		public void buttonClick(ClickEvent event) {
 			UI.getCurrent().addWindow(pop);
+
 			pop.center();
 
 		}
-
 	}
 
 	private class AddProfileHandler implements Button.ClickListener {
@@ -506,28 +540,6 @@ public class ProfilesAndPermissionsModule {
 			combo = new ComboBox("Profile");
 			combo.setValue(null);
 			combo.setNullSelectionAllowed(false);
-			if (hmProfileTypes == null) {
-				if (rs == null)
-					try {
-						rs = new ReportingService();
-					} catch (AxisFault e1) {
-
-						e1.printStackTrace();
-					}
-				try {
-					hmProfileTypes = rs.getProfiles();
-				} catch (RemoteException | DataServiceFault e1) {
-
-					e1.printStackTrace();
-				}
-			}
-
-			Set<Entry<String, String>> set = hmProfileTypes.entrySet();
-			for (Entry<String, String> e : set) {
-				String key = e.getKey();
-				combo.addItem(key);
-				combo.setItemCaption(key, e.getValue());
-			}
 
 			btnSave = new Button();
 			btnSave.setIcon(FontAwesome.SAVE);
@@ -546,6 +558,34 @@ public class ProfilesAndPermissionsModule {
 			cAddProf.addComponent(cBtns);
 
 			cPlaceholder.addComponent(cAddProf);
+
+			combo.addFocusListener(new FocusListener() {
+				private static final long serialVersionUID = -7814943757729564782L;
+
+				@Override
+				public void focus(FocusEvent event) {
+
+					if (hmProfileTypes != null)
+						return;
+					addProfileTypes(combo);
+
+				}
+
+			});
+
+			tFProf.addValueChangeListener(new ValueChangeListener() {
+
+				private static final long serialVersionUID = 4362210247953246281L;
+
+				@Override
+				public void valueChange(ValueChangeEvent event) {
+
+					if (hmAllProfiles == null)
+						addProfiles(comboProfiles);
+
+				}
+
+			});
 
 			btnCancel.addClickListener(new Button.ClickListener() {
 
@@ -591,19 +631,39 @@ public class ProfilesAndPermissionsModule {
 
 					Object profileID = combo.getValue();
 					Integer pid = Integer.parseInt(profileID.toString());
+					String response = null;
 
 					try {
-						String response = UserManagementService.addProfile(pn,
-								pid);
-						tFProf.setValue("");
-						hmAllProfiles.put(pn, pid.toString());
+
+						System.out.println(pn + " : " + pid);
+						response = UserManagementService.addProfile(pn, pid);
+
 					} catch (Exception e) {
+						Notification.show(e.getMessage(),
+								Notification.Type.ERROR_MESSAGE);
 						e.printStackTrace();
 						return;
 					}
+					if (response == null || response.trim().isEmpty()) {
+						Notification.show("Unknown operation status",
+								Notification.Type.ERROR_MESSAGE);
+						return;
+					}
 
-					cAllProf.setVisible(true);
-					cPlaceholder.setVisible(false);
+					if (response.toUpperCase().contains("SUCCESS")) {
+						NotifCustom.show("Add profile", pn
+								+ " added successfully.");
+						tFProf.setValue("");
+						hmAllProfiles.put(pn, pid.toString());
+						comboProfiles.addItem(pn);
+						cAllProf.setVisible(true);
+						cPlaceholder.setVisible(false);
+						combo.select(null);
+						return;
+					} else {
+						Notification.show(response,
+								Notification.Type.ERROR_MESSAGE);
+					}
 
 				}
 			});
@@ -614,6 +674,8 @@ public class ProfilesAndPermissionsModule {
 		public void buttonClick(ClickEvent event) {
 			cPlaceholder.setVisible(true);
 			cAllProf.setVisible(false);
+			tFProf.setValue("");
+			combo.select(null);
 
 		}
 
@@ -621,61 +683,65 @@ public class ProfilesAndPermissionsModule {
 
 	private void addProfileTypes(ComboBox combo) {
 
-		if (rs == null)
+		if (hmProfileTypes != null)
+			return;
+
+		if (rs == null) {
 			try {
 				rs = new ReportingService();
-				try {
-					if (hmProfileTypes != null)
-						return;
-
-					hmProfileTypes = rs.getProfiles();
-					Set<Entry<String, String>> set = hmProfileTypes.entrySet();
-					for (Entry<String, String> e : set) {
-
-						System.out.println(e.getKey() + " : " + e.getValue());
-						Object key = e.getKey();
-						combo.addItem(key);
-						combo.setItemCaption(key, e.getValue());
-
-					}
-
-				} catch (RemoteException | DataServiceFault e) {
-
-					e.printStackTrace();
-				}
 			} catch (AxisFault e) {
-
 				e.printStackTrace();
 			}
+		}
+
+		try {
+
+			hmProfileTypes = rs.getProfiles();
+			Set<Entry<String, String>> set = hmProfileTypes.entrySet();
+			for (Entry<String, String> e : set) {
+
+				System.out.println(e.getKey() + " : " + e.getValue());
+				Object key = e.getValue();
+				combo.addItem(key);
+				combo.setItemCaption(key, e.getKey());
+
+			}
+
+		} catch (RemoteException | DataServiceFault e) {
+
+			e.printStackTrace();
+		}
 
 	}
 
 	private void addProfiles(ComboBox combo) {
 
-		if (rs == null)
+		if (rs == null) {
 			try {
 				rs = new ReportingService();
-				try {
-					if (hmAllProfiles != null)
-						return;
-
-					hmAllProfiles = rs.getProfiles();
-					Set<Entry<String, String>> set = hmAllProfiles.entrySet();
-					for (Entry<String, String> e : set) {
-
-						Object key = e.getValue();
-						combo.addItem(key);
-
-					}
-
-				} catch (RemoteException | DataServiceFault e) {
-
-					e.printStackTrace();
-				}
 			} catch (AxisFault e) {
 
 				e.printStackTrace();
 			}
+		}
+
+		try {
+			if (hmAllProfiles != null)
+				return;
+			hmAllProfiles = rs.getProfiles();
+			Set<Entry<String, String>> set = hmAllProfiles.entrySet();
+			for (Entry<String, String> e : set) {
+
+				Object key = e.getKey();
+				combo.addItem(key);
+				System.out.println("-------:" + key + ":-------");
+
+			}
+
+		} catch (RemoteException | DataServiceFault e) {
+
+			e.printStackTrace();
+		}
 
 	}
 }

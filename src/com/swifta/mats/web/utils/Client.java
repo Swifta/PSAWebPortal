@@ -28,7 +28,7 @@ public class Client {
 
 			// Client.getProfiles();
 
-			Client.getProfileTypes();
+			// Client.getProfileTypes();
 
 			// Client.setProfilepermission();
 
@@ -36,7 +36,7 @@ public class Client {
 
 			// Client.addprofile();
 
-			// Client.deleteprofile();
+			Client.deleteprofile();
 
 			// Client.renameprofile();
 
@@ -436,17 +436,12 @@ public class Client {
 
 	public static void addprofile() throws Exception {
 
-		System.out.println(UserManagementService.addProfile(
-				"MATS_CUSTOMER_CARE_USER_PROFILE", 1));
+		System.out.println(UserManagementService.addProfile("MATS_ITSP", 1));
 	}
 
 	public static void deleteprofile() throws Exception {
 
-		System.out
-				.println(UserManagementService
-						.removeProfile(
-								"TOTALEntered role name is not conforming to policy.v_USER",
-								41));
+		System.out.println(UserManagementService.removeProfile("Admin", 1));
 	}
 
 	public static void renameprofile() throws Exception {
