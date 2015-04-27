@@ -769,29 +769,39 @@ public class ProfilesAndPermissionsModule {
 					System.out.println(" New PN: " + pnNew + " Old PN: "
 							+ pnOld + " PID:" + pid);
 
+					String response = null;
+
 					try {
-						// TODO UserManagementService.editProfile(pnNew, pnOld,
-						// pid);
+						response = UserManagementService.editProfile(pnNew,
+								pnOld, pid);
 
-						// comboProfiles.addItem(pnNew);
-						// comboProfiles.removeItem(profileName);
-						// comboProfiles.select(pnNew);
-						// hmAllProfiles.remove(pnOld);
-						// hmAllProfiles.put(pnNew, pid.toString());
+						comboProfiles.addItem(pnNew);
+						comboProfiles.select(pnNew);
+						hmAllProfiles.remove(pnOld);
 
-						// hmAllProfiles.replace(pnOld, pnNew);
+						if (response == null || response.trim().isEmpty()) {
+							Notification.show("No reponse from the server",
+									Notification.Type.ERROR_MESSAGE);
+							return;
+
+						}
+
+						if (response.toUpperCase().contains("SUCCESSFUL")) {
+							lbProf.setValue(tFProf.getValue());
+							cProfName.replaceComponent(tFProf, lbProf);
+							btnEdit.setIcon(FontAwesome.EDIT);
+							btnCancel.setVisible(false);
+
+							NotifCustom.show("Response", response);
+							return;
+						}
 
 					} catch (Exception e) {
 
 						e.printStackTrace();
 					}
 
-					return;
 				}
-				lbProf.setValue(tFProf.getValue());
-				cProfName.replaceComponent(tFProf, lbProf);
-				btnEdit.setIcon(FontAwesome.EDIT);
-				btnCancel.setVisible(false);
 
 			}
 		});

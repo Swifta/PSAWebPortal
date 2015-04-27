@@ -1,5 +1,6 @@
 package com.swifta.mats.web.usermanagement;
 
+import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
@@ -15,10 +16,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import com.google.gwt.user.client.rpc.core.java.util.Collections;
+import org.apache.axis2.AxisFault;
+
 import com.swifta.mats.web.MatsWebPortalUI;
+import com.swifta.mats.web.utils.ReportingService;
 import com.swifta.mats.web.utils.UserManagementService;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub;
+import com.swifta.sub.mats.reporting.DataServiceFault;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.Validator;
@@ -84,13 +88,13 @@ public class AddUserModule {
 	private ComboBox comboBID;
 	private ComboBox comboCur;
 	private ComboBox comboSecQn;
-	private ComboBox comboProfile;
+	private ComboBox comboProfilex;
 	private ComboBox comboIDType;
 
 	private PopupDateField dFDoB;
 	private PopupDateField dFDoI;
 	private PopupDateField dFDoE;
-	public static Map<Integer, String> profToID;
+	private Map<String, String> hmProfileIDx;
 	private OptionGroup optSex;
 	private boolean isValidatorAdded = false;
 	private boolean isCSelected = false;
@@ -105,17 +109,20 @@ public class AddUserModule {
 	private ArrayList<Field<?>> arrLValidatable;
 
 	private Button btnSave;
+	private ReportingService rs;
 
 	public AddUserModule() {
 
-		profToID = new HashMap<>();
-		profToID.put(1, "MATS_ADMIN_USER_PROFILE");
-		profToID.put(3, "MATS_FINANCIAL_CONTROLLER_USER_PROFILE");
-		profToID.put(4, "MATS_CUSTOMER_CARE_USER_PROFILE");
-		profToID.put(6, "MATS_SUPER_AGENT_USER_PROFILE");
-		profToID.put(7, "MATS_SUB_AGENT_USER_PROFILE");
-		profToID.put(11, "MATS_DEALER_USER_PROFILE");
-		profToID.put(15, "MATS_SERVICE_PROVIDER_USER_PROFILE");
+		/*
+		 * profToID = new HashMap<>(); profToID.put(1,
+		 * "MATS_ADMIN_USER_PROFILE"); profToID.put(3,
+		 * "MATS_FINANCIAL_CONTROLLER_USER_PROFILE"); profToID.put(4,
+		 * "MATS_CUSTOMER_CARE_USER_PROFILE"); profToID.put(6,
+		 * "MATS_SUPER_AGENT_USER_PROFILE"); profToID.put(7,
+		 * "MATS_SUB_AGENT_USER_PROFILE"); profToID.put(11,
+		 * "MATS_DEALER_USER_PROFILE"); profToID.put(15,
+		 * "MATS_SERVICE_PROVIDER_USER_PROFILE");
+		 */
 
 	}
 
@@ -220,7 +227,7 @@ public class AddUserModule {
 		combo.addItem("Prof. ");
 		comboPref = combo;
 		comboPref.select("Eng. ");
-		//combo.addItems();
+		// combo.addItems();
 		cBasic.addComponent(combo);
 		// arrLDFields.add(combo);
 		arrLAllFields.add(combo);
@@ -538,17 +545,29 @@ public class AddUserModule {
 
 		comboHierarchy = new ComboBox("Profile");
 
-		Set<Entry<Integer, String>> set = profToID.entrySet();
-		for (Entry<Integer, String> e : set) {
-			comboHierarchy.addItem(e.getKey());
-			comboHierarchy.setItemCaption(e.getKey(), e.getValue());
-		}
-
 		// comboHierarchy.select(1);
-		comboProfile = comboHierarchy;
-		comboProfile.setRequired(true);
-		comboProfile.setImmediate(true);
-		comboProfile.select(1);
+		comboProfilex = comboHierarchy;
+		comboProfilex.setRequired(true);
+		comboProfilex.setImmediate(true);
+		// comboProfilex.setNullSelectionAllowed(false);
+
+		comboProfilex.addFocusListener(new FocusListener() {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void focus(FocusEvent event) {
+
+				addProfiles(comboProfilex);
+
+			}
+
+		});
+
+		arrLGFields.add(comboProfilex);
 		cAcc.addComponent(comboHierarchy);
 
 		final VerticalLayout cLBody = new VerticalLayout();
@@ -649,7 +668,7 @@ public class AddUserModule {
 		chcTAndC = chk;
 		chk.setStyleName("check_t_and_c");
 
-		comboProfile.addValueChangeListener(new ValueChangeListener() {
+		comboProfilex.addValueChangeListener(new ValueChangeListener() {
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -944,8 +963,10 @@ public class AddUserModule {
 						validate(arrLValidatable);
 
 					} catch (InvalidValueException e) {
+
 						Notification.show("Message: ", e.getMessage(),
 								Notification.Type.ERROR_MESSAGE);
+						// Notification.show("kdkdkkkkkkkkkkkkkkk");
 						return;
 					}
 
@@ -964,9 +985,13 @@ public class AddUserModule {
 							: tFAccEmail.getValue().toString();
 					String msisdn = (tFMSISDN.getValue() == null) ? ""
 							: tFMSISDN.getValue().toString();
-					int profid = (comboProfile.getValue() == null) ? 0
-							: Integer.valueOf(comboProfile.getValue()
-									.toString());
+
+					Object sProfileID = hmProfileIDx.get(comboProfilex
+							.getValue());
+
+					int profid = (sProfileID == null) ? 0 : Integer
+							.valueOf(sProfileID.toString());
+
 					String secQn = (comboSecQn.getValue() == null) ? ""
 							: comboSecQn.getValue().toString();
 					String secAns = (tFSecAns.getValue() == null) ? ""
@@ -1353,7 +1378,7 @@ public class AddUserModule {
 		// comboBID.setRequired(false);
 		// comboCur.setRequired(false);
 		// comboSecQn.setRequired(false);
-		comboProfile.setRequired(false);
+		comboProfilex.setRequired(false);
 		comboIDType.setRequired(false);
 
 		// dFDoB.setRequired(false);
@@ -1397,7 +1422,7 @@ public class AddUserModule {
 		// comboBID.addValidator(new NoNull());
 		// comboCur.addValidator(new NoNull());
 		// comboSecQn.addValidator(new NoNull());
-		comboProfile.addValidator(new NoNull(comboProfile));
+		comboProfilex.addValidator(new NoNull(comboProfilex));
 		comboIDType.addValidator(new NoNull(comboIDType));
 
 		// dFDoB.addValidator(new NoNull());
@@ -1462,7 +1487,7 @@ public class AddUserModule {
 		comboBID.validate();
 		comboCur.validate();
 		comboSecQn.validate();
-		comboProfile.validate();
+		comboProfilex.validate();
 		comboIDType.validate();
 
 		dFDoB.validate();
@@ -1527,6 +1552,34 @@ public class AddUserModule {
 				continue;
 
 			}
+		}
+
+	}
+
+	private void addProfiles(ComboBox combo) {
+
+		if (rs == null) {
+			try {
+				rs = new ReportingService();
+			} catch (AxisFault e) {
+
+				e.printStackTrace();
+			}
+		}
+
+		try {
+
+			hmProfileIDx = rs.getProfiles();
+			Set<Entry<String, String>> set = hmProfileIDx.entrySet();
+			for (Entry<String, String> e : set) {
+				Object key = e.getKey();
+				combo.addItem(key);
+
+			}
+
+		} catch (RemoteException | DataServiceFault e) {
+
+			e.printStackTrace();
 		}
 
 	}
