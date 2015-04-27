@@ -1,7 +1,9 @@
 package com.swifta.mats.web.settings;
 
 import java.rmi.RemoteException;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -26,6 +28,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.ListSelect;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
@@ -45,13 +48,20 @@ public class ProfilesAndPermissionsModule {
 	private boolean isProfileNameChanged = false;
 	private ReportingService rs;
 	private boolean isProfilesAdded = false;
+	private boolean isPermProfilesAdded = false;
+	private ComboBox comboPermProfiles;
 	private ComboBox comboProfiles;
 	private HashMap<String, String> hmAllProfiles;
 	private HashMap<String, String> hmProfileTypes;
 
+	private HashMap<String, String> hmActivePerms;
+	private HashMap<String, String> hmNonActivePerms;
+	private boolean isActivePermsLoaded = false;
+	private boolean isNonActivePermsLoaded = false;
+
 	ProfilesAndPermissionsModule() {
 		addMenu();
-		cProfile = getPC();
+		cProfile = getProfileC();
 		cStage.addComponent(cProfile);
 		cMain.addComponent(cStage);
 		cMain.setComponentAlignment(cStage, Alignment.TOP_CENTER);
@@ -152,16 +162,151 @@ public class ProfilesAndPermissionsModule {
 	}
 
 	private HorizontalLayout getPermissionsC() {
+		VerticalLayout cAgentInfo = new VerticalLayout();
+		final HorizontalLayout cPlaceholder = new HorizontalLayout();
+		cAgentInfo.setMargin(new MarginInfo(true, true, true, true));
+		// cAgentInfo.setStyleName("c_details_test");
+
+		final VerticalLayout cLBody = new VerticalLayout();
+
+		cLBody.setStyleName("c_body_visible");
+
+		// addLinksTable();
+
+		final VerticalLayout cAllProf = new VerticalLayout();
+
+		final HorizontalLayout cProfActions = new HorizontalLayout();
+		cProfActions.setVisible(false);
+		HorizontalLayout cProfNameAndAddBtn = new HorizontalLayout();
+		final FormLayout cProfName = new FormLayout();
+
+		cProfName.setStyleName("frm_profile_name");
+		cProfName.setSizeUndefined();
+
+		final Label lbProf = new Label();
+		final Label lb = new Label();
+		lb.setValue("Manage Profile Permissions");
+		final TextField tFProf = new TextField();
+		comboPermProfiles = new ComboBox("Select Profile: ");
+
+		lbProf.setCaption("Selected Profile Name: ");
+		lbProf.setValue("None.");
+		tFProf.setCaption(lbProf.getCaption());
+		cAllProf.addComponent(lb);
+		lb.setStyleName("label_search_user");
+		cAllProf.setComponentAlignment(lb, Alignment.TOP_CENTER);
+		cProfName.addComponent(comboProfiles);
+		cProfName.addComponent(lbProf);
+
+		final Button btnEdit = new Button();
+		btnEdit.setIcon(FontAwesome.EDIT);
+		btnEdit.setStyleName("btn_link");
+		btnEdit.setDescription("Edit profile name");
+
+		final Button btnCancel = new Button();
+		btnCancel.setIcon(FontAwesome.UNDO);
+		btnCancel.setStyleName("btn_link");
+		btnCancel.setDescription("Cancel Profile name editting.");
+
+		Button btnAdd = new Button("+");
+		// btnAdd.setIcon(FontAwesome.EDIT);
+		btnAdd.setStyleName("btn_link");
+		btnAdd.setDescription("Set new profile");
+
+		Button btnRemove = new Button("-");
+		// btnRemove.setIcon(FontAwesome.EDIT);
+		btnRemove.setStyleName("btn_link");
+		btnRemove.setDescription("Remove current profile");
+
+		cProfNameAndAddBtn.addComponent(cProfName);
+		cProfNameAndAddBtn.addComponent(btnAdd);
+
+		// cProf.addComponent(cProfName);
+		cProfActions.addComponent(btnEdit);
+		cProfActions.addComponent(btnCancel);
+		// cProfActions.addComponent(btnAdd);
+		cProfActions.addComponent(btnRemove);
+
+		btnCancel.setVisible(false);
+
+		cAllProf.addComponent(cProfNameAndAddBtn);
+		cAllProf.addComponent(cProfActions);
+		cAllProf.setComponentAlignment(cProfActions, Alignment.TOP_CENTER);
+
+		cLBody.addComponent(cAllProf);
+
+		// cLBody.addComponent(tb);
+
+		cAgentInfo.addComponent(cLBody);
+
+		// cLBody.addComponent(btnLink);
+		// cLBody.setComponentAlignment(btnLink, Alignment.TOP_LEFT);
+
+		cPlaceholder.setVisible(false);
+		// addLinkUserContainer();
+		cPlaceholder.setWidth("100%");
+
+		cLBody.addComponent(cPlaceholder);
+		cLBody.setComponentAlignment(cPlaceholder, Alignment.TOP_CENTER);
 		HorizontalLayout c = new HorizontalLayout();
-		c.setSizeFull();
-		Label lb = new Label("No Data Available!");
-		c.addComponent(lb);
-		c.setMargin(true);
-		c.setComponentAlignment(lb, Alignment.MIDDLE_CENTER);
+		c.addComponent(cAgentInfo);
+
+		final ListSelect list = new ListSelect();
+
+		comboPermProfiles
+				.addValueChangeListener(new Property.ValueChangeListener() {
+
+					private static final long serialVersionUID = -1655803841445897977L;
+
+					@Override
+					public void valueChange(ValueChangeEvent event) {
+						
+					}
+				});
+
+		comboPermProfiles.addFocusListener(new FocusListener() {
+
+			private static final long serialVersionUID = 1583773393542597237L;
+
+			@Override
+			public void focus(FocusEvent event) {
+
+				if (!isPermProfilesAdded)
+					addProfileTypes(comboPermProfiles);
+				isPermProfilesAdded = true;
+
+			}
+
+		});
+
 		return c;
 	}
 
-	private HorizontalLayout getPC() {
+	private Map<String, String> getActivePermissions(int pid) {
+		try {
+			return UserManagementService.getactiveprofilepermission(pid);
+		} catch (Exception e) {
+			Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
+			e.printStackTrace();
+			return Collections.emptyMap();
+
+		}
+
+	}
+
+	private Map<String, String> getInActivePermissions(int pid) {
+		try {
+			return UserManagementService.getactiveprofilepermission(pid);
+		} catch (Exception e) {
+			Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
+			e.printStackTrace();
+			return Collections.emptyMap();
+
+		}
+
+	}
+
+	private HorizontalLayout getProfileC() {
 
 		VerticalLayout cAgentInfo = new VerticalLayout();
 		final HorizontalLayout cPlaceholder = new HorizontalLayout();
@@ -683,9 +828,6 @@ public class ProfilesAndPermissionsModule {
 
 	private void addProfileTypes(ComboBox combo) {
 
-		if (hmProfileTypes != null)
-			return;
-
 		if (rs == null) {
 			try {
 				rs = new ReportingService();
@@ -695,15 +837,15 @@ public class ProfilesAndPermissionsModule {
 		}
 
 		try {
-
-			hmProfileTypes = rs.getProfiles();
+			if (hmProfileTypes == null)
+				hmProfileTypes = rs.getProfiles();
 			Set<Entry<String, String>> set = hmProfileTypes.entrySet();
 			for (Entry<String, String> e : set) {
 
 				System.out.println(e.getKey() + " : " + e.getValue());
-				Object key = e.getValue();
-				combo.addItem(key);
-				combo.setItemCaption(key, e.getKey());
+				Object id = e.getValue();
+				combo.addItem(id);
+				combo.setItemCaption(id, e.getKey());
 
 			}
 
@@ -726,15 +868,13 @@ public class ProfilesAndPermissionsModule {
 		}
 
 		try {
-			if (hmAllProfiles != null)
-				return;
-			hmAllProfiles = rs.getProfiles();
+			if (hmAllProfiles == null)
+				hmAllProfiles = rs.getProfiles();
 			Set<Entry<String, String>> set = hmAllProfiles.entrySet();
 			for (Entry<String, String> e : set) {
 
 				Object key = e.getKey();
 				combo.addItem(key);
-				System.out.println("-------:" + key + ":-------");
 
 			}
 

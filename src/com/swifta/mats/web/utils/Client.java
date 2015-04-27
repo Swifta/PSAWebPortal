@@ -16,7 +16,7 @@ public class Client {
 
 			// Client.passreset();
 
-			// Client.unlockAccount();
+			Client.unlockAccount();
 
 			// Client.changepassword();
 
@@ -36,7 +36,7 @@ public class Client {
 
 			// Client.addprofile();
 
-			Client.deleteprofile();
+			// Client.deleteprofile();
 
 			// Client.renameprofile();
 
@@ -414,7 +414,7 @@ public class Client {
 
 	public static void unlockAccount() throws AxisFault {
 		System.out.println(UserManagementService.unlockUserAccount("admin",
-				"matsng"));
+				"matsadminone"));
 	}
 
 	public static void lockUserAccountByAdmin() throws AxisFault {

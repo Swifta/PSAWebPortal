@@ -2,6 +2,7 @@ package com.swifta.mats.web.utils;
 
 import java.rmi.RemoteException;
 import java.util.Date;
+import java.util.HashMap;
 
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
@@ -1198,8 +1199,8 @@ public class UserManagementService {
 
 	}
 
-	public static void getactiveprofilepermission(int profileid)
-			throws Exception {
+	public static HashMap<String, String> getactiveprofilepermission(
+			int profileid) throws Exception {
 		// String statusMessage = "";
 		matsReportstub = new MatsreportingserviceStub(esbendpoint);
 
@@ -1210,13 +1211,14 @@ public class UserManagementService {
 		GetpermissionsE getpermissionsE = matsReportstub
 				.getactivepermissionbyprofileid(getnonactivepermissionbyprofileid);
 
+		HashMap<String, String> hm = new HashMap<>();
+
 		Getpermissions getpermissions = getpermissionsE.getGetpermissions();
 
-		for (Getpermission getpermission : getpermissions.getGetpermission()) {
-			System.out.println(getpermission.getPermissionid());
-			System.out.println(getpermission.getPermissions());
-			System.out.println(getpermission.getPermissionsaction());
-		}
+		for (Getpermission getpermission : getpermissions.getGetpermission())
+			hm.put(getpermission.getPermissionid(),
+					getpermission.getPermissions());
+		return hm;
 
 	}
 
