@@ -205,8 +205,7 @@ public class UserManagementService {
 
 		String statusMessage = "";
 
-		registration.setLoggedinUser(UI.getCurrent().getSession()
-				.getAttribute("user").toString());
+		registration.setLoggedinUser(loggedInUser);
 		registration.setAccountholderdetails(accountholderdetails);
 		registration.setBankaccount(bankAccount);
 		registration.setBankcodeid(bankCodeid);
@@ -267,8 +266,7 @@ public class UserManagementService {
 
 			Activationrequest act = new Activationrequest();
 
-			act.setLoggedinUser(UI.getCurrent().getSession()
-					.getAttribute("user").toString());
+			act.setLoggedinUser(loggedInUser);
 			act.setBankdomainid(bankdomainid);
 			act.setCredential(cre);
 			act.setCurrency(currency);
