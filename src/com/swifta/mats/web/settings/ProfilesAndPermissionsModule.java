@@ -54,8 +54,8 @@ public class ProfilesAndPermissionsModule {
 	private HashMap<String, String> hmAllProfiles;
 	private HashMap<String, String> hmProfileTypes;
 
-	private HashMap<String, String> hmActivePerms;
-	private HashMap<String, String> hmNonActivePerms;
+	private Map<String, String> hmActivePerms = new HashMap<>();
+	private Map<String, String> hmNonActivePerms = new HashMap<>();
 	private boolean isActivePermsLoaded = false;
 	private boolean isNonActivePermsLoaded = false;
 
@@ -195,7 +195,7 @@ public class ProfilesAndPermissionsModule {
 		cAllProf.addComponent(lb);
 		lb.setStyleName("label_search_user");
 		cAllProf.setComponentAlignment(lb, Alignment.TOP_CENTER);
-		cProfName.addComponent(comboProfiles);
+		cProfName.addComponent(comboPermProfiles);
 		cProfName.addComponent(lbProf);
 
 		final Button btnEdit = new Button();
@@ -242,7 +242,7 @@ public class ProfilesAndPermissionsModule {
 		// cLBody.addComponent(btnLink);
 		// cLBody.setComponentAlignment(btnLink, Alignment.TOP_LEFT);
 
-		cPlaceholder.setVisible(false);
+		// cPlaceholder.setVisible(false);
 		// addLinkUserContainer();
 		cPlaceholder.setWidth("100%");
 
@@ -261,6 +261,17 @@ public class ProfilesAndPermissionsModule {
 
 					@Override
 					public void valueChange(ValueChangeEvent event) {
+						hmActivePerms.clear();
+
+						hmActivePerms = getActivePermissions(Integer
+								.parseInt(hmAllProfiles.get(event.getProperty()
+										.getValue().toString())));
+						for (Entry<String, String> e : hmActivePerms.entrySet()) {
+							String id = e.getKey();
+							list.addItems(id);
+							list.setItemCaption(id, e.getValue());
+							System.out.println(id + " : " + e.getValue());
+						}
 
 					}
 				});
@@ -272,9 +283,9 @@ public class ProfilesAndPermissionsModule {
 			@Override
 			public void focus(FocusEvent event) {
 
-				if (!isPermProfilesAdded)
-					addProfileTypes(comboPermProfiles);
-				isPermProfilesAdded = true;
+				// if (!isPermProfilesAdded)
+				addProfiles(comboPermProfiles);
+				// isPermProfilesAdded = true;
 
 			}
 
@@ -428,9 +439,7 @@ public class ProfilesAndPermissionsModule {
 			@Override
 			public void focus(FocusEvent event) {
 
-				if (!isProfilesAdded)
-					addProfiles(comboProfiles);
-				isProfilesAdded = true;
+				addProfiles(comboProfiles);
 
 			}
 
@@ -506,11 +515,11 @@ public class ProfilesAndPermissionsModule {
 						// TODO UserManagementService.editProfile(pnNew, pnOld,
 						// pid);
 
-						comboProfiles.addItem(pnNew);
-						comboProfiles.removeItem(profileName);
-						comboProfiles.select(pnNew);
-						hmAllProfiles.remove(pnOld);
-						hmAllProfiles.put(pnNew, pid.toString());
+						// comboProfiles.addItem(pnNew);
+						// comboProfiles.removeItem(profileName);
+						// comboProfiles.select(pnNew);
+						// hmAllProfiles.remove(pnOld);
+						// hmAllProfiles.put(pnNew, pid.toString());
 
 						// hmAllProfiles.replace(pnOld, pnNew);
 
@@ -623,8 +632,8 @@ public class ProfilesAndPermissionsModule {
 
 					if (response.toUpperCase().contains("SUCCESSFUL")) {
 						comboProfiles.select(null);
-						comboProfiles.removeItem(pn);
-						hmAllProfiles.remove(pn);
+						// comboProfiles.removeItem(pn);
+						// hmAllProfiles.remove(pn);
 						NotifCustom.show("Remove response", pn
 								+ " removed successfully.");
 
@@ -800,8 +809,8 @@ public class ProfilesAndPermissionsModule {
 						NotifCustom.show("Add profile", pn
 								+ " added successfully.");
 						tFProf.setValue("");
-						hmAllProfiles.put(pn, pid.toString());
-						comboProfiles.addItem(pn);
+						// hmAllProfiles.put(pn, pid.toString());
+						// comboProfiles.addItem(pn);
 						cAllProf.setVisible(true);
 						cPlaceholder.setVisible(false);
 						combo.select(null);
@@ -869,8 +878,8 @@ public class ProfilesAndPermissionsModule {
 		}
 
 		try {
-			if (hmAllProfiles == null)
-				hmAllProfiles = rs.getProfiles();
+
+			hmAllProfiles = rs.getProfiles();
 			Set<Entry<String, String>> set = hmAllProfiles.entrySet();
 			for (Entry<String, String> e : set) {
 
