@@ -1,8 +1,10 @@
 package com.swifta.mats.web.utils;
 
 import java.rmi.RemoteException;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
@@ -1178,8 +1180,8 @@ public class UserManagementService {
 
 	// reporting section - please relocate
 
-	public static void getnonactiveprofilepermission(int profileid)
-			throws Exception {
+	public static Map<String, String> getnonactiveprofilepermission(
+			int profileid) throws Exception {
 		// String statusMessage = "";
 		matsReportstub = new MatsreportingserviceStub(esbendpoint);
 
@@ -1191,17 +1193,21 @@ public class UserManagementService {
 				.getnonactivepermissionbyprofileid(getnonactivepermissionbyprofileid);
 
 		Getpermissions getpermissions = getpermissionsE.getGetpermissions();
+		Getpermission[] perms = getpermissions.getGetpermission();
+		if (perms == null)
+			return Collections.emptyMap();
 
-		for (Getpermission getpermission : getpermissions.getGetpermission()) {
-			System.out.println(getpermission.getPermissionid());
-			System.out.println(getpermission.getPermissions());
-			System.out.println(getpermission.getPermissionsaction());
-		}
+		HashMap<String, String> hm = new HashMap<>();
+
+		for (Getpermission perm : perms)
+			hm.put(perm.getPermissionsaction(), perm.getPermissions());
+
+		return hm;
 
 	}
 
-	public static HashMap<String, String> getactiveprofilepermission(
-			int profileid) throws Exception {
+	public static Map<String, String> getactiveprofilepermission(int profileid)
+			throws Exception {
 		// String statusMessage = "";
 		matsReportstub = new MatsreportingserviceStub(esbendpoint);
 
@@ -1215,9 +1221,12 @@ public class UserManagementService {
 		HashMap<String, String> hm = new HashMap<>();
 
 		Getpermissions getpermissions = getpermissionsE.getGetpermissions();
+		Getpermission[] perms = getpermissions.getGetpermission();
+		if (perms == null)
+			return Collections.emptyMap();
 
-		for (Getpermission getpermission : getpermissions.getGetpermission())
-			hm.put(getpermission.getPermissionid(),
+		for (Getpermission getpermission : perms)
+			hm.put(getpermission.getPermissionsaction(),
 					getpermission.getPermissions());
 		return hm;
 

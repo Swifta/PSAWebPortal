@@ -30,11 +30,11 @@ public class Client {
 
 			// Client.getProfileTypes();
 
-			// Client.setProfilepermission();
+			Client.setProfilepermission();
 
 			// Client.removeProfilePermission();
 
-			Client.addprofile();
+			// Client.addprofile();
 
 			// Client.deleteprofile();
 

@@ -31,6 +31,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.ListSelect;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.TwinColSelect;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -51,13 +52,15 @@ public class ProfilesAndPermissionsModule {
 	private boolean isPermProfilesAdded = false;
 	private ComboBox comboPermProfiles;
 	private ComboBox comboProfiles;
-	private HashMap<String, String> hmAllProfiles;
-	private HashMap<String, String> hmProfileTypes;
+	private Map<String, String> hmAllProfiles;
+	private Map<String, String> hmProfileTypes;
 
 	private Map<String, String> hmActivePerms = new HashMap<>();
-	private Map<String, String> hmNonActivePerms = new HashMap<>();
+	private Map<String, String> hmInActivePerms = new HashMap<>();
 	private boolean isActivePermsLoaded = false;
 	private boolean isNonActivePermsLoaded = false;
+
+	private TwinColSelect tcsInactiveAndActive;
 
 	ProfilesAndPermissionsModule() {
 		addMenu();
@@ -175,8 +178,8 @@ public class ProfilesAndPermissionsModule {
 
 		final VerticalLayout cAllProf = new VerticalLayout();
 
-		final HorizontalLayout cProfActions = new HorizontalLayout();
-		cProfActions.setVisible(false);
+		final HorizontalLayout cPermsActions = new HorizontalLayout();
+		// cProfActions.setVisible(false);
 		HorizontalLayout cProfNameAndAddBtn = new HorizontalLayout();
 		final FormLayout cProfName = new FormLayout();
 
@@ -201,39 +204,39 @@ public class ProfilesAndPermissionsModule {
 		final Button btnEdit = new Button();
 		btnEdit.setIcon(FontAwesome.EDIT);
 		btnEdit.setStyleName("btn_link");
-		btnEdit.setDescription("Edit profile name");
+		btnEdit.setDescription("Edit Permsissions");
 
 		final Button btnCancel = new Button();
 		btnCancel.setIcon(FontAwesome.UNDO);
 		btnCancel.setStyleName("btn_link");
-		btnCancel.setDescription("Cancel Profile name editting.");
+		btnCancel.setDescription("Cancel editting permissions");
 
-		Button btnAdd = new Button("+");
-		// btnAdd.setIcon(FontAwesome.EDIT);
+		final Button btnAdd = new Button("+");
+		// btnAdd.setIcon(FontAwesome.UNDO);
 		btnAdd.setStyleName("btn_link");
-		btnAdd.setDescription("Set new profile");
-
-		Button btnRemove = new Button("-");
-		// btnRemove.setIcon(FontAwesome.EDIT);
-		btnRemove.setStyleName("btn_link");
-		btnRemove.setDescription("Remove current profile");
+		btnAdd.setDescription("Add permissions");
+		btnAdd.setVisible(false);
 
 		cProfNameAndAddBtn.addComponent(cProfName);
-		cProfNameAndAddBtn.addComponent(btnAdd);
 
 		// cProf.addComponent(cProfName);
-		cProfActions.addComponent(btnEdit);
-		cProfActions.addComponent(btnCancel);
+		cPermsActions.addComponent(btnEdit);
+		cPermsActions.addComponent(btnCancel);
+
 		// cProfActions.addComponent(btnAdd);
-		cProfActions.addComponent(btnRemove);
 
 		btnCancel.setVisible(false);
 
 		cAllProf.addComponent(cProfNameAndAddBtn);
-		cAllProf.addComponent(cProfActions);
-		cAllProf.setComponentAlignment(cProfActions, Alignment.TOP_CENTER);
+		cAllProf.setComponentAlignment(cProfNameAndAddBtn, Alignment.TOP_CENTER);
+		// cAllProf.addComponent(cPermsActions);
+		// cAllProf.setComponentAlignment(cProfActions, Alignment.TOP_CENTER);
+
+		cAllProf.addComponent(btnAdd);
+		cAllProf.setComponentAlignment(btnAdd, Alignment.TOP_CENTER);
 
 		cLBody.addComponent(cAllProf);
+		cLBody.setComponentAlignment(cAllProf, Alignment.TOP_CENTER);
 
 		// cLBody.addComponent(tb);
 
@@ -242,17 +245,39 @@ public class ProfilesAndPermissionsModule {
 		// cLBody.addComponent(btnLink);
 		// cLBody.setComponentAlignment(btnLink, Alignment.TOP_LEFT);
 
-		// cPlaceholder.setVisible(false);
+		cPlaceholder.setVisible(false);
 		// addLinkUserContainer();
 		cPlaceholder.setWidth("100%");
 
 		cLBody.addComponent(cPlaceholder);
+		cLBody.setWidth("100%");
 		cLBody.setComponentAlignment(cPlaceholder, Alignment.TOP_CENTER);
 		HorizontalLayout c = new HorizontalLayout();
+		// c.setWidth("100%");
+		// cAgentInfo.setWidth("100%");
 		c.addComponent(cAgentInfo);
 
 		final ListSelect list = new ListSelect();
 		cPlaceholder.addComponent(list);
+
+		final VerticalLayout cPermsAndBtns = new VerticalLayout();
+		final HorizontalLayout cPermsList = new HorizontalLayout();
+		cPermsList.addComponent(list);
+		cPermsAndBtns.addComponent(cPermsList);
+		cPermsAndBtns.addComponent(cPermsActions);
+		cPlaceholder.addComponent(cPermsAndBtns);
+
+		cPermsAndBtns.setComponentAlignment(cPermsActions,
+				Alignment.BOTTOM_RIGHT);
+
+		tcsInactiveAndActive = new TwinColSelect();
+		tcsInactiveAndActive.setLeftColumnCaption("INACTIVE Permissions");
+		tcsInactiveAndActive.setRightColumnCaption("ACTIVE Permissions");
+		tcsInactiveAndActive
+				.setDescription("Select permission(s) and click \'<\' or \'>\' to move from INACTIVE or ACTIVE list respectively.");
+
+		tcsInactiveAndActive.setWidth("1200px");
+		// tcsInactiveAndActive.set
 
 		comboPermProfiles
 				.addValueChangeListener(new Property.ValueChangeListener() {
@@ -263,14 +288,38 @@ public class ProfilesAndPermissionsModule {
 					public void valueChange(ValueChangeEvent event) {
 						hmActivePerms.clear();
 
+						String pname = event.getProperty().getValue()
+								.toString();
+						lbProf.setCaption("Selected Profile: ");
+						lbProf.setValue(pname);
+
 						hmActivePerms = getActivePermissions(Integer
-								.parseInt(hmAllProfiles.get(event.getProperty()
-										.getValue().toString())));
+								.parseInt(hmAllProfiles.get(pname)));
+						Integer pCount = hmActivePerms.size();
+
+						list.setCaption(pCount + " Active Permissions.");
+						if (pCount == 0) {
+							cPlaceholder.setVisible(false);
+							NotifCustom.show("No Permissions", "Profile \""
+									+ pname + "\" has NO active permissions");
+							btnAdd.setVisible(true);
+							return;
+						}
+
+						btnAdd.setVisible(false);
+						btnEdit.setIcon(FontAwesome.EDIT);
+
+						cPermsList.replaceComponent(tcsInactiveAndActive, list);
+
+						list.setCaption("Total active permissions: " + pCount);
+						list.removeAllItems();
+						cPlaceholder.setVisible(true);
+
 						for (Entry<String, String> e : hmActivePerms.entrySet()) {
 							String id = e.getKey();
 							list.addItems(id);
 							list.setItemCaption(id, e.getValue());
-							System.out.println(id + " : " + e.getValue());
+
 						}
 
 					}
@@ -286,6 +335,215 @@ public class ProfilesAndPermissionsModule {
 				// if (!isPermProfilesAdded)
 				addProfiles(comboPermProfiles);
 				// isPermProfilesAdded = true;
+
+			}
+
+		});
+
+		btnEdit.addClickListener(new Button.ClickListener() {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 5334429740205971979L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+
+				String pname = comboPermProfiles
+						.getItemCaption(comboPermProfiles.getValue());
+
+				Integer pid = Integer.parseInt(hmAllProfiles.get(pname));
+				if (btnEdit.getIcon().equals(FontAwesome.EDIT)) {
+					btnCancel.setVisible(true);
+					btnEdit.setIcon(FontAwesome.SAVE);
+
+					hmActivePerms.clear();
+					hmInActivePerms.clear();
+					hmActivePerms = getActivePermissions(pid);
+					hmInActivePerms = getInActivePermissions(pid);
+
+					tcsInactiveAndActive.removeAllItems();
+
+					for (Entry<String, String> e : hmActivePerms.entrySet()) {
+						String id = e.getKey();
+						tcsInactiveAndActive.addItem(id);
+						tcsInactiveAndActive.setItemCaption(id, e.getValue());
+						tcsInactiveAndActive.select(id);
+
+						System.out.println(id
+								+ "------.................--------"
+								+ e.getValue());
+					}
+
+					for (Entry<String, String> e : hmInActivePerms.entrySet()) {
+						String id = e.getKey();
+						tcsInactiveAndActive.addItem(id);
+						tcsInactiveAndActive.setItemCaption(id, e.getValue());
+
+						System.out.println(id
+								+ "------.................--------"
+								+ e.getValue());
+
+					}
+					cPermsList.replaceComponent(list, tcsInactiveAndActive);
+
+				} else {
+					Set<?> ids = (Set<?>) tcsInactiveAndActive.getValue();
+					Set<String> originalIDs = hmActivePerms.keySet();
+
+					if (originalIDs.containsAll(ids)
+							&& ids.containsAll(originalIDs)) {
+						NotifCustom.show("Save Permissions",
+								"No Permission Changes to save.");
+						return;
+					}
+
+					String response = null;
+
+					System.out.println("Profile Name: " + pname
+							+ "=====ccc=====c===c== Profile ID: " + pid);
+
+					System.out.println("ACTIONS ARRAY");
+					for (Object px : ids)
+						System.out.println(px.toString());
+
+					try {
+						btnEdit.setEnabled(false);
+
+						response = UserManagementService.setProfilePermission(
+								pname, pid, ids.toArray(new String[ids.size()]));
+
+					} catch (Exception e) {
+
+						Notification.show(e.getMessage(),
+								Notification.Type.ERROR_MESSAGE);
+						e.printStackTrace();
+					}
+
+					btnEdit.setEnabled(true);
+
+					if (response == null || response.trim().isEmpty()) {
+						Notification.show("No response from the Server.",
+								Notification.Type.ERROR_MESSAGE);
+
+						return;
+					}
+
+					if (response.toUpperCase().contains("SUCCESS")) {
+						NotifCustom.show("Response", response);
+						response = null;
+					}
+
+					hmActivePerms.clear();
+
+					hmActivePerms = getActivePermissions(pid);
+					if (hmActivePerms.size() != 0) {
+
+						list.removeAllItems();
+
+						for (Entry<String, String> e : hmActivePerms.entrySet()) {
+							String id = e.getKey();
+							list.addItem(id);
+							list.setItemCaption(id, e.getValue());
+
+						}
+
+						list.setCaption("Total active permissions: "
+								+ hmActivePerms.size());
+						cPermsList.replaceComponent(tcsInactiveAndActive, list);
+						btnCancel.setVisible(false);
+						btnEdit.setIcon(FontAwesome.EDIT);
+						btnAdd.setVisible(false);
+						if (response != null)
+							NotifCustom.show("Response", response);
+
+						return;
+
+					}
+
+					cPlaceholder.setVisible(false);
+					if (response != null)
+						Notification.show(response,
+								Notification.Type.ERROR_MESSAGE);
+					btnAdd.setVisible(true);
+
+				}
+
+			}
+		});
+
+		btnCancel.addClickListener(new Button.ClickListener() {
+
+			private static final long serialVersionUID = 2567415555987260624L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				String pn = comboPermProfiles.getValue().toString();
+				hmActivePerms.clear();
+
+				hmActivePerms = getActivePermissions(Integer
+						.parseInt(hmAllProfiles.get(pn)));
+
+				list.removeAllItems();
+
+				for (Entry<String, String> e : hmActivePerms.entrySet()) {
+					String pid = e.getKey();
+					list.addItem(pid);
+					list.setItemCaption(pid, e.getValue());
+
+				}
+				cPermsList.replaceComponent(tcsInactiveAndActive, list);
+				// cPlaceholder.setVisible(false);
+				btnCancel.setVisible(false);
+
+				btnEdit.setIcon(FontAwesome.EDIT);
+				btnEdit.setEnabled(true);
+				btnAdd.setVisible(false);
+
+			}
+		});
+
+		btnAdd.addClickListener(new Button.ClickListener() {
+
+			private static final long serialVersionUID = 6681943508644191905L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				String pn = comboPermProfiles.getValue().toString();
+				Integer pid = Integer.parseInt(hmAllProfiles.get(pn));
+
+				btnCancel.setVisible(true);
+				btnEdit.setIcon(FontAwesome.SAVE);
+				btnAdd.setVisible(false);
+				cPlaceholder.setVisible(true);
+
+				hmActivePerms.clear();
+				hmInActivePerms.clear();
+				hmActivePerms = getActivePermissions(pid);
+				hmInActivePerms = getInActivePermissions(pid);
+
+				tcsInactiveAndActive.removeAllItems();
+
+				for (Entry<String, String> e : hmActivePerms.entrySet()) {
+					String id = e.getKey();
+					tcsInactiveAndActive.addItem(id);
+					tcsInactiveAndActive.setItemCaption(id, e.getValue());
+					tcsInactiveAndActive.select(id);
+
+					System.out.println(id + "------.................--------"
+							+ e.getValue());
+				}
+
+				for (Entry<String, String> e : hmInActivePerms.entrySet()) {
+					String id = e.getKey();
+					tcsInactiveAndActive.addItem(id);
+					tcsInactiveAndActive.setItemCaption(id, e.getValue());
+
+					System.out.println(id + "------..................-------"
+							+ e.getValue());
+				}
+				cPermsList.replaceComponent(list, tcsInactiveAndActive);
 
 			}
 
@@ -308,7 +566,7 @@ public class ProfilesAndPermissionsModule {
 
 	private Map<String, String> getInActivePermissions(int pid) {
 		try {
-			return UserManagementService.getactiveprofilepermission(pid);
+			return UserManagementService.getnonactiveprofilepermission(pid);
 		} catch (Exception e) {
 			Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
 			e.printStackTrace();
