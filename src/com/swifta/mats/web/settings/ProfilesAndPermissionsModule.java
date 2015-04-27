@@ -252,6 +252,7 @@ public class ProfilesAndPermissionsModule {
 		c.addComponent(cAgentInfo);
 
 		final ListSelect list = new ListSelect();
+		cPlaceholder.addComponent(list);
 
 		comboPermProfiles
 				.addValueChangeListener(new Property.ValueChangeListener() {
@@ -260,7 +261,7 @@ public class ProfilesAndPermissionsModule {
 
 					@Override
 					public void valueChange(ValueChangeEvent event) {
-						
+
 					}
 				});
 
@@ -357,7 +358,7 @@ public class ProfilesAndPermissionsModule {
 		Button btnAdd = new Button("+");
 		// btnAdd.setIcon(FontAwesome.EDIT);
 		btnAdd.setStyleName("btn_link");
-		btnAdd.setDescription("Set new profile");
+		btnAdd.setDescription("Add new profile");
 
 		Button btnRemove = new Button("-");
 		// btnRemove.setIcon(FontAwesome.EDIT);
@@ -682,7 +683,7 @@ public class ProfilesAndPermissionsModule {
 			cAddProf.setMargin(new MarginInfo(true, false, false, false));
 
 			tFProf = new TextField("Profile Name");
-			combo = new ComboBox("Profile");
+			combo = new ComboBox("Profile Type");
 			combo.setValue(null);
 			combo.setNullSelectionAllowed(false);
 
@@ -838,14 +839,14 @@ public class ProfilesAndPermissionsModule {
 
 		try {
 			if (hmProfileTypes == null)
-				hmProfileTypes = rs.getProfiles();
+				hmProfileTypes = rs.getProfileTypes();
 			Set<Entry<String, String>> set = hmProfileTypes.entrySet();
 			for (Entry<String, String> e : set) {
 
 				System.out.println(e.getKey() + " : " + e.getValue());
-				Object id = e.getValue();
+				Object id = e.getKey();
 				combo.addItem(id);
-				combo.setItemCaption(id, e.getKey());
+				combo.setItemCaption(id, e.getValue());
 
 			}
 

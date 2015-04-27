@@ -91,6 +91,7 @@ public class MatsWebPortalUI extends UI {
 					boolean isErrorView = event.getNewView() instanceof ErrorVIEW;
 					boolean isLoggedIn = UI.getCurrent().getSession()
 							.getAttribute("user") != null;
+
 					View prevView = event.getOldView();
 					if (prevView != null && prevView.equals(event.getNewView()))
 						return false;

@@ -117,6 +117,8 @@ public class UserManagementService {
 	// "http://127.0.0.1:8280/services/Provisionservice";
 
 	final static String esbendpoint = MatsWebPortalUI.conf.ESB;
+	final static String loggedInUser = UI.getCurrent().getSession()
+			.getAttribute("user").toString();
 
 	static ProvisioningStub matsStub;
 	static MatsreportingserviceStub matsReportstub;
@@ -454,7 +456,8 @@ public class UserManagementService {
 
 		// passwordReset.setLoggedinUser(UI.getCurrent().getSession()
 		// .getAttribute("user").toString());
-		passwordReset.setLoggedinUser("admin");
+
+		passwordReset.setLoggedinUser(loggedInUser);
 		passwordReset.setUsername(username);
 		passwordReset.setConfirmnewpassword(newPassword);
 
@@ -692,7 +695,7 @@ public class UserManagementService {
 			// addProfile.setLoggedinUser(UI.getCurrent().getSession()
 			// .getAttribute("user").toString());
 
-			addProfile.setLoggedinUser("admin");
+			addProfile.setLoggedinUser(loggedInUser);
 			addProfile.setProfilename(profilename);
 			addProfile.setProfiletypeid(profiletypeid);
 
@@ -812,7 +815,7 @@ public class UserManagementService {
 
 			// editProfile.setLoggedinUser(UI.getCurrent().getSession()
 			// .getAttribute("user").toString());
-			editProfile.setLoggedinUser("admin");
+			editProfile.setLoggedinUser(loggedInUser);
 			editProfile.setProfilename(profilename);
 			editProfile.setOldprofilename(oldprofilename);
 			editProfile.setProfileid(profileid);
@@ -886,7 +889,7 @@ public class UserManagementService {
 
 			// removeProfile.setLoggedinUser(UI.getCurrent().getSession()
 			// .getAttribute("user").toString());
-			removeProfile.setLoggedinUser("admin");
+			removeProfile.setLoggedinUser(loggedInUser);
 			removeProfile.setProfilename(profilename);
 			removeProfile.setProfileid(profileid);
 
@@ -955,7 +958,7 @@ public class UserManagementService {
 			RemoveProfilePermissionE removeProfilePermissionE = new RemoveProfilePermissionE();
 			RemoveProfilePermission removeProfilePermission = new RemoveProfilePermission();
 
-			removeProfilePermission.setLoggedinUser("admin");
+			removeProfilePermission.setLoggedinUser(loggedInUser);
 			removeProfilePermission.setProfilename(profilename);
 			removeProfilePermission.setProfileid(profileid);
 			removeProfilePermission.setOperation(action);
@@ -1027,7 +1030,7 @@ public class UserManagementService {
 			SetProfilePermissionE setProfilePermissionE = new SetProfilePermissionE();
 			SetProfilePermission setProfilePermission = new SetProfilePermission();
 
-			setProfilePermission.setLoggedinUser("admin");
+			setProfilePermission.setLoggedinUser(loggedInUser);
 			setProfilePermission.setProfilename(profilename);
 			setProfilePermission.setProfileid(profileid);
 			setProfilePermission.setOperation(action);
@@ -1139,7 +1142,7 @@ public class UserManagementService {
 		ChangepasswordE changepasswordE = new ChangepasswordE();
 		Changepassword changepassword = new Changepassword();
 
-		changepassword.setLoggedinUser("admin");
+		changepassword.setLoggedinUser(loggedInUser);
 		changepassword.setUsername(username);
 		changepassword.setOldcredentials(oldpassword);
 		changepassword.setNewcredentials(newpassword);

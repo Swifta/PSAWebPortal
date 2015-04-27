@@ -16,7 +16,7 @@ public class Client {
 
 			// Client.passreset();
 
-			Client.unlockAccount();
+			// Client.unlockAccount();
 
 			// Client.changepassword();
 
@@ -34,7 +34,7 @@ public class Client {
 
 			// Client.removeProfilePermission();
 
-			// Client.addprofile();
+			Client.addprofile();
 
 			// Client.deleteprofile();
 
