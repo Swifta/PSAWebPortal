@@ -696,7 +696,7 @@ public class ProfilesAndPermissionsModule {
 
 			@Override
 			public void focus(FocusEvent event) {
-
+				comboProfiles.removeAllItems();
 				addProfiles(comboProfiles);
 
 			}
@@ -906,8 +906,7 @@ public class ProfilesAndPermissionsModule {
 
 					if (response.toUpperCase().contains("SUCCESSFUL")) {
 						comboProfiles.select(null);
-						// comboProfiles.removeItem(pn);
-						// hmAllProfiles.remove(pn);
+
 						NotifCustom.show("Remove response", pn
 								+ " removed successfully.");
 
