@@ -606,9 +606,10 @@ public class AddUserModule {
 					String no = value.toString();
 					Pattern pattern = Pattern.compile("^\\d{11}$");
 					Matcher m = pattern.matcher(no);
-					if (m.find()) {
+					if (!m.find()) {
 						tFMSISDN.focus();
-						throw new InvalidValueException("Invalid MSISDN");
+						throw new InvalidValueException(
+								"Invalid MSISDN. Should be at most 11 digits.");
 					}
 
 				}
