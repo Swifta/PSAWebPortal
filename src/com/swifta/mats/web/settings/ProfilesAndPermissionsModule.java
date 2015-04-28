@@ -48,8 +48,7 @@ public class ProfilesAndPermissionsModule {
 	private boolean isfromsub;
 	private boolean isProfileNameChanged = false;
 	private ReportingService rs;
-	private boolean isProfilesAdded = false;
-	private boolean isPermProfilesAdded = false;
+
 	private ComboBox comboPermProfiles;
 	private ComboBox comboProfiles;
 	private Map<String, String> hmAllProfiles;
@@ -57,8 +56,6 @@ public class ProfilesAndPermissionsModule {
 
 	private Map<String, String> hmActivePerms = new HashMap<>();
 	private Map<String, String> hmInActivePerms = new HashMap<>();
-	private boolean isActivePermsLoaded = false;
-	private boolean isNonActivePermsLoaded = false;
 
 	private TwinColSelect tcsInactiveAndActive;
 
@@ -793,6 +790,7 @@ public class ProfilesAndPermissionsModule {
 							btnCancel.setVisible(false);
 
 							NotifCustom.show("Response", response);
+							hmAllProfiles.put(pnNew, pid.toString());
 							return;
 						}
 
@@ -937,6 +935,8 @@ public class ProfilesAndPermissionsModule {
 
 		@Override
 		public void buttonClick(ClickEvent event) {
+			lbComfirm.setValue("Please comfirm removal of Profile \""
+					+ comboProfiles.getValue().toString() + "\"");
 			UI.getCurrent().addWindow(pop);
 
 			pop.center();
