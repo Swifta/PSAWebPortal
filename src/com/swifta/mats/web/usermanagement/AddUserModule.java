@@ -15,6 +15,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.axis2.AxisFault;
 
@@ -590,6 +592,29 @@ public class AddUserModule {
 		arrLDFields.add(tF);
 		arrLAllFields.add(tF);
 		arrLGFields.add(tF);
+
+		tFMSISDN.addValidator(new Validator() {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void validate(Object value) throws InvalidValueException {
+				if (value != null) {
+					String no = value.toString();
+					Pattern pattern = Pattern.compile("^\\d{11}$");
+					Matcher m = pattern.matcher(no);
+					if (m.find()) {
+						tFMSISDN.focus();
+						throw new InvalidValueException("Invalid MSISDN");
+					}
+
+				}
+			}
+
+		});
 
 		// / tF = new TextField("PIN");
 		// / cLBody.addComponent(tF);
