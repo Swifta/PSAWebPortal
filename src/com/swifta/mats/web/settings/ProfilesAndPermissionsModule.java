@@ -285,8 +285,16 @@ public class ProfilesAndPermissionsModule {
 					public void valueChange(ValueChangeEvent event) {
 						hmActivePerms.clear();
 
-						String pname = event.getProperty().getValue()
-								.toString();
+						Object objPname = event.getProperty().getValue();
+						if (objPname == null) {
+							lbProf.setValue("None.");
+							lbProf.setCaption("Selected Profile: ");
+							btnAdd.setVisible(false);
+							cPlaceholder.setVisible(false);
+							return;
+						}
+
+						String pname = objPname.toString();
 						lbProf.setCaption("Selected Profile: ");
 						lbProf.setValue(pname);
 
@@ -349,8 +357,8 @@ public class ProfilesAndPermissionsModule {
 
 				String pname = comboPermProfiles
 						.getItemCaption(comboPermProfiles.getValue());
-
 				Integer pid = Integer.parseInt(hmAllProfiles.get(pname));
+
 				if (btnEdit.getIcon().equals(FontAwesome.EDIT)) {
 					btnCancel.setVisible(true);
 					btnEdit.setIcon(FontAwesome.SAVE);
@@ -679,6 +687,7 @@ public class ProfilesAndPermissionsModule {
 						} else {
 							cProfActions.setVisible(false);
 							lbProf.setValue("None.");
+							cProfName.replaceComponent(tFProf, lbProf);
 
 						}
 					}
@@ -693,8 +702,10 @@ public class ProfilesAndPermissionsModule {
 
 			@Override
 			public void focus(FocusEvent event) {
+
 				comboProfiles.removeAllItems();
 				addProfiles(comboProfiles);
+				comboProfiles.select(null);
 
 			}
 
@@ -791,6 +802,9 @@ public class ProfilesAndPermissionsModule {
 
 							NotifCustom.show("Response", response);
 							hmAllProfiles.put(pnNew, pid.toString());
+							comboPermProfiles.removeAllItems();
+							comboPermProfiles.select(null);
+
 							return;
 						}
 
@@ -903,7 +917,10 @@ public class ProfilesAndPermissionsModule {
 					}
 
 					if (response.toUpperCase().contains("SUCCESSFUL")) {
+						comboProfiles.removeAllItems();
+						comboPermProfiles.removeAllItems();
 						comboProfiles.select(null);
+						comboPermProfiles.select(null);
 
 						NotifCustom.show("Remove response", pn
 								+ " removed successfully.");
