@@ -12,14 +12,16 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.TreeMap;
 
 import org.apache.axis2.AxisFault;
 
 import com.swifta.mats.web.MatsWebPortalUI;
+import com.swifta.mats.web.utils.ReportingService;
 import com.swifta.mats.web.utils.UserManagementService;
+import com.swifta.sub.mats.reporting.DataServiceFault;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
@@ -77,28 +79,48 @@ public class BE2 {
 	private ArrayList<String> arrLBulkIDs;
 
 	private ThemeResource icDelete;
-	private TreeMap<String, Integer> hm;
-	private HashMap<String, String> hmFilter;
+	private Map<String, String> hmProfiles;
+	private Map<String, String> hmFilter;
 	private IndexedContainer container;
 	private ArrayList<Object> arrLTfs;
 	private Button btnLock;
 	// private boolean isFChanged = false;
 	private boolean isSFC = false;
 	private boolean isFFC = false;
+	private ReportingService rs;
 	public Window upop;
 
 	BE2() {
 		icDelete = new ThemeResource("img/ic_delete_small.png");
 		isPopupShowing = false;
-		hm = new TreeMap<>();
-		hm.put("ALL", 0);
-		hm.put("MATS_ADMIN_USER_PROFILE", 1);
-		hm.put("MATS_FINANCIAL_CONTROLLER_USER_PROFILE", 3);
-		hm.put("MATS_CUSTOMER_CARE_USER_PROFILE", 4);
-		hm.put("MATS_SUPER_AGENT_USER_PROFILE", 6);
-		hm.put("MATS_SUB_AGENT_USER_PROFILE", 7);
-		hm.put("MATS_DEALER_USER_PROFILE", 11);
-		hm.put("MATS_SERVICE_PROVIDER_USER_PROFILE", 15);
+
+		if (rs == null) {
+			try {
+				rs = new ReportingService();
+			} catch (AxisFault e) {
+
+				e.printStackTrace();
+			}
+		}
+
+		try {
+			hmProfiles = rs.getProfiles();
+			hmProfiles.put("ALL", "0");
+
+		} catch (RemoteException | DataServiceFault e) {
+			e.printStackTrace();
+		}
+
+		/*
+		 * hm = new TreeMap<>(); hm.put("ALL", 0);
+		 * hm.put("MATS_ADMIN_USER_PROFILE", 1);
+		 * hm.put("MATS_FINANCIAL_CONTROLLER_USER_PROFILE", 3);
+		 * hm.put("MATS_CUSTOMER_CARE_USER_PROFILE", 4);
+		 * hm.put("MATS_SUPER_AGENT_USER_PROFILE", 6);
+		 * hm.put("MATS_SUB_AGENT_USER_PROFILE", 7);
+		 * hm.put("MATS_DEALER_USER_PROFILE", 11);
+		 * hm.put("MATS_SERVICE_PROVIDER_USER_PROFILE", 15);
+		 */
 
 	}
 
@@ -1225,24 +1247,24 @@ public class BE2 {
 		btnLock.setDescription("Lock user");
 		btnLock.setStyleName("btn_link");
 
-		btnLock.setId("users_personal_" + hm.get(strProf) + "_" + strUname
-				+ "_lock");
-		btnDetails.setId("users_personal_" + hm.get(strProf) + "_" + strUname
-				+ "_details");
-		btnEdit.setId("user_personal_" + hm.get(strProf) + "_" + strUname
-				+ "_edit");
-		btnLink.setId("user_account_" + hm.get(strProf) + "_" + strUname
-				+ "_link");
-		btnActivate.setId("user_account_" + hm.get(strProf) + "_" + strUname
-				+ "_activate");
-		btnDelete.setId("user_account_" + hm.get(strProf) + "_" + strUname
-				+ "_delete");
-		btnMoreActions.setId("user_account_" + hm.get(strProf) + "_" + strUname
-				+ "_moreActions");
+		btnLock.setId("users_personal_" + hmProfiles.get(strProf) + "_"
+				+ strUname + "_lock");
+		btnDetails.setId("users_personal_" + hmProfiles.get(strProf) + "_"
+				+ strUname + "_details");
+		btnEdit.setId("user_personal_" + hmProfiles.get(strProf) + "_"
+				+ strUname + "_edit");
+		btnLink.setId("user_account_" + hmProfiles.get(strProf) + "_"
+				+ strUname + "_link");
+		btnActivate.setId("user_account_" + hmProfiles.get(strProf) + "_"
+				+ strUname + "_activate");
+		btnDelete.setId("user_account_" + hmProfiles.get(strProf) + "_"
+				+ strUname + "_delete");
+		btnMoreActions.setId("user_account_" + hmProfiles.get(strProf) + "_"
+				+ strUname + "_moreActions");
 
-		btnSetParent.setId("user_account_" + hm.get(strProf) + "_" + strUname
-				+ "_parent");
-		btnSetDefaultAcc.setId("user_account_" + hm.get(strProf) + "_"
+		btnSetParent.setId("user_account_" + hmProfiles.get(strProf) + "_"
+				+ strUname + "_parent");
+		btnSetDefaultAcc.setId("user_account_" + hmProfiles.get(strProf) + "_"
 				+ strUname + "_default");
 
 		btnSetDefaultAcc.setDescription("Set Default Account");
@@ -2028,14 +2050,35 @@ public class BE2 {
 		comboProfile.setNullSelectionAllowed(false);
 		// addVCL(comboProfile, comboProfile.getCaption());
 
-		Set<Entry<String, Integer>> set = hm.entrySet();
+		/*
+		 * Set<Entry<String, String>> set = hmProfiles.entrySet();
+		 * 
+		 * for (Entry<String, String> e : set) {
+		 * comboProfile.addItem(e.getValue());
+		 * comboProfile.setItemCaption(e.getValue(), e.getKey()); }
+		 */
 
-		for (Entry<String, Integer> e : set) {
-			comboProfile.addItem(e.getValue());
-			comboProfile.setItemCaption(e.getValue(), e.getKey());
-		}
+		comboProfile.addFocusListener(new FocusListener() {
 
-		comboProfile.select(hm.get(hmFilter.get("Profile Type")));
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void focus(FocusEvent event) {
+
+				addProfiles(comboProfile);
+
+			}
+
+		});
+
+		addProfiles(comboProfile);
+		comboProfile.select(hmFilter.get("Profile Type"));
+
+		comboProfile.setNullSelectionAllowed(false);
+
 		comboProfile.addValueChangeListener(new ValueChangeListener() {
 
 			private static final long serialVersionUID = -8351740132669945359L;
@@ -2299,6 +2342,35 @@ public class BE2 {
 		}
 
 		tb.setPageLength(t);
+
+	}
+
+	private void addProfiles(ComboBox combo) {
+
+		if (rs == null) {
+			try {
+				rs = new ReportingService();
+			} catch (AxisFault e) {
+
+				e.printStackTrace();
+			}
+		}
+
+		try {
+
+			hmProfiles = rs.getProfiles();
+			hmProfiles.put("ALL", "0");
+			Set<Entry<String, String>> set = hmProfiles.entrySet();
+			for (Entry<String, String> e : set) {
+				Object key = e.getKey();
+				combo.addItem(key);
+
+			}
+
+		} catch (RemoteException | DataServiceFault e) {
+
+			e.printStackTrace();
+		}
 
 	}
 }

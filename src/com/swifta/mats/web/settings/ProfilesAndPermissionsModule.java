@@ -777,7 +777,7 @@ public class ProfilesAndPermissionsModule {
 
 						comboProfiles.addItem(pnNew);
 						comboProfiles.select(pnNew);
-						hmAllProfiles.remove(pnOld);
+						// hmAllProfiles.remove(pnOld);
 
 						if (response == null || response.trim().isEmpty()) {
 							Notification.show("No reponse from the server",
@@ -796,7 +796,13 @@ public class ProfilesAndPermissionsModule {
 							return;
 						}
 
+						Notification.show(response,
+								Notification.Type.ERROR_MESSAGE);
+
 					} catch (Exception e) {
+
+						Notification.show(e.getMessage(),
+								Notification.Type.ERROR_MESSAGE);
 
 						e.printStackTrace();
 					}

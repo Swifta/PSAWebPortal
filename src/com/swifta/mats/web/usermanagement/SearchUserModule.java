@@ -1,11 +1,17 @@
 package com.swifta.mats.web.usermanagement;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.axis2.AxisFault;
+
+import com.swifta.mats.web.utils.ReportingService;
+import com.swifta.sub.mats.reporting.DataServiceFault;
+import com.vaadin.event.FieldEvents.FocusEvent;
+import com.vaadin.event.FieldEvents.FocusListener;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Button;
@@ -23,20 +29,22 @@ public class SearchUserModule {
 	private ArrayList<Object> arrLTfs;
 	private boolean isSearchURL = false;
 
-	private Map<Integer, String> profToID;
+	private Map<String, String> hmProfiles;
 	private BE2 be;
+	private ReportingService rs;
 
 	public SearchUserModule() {
 
-		profToID = new HashMap<>();
-		profToID.put(0, "ALL");
-		profToID.put(1, "MATS_ADMIN_USER_PROFILE");
-		profToID.put(3, "MATS_FINANCIAL_CONTROLLER_USER_PROFILE");
-		profToID.put(4, "MATS_CUSTOMER_CARE_USER_PROFILE");
-		profToID.put(6, "MATS_SUPER_AGENT_USER_PROFILE");
-		profToID.put(7, "MATS_SUB_AGENT_USER_PROFILE");
-		profToID.put(11, "MATS_DEALER_USER_PROFILE");
-		profToID.put(15, "MATS_SERVICE_PROVIDER_USER_PROFILE");
+		/*
+		 * profToID = new HashMap<>(); profToID.put(0, "ALL"); profToID.put(1,
+		 * "MATS_ADMIN_USER_PROFILE"); profToID.put(3,
+		 * "MATS_FINANCIAL_CONTROLLER_USER_PROFILE"); profToID.put(4,
+		 * "MATS_CUSTOMER_CARE_USER_PROFILE"); profToID.put(6,
+		 * "MATS_SUPER_AGENT_USER_PROFILE"); profToID.put(7,
+		 * "MATS_SUB_AGENT_USER_PROFILE"); profToID.put(11,
+		 * "MATS_DEALER_USER_PROFILE"); profToID.put(15,
+		 * "MATS_SERVICE_PROVIDER_USER_PROFILE");
+		 */
 
 	}
 
@@ -125,7 +133,7 @@ public class SearchUserModule {
 						strBuilder.append("&");
 					} else {
 						ComboBox combo = (ComboBox) tF;
-						String strProf = profToID.get(combo.getValue());
+						String strProf = combo.getValue().toString();
 						strBuilder.append(combo.getCaption());
 						strBuilder.append("=");
 						strBuilder.append(strProf);
@@ -156,16 +164,33 @@ public class SearchUserModule {
 		ArrayList<Object> arrLTfs = new ArrayList<Object>();
 		TextField tF;
 
-		ComboBox comboProfile = new ComboBox("Profile Type");
+		final ComboBox comboProfile = new ComboBox("Profile Type");
+		comboProfile.setNullSelectionAllowed(false);
 
-		Set<Entry<Integer, String>> set = profToID.entrySet();
+		comboProfile.addFocusListener(new FocusListener() {
 
-		for (Entry<Integer, String> e : set) {
-			comboProfile.addItem(e.getKey());
-			comboProfile.setItemCaption(e.getKey(), e.getValue());
-		}
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
 
-		comboProfile.select(0);
+			@Override
+			public void focus(FocusEvent event) {
+				addProfiles(comboProfile);
+
+			}
+
+		});
+
+		// Set<Entry<Integer, String>> set = profToID.entrySet();
+
+		/*
+		 * for (Entry<Integer, String> e : set) {
+		 * comboProfile.addItem(e.getKey());
+		 * comboProfile.setItemCaption(e.getKey(), e.getValue()); }
+		 */
+
+		// comboProfile.select(0);
 
 		arrLTfs.add(comboProfile);
 		searchForm.addComponent(comboProfile);
@@ -177,6 +202,35 @@ public class SearchUserModule {
 			searchForm.addComponent(tF);
 		}
 		return arrLTfs;
+	}
+
+	private void addProfiles(ComboBox combo) {
+
+		if (rs == null) {
+			try {
+				rs = new ReportingService();
+			} catch (AxisFault e) {
+
+				e.printStackTrace();
+			}
+		}
+
+		try {
+
+			hmProfiles = rs.getProfiles();
+			hmProfiles.put("ALL", "0");
+			Set<Entry<String, String>> set = hmProfiles.entrySet();
+			for (Entry<String, String> e : set) {
+				Object key = e.getKey();
+				combo.addItem(key);
+
+			}
+
+		} catch (RemoteException | DataServiceFault e) {
+
+			e.printStackTrace();
+		}
+
 	}
 
 }
