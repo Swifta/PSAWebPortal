@@ -68,9 +68,15 @@ public class ProfilesAndPermissionsModule {
 
 	private OptionGroup optMultTrans;
 	private ComboBox comboThresholds;
+	Button back;
 
-	ProfilesAndPermissionsModule() {
+	// private HorizontalLayout cjust;
+
+	ProfilesAndPermissionsModule(Button back) {
+		this.back = back;
+
 		addMenu();
+
 		cProfile = getProfileC();
 		cStage.addComponent(cProfile);
 		cMain.addComponent(cStage);
@@ -164,6 +170,8 @@ public class ProfilesAndPermissionsModule {
 		cMain.addComponent(cMenu);
 		cMain.setComponentAlignment(cMenu, Alignment.TOP_CENTER);
 		cMain.setSizeFull();
+		cMain.addComponent(back);
+		cMain.setComponentAlignment(back, Alignment.TOP_RIGHT);
 
 	}
 
@@ -502,6 +510,8 @@ public class ProfilesAndPermissionsModule {
 
 				list.removeAllItems();
 
+				int pCount = hmActivePerms.size();
+
 				for (Entry<String, String> e : hmActivePerms.entrySet()) {
 					String pid = e.getKey();
 					list.addItem(pid);
@@ -515,6 +525,12 @@ public class ProfilesAndPermissionsModule {
 				btnEdit.setIcon(FontAwesome.EDIT);
 				btnEdit.setEnabled(true);
 				btnAdd.setVisible(false);
+
+				if (pCount == 0) {
+					cPlaceholder.setVisible(false);
+					NotifCustom.show("", "NO new permissions were set.");
+					btnAdd.setVisible(true);
+				}
 
 			}
 		});
@@ -1233,6 +1249,8 @@ public class ProfilesAndPermissionsModule {
 		private Button btnSave;
 		private VerticalLayout cAllProf;
 		private HorizontalLayout cPlaceholder;
+		private String ptid;
+		private HorizontalLayout cTransactionTypes;
 
 		SetThresholdHandler(final VerticalLayout cAllProf,
 				final HorizontalLayout cPlaceholder) {
@@ -1271,9 +1289,10 @@ public class ProfilesAndPermissionsModule {
 
 			HorizontalLayout cThresholds = new HorizontalLayout();
 
-			HorizontalLayout cTransactionTypes = new HorizontalLayout();
+			cTransactionTypes = new HorizontalLayout();
 
 			cThresholds.addComponent(comboThresholds);
+
 			cTransactionTypes.addComponent(optMultTrans);
 			Label lb = new Label("Select Threshold and Transaction Type(s)");
 			cAddProf.addComponent(lb);
@@ -1328,14 +1347,16 @@ public class ProfilesAndPermissionsModule {
 						return;
 					}
 
-					if (optMultTrans.getValue() == null
-							|| ((Collection<?>) optMultTrans.getValue()).size() == 0) {
-						Notification.show(
-								"Please select at least a Transaction Type",
-								Notification.Type.ERROR_MESSAGE);
-						optMultTrans.focus();
-						return;
-					}
+					if (!ptid.equals("3"))
+						if (optMultTrans.getValue() == null
+								|| ((Collection<?>) optMultTrans.getValue())
+										.size() == 0) {
+							Notification
+									.show("Please select at least a Transaction Type",
+											Notification.Type.ERROR_MESSAGE);
+							optMultTrans.focus();
+							return;
+						}
 
 					if (comboThresholds.getValue() == null) {
 						Notification.show("Please select a Threshold",
@@ -1414,13 +1435,21 @@ public class ProfilesAndPermissionsModule {
 
 		@Override
 		public void buttonClick(ClickEvent event) {
+
+			ptid = hmProfIDs.get(comboProfiles.getValue().toString())
+					.getProfiletypeid();
+
+			if (ptid.equals("3")) {
+				optMultTrans.setVisible(false);
+
+			} else {
+				optMultTrans.setVisible(true);
+			}
 			cPlaceholder.setVisible(true);
 			cAllProf.setVisible(false);
 			tFProf.setValue("");
 			combo.select(null);
-			addThresholds(comboThresholds,
-					hmProfIDs.get(comboProfiles.getValue().toString())
-							.getProfiletypeid());
+			addThresholds(comboThresholds, ptid);
 			addTransactionTypes(optMultTrans);
 
 		}

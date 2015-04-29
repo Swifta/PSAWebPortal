@@ -166,11 +166,12 @@ public class Settings extends VerticalLayout {
 			public void layoutClick(LayoutClickEvent event) {
 
 				if (ppm == null)
-					ppm = new ProfilesAndPermissionsModule();
+					ppm = new ProfilesAndPermissionsModule(back);
 				VerticalLayout cppm = ppm.getMainContainer();
+
 				laying.removeAllComponents();
 				laying.addComponent(cppm);
-				laying.setComponentAlignment(cppm, Alignment.TOP_LEFT);
+				laying.setComponentAlignment(cppm, Alignment.TOP_CENTER);
 				laying.setSizeFull();
 
 			}
