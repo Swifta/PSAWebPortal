@@ -1380,7 +1380,7 @@ public class ProfilesAndPermissionsModule {
 								pn, ttids, (int) pid,
 								Integer.parseInt(threshold),
 								Integer.parseInt(profile.getProfiletypeid()),
-								"");
+								amount);
 
 					} catch (Exception e) {
 						Notification.show(e.getMessage(),
