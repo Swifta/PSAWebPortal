@@ -30,7 +30,11 @@ public class Client {
 
 			// Client.getProfileTypes();
 
-			Client.setProfilepermission();
+			// Client.setProfilepermission();
+
+			// Client.getThresholdTypes();
+
+			Client.getTransactionTypes();
 
 			// Client.removeProfilePermission();
 
@@ -480,6 +484,16 @@ public class Client {
 
 		for (Entry<String, String> e : set)
 			System.out.println(e.getKey() + " : " + e.getValue());
+	}
+
+	public static void getThresholdTypes() throws Exception {
+		ReportingService rs = new ReportingService();
+		rs.getThresholdTypes("1");
+	}
+
+	public static void getTransactionTypes() throws Exception {
+		ReportingService rs = new ReportingService();
+		rs.getTransactionTypes();
 	}
 	// public static void getactive() throws Exception {
 	//
