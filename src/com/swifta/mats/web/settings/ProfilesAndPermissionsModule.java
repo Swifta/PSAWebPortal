@@ -1359,7 +1359,8 @@ public class ProfilesAndPermissionsModule {
 						response = UserManagementService.addProfileThreshold(
 								pn, ttids, (int) pid,
 								Integer.parseInt(threshold),
-								Integer.parseInt(profile.getProfiletypeid()));
+								Integer.parseInt(profile.getProfiletypeid()),
+								"");
 
 					} catch (Exception e) {
 						Notification.show(e.getMessage(),
