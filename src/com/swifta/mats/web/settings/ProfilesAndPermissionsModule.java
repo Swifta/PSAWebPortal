@@ -1273,8 +1273,8 @@ public class ProfilesAndPermissionsModule {
 
 			HorizontalLayout cTransactionTypes = new HorizontalLayout();
 
-			cTransactionTypes.addComponent(comboThresholds);
-			cThresholds.addComponent(optMultTrans);
+			cThresholds.addComponent(comboThresholds);
+			cTransactionTypes.addComponent(optMultTrans);
 			Label lb = new Label("Select Threshold and Transaction Type(s)");
 			cAddProf.addComponent(lb);
 
@@ -1328,20 +1328,20 @@ public class ProfilesAndPermissionsModule {
 						return;
 					}
 
-					if (comboThresholds.getValue() == null) {
-						Notification.show("Please select a Threshold",
-								Notification.Type.ERROR_MESSAGE);
-
-						comboThresholds.focus();
-						return;
-					}
-
 					if (optMultTrans.getValue() == null
 							|| ((Collection<?>) optMultTrans.getValue()).size() == 0) {
 						Notification.show(
 								"Please select at least a Transaction Type",
 								Notification.Type.ERROR_MESSAGE);
 						optMultTrans.focus();
+						return;
+					}
+
+					if (comboThresholds.getValue() == null) {
+						Notification.show("Please select a Threshold",
+								Notification.Type.ERROR_MESSAGE);
+
+						comboThresholds.focus();
 						return;
 					}
 
