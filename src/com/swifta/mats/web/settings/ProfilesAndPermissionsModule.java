@@ -14,6 +14,7 @@ import com.swifta.mats.web.usermanagement.NotifCustom;
 import com.swifta.mats.web.utils.ReportingService;
 import com.swifta.mats.web.utils.UserManagementService;
 import com.swifta.sub.mats.reporting.DataServiceFault;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Profile;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
@@ -58,6 +59,7 @@ public class ProfilesAndPermissionsModule {
 	private Map<String, String> hmInActivePerms = new HashMap<>();
 
 	private TwinColSelect tcsInactiveAndActive;
+	private Profile[] profiles;
 
 	ProfilesAndPermissionsModule() {
 		addMenu();
@@ -1169,7 +1171,13 @@ public class ProfilesAndPermissionsModule {
 
 		try {
 
-			hmAllProfiles = rs.getProfiles();
+			profiles = rs.getProfiles();
+			Map<String, String> hmTemp = new HashMap<>();
+			for (Profile profile : profiles) {
+				hmTemp.put(profile.getProfilename(), profile.getProfileid());
+			}
+
+			hmAllProfiles = hmTemp;
 			Set<Entry<String, String>> set = hmAllProfiles.entrySet();
 			for (Entry<String, String> e : set) {
 

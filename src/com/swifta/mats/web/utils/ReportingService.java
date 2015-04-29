@@ -33,16 +33,15 @@ public class ReportingService {
 		rservice = new MatsreportingserviceStub(esbendpoint);
 	}
 
-	public HashMap<String, String> getProfiles() throws RemoteException,
-			DataServiceFault {
+	public Profile[] getProfiles() throws RemoteException, DataServiceFault {
 		Getprofiles getProfiles = new Getprofiles();
 		ProfilesE profileE = rservice.getprofiles(getProfiles);
 		Profiles profiles = profileE.getProfiles();
 		Profile[] arrProfiles = profiles.getProfile();
-		HashMap<String, String> hmProfiles = new HashMap<>();
-		for (Profile profile : arrProfiles)
-			hmProfiles.put(profile.getProfilename(), profile.getProfileid());
-		return hmProfiles;
+		if (arrProfiles == null)
+			return new Profile[0];
+
+		return arrProfiles;
 
 	}
 

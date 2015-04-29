@@ -25,6 +25,7 @@ import com.swifta.mats.web.utils.ReportingService;
 import com.swifta.mats.web.utils.UserManagementService;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub;
 import com.swifta.sub.mats.reporting.DataServiceFault;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Profile;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.Validator;
@@ -1594,8 +1595,14 @@ public class AddUserModule {
 		}
 
 		try {
+			Map<String, String> hmTemp = new HashMap<>();
+			for (Profile profile : rs.getProfiles()) {
+				hmTemp.put(profile.getProfilename(), profile.getProfileid());
 
-			hmProfileIDx = rs.getProfiles();
+			}
+
+			hmProfileIDx = hmTemp;
+
 			Set<Entry<String, String>> set = hmProfileIDx.entrySet();
 			for (Entry<String, String> e : set) {
 				Object key = e.getKey();

@@ -2,10 +2,14 @@ package com.swifta.mats.web.utils;
 
 import java.rmi.RemoteException;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.axis2.AxisFault;
+
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Profile;
 
 public class Client {
 
@@ -472,7 +476,13 @@ public class Client {
 
 	public static void getProfiles() throws Exception {
 		ReportingService rs = new ReportingService();
-		Set<Entry<String, String>> set = rs.getProfiles().entrySet();
+
+		Map<String, String> hmTemp = new HashMap<>();
+		for (Profile profile : rs.getProfiles()) {
+			hmTemp.put(profile.getProfilename(), profile.getProfileid());
+		}
+
+		Set<Entry<String, String>> set = hmTemp.entrySet();
 
 		for (Entry<String, String> e : set)
 			System.out.println(e.getKey() + " : " + e.getValue());

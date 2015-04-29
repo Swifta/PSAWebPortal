@@ -22,6 +22,7 @@ import com.swifta.mats.web.MatsWebPortalUI;
 import com.swifta.mats.web.utils.ReportingService;
 import com.swifta.mats.web.utils.UserManagementService;
 import com.swifta.sub.mats.reporting.DataServiceFault;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Profile;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
@@ -104,7 +105,13 @@ public class BE2 {
 		}
 
 		try {
-			hmProfiles = rs.getProfiles();
+			Map<String, String> hmTemp = new HashMap<>();
+			for (Profile profile : rs.getProfiles()) {
+				hmTemp.put(profile.getProfilename(), profile.getProfileid());
+
+			}
+
+			hmProfiles = hmTemp;
 			hmProfiles.put("ALL", "0");
 
 		} catch (RemoteException | DataServiceFault e) {
@@ -2358,7 +2365,14 @@ public class BE2 {
 
 		try {
 
-			hmProfiles = rs.getProfiles();
+			Map<String, String> hmTemp = new HashMap<>();
+			for (Profile profile : rs.getProfiles()) {
+				hmTemp.put(profile.getProfilename(), profile.getProfileid());
+
+			}
+
+			hmProfiles = hmTemp;
+
 			hmProfiles.put("ALL", "0");
 			Set<Entry<String, String>> set = hmProfiles.entrySet();
 			for (Entry<String, String> e : set) {

@@ -2,6 +2,7 @@ package com.swifta.mats.web.usermanagement;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -10,6 +11,7 @@ import org.apache.axis2.AxisFault;
 
 import com.swifta.mats.web.utils.ReportingService;
 import com.swifta.sub.mats.reporting.DataServiceFault;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Profile;
 import com.vaadin.event.FieldEvents.FocusEvent;
 import com.vaadin.event.FieldEvents.FocusListener;
 import com.vaadin.server.FontAwesome;
@@ -216,8 +218,13 @@ public class SearchUserModule {
 		}
 
 		try {
+			Map<String, String> hmTemp = new HashMap<>();
+			for (Profile profile : rs.getProfiles()) {
+				hmTemp.put(profile.getProfilename(), profile.getProfileid());
 
-			hmProfiles = rs.getProfiles();
+			}
+
+			hmProfiles = hmTemp;
 			hmProfiles.put("ALL", "0");
 			Set<Entry<String, String>> set = hmProfiles.entrySet();
 			for (Entry<String, String> e : set) {
