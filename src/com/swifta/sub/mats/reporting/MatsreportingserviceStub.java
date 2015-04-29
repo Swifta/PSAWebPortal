@@ -2014,7 +2014,7 @@
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                 "http://swifta.com/sub/mats/reporting",
                 "gettransactionsummaryreportresponses",
-                "ns2");
+                "ns1");
 
             
 
@@ -2092,7 +2092,7 @@
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
             if(namespace.equals("http://swifta.com/sub/mats/reporting")){
-                return "ns2";
+                return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
         }
@@ -2348,7 +2348,7 @@
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                 "http://swifta.com/sub/mats/reporting",
                 "Profiles",
-                "ns2");
+                "ns1");
 
             
 
@@ -2426,7 +2426,7 @@
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
             if(namespace.equals("http://swifta.com/sub/mats/reporting")){
-                return "ns2";
+                return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
         }
@@ -2682,7 +2682,7 @@
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                 "http://swifta.com/sub/mats/reporting",
                 "getfeesandcommissionreportresponses",
-                "ns2");
+                "ns1");
 
             
 
@@ -2760,7 +2760,7 @@
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
             if(namespace.equals("http://swifta.com/sub/mats/reporting")){
-                return "ns2";
+                return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
         }
@@ -3015,7 +3015,7 @@
         /* This type was generated from the piece of schema that had
                 name = getpermissions
                 Namespace URI = http://swifta.com/sub/mats/reporting
-                Namespace Prefix = ns2
+                Namespace Prefix = ns1
                 */
             
 
@@ -3183,7 +3183,7 @@
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
             if(namespace.equals("http://swifta.com/sub/mats/reporting")){
-                return "ns2";
+                return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
         }
@@ -3529,7 +3529,7 @@
         /* This type was generated from the piece of schema that had
                 name = Profiles
                 Namespace URI = http://swifta.com/sub/mats/reporting
-                Namespace Prefix = ns2
+                Namespace Prefix = ns1
                 */
             
 
@@ -3697,7 +3697,7 @@
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
             if(namespace.equals("http://swifta.com/sub/mats/reporting")){
-                return "ns2";
+                return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
         }
@@ -4043,7 +4043,7 @@
         /* This type was generated from the piece of schema that had
                 name = gettransactionsummaryreportresponse
                 Namespace URI = http://swifta.com/sub/mats/reporting
-                Namespace Prefix = ns2
+                Namespace Prefix = ns1
                 */
             
 
@@ -4257,7 +4257,7 @@
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
             if(namespace.equals("http://swifta.com/sub/mats/reporting")){
-                return "ns2";
+                return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
         }
@@ -4640,7 +4640,7 @@
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                 "http://swifta.com/sub/mats/reporting",
                 "getthresholdtypes",
-                "ns2");
+                "ns1");
 
             
 
@@ -4758,7 +4758,7 @@
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
             if(namespace.equals("http://swifta.com/sub/mats/reporting")){
-                return "ns2";
+                return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
         }
@@ -5070,7 +5070,7 @@
         /* This type was generated from the piece of schema that had
                 name = thresholdtypes
                 Namespace URI = http://swifta.com/sub/mats/reporting
-                Namespace Prefix = ns2
+                Namespace Prefix = ns1
                 */
             
 
@@ -5238,7 +5238,7 @@
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
             if(namespace.equals("http://swifta.com/sub/mats/reporting")){
-                return "ns2";
+                return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
         }
@@ -5584,7 +5584,7 @@
         /* This type was generated from the piece of schema that had
                 name = source_data_service_type0
                 Namespace URI = http://ws.wso2.org/dataservice
-                Namespace Prefix = ns3
+                Namespace Prefix = ns2
                 */
             
 
@@ -5846,7 +5846,7 @@
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
             if(namespace.equals("http://ws.wso2.org/dataservice")){
-                return "ns3";
+                return "ns2";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
         }
@@ -6260,7 +6260,7 @@
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                 "http://swifta.com/sub/mats/reporting",
                 "TransactionResponses",
-                "ns2");
+                "ns1");
 
             
 
@@ -6338,7 +6338,7 @@
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
             if(namespace.equals("http://swifta.com/sub/mats/reporting")){
-                return "ns2";
+                return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
         }
@@ -6594,7 +6594,7 @@
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                 "http://swifta.com/sub/mats/reporting",
                 "getministatementreport",
-                "ns2");
+                "ns1");
 
             
 
@@ -6760,7 +6760,7 @@
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
             if(namespace.equals("http://swifta.com/sub/mats/reporting")){
-                return "ns2";
+                return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
         }
@@ -7107,7 +7107,7 @@
         /* This type was generated from the piece of schema that had
                 name = profiletype
                 Namespace URI = http://swifta.com/sub/mats/reporting
-                Namespace Prefix = ns2
+                Namespace Prefix = ns1
                 */
             
 
@@ -7273,7 +7273,7 @@
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
             if(namespace.equals("http://swifta.com/sub/mats/reporting")){
-                return "ns2";
+                return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
         }
@@ -7621,7 +7621,7 @@
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                 "http://swifta.com/sub/mats/reporting",
                 "getfeesandcommissionsummaryreport",
-                "ns2");
+                "ns1");
 
             
 
@@ -7787,7 +7787,7 @@
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
             if(namespace.equals("http://swifta.com/sub/mats/reporting")){
-                return "ns2";
+                return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
         }
@@ -8135,7 +8135,7 @@
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                 "http://swifta.com/sub/mats/reporting",
                 "profiletypes",
-                "ns2");
+                "ns1");
 
             
 
@@ -8213,7 +8213,7 @@
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
             if(namespace.equals("http://swifta.com/sub/mats/reporting")){
-                return "ns2";
+                return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
         }
@@ -8469,7 +8469,7 @@
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                 "http://ws.wso2.org/dataservice",
                 "DATA_SERVICE_RESPONSE",
-                "ns3");
+                "ns2");
 
             
 
@@ -8588,7 +8588,7 @@
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
             if(namespace.equals("http://ws.wso2.org/dataservice")){
-                return "ns3";
+                return "ns2";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
         }
@@ -8898,7 +8898,7 @@
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                 "http://swifta.com/sub/mats/reporting",
                 "getfeesandcommissionreport",
-                "ns2");
+                "ns1");
 
             
 
@@ -9064,7 +9064,7 @@
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
             if(namespace.equals("http://swifta.com/sub/mats/reporting")){
-                return "ns2";
+                return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
         }
@@ -9411,7 +9411,7 @@
         /* This type was generated from the piece of schema that had
                 name = transactiontypes
                 Namespace URI = http://swifta.com/sub/mats/reporting
-                Namespace Prefix = ns2
+                Namespace Prefix = ns1
                 */
             
 
@@ -9579,7 +9579,7 @@
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
             if(namespace.equals("http://swifta.com/sub/mats/reporting")){
-                return "ns2";
+                return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
         }
@@ -9925,7 +9925,7 @@
         /* This type was generated from the piece of schema that had
                 name = gettransactionreportresponse
                 Namespace URI = http://swifta.com/sub/mats/reporting
-                Namespace Prefix = ns2
+                Namespace Prefix = ns1
                 */
             
 
@@ -10235,7 +10235,7 @@
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
             if(namespace.equals("http://swifta.com/sub/mats/reporting")){
-                return "ns2";
+                return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
         }
@@ -10687,7 +10687,7 @@
         /* This type was generated from the piece of schema that had
                 name = getfloatmanagementfloatresponses
                 Namespace URI = http://swifta.com/sub/mats/reporting
-                Namespace Prefix = ns2
+                Namespace Prefix = ns1
                 */
             
 
@@ -10855,7 +10855,7 @@
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
             if(namespace.equals("http://swifta.com/sub/mats/reporting")){
-                return "ns2";
+                return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
         }
@@ -11202,7 +11202,7 @@
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                 "http://swifta.com/sub/mats/reporting",
                 "gettransactionsummaryreport",
-                "ns2");
+                "ns1");
 
             
 
@@ -11368,7 +11368,7 @@
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
             if(namespace.equals("http://swifta.com/sub/mats/reporting")){
-                return "ns2";
+                return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
         }
@@ -11716,7 +11716,7 @@
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                 "http://swifta.com/sub/mats/reporting",
                 "transactiontypes",
-                "ns2");
+                "ns1");
 
             
 
@@ -11794,7 +11794,7 @@
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
             if(namespace.equals("http://swifta.com/sub/mats/reporting")){
-                return "ns2";
+                return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
         }
@@ -12281,7 +12281,7 @@
         /* This type was generated from the piece of schema that had
                 name = getfeesandcommissionsummaryreportresponse
                 Namespace URI = http://swifta.com/sub/mats/reporting
-                Namespace Prefix = ns2
+                Namespace Prefix = ns1
                 */
             
 
@@ -12619,7 +12619,7 @@
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
             if(namespace.equals("http://swifta.com/sub/mats/reporting")){
-                return "ns2";
+                return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
         }
@@ -13115,7 +13115,7 @@
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                 "http://swifta.com/sub/mats/reporting",
                 "getfloatmanagementreport",
-                "ns2");
+                "ns1");
 
             
 
@@ -13281,7 +13281,7 @@
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
             if(namespace.equals("http://swifta.com/sub/mats/reporting")){
-                return "ns2";
+                return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
         }
@@ -13628,7 +13628,7 @@
         /* This type was generated from the piece of schema that had
                 name = TransactionResponse
                 Namespace URI = http://swifta.com/sub/mats/reporting
-                Namespace Prefix = ns2
+                Namespace Prefix = ns1
                 */
             
 
@@ -13938,7 +13938,7 @@
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
             if(namespace.equals("http://swifta.com/sub/mats/reporting")){
-                return "ns2";
+                return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
         }
@@ -14390,7 +14390,7 @@
         /* This type was generated from the piece of schema that had
                 name = thresholdtype
                 Namespace URI = http://swifta.com/sub/mats/reporting
-                Namespace Prefix = ns2
+                Namespace Prefix = ns1
                 */
             
 
@@ -14556,7 +14556,7 @@
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
             if(namespace.equals("http://swifta.com/sub/mats/reporting")){
-                return "ns2";
+                return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
         }
@@ -14903,7 +14903,7 @@
         /* This type was generated from the piece of schema that had
                 name = profile
                 Namespace URI = http://swifta.com/sub/mats/reporting
-                Namespace Prefix = ns2
+                Namespace Prefix = ns1
                 */
             
 
@@ -14962,6 +14962,36 @@
                                public void setProfilename(java.lang.String param){
                             
                                             this.localProfilename=param;
+                                    
+
+                               }
+                            
+
+                        /**
+                        * field for Profiletypeid
+                        */
+
+                        
+                                    protected java.lang.String localProfiletypeid ;
+                                
+
+                           /**
+                           * Auto generated getter method
+                           * @return java.lang.String
+                           */
+                           public  java.lang.String getProfiletypeid(){
+                               return localProfiletypeid;
+                           }
+
+                           
+                        
+                            /**
+                               * Auto generated setter method
+                               * @param param Profiletypeid
+                               */
+                               public void setProfiletypeid(java.lang.String param){
+                            
+                                            this.localProfiletypeid=param;
                                     
 
                                }
@@ -15062,6 +15092,24 @@
                                     
                                    xmlWriter.writeEndElement();
                              
+                                    namespace = "http://swifta.com/sub/mats/reporting";
+                                    writeStartElement(null, namespace, "profiletypeid", xmlWriter);
+                             
+
+                                          if (localProfiletypeid==null){
+                                              // write the nil attribute
+                                              
+                                                     writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","nil","1",xmlWriter);
+                                                  
+                                          }else{
+
+                                        
+                                                   xmlWriter.writeCharacters(localProfiletypeid);
+                                            
+                                          }
+                                    
+                                   xmlWriter.writeEndElement();
+                             
                     xmlWriter.writeEndElement();
                
 
@@ -15069,7 +15117,7 @@
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
             if(namespace.equals("http://swifta.com/sub/mats/reporting")){
-                return "ns2";
+                return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
         }
@@ -15254,6 +15302,12 @@
                                          elementList.add(localProfilename==null?null:
                                          org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localProfilename));
                                     
+                                      elementList.add(new javax.xml.namespace.QName("http://swifta.com/sub/mats/reporting",
+                                                                      "profiletypeid"));
+                                 
+                                         elementList.add(localProfiletypeid==null?null:
+                                         org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localProfiletypeid));
+                                    
 
                 return new org.apache.axis2.databinding.utils.reader.ADBXMLStreamReaderImpl(qName, elementList.toArray(), attribList.toArray());
             
@@ -15386,6 +15440,35 @@
                                     // A start element we are not expecting indicates an invalid parameter was passed
                                     throw new org.apache.axis2.databinding.ADBException("Unexpected subelement " + reader.getName());
                                 }
+                            
+                                    
+                                    while (!reader.isStartElement() && !reader.isEndElement()) reader.next();
+                                
+                                    if (reader.isStartElement() && new javax.xml.namespace.QName("http://swifta.com/sub/mats/reporting","profiletypeid").equals(reader.getName())){
+                                
+                                       nillableValue = reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance","nil");
+                                       if (!"true".equals(nillableValue) && !"1".equals(nillableValue)){
+                                    
+
+                                    java.lang.String content = reader.getElementText();
+                                    
+                                              object.setProfiletypeid(
+                                                    org.apache.axis2.databinding.utils.ConverterUtil.convertToString(content));
+                                            
+                                       } else {
+                                           
+                                           
+                                           reader.getElementText(); // throw away text nodes if any.
+                                       }
+                                      
+                                        reader.next();
+                                    
+                              }  // End of if for expected property start element
+                                
+                                else{
+                                    // A start element we are not expecting indicates an invalid parameter was passed
+                                    throw new org.apache.axis2.databinding.ADBException("Unexpected subelement " + reader.getName());
+                                }
                               
                             while (!reader.isStartElement() && !reader.isEndElement())
                                 reader.next();
@@ -15417,9 +15500,69 @@
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                 "http://swifta.com/sub/mats/reporting",
                 "gettransactionreport",
-                "ns2");
+                "ns1");
 
             
+
+                        /**
+                        * field for Fromdate
+                        */
+
+                        
+                                    protected java.lang.String localFromdate ;
+                                
+
+                           /**
+                           * Auto generated getter method
+                           * @return java.lang.String
+                           */
+                           public  java.lang.String getFromdate(){
+                               return localFromdate;
+                           }
+
+                           
+                        
+                            /**
+                               * Auto generated setter method
+                               * @param param Fromdate
+                               */
+                               public void setFromdate(java.lang.String param){
+                            
+                                            this.localFromdate=param;
+                                    
+
+                               }
+                            
+
+                        /**
+                        * field for Todate
+                        */
+
+                        
+                                    protected java.lang.String localTodate ;
+                                
+
+                           /**
+                           * Auto generated getter method
+                           * @return java.lang.String
+                           */
+                           public  java.lang.String getTodate(){
+                               return localTodate;
+                           }
+
+                           
+                        
+                            /**
+                               * Auto generated setter method
+                               * @param param Todate
+                               */
+                               public void setTodate(java.lang.String param){
+                            
+                                            this.localTodate=param;
+                                    
+
+                               }
+                            
      
 
      
@@ -15480,6 +15623,42 @@
                
                    }
                
+                                    namespace = "http://swifta.com/sub/mats/reporting";
+                                    writeStartElement(null, namespace, "fromdate", xmlWriter);
+                             
+
+                                          if (localFromdate==null){
+                                              // write the nil attribute
+                                              
+                                                     writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","nil","1",xmlWriter);
+                                                  
+                                          }else{
+
+                                        
+                                                   xmlWriter.writeCharacters(localFromdate);
+                                            
+                                          }
+                                    
+                                   xmlWriter.writeEndElement();
+                             
+                                    namespace = "http://swifta.com/sub/mats/reporting";
+                                    writeStartElement(null, namespace, "todate", xmlWriter);
+                             
+
+                                          if (localTodate==null){
+                                              // write the nil attribute
+                                              
+                                                     writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","nil","1",xmlWriter);
+                                                  
+                                          }else{
+
+                                        
+                                                   xmlWriter.writeCharacters(localTodate);
+                                            
+                                          }
+                                    
+                                   xmlWriter.writeEndElement();
+                             
                     xmlWriter.writeEndElement();
                
 
@@ -15487,7 +15666,7 @@
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
             if(namespace.equals("http://swifta.com/sub/mats/reporting")){
-                return "ns2";
+                return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
         }
@@ -15660,6 +15839,18 @@
                  java.util.ArrayList attribList = new java.util.ArrayList();
 
                 
+                                      elementList.add(new javax.xml.namespace.QName("http://swifta.com/sub/mats/reporting",
+                                                                      "fromdate"));
+                                 
+                                         elementList.add(localFromdate==null?null:
+                                         org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localFromdate));
+                                    
+                                      elementList.add(new javax.xml.namespace.QName("http://swifta.com/sub/mats/reporting",
+                                                                      "todate"));
+                                 
+                                         elementList.add(localTodate==null?null:
+                                         org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localTodate));
+                                    
 
                 return new org.apache.axis2.databinding.utils.reader.ADBXMLStreamReaderImpl(qName, elementList.toArray(), attribList.toArray());
             
@@ -15734,7 +15925,65 @@
                 
                     
                     reader.next();
-                  
+                
+                                    
+                                    while (!reader.isStartElement() && !reader.isEndElement()) reader.next();
+                                
+                                    if (reader.isStartElement() && new javax.xml.namespace.QName("http://swifta.com/sub/mats/reporting","fromdate").equals(reader.getName())){
+                                
+                                       nillableValue = reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance","nil");
+                                       if (!"true".equals(nillableValue) && !"1".equals(nillableValue)){
+                                    
+
+                                    java.lang.String content = reader.getElementText();
+                                    
+                                              object.setFromdate(
+                                                    org.apache.axis2.databinding.utils.ConverterUtil.convertToString(content));
+                                            
+                                       } else {
+                                           
+                                           
+                                           reader.getElementText(); // throw away text nodes if any.
+                                       }
+                                      
+                                        reader.next();
+                                    
+                              }  // End of if for expected property start element
+                                
+                                else{
+                                    // A start element we are not expecting indicates an invalid parameter was passed
+                                    throw new org.apache.axis2.databinding.ADBException("Unexpected subelement " + reader.getName());
+                                }
+                            
+                                    
+                                    while (!reader.isStartElement() && !reader.isEndElement()) reader.next();
+                                
+                                    if (reader.isStartElement() && new javax.xml.namespace.QName("http://swifta.com/sub/mats/reporting","todate").equals(reader.getName())){
+                                
+                                       nillableValue = reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance","nil");
+                                       if (!"true".equals(nillableValue) && !"1".equals(nillableValue)){
+                                    
+
+                                    java.lang.String content = reader.getElementText();
+                                    
+                                              object.setTodate(
+                                                    org.apache.axis2.databinding.utils.ConverterUtil.convertToString(content));
+                                            
+                                       } else {
+                                           
+                                           
+                                           reader.getElementText(); // throw away text nodes if any.
+                                       }
+                                      
+                                        reader.next();
+                                    
+                              }  // End of if for expected property start element
+                                
+                                else{
+                                    // A start element we are not expecting indicates an invalid parameter was passed
+                                    throw new org.apache.axis2.databinding.ADBException("Unexpected subelement " + reader.getName());
+                                }
+                              
                             while (!reader.isStartElement() && !reader.isEndElement())
                                 reader.next();
                             
@@ -15765,7 +16014,7 @@
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                 "http://ws.wso2.org/dataservice",
                 "REQUEST_STATUS",
-                "ns3");
+                "ns2");
 
             
 
@@ -15869,7 +16118,7 @@
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
             if(namespace.equals("http://ws.wso2.org/dataservice")){
-                return "ns3";
+                return "ns2";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
         }
@@ -16139,7 +16388,7 @@
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                 "http://swifta.com/sub/mats/reporting",
                 "gettransactiontypes",
-                "ns2");
+                "ns1");
 
             
      
@@ -16209,7 +16458,7 @@
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
             if(namespace.equals("http://swifta.com/sub/mats/reporting")){
-                return "ns2";
+                return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
         }
@@ -16487,7 +16736,7 @@
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                 "http://swifta.com/sub/mats/reporting",
                 "thresholdtypes",
-                "ns2");
+                "ns1");
 
             
 
@@ -16565,7 +16814,7 @@
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
             if(namespace.equals("http://swifta.com/sub/mats/reporting")){
-                return "ns2";
+                return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
         }
@@ -16820,7 +17069,7 @@
         /* This type was generated from the piece of schema that had
                 name = profiletypes
                 Namespace URI = http://swifta.com/sub/mats/reporting
-                Namespace Prefix = ns2
+                Namespace Prefix = ns1
                 */
             
 
@@ -16988,7 +17237,7 @@
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
             if(namespace.equals("http://swifta.com/sub/mats/reporting")){
-                return "ns2";
+                return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
         }
@@ -17335,7 +17584,7 @@
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                 "http://swifta.com/sub/mats/reporting",
                 "getprofiletypes",
-                "ns2");
+                "ns1");
 
             
      
@@ -17405,7 +17654,7 @@
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
             if(namespace.equals("http://swifta.com/sub/mats/reporting")){
-                return "ns2";
+                return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
         }
@@ -17682,7 +17931,7 @@
         /* This type was generated from the piece of schema that had
                 name = getpermission
                 Namespace URI = http://swifta.com/sub/mats/reporting
-                Namespace Prefix = ns2
+                Namespace Prefix = ns1
                 */
             
 
@@ -17896,7 +18145,7 @@
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
             if(namespace.equals("http://swifta.com/sub/mats/reporting")){
-                return "ns2";
+                return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
         }
@@ -18279,7 +18528,7 @@
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                 "http://swifta.com/sub/mats/reporting",
                 "getpermissions",
-                "ns2");
+                "ns1");
 
             
 
@@ -18357,7 +18606,7 @@
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
             if(namespace.equals("http://swifta.com/sub/mats/reporting")){
-                return "ns2";
+                return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
         }
@@ -18613,7 +18862,7 @@
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                 "http://swifta.com/sub/mats/reporting",
                 "gettransactionreportresponses",
-                "ns2");
+                "ns1");
 
             
 
@@ -18691,7 +18940,7 @@
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
             if(namespace.equals("http://swifta.com/sub/mats/reporting")){
-                return "ns2";
+                return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
         }
@@ -18946,7 +19195,7 @@
         /* This type was generated from the piece of schema that had
                 name = transactiontype
                 Namespace URI = http://swifta.com/sub/mats/reporting
-                Namespace Prefix = ns2
+                Namespace Prefix = ns1
                 */
             
 
@@ -19112,7 +19361,7 @@
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
             if(namespace.equals("http://swifta.com/sub/mats/reporting")){
-                return "ns2";
+                return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
         }
@@ -19460,7 +19709,7 @@
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                 "http://swifta.com/sub/mats/reporting",
                 "getnonactivepermissionbyprofileid",
-                "ns2");
+                "ns1");
 
             
 
@@ -19573,7 +19822,7 @@
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
             if(namespace.equals("http://swifta.com/sub/mats/reporting")){
-                return "ns2";
+                return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
         }
@@ -19887,7 +20136,7 @@
         /* This type was generated from the piece of schema that had
                 name = getfeesandcommissionsummaryreportresponses
                 Namespace URI = http://swifta.com/sub/mats/reporting
-                Namespace Prefix = ns2
+                Namespace Prefix = ns1
                 */
             
 
@@ -20055,7 +20304,7 @@
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
             if(namespace.equals("http://swifta.com/sub/mats/reporting")){
-                return "ns2";
+                return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
         }
@@ -20402,7 +20651,7 @@
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                 "http://swifta.com/sub/mats/reporting",
                 "getfloatmanagementfloatresponses",
-                "ns2");
+                "ns1");
 
             
 
@@ -20480,7 +20729,7 @@
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
             if(namespace.equals("http://swifta.com/sub/mats/reporting")){
-                return "ns2";
+                return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
         }
@@ -20735,7 +20984,7 @@
         /* This type was generated from the piece of schema that had
                 name = gettransactionreportresponses
                 Namespace URI = http://swifta.com/sub/mats/reporting
-                Namespace Prefix = ns2
+                Namespace Prefix = ns1
                 */
             
 
@@ -20903,7 +21152,7 @@
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
             if(namespace.equals("http://swifta.com/sub/mats/reporting")){
-                return "ns2";
+                return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
         }
@@ -21250,7 +21499,7 @@
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                 "http://ws.wso2.org/dataservice",
                 "DataServiceFault",
-                "ns3");
+                "ns2");
 
             
 
@@ -21548,7 +21797,7 @@
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
             if(namespace.equals("http://ws.wso2.org/dataservice")){
-                return "ns3";
+                return "ns2";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
         }
@@ -21987,7 +22236,7 @@
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                 "http://swifta.com/sub/mats/reporting",
                 "getactivepermissionbyprofileid",
-                "ns2");
+                "ns1");
 
             
 
@@ -22100,7 +22349,7 @@
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
             if(namespace.equals("http://swifta.com/sub/mats/reporting")){
-                return "ns2";
+                return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
         }
@@ -22415,7 +22664,7 @@
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                 "http://swifta.com/sub/mats/reporting",
                 "getprofiles",
-                "ns2");
+                "ns1");
 
             
      
@@ -22485,7 +22734,7 @@
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
             if(namespace.equals("http://swifta.com/sub/mats/reporting")){
-                return "ns2";
+                return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
         }
@@ -22763,7 +23012,7 @@
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                 "http://swifta.com/sub/mats/reporting",
                 "getfeesandcommissionsummaryreportresponses",
-                "ns2");
+                "ns1");
 
             
 
@@ -22841,7 +23090,7 @@
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
             if(namespace.equals("http://swifta.com/sub/mats/reporting")){
-                return "ns2";
+                return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
         }
@@ -23096,7 +23345,7 @@
         /* This type was generated from the piece of schema that had
                 name = getfeesandcommissionreportresponses
                 Namespace URI = http://swifta.com/sub/mats/reporting
-                Namespace Prefix = ns2
+                Namespace Prefix = ns1
                 */
             
 
@@ -23202,7 +23451,7 @@
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
             if(namespace.equals("http://swifta.com/sub/mats/reporting")){
-                return "ns2";
+                return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
         }
@@ -23505,7 +23754,7 @@
                 public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
                 "http://swifta.com/sub/mats/reporting",
                 "_get_getmini",
-                "ns2");
+                "ns1");
 
             
 
@@ -23671,7 +23920,7 @@
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
             if(namespace.equals("http://swifta.com/sub/mats/reporting")){
-                return "ns2";
+                return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
         }
@@ -24018,7 +24267,7 @@
         /* This type was generated from the piece of schema that had
                 name = TransactionResponses
                 Namespace URI = http://swifta.com/sub/mats/reporting
-                Namespace Prefix = ns2
+                Namespace Prefix = ns1
                 */
             
 
@@ -24186,7 +24435,7 @@
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
             if(namespace.equals("http://swifta.com/sub/mats/reporting")){
-                return "ns2";
+                return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
         }
@@ -24532,7 +24781,7 @@
         /* This type was generated from the piece of schema that had
                 name = getfloatmanagementfloatresponse
                 Namespace URI = http://swifta.com/sub/mats/reporting
-                Namespace Prefix = ns2
+                Namespace Prefix = ns1
                 */
             
 
@@ -24986,7 +25235,7 @@
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
             if(namespace.equals("http://swifta.com/sub/mats/reporting")){
-                return "ns2";
+                return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
         }
@@ -25543,7 +25792,7 @@
         /* This type was generated from the piece of schema that had
                 name = gettransactionsummaryreportresponses
                 Namespace URI = http://swifta.com/sub/mats/reporting
-                Namespace Prefix = ns2
+                Namespace Prefix = ns1
                 */
             
 
@@ -25711,7 +25960,7 @@
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
             if(namespace.equals("http://swifta.com/sub/mats/reporting")){
-                return "ns2";
+                return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
         }
