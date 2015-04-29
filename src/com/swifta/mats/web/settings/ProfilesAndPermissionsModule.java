@@ -1197,6 +1197,13 @@ public class ProfilesAndPermissionsModule {
 			for (Profile profile : profiles) {
 				hmTemp.put(profile.getProfilename(), profile.getProfileid());
 				hmProfIDs.put(profile.getProfilename(), profile);
+
+				System.out
+						.println("PN:             ProfID:               ProfTypeID");
+				/*
+				 * System.out.println(profile.getProfilename() + " : " +
+				 * profile.getProfileid() + " : " + profile.getProfiletypeid());
+				 */
 			}
 
 			hmAllProfiles = hmTemp;
@@ -1235,7 +1242,8 @@ public class ProfilesAndPermissionsModule {
 			cBtns = new HorizontalLayout();
 			cAddProf.setMargin(new MarginInfo(true, false, false, false));
 
-			tFProf = new TextField("Profile Name");
+			tFProf = new TextField();
+			tFProf.setCaption("Amount");
 			combo = new ComboBox("Profile Type");
 			combo.setValue(null);
 			combo.setNullSelectionAllowed(false);
@@ -1250,7 +1258,7 @@ public class ProfilesAndPermissionsModule {
 			btnCancel.setIcon(FontAwesome.UNDO);
 			btnCancel.setDescription("Cancel setting new profile");
 
-			// cAddProf.addComponent(tFProf);
+			cAddProf.addComponent(tFProf);
 			// cAddProf.addComponent(combo);
 
 			optMultTrans = new OptionGroup();
@@ -1272,6 +1280,7 @@ public class ProfilesAndPermissionsModule {
 
 			cAddProf.addComponent(cTransactionTypes);
 			cAddProf.addComponent(cThresholds);
+			cAddProf.addComponent(tFProf);
 
 			cPlaceholder.setSpacing(true);
 
@@ -1336,6 +1345,15 @@ public class ProfilesAndPermissionsModule {
 						return;
 					}
 
+					if (tFProf.getValue() == null
+							|| tFProf.getValue().toString().trim().isEmpty()) {
+						Notification.show("Pleas provide amount",
+								Notification.Type.ERROR_MESSAGE);
+
+						tFProf.focus();
+						return;
+					}
+
 					String pn = spn.toString();
 					Integer pid = Integer.parseInt(hmAllProfiles.get(pn));
 					Collection<?> ctids = (Collection<?>) optMultTrans
@@ -1350,6 +1368,8 @@ public class ProfilesAndPermissionsModule {
 
 					Profile profile = hmProfIDs.get(pn);
 					String threshold = comboThresholds.getValue().toString();
+
+					String amount = tFProf.getValue();
 
 					String response = null;
 
@@ -1417,6 +1437,8 @@ public class ProfilesAndPermissionsModule {
 			}
 
 			try {
+
+				// System.out.println(pid);
 
 				hmThresholdTypes = rs.getThresholdTypes(pid);
 
