@@ -757,7 +757,7 @@ public class UserManagementService {
 
 	public static String addProfileThreshold(String profilename,
 			int[] transactiontypeids, int profileid, int thresholdtypeid,
-			int profiletypeid) throws Exception {
+			int profiletypeid, String value) throws Exception {
 
 		String statusMessage = "";
 		matsStub = new ProvisioningStub(esbendpoint);
@@ -772,6 +772,7 @@ public class UserManagementService {
 		addProfileThreshold.setAction(transactiontypeids);
 		addProfileThreshold.setThresholdtypeid(thresholdtypeid);
 		addProfileThreshold.setProfiletypeid(profiletypeid);
+		addProfileThreshold.setValue(value);
 
 		addProfileThresholdE.setAddProfileThreshold(addProfileThreshold);
 
