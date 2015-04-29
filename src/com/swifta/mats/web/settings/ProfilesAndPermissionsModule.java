@@ -1,6 +1,7 @@
 package com.swifta.mats.web.settings;
 
 import java.rmi.RemoteException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,6 +32,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.ListSelect;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.TwinColSelect;
 import com.vaadin.ui.UI;
@@ -54,12 +56,18 @@ public class ProfilesAndPermissionsModule {
 	private ComboBox comboProfiles;
 	private Map<String, String> hmAllProfiles;
 	private Map<String, String> hmProfileTypes;
+	private Map<String, String> hmThresholdTypes;
+	private Map<String, String> hmTransactionTypes;
+	private Map<String, Profile> hmProfIDs = new HashMap<>();
 
 	private Map<String, String> hmActivePerms = new HashMap<>();
 	private Map<String, String> hmInActivePerms = new HashMap<>();
 
 	private TwinColSelect tcsInactiveAndActive;
 	private Profile[] profiles;
+
+	private OptionGroup optMultTrans;
+	private ComboBox comboThresholds;
 
 	ProfilesAndPermissionsModule() {
 		addMenu();
@@ -587,6 +595,7 @@ public class ProfilesAndPermissionsModule {
 
 		VerticalLayout cAgentInfo = new VerticalLayout();
 		final HorizontalLayout cPlaceholder = new HorizontalLayout();
+		final HorizontalLayout cPlaceholderx = new HorizontalLayout();
 		cAgentInfo.setMargin(new MarginInfo(true, true, true, true));
 		// cAgentInfo.setStyleName("c_details_test");
 
@@ -612,7 +621,7 @@ public class ProfilesAndPermissionsModule {
 		final TextField tFProf = new TextField();
 		comboProfiles = new ComboBox("Select Profile: ");
 
-		lbProf.setCaption("Selected Profile Name: ");
+		lbProf.setCaption("Profile Name: ");
 		lbProf.setValue("None.");
 		tFProf.setCaption(lbProf.getCaption());
 		cAllProf.addComponent(lb);
@@ -625,6 +634,11 @@ public class ProfilesAndPermissionsModule {
 		btnEdit.setIcon(FontAwesome.EDIT);
 		btnEdit.setStyleName("btn_link");
 		btnEdit.setDescription("Edit profile name");
+
+		final Button btnThreshold = new Button("T");
+		// btnThreshold.setIcon(FontAwesome.T);
+		btnThreshold.setStyleName("btn_link");
+		btnThreshold.setDescription("Set profile threshold");
 
 		final Button btnCancel = new Button();
 		btnCancel.setIcon(FontAwesome.UNDO);
@@ -648,6 +662,7 @@ public class ProfilesAndPermissionsModule {
 		cProfActions.addComponent(btnEdit);
 		cProfActions.addComponent(btnCancel);
 		// cProfActions.addComponent(btnAdd);
+		cProfActions.addComponent(btnThreshold);
 		cProfActions.addComponent(btnRemove);
 
 		btnCancel.setVisible(false);
@@ -666,11 +681,15 @@ public class ProfilesAndPermissionsModule {
 		// cLBody.setComponentAlignment(btnLink, Alignment.TOP_LEFT);
 
 		cPlaceholder.setVisible(false);
+		cPlaceholderx.setVisible(false);
 		// addLinkUserContainer();
 		cPlaceholder.setWidth("100%");
+		cPlaceholderx.setWidth("100%");
 
 		cLBody.addComponent(cPlaceholder);
+		cLBody.addComponent(cPlaceholderx);
 		cLBody.setComponentAlignment(cPlaceholder, Alignment.TOP_CENTER);
+		cLBody.setComponentAlignment(cPlaceholderx, Alignment.TOP_CENTER);
 		HorizontalLayout c = new HorizontalLayout();
 		c.addComponent(cAgentInfo);
 
@@ -841,6 +860,8 @@ public class ProfilesAndPermissionsModule {
 		btnAdd.addClickListener(new AddProfileHandler(cAllProf, cPlaceholder));
 
 		btnRemove.addClickListener(new RemoveProfileHandler(pop));
+		btnThreshold.addClickListener(new SetThresholdHandler(cAllProf,
+				cPlaceholderx));
 
 		return c;
 
@@ -1170,11 +1191,12 @@ public class ProfilesAndPermissionsModule {
 		}
 
 		try {
-
+			hmProfIDs.clear();
 			profiles = rs.getProfiles();
 			Map<String, String> hmTemp = new HashMap<>();
 			for (Profile profile : profiles) {
 				hmTemp.put(profile.getProfilename(), profile.getProfileid());
+				hmProfIDs.put(profile.getProfilename(), profile);
 			}
 
 			hmAllProfiles = hmTemp;
@@ -1189,6 +1211,260 @@ public class ProfilesAndPermissionsModule {
 		} catch (RemoteException | DataServiceFault e) {
 
 			e.printStackTrace();
+		}
+
+	}
+
+	private class SetThresholdHandler implements Button.ClickListener {
+
+		private static final long serialVersionUID = -9065514577173650677L;
+		private VerticalLayout cAddProf;
+		private HorizontalLayout cBtns;
+		private TextField tFProf;
+		private ComboBox combo;
+		private Button btnCancel;
+		private Button btnSave;
+		private VerticalLayout cAllProf;
+		private HorizontalLayout cPlaceholder;
+
+		SetThresholdHandler(final VerticalLayout cAllProf,
+				final HorizontalLayout cPlaceholder) {
+			this.cAllProf = cAllProf;
+			this.cPlaceholder = cPlaceholder;
+			cAddProf = new VerticalLayout();
+			cBtns = new HorizontalLayout();
+			cAddProf.setMargin(new MarginInfo(true, false, false, false));
+
+			tFProf = new TextField("Profile Name");
+			combo = new ComboBox("Profile Type");
+			combo.setValue(null);
+			combo.setNullSelectionAllowed(false);
+
+			btnSave = new Button();
+			btnSave.setIcon(FontAwesome.SAVE);
+			btnSave.setStyleName("btn_link");
+			btnSave.setDescription("Save new profile");
+
+			btnCancel = new Button();
+			btnCancel.setStyleName("btn_link");
+			btnCancel.setIcon(FontAwesome.UNDO);
+			btnCancel.setDescription("Cancel setting new profile");
+
+			// cAddProf.addComponent(tFProf);
+			// cAddProf.addComponent(combo);
+
+			optMultTrans = new OptionGroup();
+			optMultTrans.setCaption("Transaction Type");
+			optMultTrans.setMultiSelect(true);
+
+			comboThresholds = new ComboBox();
+			comboThresholds.setCaption("Threshold");
+			// optMultTransactionTypes.setMultiSelect(true);
+
+			HorizontalLayout cThresholds = new HorizontalLayout();
+
+			HorizontalLayout cTransactionTypes = new HorizontalLayout();
+
+			cTransactionTypes.addComponent(comboThresholds);
+			cThresholds.addComponent(optMultTrans);
+			Label lb = new Label("Select Threshold and Transaction Type(s)");
+			cAddProf.addComponent(lb);
+
+			cAddProf.addComponent(cTransactionTypes);
+			cAddProf.addComponent(cThresholds);
+
+			cPlaceholder.setSpacing(true);
+
+			cBtns.addComponent(btnSave);
+			cBtns.addComponent(btnCancel);
+			cAddProf.addComponent(cBtns);
+
+			cPlaceholder.addComponent(cAddProf);
+
+			combo.addFocusListener(new FocusListener() {
+				private static final long serialVersionUID = -7814943757729564782L;
+
+				@Override
+				public void focus(FocusEvent event) {
+
+				}
+
+			});
+
+			btnCancel.addClickListener(new Button.ClickListener() {
+
+				private static final long serialVersionUID = 3115121215716705673L;
+
+				@Override
+				public void buttonClick(ClickEvent event) {
+
+					cAllProf.setVisible(true);
+					cPlaceholder.setVisible(false);
+
+				}
+			});
+
+			btnSave.addClickListener(new Button.ClickListener() {
+
+				private static final long serialVersionUID = 7591799098570751956L;
+
+				@Override
+				public void buttonClick(ClickEvent event) {
+
+					Object spn = comboProfiles.getValue();
+					if (spn == null || spn.toString().trim().isEmpty()) {
+						Notification.show("Please provide a profile name",
+								Notification.Type.ERROR_MESSAGE);
+
+						return;
+					}
+
+					if (comboThresholds.getValue() == null) {
+						Notification.show("Please select a Threshold",
+								Notification.Type.ERROR_MESSAGE);
+
+						comboThresholds.focus();
+						return;
+					}
+
+					if (optMultTrans.getValue() == null
+							|| ((Collection<?>) optMultTrans.getValue()).size() == 0) {
+						Notification.show(
+								"Please select at least a Transaction Type",
+								Notification.Type.ERROR_MESSAGE);
+						optMultTrans.focus();
+						return;
+					}
+
+					String pn = spn.toString();
+					Integer pid = Integer.parseInt(hmAllProfiles.get(pn));
+					Collection<?> ctids = (Collection<?>) optMultTrans
+							.getValue();
+
+					int[] ttids = new int[ctids.size()];
+					int ix = 0;
+					for (Object tid : ctids) {
+						ttids[ix] = Integer.valueOf(tid.toString()).intValue();
+						ix++;
+					}
+
+					Profile profile = hmProfIDs.get(pn);
+					String threshold = comboThresholds.getValue().toString();
+
+					String response = null;
+
+					try {
+
+						System.out.println(pn + " : " + pid);
+						response = UserManagementService.addProfileThreshold(
+								pn, ttids, (int) pid,
+								Integer.parseInt(threshold),
+								Integer.parseInt(profile.getProfiletypeid()));
+
+					} catch (Exception e) {
+						Notification.show(e.getMessage(),
+								Notification.Type.ERROR_MESSAGE);
+						e.printStackTrace();
+						return;
+					}
+					if (response == null || response.trim().isEmpty()) {
+						Notification.show("Unknown operation status",
+								Notification.Type.ERROR_MESSAGE);
+						return;
+					}
+
+					if (response.toUpperCase().contains("SUCCESS")) {
+						NotifCustom.show("Threshold", pn
+								+ " added successfully.");
+
+						cAllProf.setVisible(true);
+						cPlaceholder.setVisible(false);
+
+						return;
+					} else {
+						Notification.show(response,
+								Notification.Type.ERROR_MESSAGE);
+					}
+
+				}
+			});
+
+		}
+
+		@Override
+		public void buttonClick(ClickEvent event) {
+			cPlaceholder.setVisible(true);
+			cAllProf.setVisible(false);
+			tFProf.setValue("");
+			combo.select(null);
+			addThresholds(comboThresholds,
+					hmProfIDs.get(comboProfiles.getValue().toString())
+							.getProfiletypeid());
+			addTransactionTypes(optMultTrans);
+
+		}
+
+		private void addThresholds(ComboBox optMult, String pid) {
+			optMult.removeAllItems();
+
+			if (rs == null) {
+				try {
+					rs = new ReportingService();
+				} catch (AxisFault e) {
+
+					e.printStackTrace();
+				}
+			}
+
+			try {
+
+				hmThresholdTypes = rs.getThresholdTypes(pid);
+
+				Set<Entry<String, String>> set = hmThresholdTypes.entrySet();
+				for (Entry<String, String> e : set) {
+
+					Object key = e.getKey();
+					optMult.addItem(key);
+					optMult.setItemCaption(key, e.getValue());
+
+				}
+
+			} catch (RemoteException | DataServiceFault e) {
+
+				e.printStackTrace();
+			}
+
+		}
+
+		private void addTransactionTypes(OptionGroup optMult) {
+			optMult.removeAllItems();
+
+			if (rs == null) {
+				try {
+					rs = new ReportingService();
+				} catch (AxisFault e) {
+
+					e.printStackTrace();
+				}
+			}
+
+			try {
+
+				hmTransactionTypes = rs.getTransactionTypes();
+				Set<Entry<String, String>> set = hmTransactionTypes.entrySet();
+				for (Entry<String, String> e : set) {
+
+					Object key = e.getKey();
+					optMult.addItem(key);
+					optMult.setItemCaption(key, e.getValue());
+
+				}
+
+			} catch (RemoteException | DataServiceFault e) {
+
+				e.printStackTrace();
+			}
+
 		}
 
 	}

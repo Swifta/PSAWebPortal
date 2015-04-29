@@ -1,7 +1,9 @@
 package com.swifta.mats.web.utils;
 
 import java.rmi.RemoteException;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.axis2.AxisFault;
 
@@ -61,10 +63,10 @@ public class ReportingService {
 
 	}
 
-	public void getThresholdTypes(String ptid) throws RemoteException,
-			DataServiceFault {
+	public Map<String, String> getThresholdTypes(String ptid)
+			throws RemoteException, DataServiceFault {
 		Getthresholdtypes getthresholdtypes = new Getthresholdtypes();
-		getthresholdtypes.setProfiletypeid("3");
+		getthresholdtypes.setProfiletypeid(ptid);
 		ThresholdtypesE thresholdtypesE = rservice
 				.getthresholdtypes(getthresholdtypes);
 		// thresholdtypesE.set
@@ -72,18 +74,18 @@ public class ReportingService {
 
 		Thresholdtypes thtypes = thresholdtypesE.getThresholdtypes();
 		Thresholdtype[] thresholdTypes = thtypes.getThresholdtype();
-		if (thresholdTypes == null) {
-			System.out.println("NO THRESHOLDS");
-			return;
-		}
+		if (thresholdTypes == null)
+			return Collections.emptyMap();
+		Map<String, String> hm = new HashMap<>();
 
 		for (Thresholdtype tty : thresholdTypes)
-			System.out.println(tty.getThresholdtype() + ":----:"
-					+ tty.getThresholdtypeid());
+			hm.put(tty.getThresholdtypeid(), tty.getThresholdtype());
+		return hm;
 
 	}
 
-	public void getTransactionTypes() throws RemoteException, DataServiceFault {
+	public Map<String, String> getTransactionTypes() throws RemoteException,
+			DataServiceFault {
 		Gettransactiontypes gettransactiontypes = new Gettransactiontypes();
 
 		TransactiontypesE transactiontypesE = rservice
@@ -94,15 +96,13 @@ public class ReportingService {
 
 		Transactiontype[] transactiontype = transactiontypes
 				.getTransactiontype();
-		if (transactiontype == null) {
-			System.out.println("No Transactions.");
-			return;
-		}
+		if (transactiontype == null)
+			return Collections.emptyMap();
+		Map<String, String> hm = new HashMap<>();
 
-		for (Transactiontype ttype : transactiontype)
-			System.out.println(ttype.getTransactiontype() + " : "
-					+ ttype.getTransactiontypeid());
+		for (Transactiontype tty : transactiontype)
+			hm.put(tty.getTransactiontypeid(), tty.getTransactiontype());
+		return hm;
 
 	}
-
 }
