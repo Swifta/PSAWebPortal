@@ -10,12 +10,16 @@ import com.swifta.sub.mats.reporting.DataServiceFault;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getprofiles;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getprofiletypes;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getthresholdtypes;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Profile;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Profiles;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.ProfilesE;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Profiletype;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Profiletypes;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.ProfiletypesE;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Thresholdtype;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Thresholdtypes;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.ThresholdtypesE;
 
 public class ReportingService {
 	private final MatsreportingserviceStub rservice;
@@ -46,10 +50,24 @@ public class ReportingService {
 		Profiletypes profiles = profileE.getProfiletypes();
 		Profiletype[] arrProfiles = profiles.getProfiletype();
 		HashMap<String, String> hmProfiles = new HashMap<>();
+
 		for (Profiletype profile : arrProfiles)
 			hmProfiles
 					.put(profile.getProfiletypeid(), profile.getProfilename());
 		return hmProfiles;
+
+	}
+
+	public void getThresholdTypes() throws RemoteException, DataServiceFault {
+		Getthresholdtypes getthresholdtypes = new Getthresholdtypes();
+		ThresholdtypesE thresholdtypes = rservice
+				.getthresholdtypes(getthresholdtypes);
+
+		Thresholdtypes thtypes = thresholdtypes.getThresholdtypes();
+		Thresholdtype[] thresholdTypes = thtypes.getThresholdtype();
+		// thresholdTypes[0].get
+		// thresholdTypes.
+		// thresholdTypes.
 
 	}
 
