@@ -1244,6 +1244,7 @@ public class ProfilesAndPermissionsModule {
 		private VerticalLayout cAddProf;
 		private HorizontalLayout cBtns;
 		private TextField tFProf;
+		private TextField tFProfx;
 		private ComboBox combo;
 		private Button btnCancel;
 		private Button btnSave;
@@ -1260,7 +1261,10 @@ public class ProfilesAndPermissionsModule {
 			cBtns = new HorizontalLayout();
 			cAddProf.setMargin(new MarginInfo(true, false, false, false));
 
+			tFProfx = new TextField();
 			tFProf = new TextField();
+			tFProf.setCaption("Amount");
+			tFProfx.setCaption("Selected Profile: ");
 			tFProf.setCaption("Amount");
 			combo = new ComboBox("Profile Type");
 			combo.setValue(null);
@@ -1296,6 +1300,10 @@ public class ProfilesAndPermissionsModule {
 			cTransactionTypes.addComponent(optMultTrans);
 			Label lb = new Label("Select Threshold and Transaction Type(s)");
 			cAddProf.addComponent(lb);
+			cAddProf.addComponent(tFProfx);
+			tFProfx.setEnabled(false);
+			tFProfx.setReadOnly(true);
+			// tFProfx.set
 
 			cAddProf.addComponent(cTransactionTypes);
 			cAddProf.addComponent(cThresholds);
@@ -1417,7 +1425,7 @@ public class ProfilesAndPermissionsModule {
 
 					if (response.toUpperCase().contains("SUCCESS")) {
 						NotifCustom.show("Threshold", pn
-								+ " added successfully.");
+								+ "'s Threshold was successfully configured.");
 
 						cAllProf.setVisible(true);
 						cPlaceholder.setVisible(false);
@@ -1445,6 +1453,15 @@ public class ProfilesAndPermissionsModule {
 			} else {
 				optMultTrans.setVisible(true);
 			}
+
+			tFProfx.setEnabled(true);
+			tFProfx.setReadOnly(false);
+
+			tFProfx.setValue(comboProfiles.getValue().toString());
+
+			tFProfx.setEnabled(false);
+			tFProfx.setReadOnly(true);
+
 			cPlaceholder.setVisible(true);
 			cAllProf.setVisible(false);
 			tFProf.setValue("");
