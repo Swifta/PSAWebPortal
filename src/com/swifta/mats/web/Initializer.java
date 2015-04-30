@@ -1,10 +1,15 @@
 package com.swifta.mats.web;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
+
 import com.swifta.mats.web.accountprofile.ProfileView;
 import com.swifta.mats.web.report.ReportView;
 import com.swifta.mats.web.settings.SettingsView;
 import com.swifta.mats.web.transactions.TransView;
 import com.swifta.mats.web.usermanagement.UMView;
+import com.swifta.mats.web.utils.LoginService;
 import com.vaadin.navigator.View;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
@@ -14,44 +19,76 @@ import com.vaadin.ui.VerticalLayout;
 public class Initializer {
 
 	private TabSheet m;
-	private View crp, cum, ct, cap, cs;
+	private View crp, cum, ct, cap, cs, cd;
+	private HashMap<String, String> hmTabPermissions;
+	private Set<String> setUserPermissions;
 
 	TabSheet getTS() {
+
+		setUserPermissions();
+		setTabPermissions();
 		createTabSheet();
+
 		return m;
+	}
+
+	private void setUserPermissions() {
+		setUserPermissions = new HashSet<>();
+		for (String perm : LoginService.getUserPermissions()) {
+			setUserPermissions.add(perm);
+			System.out.println(perm);
+		}
+
+		setUserPermissions.add("/viewsettings");
+
+	}
+
+	private void setTabPermissions() {
+		hmTabPermissions = new HashMap<>();
+		hmTabPermissions.put("settings", "/viewsettings");
+		hmTabPermissions.put("dashboard", "/viewdashboard");
+		hmTabPermissions.put("report", "/viewreport");
+		hmTabPermissions.put("manage_users", "/manageusers");
+
 	}
 
 	private void createTabSheet() {
 		m = new TabSheet();
+
+		VerticalLayout ap = new VerticalLayout();
+		ap.setId("ap_init");
+		ap.setData(m.getTabPosition(m.addTab(ap, "My Profile")));
+
 		VerticalLayout u = new VerticalLayout();
 		u.setId("ds_init");
-		m.addTab(u, "Dashbord");
+		if (setUserPermissions.contains(hmTabPermissions.get("dashboard")))
+			u.setData(m.getTabPosition(m.addTab(u, "Dashbord")));
 
 		VerticalLayout v = new VerticalLayout();
 		// tf = new TextField();
 		// v.addComponent(tf);
 		v.setId("rp_init");
-		m.addTab(v, "Reports");
+		if (setUserPermissions.contains(hmTabPermissions.get("report")))
+			v.setData(m.getTabPosition(m.addTab(v, "Reports")));
 
 		VerticalLayout um = new VerticalLayout();
 		// tf = new TextField();
 		// v.addComponent(tf);
 		um.setId("um_init");
-		m.addTab(um, "User Management");
+		if (setUserPermissions.contains(hmTabPermissions.get("manage_users")))
+			um.setData(m.getTabPosition(m.addTab(um, "User Management")));
 
 		VerticalLayout tx = new VerticalLayout();
 		// tf = new TextField();
 		// v.addComponent(tf);
 		tx.setId("tx_init");
-		m.addTab(tx, "Transactions");
-
-		VerticalLayout ap = new VerticalLayout();
-		ap.setId("ap_init");
-		m.addTab(ap, "My Profile");
+		tx.setData(m.getTabPosition(m.addTab(tx, "Transactions")));
 
 		VerticalLayout st = new VerticalLayout();
 		st.setId("st_init");
-		m.addTab(st, "Settings");
+
+		if (setUserPermissions.contains(hmTabPermissions.get("settings")))
+			st.setData(m.getTabPosition(m.addTab(st, "Settings")));
 		// m.getSelectedTab().
 
 		m.addSelectedTabChangeListener(new TabSheet.SelectedTabChangeListener() {
@@ -62,7 +99,18 @@ public class Initializer {
 			public void selectedTabChange(SelectedTabChangeEvent event) {
 				String id = m.getSelectedTab().getId();
 				switch (id) {
+				case "ap_init": {
+
+					UI.getCurrent().getNavigator().navigateTo(ProfileView.Prof);
+					break;
+				}
+
 				case "ds_init": {
+
+					if (cd == null) {
+						cd = new Main(m);
+						UI.getCurrent().getNavigator().addView("dashboard", cd);
+					}
 					UI.getCurrent().getNavigator().navigateTo(Main.WS);
 
 					break;
@@ -100,18 +148,6 @@ public class Initializer {
 					break;
 				}
 
-				case "ap_init": {
-					if (cap == null) {
-						cap = new ProfileView(m);
-
-						UI.getCurrent().getNavigator()
-								.addView("account_profile", cap);
-					}
-					UI.getCurrent().getNavigator()
-							.navigateTo("account_profile");
-					break;
-				}
-
 				case "st_init": {
 					if (cs == null) {
 						cs = new SettingsView(m);
@@ -125,7 +161,8 @@ public class Initializer {
 				default: {
 
 					if (UI.getCurrent().getSession().getAttribute("user") != null) {
-						UI.getCurrent().getNavigator().navigateTo("dashbord");
+						UI.getCurrent().getNavigator()
+								.navigateTo("account_profile");
 					} else {
 						UI.getCurrent().getNavigator().navigateTo(Login.LOGIN);
 					}

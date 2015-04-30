@@ -36,7 +36,8 @@ public class TransView extends VerticalLayout implements View {
 	@Override
 	public void enter(ViewChangeEvent event) {
 
-		ts.setSelectedTab(3);
+		// ts.setSelectedTab(3);
+		ts.setSelectedTab(Integer.parseInt(tab.getData().toString()));
 		addMenu();
 
 	}

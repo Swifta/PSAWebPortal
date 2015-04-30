@@ -68,7 +68,9 @@ public class ProfilesAndPermissionsModule {
 
 	private OptionGroup optMultTrans;
 	private ComboBox comboThresholds;
-	Button back;
+	private Button back;
+
+	private HashMap<String, String> hmProfPermPermissions;
 
 	// private HorizontalLayout cjust;
 
@@ -81,6 +83,16 @@ public class ProfilesAndPermissionsModule {
 		cStage.addComponent(cProfile);
 		cMain.addComponent(cStage);
 		cMain.setComponentAlignment(cStage, Alignment.TOP_CENTER);
+
+	}
+
+	private void setProfileAndPermissionsPermissions() {
+
+		hmProfPermPermissions = new HashMap<>();
+		hmProfPermPermissions.put("edit_profile", "/editProfile");
+		hmProfPermPermissions.put("add_profile", "");
+		hmProfPermPermissions.put("add_threshold", "");
+		hmProfPermPermissions.put("remove_profile", "/removeProfile");
 
 	}
 
@@ -289,7 +301,7 @@ public class ProfilesAndPermissionsModule {
 		tcsInactiveAndActive.setLeftColumnCaption("INACTIVE Permissions");
 		tcsInactiveAndActive.setRightColumnCaption("ACTIVE Permissions");
 		tcsInactiveAndActive
-				.setDescription("Select permission(s) and click \'<\' or \'>\' to move from INACTIVE or ACTIVE list respectively.");
+				.setDescription("Select permission(s) and click \'>\' or \'<\' to move from INACTIVE or ACTIVE list respectively.");
 
 		tcsInactiveAndActive.setWidth("1200px");
 		// tcsInactiveAndActive.set
@@ -331,6 +343,7 @@ public class ProfilesAndPermissionsModule {
 
 						btnAdd.setVisible(false);
 						btnEdit.setIcon(FontAwesome.EDIT);
+						btnEdit.setDescription("Edit permissions");
 
 						cPermsList.replaceComponent(tcsInactiveAndActive, list);
 
@@ -380,6 +393,7 @@ public class ProfilesAndPermissionsModule {
 				if (btnEdit.getIcon().equals(FontAwesome.EDIT)) {
 					btnCancel.setVisible(true);
 					btnEdit.setIcon(FontAwesome.SAVE);
+					btnEdit.setDescription("Save changes");
 
 					hmActivePerms.clear();
 					hmInActivePerms.clear();
@@ -477,6 +491,7 @@ public class ProfilesAndPermissionsModule {
 						cPermsList.replaceComponent(tcsInactiveAndActive, list);
 						btnCancel.setVisible(false);
 						btnEdit.setIcon(FontAwesome.EDIT);
+						btnEdit.setDescription("Edit permissions");
 						btnAdd.setVisible(false);
 						if (response != null)
 							NotifCustom.show("Response", response);
@@ -523,6 +538,7 @@ public class ProfilesAndPermissionsModule {
 				btnCancel.setVisible(false);
 
 				btnEdit.setIcon(FontAwesome.EDIT);
+				btnEdit.setDescription("Edit permissions");
 				btnEdit.setEnabled(true);
 				btnAdd.setVisible(false);
 
@@ -546,6 +562,7 @@ public class ProfilesAndPermissionsModule {
 
 				btnCancel.setVisible(true);
 				btnEdit.setIcon(FontAwesome.SAVE);
+				btnEdit.setDescription("Save changes");
 				btnAdd.setVisible(false);
 				cPlaceholder.setVisible(true);
 
@@ -773,6 +790,7 @@ public class ProfilesAndPermissionsModule {
 					tFProf.selectAll();
 					cProfName.replaceComponent(lbProf, tFProf);
 					btnEdit.setIcon(FontAwesome.SAVE);
+					btnEdit.setDescription("Save changes");
 					btnCancel.setVisible(true);
 					return;
 
@@ -802,6 +820,7 @@ public class ProfilesAndPermissionsModule {
 					lbProf.setValue(tFProf.getValue());
 					cProfName.replaceComponent(tFProf, lbProf);
 					btnEdit.setIcon(FontAwesome.EDIT);
+					btnEdit.setDescription("Edit profile name");
 					btnCancel.setVisible(false);
 
 					isProfileNameChanged = false;
@@ -835,6 +854,7 @@ public class ProfilesAndPermissionsModule {
 							lbProf.setValue(tFProf.getValue());
 							cProfName.replaceComponent(tFProf, lbProf);
 							btnEdit.setIcon(FontAwesome.EDIT);
+							btnEdit.setDescription("Edit profile name");
 							btnCancel.setVisible(false);
 
 							NotifCustom.show("Response", response);
@@ -868,6 +888,7 @@ public class ProfilesAndPermissionsModule {
 			public void buttonClick(ClickEvent event) {
 				cProfName.replaceComponent(tFProf, lbProf);
 				btnEdit.setIcon(FontAwesome.EDIT);
+				btnEdit.setDescription("Edit profile name");
 				btnCancel.setVisible(false);
 
 			}
@@ -1214,12 +1235,6 @@ public class ProfilesAndPermissionsModule {
 				hmTemp.put(profile.getProfilename(), profile.getProfileid());
 				hmProfIDs.put(profile.getProfilename(), profile);
 
-				System.out
-						.println("PN:             ProfID:               ProfTypeID");
-				/*
-				 * System.out.println(profile.getProfilename() + " : " +
-				 * profile.getProfileid() + " : " + profile.getProfiletypeid());
-				 */
 			}
 
 			hmAllProfiles = hmTemp;

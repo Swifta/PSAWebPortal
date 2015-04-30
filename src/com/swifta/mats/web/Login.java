@@ -4,6 +4,7 @@ import java.util.logging.Logger;
 
 import org.apache.axis2.AxisFault;
 
+import com.swifta.mats.web.accountprofile.ProfileView;
 import com.swifta.mats.web.utils.LoginService;
 import com.vaadin.data.Validator;
 import com.vaadin.data.fieldgroup.FieldGroup;
@@ -239,9 +240,13 @@ public class Login extends VerticalLayout implements View {
 						// mx//.navigateTo(WorkSpace.WORK_SPACE);
 
 						Initializer initts = new Initializer();
+						UI.getCurrent()
+								.getNavigator()
+								.addView(ProfileView.Prof,
+										new ProfileView(initts.getTS()));
+
 						UI.getCurrent().getNavigator()
-								.addView(Main.WS, new Main(initts.getTS()));
-						UI.getCurrent().getNavigator().navigateTo(Main.WS);
+								.navigateTo(ProfileView.Prof);
 
 						logger.info("---------------after getting navigator to workspace:::Login");
 

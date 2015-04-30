@@ -16,7 +16,7 @@ import com.vaadin.ui.VerticalLayout;
 public class ProfileView extends VerticalLayout implements View {
 
 	private static final long serialVersionUID = 7453202011100914519L;
-	public static final String WS = "dashboard";
+	public static final String Prof = "account_profile";
 
 	boolean isCriteriaChanged = false;
 	String dCat;
@@ -42,7 +42,8 @@ public class ProfileView extends VerticalLayout implements View {
 
 	@Override
 	public void enter(ViewChangeEvent event) {
-		ts.setSelectedTab(4);
+		// ts.setSelectedTab(4);
+		ts.setSelectedTab(Integer.parseInt(tab.getData().toString()));
 		addMenu();
 	}
 

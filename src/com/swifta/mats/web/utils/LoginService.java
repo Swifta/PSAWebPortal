@@ -21,6 +21,7 @@ import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Webauthe
 
 public class LoginService {
 	private ProvisioningStub provisioningStub;
+	private static String[] permissions;
 	private static final Logger logger = Logger.getLogger(LoginService.class
 			.getName());
 
@@ -55,11 +56,14 @@ public class LoginService {
 		if (response != null) {
 			WebauthenticateResponse response2 = response
 					.getWebauthenticateResponse();
+
 			if (response2 != null) {
 				Webauthenticationrequestresponse response3 = response2
 						.get_return();
 				if (response3 != null) {
 					statusMessage = response3.getResponsemessage();
+					permissions = response3.getPermission();
+
 				}
 
 				else {
@@ -119,6 +123,10 @@ public class LoginService {
 		}
 		return status;
 		// return statusMessage;
+	}
+
+	public static String[] getUserPermissions() {
+		return permissions;
 	}
 
 }

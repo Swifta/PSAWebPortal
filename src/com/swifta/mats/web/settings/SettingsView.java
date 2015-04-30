@@ -36,7 +36,7 @@ public class SettingsView extends VerticalLayout implements View {
 	@Override
 	public void enter(ViewChangeEvent event) {
 		inSettings = true;
-		ts.setSelectedTab(5);
+		ts.setSelectedTab(Integer.parseInt(tab.getData().toString()));
 		addMenu();
 
 	}

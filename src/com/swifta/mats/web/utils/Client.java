@@ -38,7 +38,9 @@ public class Client {
 
 			// Client.getThresholdTypes();
 
-			Client.getTransactionTypes();
+			// Client.getTransactionTypes();
+
+			Client.getUserPermissions();
 
 			// Client.removeProfilePermission();
 
@@ -504,6 +506,10 @@ public class Client {
 	public static void getTransactionTypes() throws Exception {
 		ReportingService rs = new ReportingService();
 		rs.getTransactionTypes();
+	}
+
+	public static void getUserPermissions() {
+
 	}
 	// public static void getactive() throws Exception {
 	//

@@ -2,6 +2,7 @@ package com.swifta.mats.web;
 
 import javax.servlet.annotation.WebServlet;
 
+import com.swifta.mats.web.accountprofile.ProfileView;
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
@@ -85,7 +86,8 @@ public class MatsWebPortalUI extends UI {
 				@Override
 				public boolean beforeViewChange(ViewChangeEvent event) {
 
-					if (main == null && event.getNewView() instanceof Main)
+					if (main == null
+							&& event.getNewView() instanceof ProfileView)
 						main = event.getNewView();
 
 					boolean isErrorView = event.getNewView() instanceof ErrorVIEW;
@@ -138,7 +140,7 @@ public class MatsWebPortalUI extends UI {
 					if (isLoginView) {
 						if (isLoggedIn) {
 							vN = null;
-							getNavigator().navigateTo(Main.WS);
+							getNavigator().navigateTo(ProfileView.Prof);
 							return false;
 						} else {
 							return true;
