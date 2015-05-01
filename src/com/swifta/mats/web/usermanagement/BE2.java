@@ -2426,6 +2426,8 @@ public class BE2 {
 
 			}
 
+			combo.setNullSelectionAllowed(false);
+
 		} catch (RemoteException | DataServiceFault e) {
 
 			e.printStackTrace();

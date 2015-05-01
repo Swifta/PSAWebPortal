@@ -22,6 +22,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -126,6 +127,12 @@ public class SearchUserModule {
 						strBuilder.append("&");
 					} else {
 						ComboBox combo = (ComboBox) tF;
+						if (combo.getValue() == null) {
+							Notification.show("Please at least a profile type",
+									Notification.Type.ERROR_MESSAGE);
+							combo.focus();
+							return;
+						}
 						String strProf = combo.getValue().toString();
 						strBuilder.append(combo.getCaption());
 						strBuilder.append("=");
@@ -223,6 +230,9 @@ public class SearchUserModule {
 				combo.addItem(key);
 
 			}
+
+			combo.select("ALL");
+			combo.setNullSelectionAllowed(false);
 
 		} catch (RemoteException | DataServiceFault e) {
 
