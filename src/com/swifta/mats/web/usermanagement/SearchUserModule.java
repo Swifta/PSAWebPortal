@@ -34,33 +34,24 @@ public class SearchUserModule {
 	private Map<String, String> hmProfiles;
 	private BE2 be;
 	private ReportingService rs;
+	private HashMap<String, String> hmPerms;
 
-	public SearchUserModule() {
-
-		/*
-		 * profToID = new HashMap<>(); profToID.put(0, "ALL"); profToID.put(1,
-		 * "MATS_ADMIN_USER_PROFILE"); profToID.put(3,
-		 * "MATS_FINANCIAL_CONTROLLER_USER_PROFILE"); profToID.put(4,
-		 * "MATS_CUSTOMER_CARE_USER_PROFILE"); profToID.put(6,
-		 * "MATS_SUPER_AGENT_USER_PROFILE"); profToID.put(7,
-		 * "MATS_SUB_AGENT_USER_PROFILE"); profToID.put(11,
-		 * "MATS_DEALER_USER_PROFILE"); profToID.put(15,
-		 * "MATS_SERVICE_PROVIDER_USER_PROFILE");
-		 */
+	public SearchUserModule(HashMap<String, String> hmPerms) {
+		this.hmPerms = hmPerms;
 
 	}
 
 	public void addFilters(String strParams) {
 
 		if (be == null)
-			be = new BE2();
+			be = new BE2(hmPerms);
 		be.addFilters(strParams);
 	}
 
 	public void search(String strParams) {
 
 		if (be == null)
-			be = new BE2();
+			be = new BE2(hmPerms);
 		be.search(strParams);
 	}
 
@@ -156,7 +147,7 @@ public class SearchUserModule {
 
 	public VerticalLayout getSearchResults(String strSearchParams) {
 		if (be == null)
-			be = new BE2();
+			be = new BE2(hmPerms);
 		return be.queryBackEnd(strSearchParams);
 	}
 

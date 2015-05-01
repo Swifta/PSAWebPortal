@@ -21,7 +21,7 @@ public class Initializer {
 	private TabSheet m;
 	private View crp, cum, ct, cap, cs, cd;
 	private HashMap<String, String> hmTabPermissions;
-	private Set<String> setUserPermissions;
+	public static Set<String> setUserPermissions;
 
 	TabSheet getTS() {
 
@@ -35,11 +35,38 @@ public class Initializer {
 	private void setUserPermissions() {
 		setUserPermissions = new HashSet<>();
 		for (String perm : LoginService.getUserPermissions()) {
-			setUserPermissions.add(perm);
-			System.out.println(perm);
+			setUserPermissions.add(perm.toLowerCase());
+			// System.out.println(perm);
 		}
 
-		setUserPermissions.add("/viewsettings");
+		/*
+		 * setUserPermissions.add("/manageusers"); //
+		 * setUserPermissions.add("/setupservicefeesandcommission"); //
+		 * setUserPermissions.add("/viewsetfeesandcommission");
+		 * 
+		 * setUserPermissions.add("/viewsettings");
+		 * 
+		 * setUserPermissions.add("/setdefaultaccount");
+		 * setUserPermissions.add("/passwordReset");
+		 * setUserPermissions.add("/lockUserAccount");
+		 * 
+		 * setUserPermissions.add("/activationrequest");
+		 * 
+		 * setUserPermissions.add("/unlinkaccount");
+		 * setUserPermissions.add("/unlockUserAccount"); //
+		 * setUserPermissions.add("/linkaccount");
+		 * setUserPermissions.add("/manageusers");
+		 * setUserPermissions.add("/registration");
+		 * 
+		 * setUserPermissions.add("/viewreport");
+		 * setUserPermissions.add("/urn:getfeesandcommissionreport");
+		 * setUserPermissions.add("/urn:getreportsummaryreport");
+		 * setUserPermissions.add("/urn:gettransactiondetailreport");
+		 * setUserPermissions.add("/urn:gettransactionreport");
+		 * setUserPermissions.add("/exportreport");
+		 * setUserPermissions.add("/urn:getfloatmanagementreport");
+		 * setUserPermissions.add("/urn:getministatementreport");
+		 */
 
 	}
 
@@ -49,6 +76,7 @@ public class Initializer {
 		hmTabPermissions.put("dashboard", "/viewdashboard");
 		hmTabPermissions.put("report", "/viewreport");
 		hmTabPermissions.put("manage_users", "/manageusers");
+		hmTabPermissions.put("register_users", "/registration");
 
 	}
 
@@ -75,7 +103,9 @@ public class Initializer {
 		// tf = new TextField();
 		// v.addComponent(tf);
 		um.setId("um_init");
-		if (setUserPermissions.contains(hmTabPermissions.get("manage_users")))
+		if (setUserPermissions.contains(hmTabPermissions.get("manage_users"))
+				|| setUserPermissions.contains(hmTabPermissions
+						.get("register_users")))
 			um.setData(m.getTabPosition(m.addTab(um, "User Management")));
 
 		VerticalLayout tx = new VerticalLayout();

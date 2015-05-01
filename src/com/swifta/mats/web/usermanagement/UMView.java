@@ -1,7 +1,9 @@
 package com.swifta.mats.web.usermanagement;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
+import com.swifta.mats.web.Initializer;
 import com.swifta.mats.web.Login;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -42,14 +44,33 @@ public class UMView extends VerticalLayout implements View {
 	private VerticalLayout csr;
 	private WorkSpaceManageUser wsmu;
 	public static String UM = "user_management";
+	private HashMap<String, String> hmPerms;
 
 	public UMView(TabSheet ts) {
 		this.ts = ts;
 		tab = (VerticalLayout) ts.getSelectedTab();
+		setPerms();
 		addHeader();
 		addMenu();
 		d();
 
+	}
+
+	private void setPerms() {
+		hmPerms = new HashMap<>();
+
+		hmPerms.put("set_default", "/setdefaultaccount");
+		hmPerms.put("activate", "/activationrequest");
+		hmPerms.put("reset", "/passwordReset");
+
+		hmPerms.put("unlink", "/unlinkaccount");
+		hmPerms.put("link", "/linkaccount");
+
+		hmPerms.put("unlock", "/unlockUserAccount");
+		hmPerms.put("lock", "/lockUserAccount");
+
+		hmPerms.put("man", "/manageusers");
+		hmPerms.put("register", "/registration");
 	}
 
 	@Override
@@ -116,13 +137,32 @@ public class UMView extends VerticalLayout implements View {
 			contentC.setHeightUndefined();
 			contentC.setStyleName("content_c");
 
-			sum = new SearchUserModule();
+			sum = new SearchUserModule(hmPerms);
 			mm = getManageUserMenu(false);
 			mm.setSizeUndefined();
-			cs = sum.getSearchForm("x");
-			csman.addComponent(cs);
+
+			FormLayout cTemp = null;
+
+			if (Initializer.setUserPermissions.contains(hmPerms.get("man"))) {
+				cTemp = sum.getSearchForm("x");
+				cs = cTemp;
+			} else {
+				if (aum == null) {
+					aum = new AddUserModule();
+					auf = aum.getAddUserForm();
+					caddman.addComponent(auf);
+					caddman.setSizeFull();
+					caddman.setComponentAlignment(auf, Alignment.TOP_CENTER);
+
+					FormLayout f = new FormLayout();
+					f.addComponent(caddman);
+					cTemp = f;
+				}
+
+			}
+			csman.addComponent(cTemp);
 			csman.setSizeFull();
-			csman.setComponentAlignment(cs, Alignment.TOP_CENTER);
+			csman.setComponentAlignment(cTemp, Alignment.TOP_CENTER);
 
 			contentC.addComponent(csman);
 
@@ -148,11 +188,29 @@ public class UMView extends VerticalLayout implements View {
 			HorizontalLayout cManageAndAddTab = new HorizontalLayout();
 
 			final BtnTabLike btnManUser = new BtnTabLike("Manage", "man");
-			btnManUser.setStyleName("btn_tab_like btn_tab_like_active");
+			// btnManUser.setStyleName("btn_tab_like btn_tab_like_active");
 
 			final BtnTabLike btnAddUser = new BtnTabLike("Add New", "add");
-			cManageAndAddTab.addComponent(btnManUser);
-			cManageAndAddTab.addComponent(btnAddUser);
+			// cManageAndAddTab.addComponent(btnManUser);
+			// cManageAndAddTab.addComponent(btnAddUser);
+
+			BtnTabLike btnTemp = null;
+
+			if (Initializer.setUserPermissions.contains(hmPerms.get("man"))) {
+				cManageAndAddTab.addComponent(btnManUser);
+				btnTemp = btnManUser;
+			}
+			if (Initializer.setUserPermissions
+					.contains(hmPerms.get("register"))) {
+				cManageAndAddTab.addComponent(btnAddUser);
+			}
+
+			if (btnTemp == null)
+				btnTemp = btnAddUser;
+
+			btnTemp.setEnabled(false);
+			btnTemp.setStyleName("btn_tab_like btn_tab_like_active");
+
 			btnManUser.setEnabled(false);
 			cManageUserMenu.addComponent(cManageAndAddTab);
 

@@ -14,6 +14,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Locale;
@@ -25,6 +26,7 @@ import java.util.TreeSet;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.swifta.mats.web.Initializer;
 import com.swifta.mats.web.MatsWebPortalUI;
 import com.swifta.mats.web.usermanagement.PagedTableCustom;
 import com.vaadin.addon.tableexport.ExcelExport;
@@ -123,6 +125,24 @@ public class Reportform extends VerticalLayout {
 	private boolean isFilterByID = false;
 
 	private TextField tFTID;
+	private HashMap<String, String> hmPerms;
+
+	Reportform() {
+		setPerms();
+	}
+
+	private void setPerms() {
+		hmPerms = new HashMap<>();
+
+		hmPerms.put("fees_commission", "/urn:getfeesandcommissionreport");
+		hmPerms.put("summary", "/urn:getreportsummaryreport");
+		hmPerms.put("trans_details", "/urn:gettransactiondetailreport");
+		hmPerms.put("trans", "/urn:gettransactionreport");
+		hmPerms.put("export", "/exportreport");
+		hmPerms.put("float_man", "/urn:getfloatmanagementreport");
+		hmPerms.put("view", "/viewreport");
+		hmPerms.put("mini", "/urn:getministatementreport");
+	}
 
 	private class ValidateRange implements Validator {
 		private static final long serialVersionUID = -5454180295673067279L;
@@ -172,11 +192,19 @@ public class Reportform extends VerticalLayout {
 		Button export = new Button("Export Report");
 		export.setStyleName("btn_link");
 
-		reportType.addItem("Transaction Report");
-		reportType.addItem("Transaction Summary Report");
-		reportType.addItem("Fees / Commission Report");
-		reportType.addItem("Fees / Commission Summary Report");
-		reportType.addItem("Float Management Report");
+		if (Initializer.setUserPermissions.contains(hmPerms.get("trans")))
+			reportType.addItem("Transaction Report");
+
+		if (Initializer.setUserPermissions.contains(hmPerms.get("summary")))
+			reportType.addItem("Transaction Summary Report");
+		if (Initializer.setUserPermissions.contains(hmPerms
+				.get("fees_commission")))
+			reportType.addItem("Fees / Commission Report");
+		if (Initializer.setUserPermissions.contains(hmPerms
+				.get("fees_commission")))
+			reportType.addItem("Fees / Commission Summary Report");
+		if (Initializer.setUserPermissions.contains(hmPerms.get("float_man")))
+			reportType.addItem("Float Management Report");
 
 		reportType.setInputPrompt("Select Report Type");
 
@@ -498,9 +526,10 @@ public class Reportform extends VerticalLayout {
 		addComponent(pnUserSearchResults);
 		addComponent(table);
 		addComponent(pnUserSearchResults2);
-
-		addComponent(export);
-		setComponentAlignment(export, Alignment.BOTTOM_RIGHT);
+		if (Initializer.setUserPermissions.contains(hmPerms.get("export"))) {
+			addComponent(export);
+			setComponentAlignment(export, Alignment.BOTTOM_RIGHT);
+		}
 
 	}
 

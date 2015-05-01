@@ -1,14 +1,20 @@
 package com.swifta.mats.web.usermanagement;
 
+import java.util.HashMap;
+
+import com.swifta.mats.web.Initializer;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 
 public class ManageUserModule {
 
+	private HashMap<String, String> hmPerms;
+
 	public ManageUserModule() {
+
 	}
 
-	public VerticalLayout getManageUserMenu(boolean boolAddHeaderStatus,
+	private VerticalLayout getManageUserMenu(boolean boolAddHeaderStatus,
 			boolean boolEditStatus, boolean hasOp) {
 
 		VerticalLayout cManageUserMenu = new VerticalLayout();
@@ -21,15 +27,22 @@ public class ManageUserModule {
 		btnManUser.setStyleName("btn_tab_like btn_tab_like_active");
 
 		BtnTabLike btnAddUser = new BtnTabLike("Add New", null);
-		cManageAndAddTab.addComponent(btnManUser);
-		cManageAndAddTab.addComponent(btnAddUser);
 
-		// final ArrayList<BtnTabLike> arrLTabBtns = new
-		// ArrayList<BtnTabLike>();
-		// arrLTabBtns.add(btnAddUser);
-		// arrLTabBtns.add(btnManUser);
+		BtnTabLike btnTemp = null;
 
-		btnManUser.setEnabled(false);
+		if (Initializer.setUserPermissions.contains(hmPerms.get("man"))) {
+			cManageAndAddTab.addComponent(btnManUser);
+			btnTemp = btnManUser;
+		}
+		if (Initializer.setUserPermissions.contains(hmPerms.get("register"))) {
+			cManageAndAddTab.addComponent(btnAddUser);
+		}
+
+		if (btnTemp == null)
+			btnTemp = btnAddUser;
+
+		btnTemp.setEnabled(false);
+		btnTemp.setStyleName("btn_tab_like btn_tab_like_active");
 
 		// ArrayList<HorizontalLayout> arrLSubTabs = new
 		// ArrayList<HorizontalLayout>();
@@ -41,27 +54,6 @@ public class ManageUserModule {
 		// arrLSubTabs.add(cAddUserSubMenu);
 
 		cManageUserMenu.addComponent(cManageAndAddTab);
-		// cManageUserMenu.addComponent(cManUserSubMenu);
-		// cManageUserMenu.addComponent(cAddUserSubMenu);
-
-		// String strManBtnPref = "man";
-		// String strAddUserBtnPref = "add";
-		// String strSessionVarAddUser =
-		// WorkSpaceManageUser.SESSION_VAR_WORK_AREA_ADD_USER;
-		// String strSessionVarManageUser =
-		// WorkSpaceManageUser.SESSION_VAR_WORK_AREA_MANAGE_USER;
-		// String strSessionSub = ManageUserModule.SESSION_VAR_UMANAGE_SEARCH;
-
-		// cManUserSubMenu = getAddUserSubMenu(btnManUser, strManBtnPref,
-		// arrLTabBtns, cManUserSubMenu, arrLSubTabs, hasOp,
-		// boolEditStatus, null, strSessionVarManageUser, strSessionSub);
-		// cAddUserSubMenu = getAddUserSubMenu(btnAddUser, strAddUserBtnPref,
-		// arrLTabBtns, cAddUserSubMenu, arrLSubTabs, hasOp,
-		// boolEditStatus, null, strSessionVarAddUser, null);
-
-		// cManUserSubMenu.setStyleName("c_u_sub_menu_visible");
-		// cManUserSubMenu.setSizeUndefined();
-		// cAddUserSubMenu.setSizeUndefined();
 
 		return cManageUserMenu;
 

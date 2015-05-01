@@ -10,6 +10,7 @@ import java.util.Set;
 
 import org.apache.axis2.AxisFault;
 
+import com.swifta.mats.web.Initializer;
 import com.swifta.mats.web.usermanagement.BtnTabLike;
 import com.swifta.mats.web.usermanagement.NotifCustom;
 import com.swifta.mats.web.utils.ReportingService;
@@ -71,28 +72,29 @@ public class ProfilesAndPermissionsModule {
 	private Button back;
 
 	private HashMap<String, String> hmProfPermPermissions;
+	private BtnTabLike btnProfiles;
+	private BtnTabLike btnPermissions;
 
 	// private HorizontalLayout cjust;
 
-	ProfilesAndPermissionsModule(Button back) {
+	ProfilesAndPermissionsModule(Button back,
+			HashMap<String, String> hmProfPermPermissions) {
+
+		this.hmProfPermPermissions = hmProfPermPermissions;
 		this.back = back;
-
 		addMenu();
+		HorizontalLayout cTemp = null;
+		if (!btnProfiles.isEnabled()) {
+			cTemp = getProfileC();
+			cProfile = cTemp;
+		} else {
+			cTemp = getPermissionsC();
+			cPerm = cTemp;
+		}
 
-		cProfile = getProfileC();
-		cStage.addComponent(cProfile);
+		cStage.addComponent(cTemp);
 		cMain.addComponent(cStage);
 		cMain.setComponentAlignment(cStage, Alignment.TOP_CENTER);
-
-	}
-
-	private void setProfileAndPermissionsPermissions() {
-
-		hmProfPermPermissions = new HashMap<>();
-		hmProfPermPermissions.put("edit_profile", "/editProfile");
-		hmProfPermPermissions.put("add_profile", "");
-		hmProfPermPermissions.put("add_threshold", "");
-		hmProfPermPermissions.put("remove_profile", "/removeProfile");
 
 	}
 
@@ -104,14 +106,35 @@ public class ProfilesAndPermissionsModule {
 
 		HorizontalLayout cMainMenu = new HorizontalLayout();
 
-		final BtnTabLike btnProfiles = new BtnTabLike("Profiles", null);
-		btnProfiles.setStyleName("btn_tab_like btn_tab_like_active");
-		btnProfiles.setEnabled(false);
+		BtnTabLike btnTemp = null;
 
-		final BtnTabLike btnPermissions = new BtnTabLike("Permissions", null);
+		btnProfiles = new BtnTabLike("Profiles", null);
+		btnPermissions = new BtnTabLike("Permissions", null);
+		if (Initializer.setUserPermissions.contains(hmProfPermPermissions
+				.get("edit_profile"))
 
-		cMainMenu.addComponent(btnProfiles);
-		cMainMenu.addComponent(btnPermissions);
+				|| Initializer.setUserPermissions
+						.contains(hmProfPermPermissions.get("add_profile"))
+				|| Initializer.setUserPermissions
+						.contains(hmProfPermPermissions.get("remove_profile"))
+				|| Initializer.setUserPermissions
+						.contains(hmProfPermPermissions.get("add_threshold"))) {
+			cMainMenu.addComponent(btnProfiles);
+			btnTemp = btnProfiles;
+		}
+
+		if (Initializer.setUserPermissions.contains(hmProfPermPermissions
+				.get("remove_permissions"))
+				|| Initializer.setUserPermissions
+						.contains(hmProfPermPermissions.get("set_permissions")))
+			cMainMenu.addComponent(btnPermissions);
+
+		if (btnTemp == null)
+			btnTemp = btnPermissions;
+
+		btnTemp.setStyleName("btn_tab_like btn_tab_like_active");
+		btnTemp.setEnabled(false);
+
 		cMenu.addComponent(cMainMenu);
 
 		btnProfiles.addClickListener(new Button.ClickListener() {
@@ -130,6 +153,8 @@ public class ProfilesAndPermissionsModule {
 				btnPermissions.setStyleName("btn_tab_like");
 
 				if (!isfromsub) {
+					if (cProfile == null)
+						cProfile = getProfileC();
 					p = (HorizontalLayout) cStage.getComponent(0);
 					cStage.replaceComponent(p, cProfile);
 				} else {
@@ -247,7 +272,9 @@ public class ProfilesAndPermissionsModule {
 		cProfNameAndAddBtn.addComponent(cProfName);
 
 		// cProf.addComponent(cProfName);
-		cPermsActions.addComponent(btnEdit);
+		if (Initializer.setUserPermissions.contains(hmProfPermPermissions
+				.get("set_permissions")))
+			cPermsActions.addComponent(btnEdit);
 		cPermsActions.addComponent(btnCancel);
 
 		// cProfActions.addComponent(btnAdd);
@@ -258,9 +285,11 @@ public class ProfilesAndPermissionsModule {
 		cAllProf.setComponentAlignment(cProfNameAndAddBtn, Alignment.TOP_CENTER);
 		// cAllProf.addComponent(cPermsActions);
 		// cAllProf.setComponentAlignment(cProfActions, Alignment.TOP_CENTER);
-
-		cAllProf.addComponent(btnAdd);
-		cAllProf.setComponentAlignment(btnAdd, Alignment.TOP_CENTER);
+		if (Initializer.setUserPermissions.contains(hmProfPermPermissions
+				.get("set_permissions"))) {
+			cAllProf.addComponent(btnAdd);
+			cAllProf.setComponentAlignment(btnAdd, Alignment.TOP_CENTER);
+		}
 
 		cLBody.addComponent(cAllProf);
 		cLBody.setComponentAlignment(cAllProf, Alignment.TOP_CENTER);
@@ -573,6 +602,19 @@ public class ProfilesAndPermissionsModule {
 
 				tcsInactiveAndActive.removeAllItems();
 
+				System.out
+						.println("MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM");
+				System.out
+						.println("MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM");
+				System.out
+						.println("MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM");
+				System.out
+						.println("MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM");
+				System.out
+						.println("MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM");
+				System.out
+						.println("MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM");
+
 				for (Entry<String, String> e : hmActivePerms.entrySet()) {
 					String id = e.getKey();
 					tcsInactiveAndActive.addItem(id);
@@ -591,6 +633,20 @@ public class ProfilesAndPermissionsModule {
 					System.out.println(id + "------..................-------"
 							+ e.getValue());
 				}
+
+				System.out
+						.println("MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM");
+				System.out
+						.println("MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM");
+				System.out
+						.println("MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM");
+				System.out
+						.println("MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM");
+				System.out
+						.println("MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM");
+				System.out
+						.println("MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM");
+
 				cPermsList.replaceComponent(list, tcsInactiveAndActive);
 
 			}
@@ -689,14 +745,23 @@ public class ProfilesAndPermissionsModule {
 		btnRemove.setDescription("Remove current profile");
 
 		cProfNameAndAddBtn.addComponent(cProfName);
-		cProfNameAndAddBtn.addComponent(btnAdd);
+		// cProf.addComponent(cProfName);
+		if (Initializer.setUserPermissions.contains(hmProfPermPermissions
+				.get("add_profile")))
+			cProfNameAndAddBtn.addComponent(btnAdd);
 
 		// cProf.addComponent(cProfName);
-		cProfActions.addComponent(btnEdit);
+		if (Initializer.setUserPermissions.contains(hmProfPermPermissions
+				.get("edit_profile")))
+			cProfActions.addComponent(btnEdit);
 		cProfActions.addComponent(btnCancel);
 		// cProfActions.addComponent(btnAdd);
-		cProfActions.addComponent(btnThreshold);
-		cProfActions.addComponent(btnRemove);
+		if (Initializer.setUserPermissions.contains(hmProfPermPermissions
+				.get("add_threshold")))
+			cProfActions.addComponent(btnThreshold);
+		if (Initializer.setUserPermissions.contains(hmProfPermPermissions
+				.get("remove_profile")))
+			cProfActions.addComponent(btnRemove);
 
 		btnCancel.setVisible(false);
 

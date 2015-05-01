@@ -18,6 +18,7 @@ import java.util.Set;
 
 import org.apache.axis2.AxisFault;
 
+import com.swifta.mats.web.Initializer;
 import com.swifta.mats.web.MatsWebPortalUI;
 import com.swifta.mats.web.utils.ReportingService;
 import com.swifta.mats.web.utils.UserManagementService;
@@ -91,7 +92,10 @@ public class BE2 {
 	private ReportingService rs;
 	public Window upop;
 
-	BE2() {
+	private HashMap<String, String> hmPerms;
+
+	BE2(HashMap<String, String> hmPerms) {
+		this.hmPerms = hmPerms;
 		icDelete = new ThemeResource("img/ic_delete_small.png");
 		isPopupShowing = false;
 
@@ -1278,14 +1282,23 @@ public class BE2 {
 		btnSetParent.setDescription("Set Parent Account");
 		btnSetDefaultAcc.setStyleName("btn_link");
 		btnSetParent.setStyleName("btn_link");
+
+		actionsC.addComponent(btnDetails);
+
 		actionsC.addComponent(btnActivate);
 		// actionsC.addComponent(btnSetParent);
-		actionsC.addComponent(btnSetDefaultAcc);
+
+		if (Initializer.setUserPermissions.contains(hmPerms.get("set_default")))
+			actionsC.addComponent(btnSetDefaultAcc);
 		// actionsC.addComponent(btnLink);
+
+		if (Initializer.setUserPermissions.contains(hmPerms.get("lock"))) {
+			btnLock.setVisible(true);
+		}
 		actionsC.addComponent(btnLock);
 		if (MatsWebPortalUI.conf.env.equals("testing"))
 			actionsC.addComponent(btnLock);
-		actionsC.addComponent(btnDetails);
+
 		actionsC.addComponent(btnEdit);
 		actionsC.addComponent(btnDelete);
 		btnEdit.setEnabled(false);
@@ -1301,6 +1314,23 @@ public class BE2 {
 			btnActivate.setCaption("R");
 			btnActivate.setStyleName("btn_link");
 			btnActivate.setDescription("Reset PIN");
+
+			btnLock.setVisible(true);
+
+			if (Initializer.setUserPermissions.contains(hmPerms.get("unlock"))
+					|| Initializer.setUserPermissions.contains(hmPerms
+							.get("lock"))) {
+				btnLock.setVisible(true);
+			} else {
+				btnLock.setVisible(false);
+			}
+
+			if (Initializer.setUserPermissions.contains(hmPerms.get("reset"))) {
+				btnActivate.setVisible(true);
+			} else {
+				btnActivate.setVisible(false);
+			}
+
 		}
 
 		if (status.equals("ACTIVE")) {
@@ -1309,10 +1339,25 @@ public class BE2 {
 			btnActivate.setCaption("R");
 			btnActivate.setStyleName("btn_link");
 			btnActivate.setDescription("Reset PIN");
+
+			btnActivate.setVisible(false);
+
+			if (Initializer.setUserPermissions.contains(hmPerms.get("reset"))) {
+				btnActivate.setVisible(true);
+			} else {
+				btnActivate.setVisible(false);
+			}
+
 		}
 
 		if (status.equals("REGISTERED")) {
 			btnLock.setVisible(false);
+			if (Initializer.setUserPermissions
+					.contains(hmPerms.get("activate"))) {
+				btnActivate.setVisible(true);
+			} else {
+				btnActivate.setVisible(false);
+			}
 		}
 
 		btnLock.addClickListener(new Button.ClickListener() {
@@ -1855,7 +1900,7 @@ public class BE2 {
 
 		UserDetailsModule udm = new UserDetailsModule();
 		VerticalLayout cUD = udm.getUserDetailsContainer(arrID[3],
-				"view_details", popup, rid, container);
+				"view_details", popup, rid, container, hmPerms);
 
 		cDeletePrompt.addComponent(cUD);
 		cDeletePrompt.setComponentAlignment(cUD, Alignment.MIDDLE_CENTER);

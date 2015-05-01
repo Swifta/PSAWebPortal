@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import com.swifta.mats.web.Initializer;
 import com.swifta.mats.web.MatsWebPortalUI;
 import com.swifta.mats.web.utils.UserManagementService;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub;
@@ -141,6 +142,8 @@ public class UserDetailsModule {
 	private Object xrid;
 	private TextField tFU;
 
+	private HashMap<String, String> hmPerms;
+
 	private Window pop = new Window("Comfirm profile removal");
 
 	public UserDetailsModule() {
@@ -246,9 +249,10 @@ public class UserDetailsModule {
 
 	public VerticalLayout getUserDetailsContainer(String strUID,
 			String strAction, Window pop, Object xrid,
-			IndexedContainer xcontainer) {
+			IndexedContainer xcontainer, HashMap<String, String> hmPerms) {
 		this.xrid = xrid;
 		this.xcontainer = xcontainer;
+		this.hmPerms = hmPerms;
 		curUser = strUID;
 		cpop = pop;
 		cUDetails = new VerticalLayout();
@@ -324,9 +328,14 @@ public class UserDetailsModule {
 		final BtnTabLike btnLog = new BtnTabLike("Log", null);
 		cManageAndAddTab.addComponent(btnPersonal);
 		cManageAndAddTab.addComponent(btnAccount);
+
 		if (xcontainer.getItem(xrid).getItemProperty("Profile Type").getValue()
-				.toString().equals("MATS_DEALER_USER_PROFILE"))
-			cManageAndAddTab.addComponent(btnLinks);
+				.toString().equals("MATS_DEALER_USER_PROFILE")) {
+			if (Initializer.setUserPermissions.contains(hmPerms.get("unlink"))
+					|| Initializer.setUserPermissions.contains(hmPerms
+							.get("link")))
+				cManageAndAddTab.addComponent(btnLinks);
+		}
 
 		// cManageAndAddTab.addComponent(btnProfile);
 
@@ -2273,8 +2282,10 @@ public class UserDetailsModule {
 		btnLink.setIcon(FontAwesome.LINK);
 		btnLink.setDescription("Link new account.");
 
-		cLBody.addComponent(btnLink);
-		cLBody.setComponentAlignment(btnLink, Alignment.TOP_LEFT);
+		if (Initializer.setUserPermissions.contains(hmPerms.get("link"))) {
+			cLBody.addComponent(btnLink);
+			cLBody.setComponentAlignment(btnLink, Alignment.TOP_LEFT);
+		}
 		btnLink.addClickListener(new LinkClickHandler());
 
 		cPlaceholder.setVisible(false);
@@ -2361,6 +2372,11 @@ public class UserDetailsModule {
 				btnLink.addClickListener(new UNLinkClickHandler());
 				btnLink.setId(un);
 				btnLink.setData(rid);
+				btnLink.setEnabled(false);
+
+				if (Initializer.setUserPermissions.contains(hmPerms
+						.get("unlink")))
+					btnLink.setEnabled(true);
 
 				pSn.setValue(x);
 				pUn.setValue(un);
@@ -2650,6 +2666,11 @@ public class UserDetailsModule {
 				btnLink.addClickListener(new UNLinkClickHandler());
 				btnLink.setId(un);
 				btnLink.setData(rid);
+				btnLink.setEnabled(false);
+
+				if (Initializer.setUserPermissions.contains(hmPerms
+						.get("unlink")))
+					btnLink.setEnabled(true);
 
 				pSn.setValue(x);
 				pUn.setValue(un);

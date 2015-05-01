@@ -1,7 +1,9 @@
 package com.swifta.mats.web.settings;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
+import com.swifta.mats.web.Initializer;
 import com.vaadin.server.Page;
 import com.vaadin.server.Page.UriFragmentChangedEvent;
 import com.vaadin.ui.Alignment;
@@ -18,7 +20,11 @@ public class WorkSpaceManageFeesAndComm {
 	private VerticalLayout cC;
 	public static ArrayList<String> prevSearchFrag = new ArrayList<>();
 
-	public WorkSpaceManageFeesAndComm() {
+	private HashMap<String, String> hmPerms;
+
+	public WorkSpaceManageFeesAndComm(HashMap<String, String> hmPerms) {
+		this.hmPerms = hmPerms;
+
 		setCoreUI();
 		UI.getCurrent()
 				.getPage()
@@ -48,12 +54,19 @@ public class WorkSpaceManageFeesAndComm {
 		cContent.setStyleName("c_content");
 
 		apm = new FeesAndCommModule();
-		HorizontalLayout pf = apm.getFeesContainer(FeesAndCommModule.FEES);
+		HorizontalLayout pf = null;
+		if (Initializer.setUserPermissions.contains(hmPerms
+				.get("man_set_fees_commission"))) {
+			pf = apm.getFeesContainer(FeesAndCommModule.FEES);
+		} else {
+			pf = apm.getExistingFeesContainer(FeesAndCommModule.EXISTING);
+		}
+
 		cContent.addComponent(pf);
 		cContent.setComponentAlignment(pf, Alignment.TOP_LEFT);
 
 		ManageFeesAndCommModule mpm = new ManageFeesAndCommModule();
-		cMenu = mpm.getMenu(false, false, false);
+		cMenu = mpm.getMenu(false, false, false, hmPerms);
 		cC.addComponent(cMenu);
 		cMenu.setSizeUndefined();
 		cC.setComponentAlignment(cMenu, Alignment.TOP_LEFT);

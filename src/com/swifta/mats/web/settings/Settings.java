@@ -6,10 +6,12 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 
 import au.com.bytecode.opencsv.CSVReader;
 
+import com.swifta.mats.web.Initializer;
 import com.swifta.mats.web.usermanagement.BtnActions;
 import com.swifta.mats.web.usermanagement.PagedTableCustom;
 import com.vaadin.data.Container.Filter;
@@ -48,6 +50,37 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 public class Settings extends VerticalLayout {
+	private HashMap<String, String> hmProfPermPermissions;
+	private HashMap<String, String> hmFeesCommPermissions;
+
+	Settings() {
+		setProfileAndPermissionsPermissions();
+		setFeesAndCommPermissions();
+	}
+
+	private void setProfileAndPermissionsPermissions() {
+
+		hmProfPermPermissions = new HashMap<>();
+		hmProfPermPermissions.put("edit_profile", "/editprofile");
+		hmProfPermPermissions.put("add_profile", "/addprofile");
+		hmProfPermPermissions.put("add_threshold", "/addprofilethreshold");
+		hmProfPermPermissions.put("remove_profile", "/removeprofile");
+		hmProfPermPermissions.put("remove_permissions",
+				"/removeprofilepermission");
+		hmProfPermPermissions.put("set_permissions", "/setprofilepermission");
+
+	}
+
+	private void setFeesAndCommPermissions() {
+
+		hmFeesCommPermissions = new HashMap<>();
+
+		hmFeesCommPermissions.put("man_set_fees_commission",
+				"/setupservicefeesandcommission");
+		hmFeesCommPermissions.put("man_existing_fees_commission",
+				"/viewsetfeesandcommission");
+
+	}
 
 	HorizontalLayout laying = new HorizontalLayout();
 	int ret;
@@ -149,9 +182,28 @@ public class Settings extends VerticalLayout {
 
 		final HorizontalLayout cIcon = new HorizontalLayout();
 		cIcon.addComponent(het1);
-		cIcon.addComponent(het2);
+		if (Initializer.setUserPermissions.contains(hmProfPermPermissions
+				.get("edit_profile"))
+				|| Initializer.setUserPermissions
+						.contains(hmProfPermPermissions.get("add_profile"))
+				|| Initializer.setUserPermissions
+						.contains(hmProfPermPermissions.get("remove_profile"))
+				|| Initializer.setUserPermissions
+						.contains(hmProfPermPermissions.get("add_threshold"))
+				|| Initializer.setUserPermissions
+						.contains(hmProfPermPermissions.get("set_permissions"))
+				|| Initializer.setUserPermissions
+						.contains(hmProfPermPermissions
+								.get("remove_permissions")))
+			cIcon.addComponent(het2);
 		cIcon.addComponent(het3);
-		cIcon.addComponent(het4);
+
+		if (Initializer.setUserPermissions.contains(hmFeesCommPermissions
+				.get("man_set_fees_commission"))
+				|| Initializer.setUserPermissions
+						.contains(hmFeesCommPermissions
+								.get("man_existing_fees_commission")))
+			cIcon.addComponent(het4);
 		cIcon.addComponent(het5);
 		cIcon.addComponent(het6);
 
@@ -166,7 +218,8 @@ public class Settings extends VerticalLayout {
 			public void layoutClick(LayoutClickEvent event) {
 
 				if (ppm == null)
-					ppm = new ProfilesAndPermissionsModule(back);
+					ppm = new ProfilesAndPermissionsModule(back,
+							hmProfPermPermissions);
 				VerticalLayout cppm = ppm.getMainContainer();
 
 				laying.removeAllComponents();
@@ -185,7 +238,8 @@ public class Settings extends VerticalLayout {
 			@Override
 			public void layoutClick(LayoutClickEvent event) {
 				if (wmfac == null)
-					wmfac = new WorkSpaceManageFeesAndComm();
+					wmfac = new WorkSpaceManageFeesAndComm(
+							hmFeesCommPermissions);
 
 				VerticalLayout cmfac = wmfac.getWorkSpaceAccountProfile(back);
 				laying.removeAllComponents();
