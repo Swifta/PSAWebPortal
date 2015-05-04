@@ -5,19 +5,16 @@ import java.util.Map;
 import org.apache.axis2.AxisFault;
 
 import com.swifta.mats.web.usermanagement.NotifCustom;
-import com.swifta.mats.web.usermanagement.UserDetailsBackEnd;
 import com.swifta.mats.web.utils.LoginService;
 import com.swifta.mats.web.utils.UserManagementService;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.Validator;
 import com.vaadin.server.FontAwesome;
-import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Embedded;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -38,31 +35,19 @@ public class AccountProfileModule {
 	public HorizontalLayout getProfileContainer() {
 
 		Map<String, String> hm = getUD();
-
 		HorizontalLayout c = new HorizontalLayout();
-		VerticalLayout cC = new VerticalLayout();
-		// VerticalLayout addUserHeader = new VerticalLayout();
+		HorizontalLayout cC = new HorizontalLayout();
 
 		Label lbAddUser = new Label("My Profile");
 		lbAddUser.setStyleName("label_user_profile_head");
 		lbAddUser.setSizeUndefined();
 
-		Embedded emb = new Embedded(null, new ThemeResource(
-				"img/add_user_small.png"));
-		emb.setDescription("Add new User.");
-		emb.setStyleName("add_user_img");
-
-		// addUserHeader.addComponent(lbAddUser);
-		// cC.addComponent(lbAddUser);
-
 		lbAddUser = new Label("Account Details");
 		lbAddUser.setStyleName("label_user_profile");
 		lbAddUser.setSizeUndefined();
-		// lbAddUser.setWidth("100%");
 		cC.addComponent(lbAddUser);
 
 		FormLayout cAcc = new FormLayout();
-
 		VerticalLayout cEditPass = new VerticalLayout();
 		cEditPass.setStyleName("c_edit_password");
 		Label lbEditPass = new Label("Edit Password");
@@ -85,65 +70,6 @@ public class AccountProfileModule {
 		cEditPassForm.addComponent(tFNewRePass);
 
 		tFCurPass.setImmediate(false);
-
-		tFNewPass.addValidator(new Validator() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void validate(Object value) throws InvalidValueException {
-
-				tFNewRePass.setComponentError(null);
-				tFNewPass.setComponentError(null);
-
-				if (value != null && !value.toString().trim().isEmpty()) {
-					if (value.toString().length() <= 4) {
-						tFNewPass.setComponentError(null);
-						tFNewRePass.setComponentError(null);
-						tFNewPass.focus();
-						tFNewRePass.focus();
-						throw new InvalidValueException(
-								"Password is too short.");
-					}
-				}
-
-			}
-
-		});
-
-		tFNewRePass.addValidator(new Validator() {
-
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void validate(Object value) throws InvalidValueException {
-
-				tFNewRePass.setComponentError(null);
-				tFNewPass.setComponentError(null);
-
-				if (value == null || value.toString().trim().isEmpty())
-					return;
-
-				if (tFNewPass.getValue() == null)
-					tFNewPass.setValue("");
-
-				if (tFNewRePass.getValue().length() != tFNewPass.getValue()
-						.length()) {
-					tFNewRePass.focus();
-					throw new InvalidValueException(
-							"New passwords do not match.");
-				}
-
-				if (!tFNewRePass.getValue().equals(tFNewPass.getValue())) {
-					tFNewRePass.focus();
-					throw new InvalidValueException(
-							"New passwords do not match.");
-				}
-			}
-
-		});
 
 		HorizontalLayout cBtns = new HorizontalLayout();
 		cBtns.setStyleName("c_edit_pass_btns");
@@ -204,15 +130,134 @@ public class AccountProfileModule {
 		cAcc.addComponent(cModify);
 		cC.addComponent(cAcc);
 
-		cC.addComponent(cPlaceHolder);
+		VerticalLayout cWrapper = new VerticalLayout();
+		cWrapper.setStyleName("my_profile_spacing");
+		cWrapper.addComponent(lbAddUser);
+		cWrapper.addComponent(cAcc);
+		cWrapper.addComponent(cPlaceHolder);
+		cC.addComponent(cWrapper);
+
+		// cC.addComponent(cPlaceHolder);
 		cPlaceHolder.addComponent(cEditPass);
 
 		lbAddUser = new Label("Email & MSISDN");
 		lbAddUser.setStyleName("label_user_profile");
-
 		cC.addComponent(lbAddUser);
 
-		cC.addComponent(cFormLow);
+		cWrapper.addComponent(lbAddUser);
+		cWrapper.addComponent(cFormLow);
+
+		// cC.addComponent(cFormLow);
+
+		lbAddUser = new Label("Basic Details");
+		lbAddUser.setStyleName("label_user_profile");
+
+		cC.addComponent(lbAddUser);
+		cWrapper = new VerticalLayout();
+		cWrapper.setStyleName("my_profile_spacing");
+		cWrapper.addComponent(lbAddUser);
+
+		FormLayout cBasic = new FormLayout();
+		cWrapper.addComponent(cBasic);
+		cC.addComponent(cWrapper);
+
+		addDatum("Profile", hm.get("Profile Type"), cBasic);
+		addDatum("Account Status", hm.get("Status"), cBasic);
+		addDatum("First Name", hm.get("First Name"), cBasic);
+		addDatum("Last Name", hm.get("Last Name"), cBasic);
+		// addDatum("Middle Name", hm.get("Middle Name"), cBasic);
+		addDatum("Gender", hm.get("Gender"), cBasic);
+		addDatum("Occupation", hm.get("Occupation"), cBasic);
+		addDatum("Date of Birth", hm.get("Date of Birth"), cBasic);
+		addDatum("Country", hm.get("Country"), cBasic);
+		addDatum("State", hm.get("State"), cBasic);
+		addDatum("Local Government", hm.get("Local Government"), cBasic);
+
+		addDatum("ID Type", hm.get("ID Type"), cBasic);
+		addDatum("ID No.", hm.get("ID No."), cBasic);
+		// addDatum("Issuer", hm.get("Issuer"), cBasic);
+		// addDatum("Issue Date", hm.get("Issue Date"), cBasic);
+		// addDatum("Expiry Date", hm.get("Expiry Date"), cBasic);
+
+		cWrapper = new VerticalLayout();
+		cWrapper.setStyleName("my_profile_spacing");
+		lbAddUser = new Label("Contact & Address Details");
+		lbAddUser.setStyleName("label_user_profile");
+		cC.addComponent(lbAddUser);
+
+		FormLayout cContact = new FormLayout();
+		cWrapper.addComponent(lbAddUser);
+		cWrapper.addComponent(cContact);
+		cC.addComponent(cWrapper);
+
+		// cContact.setStyleName("frm_user_prof");
+		addDatum("Street", hm.get("Street"), cContact);
+		addDatum("Mobile Phone No.", hm.get("P-Mobile Phone No."), cContact);
+		addDatum("Alt. Phone No.", hm.get("P-Alt. Phone No."), cContact);
+		addDatum("Email Address", hm.get("Email"), cContact);
+
+		// addDatum("Mobile Phone No.", hm.get("S-Mobile Phone No."), cContact);
+		// addDatum("Alt. Phone No.", hm.get("S-Alt. Phone No."), cContact);
+		// addDatum("Email Address", hm.get("Email"), cContact);
+
+		tFNewPass.addValidator(new Validator() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void validate(Object value) throws InvalidValueException {
+
+				tFNewRePass.setComponentError(null);
+				tFNewPass.setComponentError(null);
+
+				if (value != null && !value.toString().trim().isEmpty()) {
+					if (value.toString().length() <= 4) {
+						tFNewPass.setComponentError(null);
+						tFNewRePass.setComponentError(null);
+						tFNewPass.focus();
+						tFNewRePass.focus();
+						throw new InvalidValueException(
+								"Password is too short.");
+					}
+				}
+
+			}
+
+		});
+
+		tFNewRePass.addValidator(new Validator() {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void validate(Object value) throws InvalidValueException {
+
+				tFNewRePass.setComponentError(null);
+				tFNewPass.setComponentError(null);
+
+				if (value == null || value.toString().trim().isEmpty())
+					return;
+
+				if (tFNewPass.getValue() == null)
+					tFNewPass.setValue("");
+
+				if (tFNewRePass.getValue().length() != tFNewPass.getValue()
+						.length()) {
+					tFNewRePass.focus();
+					throw new InvalidValueException(
+							"New passwords do not match.");
+				}
+
+				if (!tFNewRePass.getValue().equals(tFNewPass.getValue())) {
+					tFNewRePass.focus();
+					throw new InvalidValueException(
+							"New passwords do not match.");
+				}
+			}
+
+		});
 
 		tFCurPass.addValueChangeListener(new ValueChangeListener() {
 
@@ -389,47 +434,6 @@ public class AccountProfileModule {
 			}
 		});
 
-		lbAddUser = new Label("Basic Details");
-		lbAddUser.setStyleName("label_user_profile");
-
-		cC.addComponent(lbAddUser);
-		FormLayout cBasic = new FormLayout();
-		cC.addComponent(cBasic);
-
-		addDatum("Profile", hm.get("Profile Type"), cBasic);
-		addDatum("Account Status", hm.get("Status"), cBasic);
-		addDatum("First Name", hm.get("First Name"), cBasic);
-		addDatum("Last Name", hm.get("Last Name"), cBasic);
-		addDatum("Middle Name", hm.get("Middle Name"), cBasic);
-		addDatum("Gender", hm.get("Gender"), cBasic);
-		addDatum("Occupation", hm.get("Occupation"), cBasic);
-		addDatum("Date of Birth", hm.get("Date of Birth"), cBasic);
-		addDatum("Country", hm.get("Country"), cBasic);
-		addDatum("State", hm.get("State"), cBasic);
-		addDatum("Local Government", hm.get("Local Government"), cBasic);
-
-		addDatum("ID Type", hm.get("ID Type"), cBasic);
-		addDatum("ID No.", hm.get("ID No."), cBasic);
-		addDatum("Issuer", hm.get("Issuer"), cBasic);
-		addDatum("Issue Date", hm.get("Issue Date"), cBasic);
-		addDatum("Expiry Date", hm.get("Expiry Date"), cBasic);
-
-		lbAddUser = new Label("Contact Details");
-		lbAddUser.setStyleName("label_user_profile");
-		cC.addComponent(lbAddUser);
-
-		FormLayout cContact = new FormLayout();
-		// cContact.setStyleName("frm_user_prof");
-
-		addDatum("Mobile Phone No.", hm.get("P-Mobile Phone No."), cContact);
-		addDatum("Alt. Phone No.", hm.get("P-Alt. Phone No."), cContact);
-		addDatum("Email Address", hm.get("Email"), cContact);
-
-		addDatum("Mobile Phone No.", hm.get("S-Mobile Phone No."), cContact);
-		addDatum("Alt. Phone No.", hm.get("S-Alt. Phone No."), cContact);
-		addDatum("Email Address", hm.get("Email"), cContact);
-		cC.addComponent(cContact);
-
 		c.addComponent(cC);
 		return c;
 	}
@@ -483,9 +487,7 @@ public class AccountProfileModule {
 	}
 
 	private Map<String, String> getUD() {
-		UserDetailsBackEnd udbe = new UserDetailsBackEnd();
-		return udbe.getUD(UI.getCurrent().getSession().getAttribute("user")
-				.toString());
+		return LoginService.getUserDetails();
 
 	}
 

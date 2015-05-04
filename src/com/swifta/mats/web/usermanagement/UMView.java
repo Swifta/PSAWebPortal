@@ -61,7 +61,7 @@ public class UMView extends VerticalLayout implements View {
 
 		hmPerms.put("set_default", "/setdefaultaccount");
 		hmPerms.put("activate", "/activationrequest");
-		hmPerms.put("reset", "/passwordReset");
+		hmPerms.put("reset", "/passwordreset");
 
 		hmPerms.put("unlink", "/unlinkaccount");
 		hmPerms.put("link", "/linkaccount");

@@ -1339,7 +1339,6 @@ public class BE2 {
 			btnActivate.setCaption("R");
 			btnActivate.setStyleName("btn_link");
 			btnActivate.setDescription("Reset PIN");
-
 			btnActivate.setVisible(false);
 
 			if (Initializer.setUserPermissions.contains(hmPerms.get("reset"))) {
