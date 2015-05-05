@@ -10,6 +10,9 @@ import java.util.Set;
 import org.apache.axis2.AxisFault;
 
 import com.swifta.sub.mats.reporting.DataServiceFault;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getfeesandcommissionreportresponse;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getfeesandcommissionsummaryreportresponse;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getfloatmanagementfloatresponse;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Gettransactionreportresponse;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Gettransactionsummaryreportresponse;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Profile;
@@ -47,6 +50,9 @@ public class Client {
 
 			getTransactionSummary();
 			getTransaction();
+			getFCR();
+			getFCSR();
+			getFMR();
 
 			// Client.removeProfilePermission();
 
@@ -519,7 +525,7 @@ public class Client {
 		ReportingService rs = new ReportingService();
 		System.out.println("Transaction summary report");
 		for (Gettransactionsummaryreportresponse r : rs
-				.getTransactionSummaryReport("2015-05-05", "2015-05-505")) {
+				.getTransactionSummaryReport("2015-05-05", "2015-05-05")) {
 
 			System.out.println(r.getTransactionDate());
 			System.out.println(r.getAmount());
@@ -531,7 +537,7 @@ public class Client {
 		ReportingService rs = new ReportingService();
 		System.out.println("Transaction xxxxx     report");
 		for (Gettransactionreportresponse r : rs.getTransactionReport(
-				"2015-05-05", "2015-05-505")) {
+				"2015-05-05", "2015-05-05")) {
 
 			System.out.println(r.getTransactionid());
 			System.out.println(r.getCreatedon());
@@ -539,6 +545,41 @@ public class Client {
 		}
 	}
 
+	public static void getFCR() throws RemoteException, DataServiceFault {
+		ReportingService rs = new ReportingService();
+		System.out.println("Fees & Commission Report xxxxx     report");
+		for (Getfeesandcommissionreportresponse r : rs
+				.getFeesAndCommissionReport("2015-05-05", "2015-05-05")) {
+
+			System.out.println(r.getPartner());
+			System.out.println(r.getTransactionDate());
+
+		}
+	}
+
+	public static void getFCSR() throws RemoteException, DataServiceFault {
+		ReportingService rs = new ReportingService();
+		System.out.println("Fees & Commission SUMMARY Report xxxxx     report");
+		for (Getfeesandcommissionsummaryreportresponse r : rs
+				.getFeesAndCommissionSummaryReport("2015-05-05", "2015-05-05")) {
+
+			System.out.println(r.getPartner());
+			System.out.println(r.getDate());
+
+		}
+	}
+
+	public static void getFMR() throws RemoteException, DataServiceFault {
+		ReportingService rs = new ReportingService();
+		System.out.println("Float Management Report xxxxx     report");
+		for (Getfloatmanagementfloatresponse r : rs.getFloatManagementReport(
+				"2015-05-05", "2015-05-05")) {
+
+			System.out.println(r.getAmount());
+			System.out.println(r.getDatecreated());
+
+		}
+	}
 	// public static void getactive() throws Exception {
 	//
 	// UserManagementService.getactiveprofilepermission(1);

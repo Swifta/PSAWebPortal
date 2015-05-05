@@ -1,6 +1,7 @@
 package com.swifta.mats.web.report;
 
 import java.math.BigDecimal;
+import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
@@ -10,6 +11,7 @@ import java.sql.Statement;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collection;
@@ -31,10 +33,15 @@ import com.swifta.mats.web.Initializer;
 import com.swifta.mats.web.MatsWebPortalUI;
 import com.swifta.mats.web.usermanagement.PagedTableCustom;
 import com.swifta.mats.web.utils.ReportingService;
+import com.swifta.sub.mats.reporting.DataServiceFault;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getfeesandcommissionreportresponse;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getfeesandcommissionsummaryreportresponse;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getfloatmanagementfloatresponse;
 import com.vaadin.addon.tableexport.ExcelExport;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
+import com.vaadin.data.Property.ReadOnlyException;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.Validator;
@@ -1117,24 +1124,14 @@ public class Reportform extends VerticalLayout {
 			container.addContainerProperty("Territory", String.class, "");
 			container.addContainerProperty("Amount (\u20A6)", String.class, "");
 
-			bdAmt = new BigDecimal(0.00);
-			bdAmt.setScale(2);
+			int x = 0;
 
-			ds = container;
-			String drivers = "com.mysql.jdbc.Driver";
 			try {
+				ds = container;
+				bdAmt = new BigDecimal(0.00);
+				bdAmt.setScale(2);
+				cDate.setVisible(true);
 
-				Class<?> driver_class = Class.forName(drivers);
-				Driver driver = (Driver) driver_class.newInstance();
-				DriverManager.registerDriver(driver);
-
-				Connection conn = DriverManager.getConnection(
-						MatsWebPortalUI.conf.DB, MatsWebPortalUI.conf.UN,
-						MatsWebPortalUI.conf.PW);
-
-				Statement stmt = conn.createStatement();
-				ResultSet rs;
-				int x = 0;
 				Object itemId;
 				Item trItem;
 
@@ -1142,50 +1139,37 @@ public class Reportform extends VerticalLayout {
 					return;
 				}
 
-				StringBuilder agentsql = new StringBuilder();
+				for (Getfloatmanagementfloatresponse r : reportService
+						.getFloatManagementReport(d1, d2)) {
 
-				agentsql.append(" select cast(tbl1.datecreated as DATE) as datecreated, ctrs.operatorid as aid, ach.username as did, concat(achd.firstname,' ',achd.lastname) as fullname,  ");
-				agentsql.append(" tbl1.cashbalance as amount, addy.province as province, addy.postalCode as postalcode, addy.city as city from accountholders ach, accountholderdetails achd,address addy, ( select actxns.userresourceid as cashacctid, sum(actxns.closingbalance) - ");
-				agentsql.append(" sum(actxns.openingbalance) as cashbalance, actxns.datecreated as datecreated, acts.profileid as profileid, actxns.transactionid as transactionid from ");
-				agentsql.append(" accounttransactions actxns, transactions trx,accounts acts where actxns.transactionid = trx.transactionid and trx.transactionstatusid = 1 and ");
-				agentsql.append(" trx.transactiontypeid=1 and  actxns.accountresourceid = acts.accountid and acts.profileid = 12 group by CAST(actxns.datecreated as DATE),");
-				agentsql.append(" actxns.userresourceid) tbl1 join cashtransactions ctrs on ctrs.transactionid = tbl1.transactionid where ach.profileid = 11 and addy.addressid = achd.addressid and tbl1.cashacctid = ");
-				agentsql.append(" ach.accountholderid and achd.accountdetailsid = ach.accountholderdetailid and datecreated >= '"
-						+ d1
-						+ "' and datecreated <= DATE_ADD('"
-						+ d2
-						+ "', INTERVAL 1 DAY) ");
-				agentsql.append(" order by datecreated desc; ");
-				System.out.println(agentsql.toString());
+					// Notification.show(d1, Notification.Type.ERROR_MESSAGE);
+					// Notification.show(d2, Notification.Type.ERROR_MESSAGE);
+					x++;
+					String aid = r.getAid();
+					String did = r.getDid();
+					String amt = r.getAmount();
+					String fullname = r.getFullname();
+					String street = r.getPostalcode();
+					String province = r.getProvince();
+					String city = r.getCity();
+					String d = r.getDatecreated();
 
-				/*
-				 * agentsql.append(
-				 * " select cast(tbl1.datecreated as DATE) as datecreated, ctrs.operatorid as aid, ach.username as did, concat(achd.firstname,' ',achd.lastname) as fullname, "
-				 * ); agentsql.append(
-				 * " tbl1.cashbalance as amount from accountholders ach, accountholderdetails achd, ( select actxns.userresourceid as cashacctid, sum(actxns.closingbalance) -  "
-				 * ); agentsql.append(
-				 * " sum(actxns.openingbalance) as cashbalance, actxns.datecreated as datecreated, acts.profileid as profileid, actxns.transactionid as transactionid from  "
-				 * ); agentsql.append(
-				 * " accounttransactions actxns, transactions trx,accounts acts where actxns.transactionid = trx.transactionid and trx.transactionstatusid = 1 and  "
-				 * ); agentsql.append(
-				 * " trx.transactiontypeid=1 and  actxns.accountresourceid = acts.accountid and acts.profileid = 12 group by CAST(actxns.datecreated as DATE),  "
-				 * ); agentsql.append(
-				 * " actxns.userresourceid) tbl1 join cashtransactions ctrs on ctrs.transactionid = tbl1.transactionid where ach.profileid = 11 and tbl1.cashacctid =  "
-				 * ); agentsql.append(
-				 * " ach.accountholderid and achd.accountdetailsid = ach.accountholderdetailid and datecreated >= '"
-				 * + d1 + "' and datecreated <= DATE_ADD('" + d2 +
-				 * "', INTERVAL 1 DAY)  ");
-				 * agentsql.append(" order by datecreated desc;  ");
-				 */
+					if (d != null)
+						try {
+							Date dt = sdf.parse(d);
+							cal.setTime(dt);
 
-				log.info(agentsql.toString());
+							int m = cal.get(Calendar.MONTH) + 1;
 
-				rs = stmt.executeQuery(agentsql.toString());
+							d = cal.get(Calendar.YEAR) + "-"
+									+ ((m < 10) ? "0" + m : m) + "-"
+									+ cal.get(Calendar.DATE);
+						} catch (ParseException e) {
 
-				cDate.setVisible(true);
+							e.printStackTrace();
+						}
 
-				while (rs.next()) {
-					x = x + 1;
+					// Notification.show(amt, Notification.Type.ERROR_MESSAGE);
 
 					itemId = container.addItem();
 
@@ -1211,16 +1195,6 @@ public class Reportform extends VerticalLayout {
 
 					Property<String> tdPropertyfullname = trItem
 							.getItemProperty("Full Name");
-					String aid = rs.getString("aid");
-					String did = rs.getString("did");
-					String amt = rs.getString("amount");
-					String fullname = rs.getString("fullname");
-					String street = rs.getString("postalcode");
-					String province = rs.getString("province");
-					String city = rs.getString("city");
-
-					Date date = rs.getDate("datecreated");
-					String d = sdf.format(date);
 
 					if (!ht.containsKey("Dealer")) {
 						TreeSet<String> arrL = new TreeSet<>();
@@ -1272,8 +1246,6 @@ public class Reportform extends VerticalLayout {
 
 				}
 
-				conn.close();
-
 				if (x > 30) {
 					x = 30;
 				}
@@ -1284,10 +1256,188 @@ public class Reportform extends VerticalLayout {
 				table.setContainerDataSource(container);
 				table.setSelectable(true);
 
-			} catch (SQLException | InstantiationException
-					| IllegalAccessException | ClassNotFoundException
-					| NullPointerException e) {
+			} catch (NullPointerException | RemoteException | ReadOnlyException
+					| DataServiceFault e) {
 				errorHandler(e);
+				return;
+
+			}
+			x = 0;
+			if (x != 0) {
+
+				bdAmt = new BigDecimal(0.00);
+				bdAmt.setScale(2);
+
+				ds = container;
+				String drivers = "com.mysql.jdbc.Driver";
+				try {
+
+					Class<?> driver_class = Class.forName(drivers);
+					Driver driver = (Driver) driver_class.newInstance();
+					DriverManager.registerDriver(driver);
+
+					Connection conn = DriverManager.getConnection(
+							MatsWebPortalUI.conf.DB, MatsWebPortalUI.conf.UN,
+							MatsWebPortalUI.conf.PW);
+
+					Statement stmt = conn.createStatement();
+					ResultSet rs;
+					x = 0;
+					Object itemId;
+					Item trItem;
+
+					if (!container.removeAllItems()) {
+						return;
+					}
+
+					StringBuilder agentsql = new StringBuilder();
+
+					agentsql.append(" select cast(tbl1.datecreated as DATE) as datecreated, ctrs.operatorid as aid, ach.username as did, concat(achd.firstname,' ',achd.lastname) as fullname,  ");
+					agentsql.append(" tbl1.cashbalance as amount, addy.province as province, addy.postalCode as postalcode, addy.city as city from accountholders ach, accountholderdetails achd,address addy, ( select actxns.userresourceid as cashacctid, sum(actxns.closingbalance) - ");
+					agentsql.append(" sum(actxns.openingbalance) as cashbalance, actxns.datecreated as datecreated, acts.profileid as profileid, actxns.transactionid as transactionid from ");
+					agentsql.append(" accounttransactions actxns, transactions trx,accounts acts where actxns.transactionid = trx.transactionid and trx.transactionstatusid = 1 and ");
+					agentsql.append(" trx.transactiontypeid=1 and  actxns.accountresourceid = acts.accountid and acts.profileid = 12 group by CAST(actxns.datecreated as DATE),");
+					agentsql.append(" actxns.userresourceid) tbl1 join cashtransactions ctrs on ctrs.transactionid = tbl1.transactionid where ach.profileid = 11 and addy.addressid = achd.addressid and tbl1.cashacctid = ");
+					agentsql.append(" ach.accountholderid and achd.accountdetailsid = ach.accountholderdetailid and datecreated >= '"
+							+ d1
+							+ "' and datecreated <= DATE_ADD('"
+							+ d2
+							+ "', INTERVAL 1 DAY) ");
+					agentsql.append(" order by datecreated desc; ");
+					System.out.println(agentsql.toString());
+
+					/*
+					 * agentsql.append(
+					 * " select cast(tbl1.datecreated as DATE) as datecreated, ctrs.operatorid as aid, ach.username as did, concat(achd.firstname,' ',achd.lastname) as fullname, "
+					 * ); agentsql.append(
+					 * " tbl1.cashbalance as amount from accountholders ach, accountholderdetails achd, ( select actxns.userresourceid as cashacctid, sum(actxns.closingbalance) -  "
+					 * ); agentsql.append(
+					 * " sum(actxns.openingbalance) as cashbalance, actxns.datecreated as datecreated, acts.profileid as profileid, actxns.transactionid as transactionid from  "
+					 * ); agentsql.append(
+					 * " accounttransactions actxns, transactions trx,accounts acts where actxns.transactionid = trx.transactionid and trx.transactionstatusid = 1 and  "
+					 * ); agentsql.append(
+					 * " trx.transactiontypeid=1 and  actxns.accountresourceid = acts.accountid and acts.profileid = 12 group by CAST(actxns.datecreated as DATE),  "
+					 * ); agentsql.append(
+					 * " actxns.userresourceid) tbl1 join cashtransactions ctrs on ctrs.transactionid = tbl1.transactionid where ach.profileid = 11 and tbl1.cashacctid =  "
+					 * ); agentsql.append(
+					 * " ach.accountholderid and achd.accountdetailsid = ach.accountholderdetailid and datecreated >= '"
+					 * + d1 + "' and datecreated <= DATE_ADD('" + d2 +
+					 * "', INTERVAL 1 DAY)  ");
+					 * agentsql.append(" order by datecreated desc;  ");
+					 */
+
+					log.info(agentsql.toString());
+
+					rs = stmt.executeQuery(agentsql.toString());
+
+					cDate.setVisible(true);
+
+					while (rs.next()) {
+						x = x + 1;
+
+						itemId = container.addItem();
+
+						trItem = container.getItem(itemId);
+
+						Property<String> tdPropertyserial = trItem
+								.getItemProperty("S/N");
+						Property<String> tdPropertydealerid = trItem
+								.getItemProperty("Dealer ID");
+						Property<String> tdPropertyagentid = trItem
+								.getItemProperty("Agent ID");
+						Property<String> tdPropertyagentStreet = trItem
+								.getItemProperty("Zone");
+						Property<String> tdPropertyagentprovince = trItem
+								.getItemProperty("Sales Area");
+						Property<String> tdPropertycity = trItem
+								.getItemProperty("Territory");
+						Property<String> tdPropertyevalueamount = trItem
+								.getItemProperty("Amount (\u20A6)");
+
+						Property<String> tdPropertydate = trItem
+								.getItemProperty("Date");
+
+						Property<String> tdPropertyfullname = trItem
+								.getItemProperty("Full Name");
+						String aid = rs.getString("aid");
+						String did = rs.getString("did");
+						String amt = rs.getString("amount");
+						String fullname = rs.getString("fullname");
+						String street = rs.getString("postalcode");
+						String province = rs.getString("province");
+						String city = rs.getString("city");
+						Date date = rs.getDate("datecreated");
+						String d = sdf.format(date);
+
+						if (!ht.containsKey("Dealer")) {
+							TreeSet<String> arrL = new TreeSet<>();
+							arrL.add(did);
+							ht.put("Dealer", arrL);
+						} else {
+							ht.get("Dealer").add(did);
+						}
+
+						if (!ht.containsKey("Zone")) {
+							TreeSet<String> arrL = new TreeSet<>();
+							arrL.add(street);
+							ht.put("Zone", arrL);
+						} else {
+							ht.get("Zone").add(street);
+						}
+
+						if (!ht.containsKey("Sales Area")) {
+							TreeSet<String> arrL = new TreeSet<>();
+							arrL.add(province);
+							ht.put("Sales Area", arrL);
+						} else {
+							ht.get("Sales Area").add(province);
+						}
+
+						if (!ht.containsKey("Territory")) {
+							TreeSet<String> arrL = new TreeSet<>();
+							arrL.add(city);
+							ht.put("Territory", arrL);
+						} else {
+							ht.get("Territory").add(city);
+						}
+						try {
+							Double dn = Double.valueOf(amt);
+							bdAmt = BigDecimal
+									.valueOf(dn + bdAmt.doubleValue());
+						} catch (Exception e) {
+
+						}
+
+						tdPropertyserial.setValue(x + "");
+						tdPropertydealerid.setValue(did);
+						tdPropertyagentid.setValue(aid);
+						tdPropertyevalueamount.setValue(amt);
+						tdPropertydate.setValue(d);
+						tdPropertyfullname.setValue(fullname);
+						tdPropertyagentStreet.setValue(street);
+						tdPropertyagentprovince.setValue(province);
+						tdPropertycity.setValue(city);
+
+					}
+
+					conn.close();
+
+					if (x > 30) {
+						x = 30;
+					}
+
+					table.setPageLength(x);
+					// table.getd
+
+					table.setContainerDataSource(container);
+					table.setSelectable(true);
+
+				} catch (SQLException | InstantiationException
+						| IllegalAccessException | ClassNotFoundException
+						| NullPointerException e) {
+					errorHandler(e);
+
+				}
 
 			}
 
@@ -1799,74 +1949,55 @@ public class Reportform extends VerticalLayout {
 			// searchform.removeAllComponents();
 			// searchform.addComponent(Transactions());
 			ds = feesCommissionContainer;
+			int x = 0;
 
 			if (!feesCommissionContainer.removeAllItems()) {
 				return;
 			}
 
-			String drivers = "com.mysql.jdbc.Driver";
 			try {
 
-				Class<?> driver_class = Class.forName(drivers);
-				Driver driver = (Driver) driver_class.newInstance();
-				DriverManager.registerDriver(driver);
-
-				Connection conn = DriverManager.getConnection(
-						MatsWebPortalUI.conf.DB, MatsWebPortalUI.conf.UN,
-						MatsWebPortalUI.conf.PW);
-
-				Statement stmt = conn.createStatement();
-				ResultSet rs;
-				int x = 0;
 				Object itemId;
 				Item trItem;
 
-				StringBuilder sb = new StringBuilder();
+				for (Getfeesandcommissionreportresponse r : reportService
+						.getFeesAndCommissionReport(d1, d2)) {
 
-				sb.append(" select trx1.transactionid as txid,trxtyp.name as 'Transaction Type',acts1.datecreated as TransactionDate,  ");
-				sb.append(" acts3.amount as Amount,txnvo.toreceivinguserresource as 'Agent ID',acts2.amount as 'Adjusted Fees',acts2.amount+acts1.amount as  ");
-				sb.append(" 'Original Fees',acts1.amount as commission, (acts1.amount  * 0.25) as 'MATS Comm.', (acts1.amount  * 0.75) as 'Total Commission', acth.username as  ");
-				sb.append(" 'Partner' from accounttransactions acts1, transactionvalueoperations txnvo, transactions trx1, transactiontypes trxtyp, accounttransactions acts2,  ");
-				sb.append(" accounttransactions acts3, accountholders acth, accountholders acth2, accounts act1, accounts act2, profiles pf1,  ");
-				sb.append(" profiles pf2 WHERE acts1.datecreated >= '" + d1
-						+ "' and acts1.datecreated <=  DATE_ADD('" + d2
-						+ "', INTERVAL 1 DAY)  ");
-				sb.append(" and acts1.transactionid = trx1.transactionid and act1.profileid = pf1.profileid and acts2.transactionid =  ");
-				sb.append(" trx1.transactionid and acts2.userresourceid = acth.accountholderid and acts1.accountresourceid = act1.accountid and  ");
-				sb.append(" act2.profileid = pf2.profileid and acts2.accountresourceid = act2.accountid and acts3.userresourceid =  ");
-				sb.append(" acth2.accountholderid and acts3.transactionid = trx1.transactionid and txnvo.transactionid = trx1.transactionid and trx1.transactiontypeid =  ");
-				sb.append(" trxtyp.transactiontypeid and acts1.accountresourceid = 12 and acts2.accountresourceid in  ");
-				sb.append(" (select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from  ");
-				sb.append(" accountholders where profileid = 15 and accounttypeid = 2)) and acts3.accountresourceid in  ");
-				sb.append(" (select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from ");
-				sb.append(" accountholders where (profileid = 11 or profileid = 6) and accounttypeid = 1)) order by TransactionDate desc; ");
-
-				rs = stmt.executeQuery(sb.toString());
-
-				bdAmt = new BigDecimal(0.00);
-
-				while (rs.next()) {
 					x = x + 1;
 
-					String transactiontype = rs.getString("Transaction Type");
-					String feesAccount = rs.getString("Partner");
-					String commissionAccount = rs.getString("Agent ID");
+					String transactiontype = r.getTransactionType();
+					String feesAccount = r.getPartner();
+					String commissionAccount = r.getAgentID();
 
-					String transID = rs.getString("txid");
+					String transID = r.getTxid();
 
-					Date date = rs.getDate("TransactionDate");
+					String d = r.getTransactionDate();
 
-					String commission = rs.getString("commission");
+					if (d != null)
+						try {
+							Date dt = sdf.parse(d);
+							cal.setTime(dt);
+							int m = cal.get(Calendar.MONTH) + 1;
 
-					String afees = rs.getString("Adjusted Fees");
+							d = cal.get(Calendar.YEAR) + "-"
+									+ ((m < 10) ? "0" + m : m) + "-"
+									+ cal.get(Calendar.DATE);
+						} catch (ParseException e) {
 
-					String ofees = rs.getString("Original Fees");
+							e.printStackTrace();
+						}
 
-					String amount = rs.getString("amount");
+					String commission = Double.toString(r.getCommission());
 
-					String mcomm = rs.getString("MATS Comm.");
+					String afees = Double.toString(r.getAdjustedFees());
 
-					String tcomm = rs.getString("Total Commission");
+					String ofees = Double.toString(r.getOriginalFees());
+
+					String amount = Double.toString(r.getAmount());
+
+					String mcomm = Double.toString(r.getMATSComm());
+
+					String tcomm = r.getTotalCommission();
 
 					if (!ht.containsKey("Transaction Type")) {
 						TreeSet<String> arrL = new TreeSet<>();
@@ -1892,7 +2023,7 @@ public class Reportform extends VerticalLayout {
 						ht.get("Agent ID").add(commissionAccount);
 					}
 
-					String d = sdf.format(date);
+					// String d = sdf.format(date);
 					itemId = feesCommissionContainer.addItem();
 
 					trItem = feesCommissionContainer.getItem(itemId);
@@ -1953,24 +2084,192 @@ public class Reportform extends VerticalLayout {
 
 				}
 
-				conn.close();
-
 				table.setContainerDataSource(feesCommissionContainer);
-
 				if (x > 30)
 					x = 30;
 				table.setPageLength(x);
 				table.setSelectable(true);
 				// table.setEditable(true);
-			} catch (SQLException | ClassNotFoundException
-					| InstantiationException | IllegalAccessException
-					| NullPointerException e) {
+			} catch (NullPointerException | RemoteException | DataServiceFault e) {
 				errorHandler(e);
+			}
+
+			x = 0;
+
+			if (x != 0) {
+
+				String drivers = "com.mysql.jdbc.Driver";
+				try {
+
+					Class<?> driver_class = Class.forName(drivers);
+					Driver driver = (Driver) driver_class.newInstance();
+					DriverManager.registerDriver(driver);
+
+					Connection conn = DriverManager.getConnection(
+							MatsWebPortalUI.conf.DB, MatsWebPortalUI.conf.UN,
+							MatsWebPortalUI.conf.PW);
+
+					Statement stmt = conn.createStatement();
+					ResultSet rs;
+					x = 0;
+					Object itemId;
+					Item trItem;
+
+					StringBuilder sb = new StringBuilder();
+
+					sb.append(" select trx1.transactionid as txid,trxtyp.name as 'Transaction Type',acts1.datecreated as TransactionDate,  ");
+					sb.append(" acts3.amount as Amount,txnvo.toreceivinguserresource as 'Agent ID',acts2.amount as 'Adjusted Fees',acts2.amount+acts1.amount as  ");
+					sb.append(" 'Original Fees',acts1.amount as commission, (acts1.amount  * 0.25) as 'MATS Comm.', (acts1.amount  * 0.75) as 'Total Commission', acth.username as  ");
+					sb.append(" 'Partner' from accounttransactions acts1, transactionvalueoperations txnvo, transactions trx1, transactiontypes trxtyp, accounttransactions acts2,  ");
+					sb.append(" accounttransactions acts3, accountholders acth, accountholders acth2, accounts act1, accounts act2, profiles pf1,  ");
+					sb.append(" profiles pf2 WHERE acts1.datecreated >= '" + d1
+							+ "' and acts1.datecreated <=  DATE_ADD('" + d2
+							+ "', INTERVAL 1 DAY)  ");
+					sb.append(" and acts1.transactionid = trx1.transactionid and act1.profileid = pf1.profileid and acts2.transactionid =  ");
+					sb.append(" trx1.transactionid and acts2.userresourceid = acth.accountholderid and acts1.accountresourceid = act1.accountid and  ");
+					sb.append(" act2.profileid = pf2.profileid and acts2.accountresourceid = act2.accountid and acts3.userresourceid =  ");
+					sb.append(" acth2.accountholderid and acts3.transactionid = trx1.transactionid and txnvo.transactionid = trx1.transactionid and trx1.transactiontypeid =  ");
+					sb.append(" trxtyp.transactiontypeid and acts1.accountresourceid = 12 and acts2.accountresourceid in  ");
+					sb.append(" (select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from  ");
+					sb.append(" accountholders where profileid = 15 and accounttypeid = 2)) and acts3.accountresourceid in  ");
+					sb.append(" (select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from ");
+					sb.append(" accountholders where (profileid = 11 or profileid = 6) and accounttypeid = 1)) order by TransactionDate desc; ");
+
+					rs = stmt.executeQuery(sb.toString());
+
+					bdAmt = new BigDecimal(0.00);
+
+					while (rs.next()) {
+						x = x + 1;
+
+						String transactiontype = rs
+								.getString("Transaction Type");
+						String feesAccount = rs.getString("Partner");
+						String commissionAccount = rs.getString("Agent ID");
+
+						String transID = rs.getString("txid");
+
+						Date date = rs.getDate("TransactionDate");
+
+						String commission = rs.getString("commission");
+
+						String afees = rs.getString("Adjusted Fees");
+
+						String ofees = rs.getString("Original Fees");
+
+						String amount = rs.getString("amount");
+
+						String mcomm = rs.getString("MATS Comm.");
+
+						String tcomm = rs.getString("Total Commission");
+
+						if (!ht.containsKey("Transaction Type")) {
+							TreeSet<String> arrL = new TreeSet<>();
+							arrL.add(transactiontype);
+							ht.put("Transaction Type", arrL);
+						} else {
+							ht.get("Transaction Type").add(transactiontype);
+						}
+
+						if (!ht.containsKey("Partner")) {
+							TreeSet<String> arrL = new TreeSet<>();
+							arrL.add(feesAccount);
+							ht.put("Partner", arrL);
+						} else {
+							ht.get("Partner").add(feesAccount);
+						}
+
+						if (!ht.containsKey("Agent ID")) {
+							TreeSet<String> arrL = new TreeSet<>();
+							arrL.add(commissionAccount);
+							ht.put("Agent ID", arrL);
+						} else {
+							ht.get("Agent ID").add(commissionAccount);
+						}
+
+						String d = sdf.format(date);
+						itemId = feesCommissionContainer.addItem();
+
+						trItem = feesCommissionContainer.getItem(itemId);
+
+						Property<String> tdPropertyserial = trItem
+								.getItemProperty("S/N");
+						Property<String> tdPropertyCommAcc = trItem
+								.getItemProperty("Agent ID");
+
+						Property<String> tdPropertyFeesAcc = trItem
+								.getItemProperty("Partner");
+
+						Property<String> tdPropertytransactiontype = trItem
+								.getItemProperty("Transaction Type");
+
+						Property<String> tdPropertyAFees = trItem
+								.getItemProperty("Adjusted Fees (\u20A6)");
+						Property<String> tdPropertyOFees = trItem
+								.getItemProperty("Original Fees (\u20A6)");
+
+						Property<String> tdPropertyCommission = trItem
+								.getItemProperty("Commission (\u20A6)");
+
+						Property<String> tdPropertyamount = trItem
+								.getItemProperty("Amount (\u20A6)");
+
+						Property<String> tdPropertytxid = trItem
+								.getItemProperty("Trans. ID");
+
+						Property<String> tdPropertymcomm = trItem
+								.getItemProperty("MATS Commission (\u20A6)");
+
+						Property<String> tdPropertytcomm = trItem
+								.getItemProperty("Total Commission (\u20A6)");
+
+						Property<String> tdPropertydate = trItem
+								.getItemProperty("Date");
+
+						try {
+							Double dn = Double.valueOf(amount);
+							bdAmt = BigDecimal
+									.valueOf(dn + bdAmt.doubleValue());
+						} catch (Exception e) {
+
+						}
+
+						tdPropertyserial.setValue(String.valueOf(x));
+						tdPropertyCommAcc.setValue(commissionAccount);
+						tdPropertyFeesAcc.setValue(feesAccount);
+						tdPropertyAFees.setValue(afees);
+						tdPropertyOFees.setValue(ofees);
+						tdPropertyCommission.setValue(commission);
+						tdPropertytxid.setValue(transID);
+						tdPropertytransactiontype.setValue(transactiontype);
+						tdPropertyamount.setValue(amount);
+						tdPropertymcomm.setValue(mcomm);
+						tdPropertytcomm.setValue(tcomm);
+						tdPropertydate.setValue(d);
+
+					}
+
+					conn.close();
+
+					table.setContainerDataSource(feesCommissionContainer);
+
+					if (x > 30)
+						x = 30;
+					table.setPageLength(x);
+					table.setSelectable(true);
+					// table.setEditable(true);
+				} catch (SQLException | ClassNotFoundException
+						| InstantiationException | IllegalAccessException
+						| NullPointerException e) {
+					errorHandler(e);
+				}
+
 			}
 		} else if (selectedId
 				.equalsIgnoreCase("Fees / Commission Summary Report")) {
 
 			cDate.setVisible(true);
+			int x = 0;
 
 			IndexedContainer feesCommissionContainer = new IndexedContainer();
 			feesCommissionContainer.addContainerProperty("S/N", String.class,
@@ -1991,63 +2290,41 @@ public class Reportform extends VerticalLayout {
 					String.class, "");
 			// searchform.removeAllComponents();
 			// searchform.addComponent(Transactions());
-			ds = feesCommissionContainer;
-			bdAmt = new BigDecimal(0.00);
 
-			String drivers = "com.mysql.jdbc.Driver";
 			try {
 
-				Class<?> driver_class = Class.forName(drivers);
-				Driver driver = (Driver) driver_class.newInstance();
-				DriverManager.registerDriver(driver);
-
-				Connection conn = DriverManager.getConnection(
-						MatsWebPortalUI.conf.DB, MatsWebPortalUI.conf.UN,
-						MatsWebPortalUI.conf.PW);
-
-				Statement stmt = conn.createStatement();
-				ResultSet rs;
-				int x = 0;
 				Object itemId;
 				Item trItem;
-
-				StringBuilder sb = new StringBuilder();
-				sb.append(" select acth.username as 'Partner', acts1.datecreated as 'date', sum(acts1.amount) as commission, sum(acts2.amount) as 'Adjusted Fees', ");
-				sb.append(" sum(acts2.amount+acts1.amount) as 'Original Fees',sum(acts3.amount) as amount from  ");
-				sb.append(" accounttransactions acts1,  transactions trx1, transactiontypes trxtyp, accounttransactions acts2, accounttransactions  ");
-				sb.append(" acts3, accountholders acth, accountholders acth2, accounts act1, accounts act2, profiles pf1, profiles pf2 where  ");
-				sb.append(" acts1.datecreated >= '" + d1
-						+ "' and acts1.datecreated <= DATE_ADD('" + d2
-						+ "', INTERVAL 1 DAY) and  ");
-				sb.append(" acts1.transactionid = trx1.transactionid and act1.profileid = pf1.profileid and acts2.transactionid =  ");
-				sb.append(" trx1.transactionid and acts2.userresourceid = acth.accountholderid and acts1.accountresourceid = act1.accountid and  ");
-				sb.append(" act2.profileid = pf2.profileid and acts2.accountresourceid = act2.accountid and acts3.userresourceid =  ");
-				sb.append(" acth2.accountholderid and acts3.transactionid = trx1.transactionid and trx1.transactiontypeid =  ");
-				sb.append(" trxtyp.transactiontypeid and acts1.accountresourceid = 12 and acts2.accountresourceid in  ");
-				sb.append(" (select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from  ");
-				sb.append(" accountholders where profileid = 15 and accounttypeid = 2)) and acts3.accountresourceid in ");
-				sb.append(" (select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from ");
-				sb.append(" accountholders where (profileid = 11 or profileid = 6) and accounttypeid = 1)) group by acth.username order by date desc; ");
-
-				// System.out.println(sb.toString());
-
-				rs = stmt.executeQuery(sb.toString());
-
-				while (rs.next()) {
+				for (Getfeesandcommissionsummaryreportresponse r : reportService
+						.getFeesAndCommissionSummaryReport(d1, d2)) {
 					x = x + 1;
 
-					String partner = rs.getString("Partner");
+					String partner = r.getPartner();
 
-					String commission = rs.getString("commission");
+					String commission = Double.toString(r.getCommission());
 
-					String afees = rs.getString("Adjusted Fees");
+					String afees = Double.toString(r.getAdjustedFees());
 
-					String ofees = rs.getString("Original Fees");
+					String ofees = Double.toString(r.getOriginalFees());
 
-					String amount = rs.getString("amount");
+					String amount = Double.toString(r.getAmount());
 
-					Date date = rs.getDate("date");
-					String d = sdf.format(date);
+					// Date date = rs.getDate("date");
+					String d = r.getDate();
+
+					if (d != null)
+						try {
+							Date dt = sdf.parse(d);
+							cal.setTime(dt);
+							int m = cal.get(Calendar.MONTH) + 1;
+
+							d = cal.get(Calendar.YEAR) + "-"
+									+ ((m < 10) ? "0" + m : m) + "-"
+									+ cal.get(Calendar.DATE);
+						} catch (ParseException e) {
+
+							e.printStackTrace();
+						}
 
 					if (!ht.containsKey("Partner")) {
 						TreeSet<String> arrL = new TreeSet<>();
@@ -2096,9 +2373,6 @@ public class Reportform extends VerticalLayout {
 					tdPropertydate.setValue(d);
 
 				}
-
-				conn.close();
-
 				table.setContainerDataSource(feesCommissionContainer);
 
 				if (x > 30)
@@ -2106,10 +2380,134 @@ public class Reportform extends VerticalLayout {
 				table.setPageLength(x);
 				table.setSelectable(true);
 				// table.setEditable(true);
-			} catch (SQLException | ClassNotFoundException
-					| InstantiationException | IllegalAccessException
-					| NullPointerException e) {
+			} catch (NullPointerException | RemoteException | DataServiceFault e) {
 				errorHandler(e);
+			}
+
+			x = 0;
+
+			if (x != 0) {
+				ds = feesCommissionContainer;
+				bdAmt = new BigDecimal(0.00);
+
+				String drivers = "com.mysql.jdbc.Driver";
+				try {
+
+					Class<?> driver_class = Class.forName(drivers);
+					Driver driver = (Driver) driver_class.newInstance();
+					DriverManager.registerDriver(driver);
+
+					Connection conn = DriverManager.getConnection(
+							MatsWebPortalUI.conf.DB, MatsWebPortalUI.conf.UN,
+							MatsWebPortalUI.conf.PW);
+
+					Statement stmt = conn.createStatement();
+					ResultSet rs;
+
+					Object itemId;
+					Item trItem;
+
+					StringBuilder sb = new StringBuilder();
+					sb.append(" select acth.username as 'Partner', acts1.datecreated as 'date', sum(acts1.amount) as commission, sum(acts2.amount) as 'Adjusted Fees', ");
+					sb.append(" sum(acts2.amount+acts1.amount) as 'Original Fees',sum(acts3.amount) as amount from  ");
+					sb.append(" accounttransactions acts1,  transactions trx1, transactiontypes trxtyp, accounttransactions acts2, accounttransactions  ");
+					sb.append(" acts3, accountholders acth, accountholders acth2, accounts act1, accounts act2, profiles pf1, profiles pf2 where  ");
+					sb.append(" acts1.datecreated >= '" + d1
+							+ "' and acts1.datecreated <= DATE_ADD('" + d2
+							+ "', INTERVAL 1 DAY) and  ");
+					sb.append(" acts1.transactionid = trx1.transactionid and act1.profileid = pf1.profileid and acts2.transactionid =  ");
+					sb.append(" trx1.transactionid and acts2.userresourceid = acth.accountholderid and acts1.accountresourceid = act1.accountid and  ");
+					sb.append(" act2.profileid = pf2.profileid and acts2.accountresourceid = act2.accountid and acts3.userresourceid =  ");
+					sb.append(" acth2.accountholderid and acts3.transactionid = trx1.transactionid and trx1.transactiontypeid =  ");
+					sb.append(" trxtyp.transactiontypeid and acts1.accountresourceid = 12 and acts2.accountresourceid in  ");
+					sb.append(" (select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from  ");
+					sb.append(" accountholders where profileid = 15 and accounttypeid = 2)) and acts3.accountresourceid in ");
+					sb.append(" (select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from ");
+					sb.append(" accountholders where (profileid = 11 or profileid = 6) and accounttypeid = 1)) group by acth.username order by date desc; ");
+
+					// System.out.println(sb.toString());
+
+					rs = stmt.executeQuery(sb.toString());
+
+					while (rs.next()) {
+						x = x + 1;
+
+						String partner = rs.getString("Partner");
+
+						String commission = rs.getString("commission");
+
+						String afees = rs.getString("Adjusted Fees");
+
+						String ofees = rs.getString("Original Fees");
+
+						String amount = rs.getString("amount");
+
+						Date date = rs.getDate("date");
+						String d = sdf.format(date);
+
+						if (!ht.containsKey("Partner")) {
+							TreeSet<String> arrL = new TreeSet<>();
+							arrL.add(partner);
+							ht.put("Partner", arrL);
+						} else {
+							ht.get("Partner").add(partner);
+						}
+
+						itemId = feesCommissionContainer.addItem();
+
+						trItem = feesCommissionContainer.getItem(itemId);
+
+						Property<String> tdPropertyserial = trItem
+								.getItemProperty("S/N");
+						Property<String> tdPropertyPartner = trItem
+								.getItemProperty("Partner");
+
+						Property<String> tdPropertyAFees = trItem
+								.getItemProperty("Adjusted Fees (\u20A6)");
+						Property<String> tdPropertyOFees = trItem
+								.getItemProperty("Original Fees (\u20A6)");
+
+						Property<String> tdPropertyCommission = trItem
+								.getItemProperty("Commission (\u20A6)");
+
+						Property<String> tdPropertyamount = trItem
+								.getItemProperty("Amount (\u20A6)");
+
+						Property<String> tdPropertydate = trItem
+								.getItemProperty("Date");
+
+						try {
+							Double dn = Double.valueOf(amount);
+							bdAmt = BigDecimal
+									.valueOf(dn + bdAmt.doubleValue());
+						} catch (Exception e) {
+
+						}
+
+						tdPropertyserial.setValue(String.valueOf(x));
+						tdPropertyPartner.setValue(partner);
+						tdPropertyAFees.setValue(afees);
+						tdPropertyOFees.setValue(ofees);
+						tdPropertyCommission.setValue(commission);
+						tdPropertyamount.setValue(amount);
+						tdPropertydate.setValue(d);
+
+					}
+
+					conn.close();
+
+					table.setContainerDataSource(feesCommissionContainer);
+
+					if (x > 30)
+						x = 30;
+					table.setPageLength(x);
+					table.setSelectable(true);
+					// table.setEditable(true);
+				} catch (SQLException | ClassNotFoundException
+						| InstantiationException | IllegalAccessException
+						| NullPointerException e) {
+					errorHandler(e);
+				}
 			}
 		}
 

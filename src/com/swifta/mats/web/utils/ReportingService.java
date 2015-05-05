@@ -11,6 +11,7 @@ import com.swifta.mats.web.MatsWebPortalUI;
 import com.swifta.sub.mats.reporting.DataServiceFault;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getfeesandcommissionreport;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getfeesandcommissionreportresponse;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getfeesandcommissionreportresponses;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.GetfeesandcommissionreportresponsesE;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getfeesandcommissionsummaryreport;
@@ -128,14 +129,14 @@ public class ReportingService {
 	public Gettransactionreportresponse[] getTransactionReport(String d1,
 			String d2) throws RemoteException, DataServiceFault {
 		Gettransactionreport gtrp = new Gettransactionreport();
-		// gtrp.setFromdate(d1);
-		// gtrp.setTodate(d2);
+		gtrp.setFromdate(d1);
+		gtrp.setTodate(d2);
 		GettransactionreportresponsesE gtrrE = rservice
 				.gettransactionreport(gtrp);
 
 		Gettransactionreportresponses gtrr = gtrrE
 				.getGettransactionreportresponses();
-		// String[] s = new String[]{};
+
 		Gettransactionreportresponse[] trr = gtrr
 				.getGettransactionreportresponse();
 
@@ -179,18 +180,23 @@ public class ReportingService {
 
 	}
 
-	public Gettransactionreportresponse[] getFeesAndCommissionReport()
-			throws RemoteException, DataServiceFault {
+	public Getfeesandcommissionreportresponse[] getFeesAndCommissionReport(
+			String d1, String d2) throws RemoteException, DataServiceFault {
 		Getfeesandcommissionreport gfcrp = new Getfeesandcommissionreport();
+		gfcrp.setFromdate(d1);
+		gfcrp.setTodate(d2);
+
 		GetfeesandcommissionreportresponsesE gfcrrE = rservice
 				.getfeesandcommissionreport(gfcrp);
 
 		Getfeesandcommissionreportresponses rps = gfcrrE
 				.getGetfeesandcommissionreportresponses();
-		Getfeesandcommissionreportresponses rp = rps
-				.getGetfeesandcommissionreportresponses();
+		Getfeesandcommissionreportresponse[] rp = rps
+				.getGetfeesandcommissionreportresponse();
+		if (rp == null)
+			return new Getfeesandcommissionreportresponse[] {};
 
-		return null;
+		return rp;
 
 	}
 
@@ -215,6 +221,7 @@ public class ReportingService {
 	public TransactionResponse[] getMiniStatementReport()
 			throws RemoteException, DataServiceFault {
 		Getministatementreport grp = new Getministatementreport();
+
 		TransactionResponsesE trE = rservice.getministatementreport(grp);
 		TransactionResponses trs = trE.getTransactionResponses();
 		TransactionResponse[] tr = trs.getTransactionResponse();
