@@ -1,6 +1,7 @@
 package com.swifta.mats.web.report;
 
 import java.math.BigDecimal;
+import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
@@ -23,12 +24,15 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import org.apache.axis2.AxisFault;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.swifta.mats.web.Initializer;
 import com.swifta.mats.web.MatsWebPortalUI;
 import com.swifta.mats.web.usermanagement.PagedTableCustom;
+import com.swifta.mats.web.utils.ReportingService;
+import com.swifta.sub.mats.reporting.DataServiceFault;
 import com.vaadin.addon.tableexport.ExcelExport;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
@@ -127,8 +131,17 @@ public class Reportform extends VerticalLayout {
 	private TextField tFTID;
 	private HashMap<String, String> hmPerms;
 
+	private ReportingService rs;
+
 	Reportform() {
 		setPerms();
+		if (rs == null)
+			try {
+				rs = new ReportingService();
+			} catch (AxisFault e) {
+
+				e.printStackTrace();
+			}
 	}
 
 	private void setPerms() {
@@ -1306,6 +1319,16 @@ public class Reportform extends VerticalLayout {
 			ds = container2;
 			if (!container2.removeAllItems()) {
 				return;
+			}
+
+			try {
+				rs.getTransactionReport();
+			} catch (RemoteException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (DataServiceFault e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
 			}
 
 			String drivers = "com.mysql.jdbc.Driver";
