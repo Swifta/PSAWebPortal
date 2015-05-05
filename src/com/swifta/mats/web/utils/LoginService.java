@@ -151,6 +151,12 @@ public class LoginService {
 
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		String sdob = "Not Specified.";
+		if (kUD == null) {
+			System.out
+					.println("KKKKKKKKKKKKKKKK<>KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK");
+
+			return;
+		}
 
 		sdob = kUD.getDateofbirth();
 
@@ -162,6 +168,8 @@ public class LoginService {
 				sdob = cal.get(Calendar.DATE) + "/"
 						+ (cal.get(Calendar.MONTH) + 1) + "/"
 						+ cal.get(Calendar.YEAR);
+			} else {
+				sdob = "Not Specified.";
 			}
 		} catch (Exception e) {
 

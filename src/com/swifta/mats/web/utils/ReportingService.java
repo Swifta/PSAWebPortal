@@ -10,6 +10,10 @@ import org.apache.axis2.AxisFault;
 import com.swifta.mats.web.MatsWebPortalUI;
 import com.swifta.sub.mats.reporting.DataServiceFault;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getfeesandcommissionreport;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.GetfeesandcommissionreportresponsesE;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getfloatmanagementfloatresponse;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getfloatmanagementreport;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getministatementreport;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getprofiles;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getprofiletypes;
@@ -28,6 +32,8 @@ import com.swifta.sub.mats.reporting.MatsreportingserviceStub.ProfiletypesE;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Thresholdtype;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Thresholdtypes;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.ThresholdtypesE;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.TransactionResponse;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.TransactionResponses;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.TransactionResponsesE;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Transactiontype;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Transactiontypes;
@@ -144,46 +150,40 @@ public class ReportingService {
 
 	}
 
-	public Gettransactionreportresponse[] getFloatManagementReport()
+	public Getfloatmanagementfloatresponse[] getFloatManagementReport()
 			throws RemoteException, DataServiceFault {
-		Gettransactionreport gtrp = new Gettransactionreport();
-		GettransactionreportresponsesE gtrrE = rservice
-				.gettransactionreport(gtrp);
+		Getfloatmanagementreport gfmrp = new Getfloatmanagementreport();
 
-		Gettransactionreportresponses gtrr = gtrrE
-				.getGettransactionreportresponses();
-		// String[] s = new String[]{};
-		Gettransactionreportresponse[] trr = gtrr
-				.getGettransactionreportresponse();
-		if (trr == null)
-			return new Gettransactionreportresponse[] {};
-		return trr;
+		Getfloatmanagementfloatresponse[] fmr = rservice
+				.getfloatmanagementreport(gfmrp)
+				.getGetfloatmanagementfloatresponses()
+				.getGetfloatmanagementfloatresponse();
+
+		if (fmr == null)
+			return new Getfloatmanagementfloatresponse[] {};
+		return fmr;
 
 	}
 
 	public Gettransactionreportresponse[] getFeesAndCommissionReport()
 			throws RemoteException, DataServiceFault {
-		Gettransactionreport gtrp = new Gettransactionreport();
-		GettransactionreportresponsesE gtrrE = rservice
-				.gettransactionreport(gtrp);
+		Getfeesandcommissionreport gfcrp = new Getfeesandcommissionreport();
+		GetfeesandcommissionreportresponsesE gfcrrE = rservice
+				.getfeesandcommissionreport(gfcrp);
 
-		Gettransactionreportresponses gtrr = gtrrE
-				.getGettransactionreportresponses();
-		// String[] s = new String[]{};
-		Gettransactionreportresponse[] trr = gtrr
-				.getGettransactionreportresponse();
-		if (trr == null)
-			return new Gettransactionreportresponse[] {};
-		return trr;
+		return null;
 
 	}
 
-	public Gettransactionreportresponse[] getMiniStatementReport()
+	public TransactionResponse[] getMiniStatementReport()
 			throws RemoteException, DataServiceFault {
 		Getministatementreport grp = new Getministatementreport();
 		TransactionResponsesE trE = rservice.getministatementreport(grp);
-
-		return null;
+		TransactionResponses trs = trE.getTransactionResponses();
+		TransactionResponse[] tr = trs.getTransactionResponse();
+		if (tr == null)
+			return new TransactionResponse[] {};
+		return tr;
 
 	}
 
