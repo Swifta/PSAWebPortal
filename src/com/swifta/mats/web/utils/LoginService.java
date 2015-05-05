@@ -1,7 +1,6 @@
 package com.swifta.mats.web.utils;
 
 import java.rmi.RemoteException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collections;
@@ -156,14 +155,15 @@ public class LoginService {
 		sdob = kUD.getDateofbirth();
 
 		try {
-			Date dob = sdf.parse(kUD.getDateofbirth());
-			Calendar cal = Calendar.getInstance();
-			cal.setTime(dob);
-
-			int m = cal.get(Calendar.MONTH) + 1;
-			sdob = cal.get(Calendar.DATE) + "/" + (cal.get(Calendar.MONTH) + 1)
-					+ "/" + cal.get(Calendar.YEAR);
-		} catch (ParseException e) {
+			if (sdob != null) {
+				Date dob = sdf.parse(kUD.getDateofbirth());
+				Calendar cal = Calendar.getInstance();
+				cal.setTime(dob);
+				sdob = cal.get(Calendar.DATE) + "/"
+						+ (cal.get(Calendar.MONTH) + 1) + "/"
+						+ cal.get(Calendar.YEAR);
+			}
+		} catch (Exception e) {
 
 		}
 
