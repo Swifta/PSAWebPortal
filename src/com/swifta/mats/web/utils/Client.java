@@ -9,6 +9,9 @@ import java.util.Set;
 
 import org.apache.axis2.AxisFault;
 
+import com.swifta.sub.mats.reporting.DataServiceFault;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Gettransactionreportresponse;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Gettransactionsummaryreportresponse;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Profile;
 
 public class Client {
@@ -40,7 +43,10 @@ public class Client {
 
 			// Client.getTransactionTypes();
 
-			Client.getUserPermissions();
+			// Client.getUserPermissions();
+
+			getTransactionSummary();
+			getTransaction();
 
 			// Client.removeProfilePermission();
 
@@ -508,9 +514,31 @@ public class Client {
 		rs.getTransactionTypes();
 	}
 
-	public static void getUserPermissions() {
+	public static void getTransactionSummary() throws RemoteException,
+			DataServiceFault {
+		ReportingService rs = new ReportingService();
+		System.out.println("Transaction summary report");
+		for (Gettransactionsummaryreportresponse r : rs
+				.getTransactionSummaryReport("2015-05-05", "2015-05-505")) {
 
+			System.out.println(r.getTransactionDate());
+			System.out.println(r.getAmount());
+		}
 	}
+
+	public static void getTransaction() throws RemoteException,
+			DataServiceFault {
+		ReportingService rs = new ReportingService();
+		System.out.println("Transaction xxxxx     report");
+		for (Gettransactionreportresponse r : rs.getTransactionReport(
+				"2015-05-05", "2015-05-505")) {
+
+			System.out.println(r.getTransactionid());
+			System.out.println(r.getCreatedon());
+
+		}
+	}
+
 	// public static void getactive() throws Exception {
 	//
 	// UserManagementService.getactiveprofilepermission(1);

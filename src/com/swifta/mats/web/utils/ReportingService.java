@@ -11,7 +11,12 @@ import com.swifta.mats.web.MatsWebPortalUI;
 import com.swifta.sub.mats.reporting.DataServiceFault;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getfeesandcommissionreport;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getfeesandcommissionreportresponses;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.GetfeesandcommissionreportresponsesE;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getfeesandcommissionsummaryreport;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getfeesandcommissionsummaryreportresponse;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getfeesandcommissionsummaryreportresponses;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.GetfeesandcommissionsummaryreportresponsesE;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getfloatmanagementfloatresponse;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getfloatmanagementreport;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getministatementreport;
@@ -22,6 +27,8 @@ import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Gettransactionrepo
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Gettransactionreportresponse;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Gettransactionreportresponses;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.GettransactionreportresponsesE;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Gettransactionsummaryreport;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Gettransactionsummaryreportresponse;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Gettransactiontypes;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Profile;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Profiles;
@@ -118,41 +125,48 @@ public class ReportingService {
 
 	}
 
-	public Gettransactionreportresponse[] getTransactionReport()
-			throws RemoteException, DataServiceFault {
+	public Gettransactionreportresponse[] getTransactionReport(String d1,
+			String d2) throws RemoteException, DataServiceFault {
 		Gettransactionreport gtrp = new Gettransactionreport();
+		// gtrp.setFromdate(d1);
+		// gtrp.setTodate(d2);
 		GettransactionreportresponsesE gtrrE = rservice
 				.gettransactionreport(gtrp);
+
 		Gettransactionreportresponses gtrr = gtrrE
 				.getGettransactionreportresponses();
 		// String[] s = new String[]{};
 		Gettransactionreportresponse[] trr = gtrr
 				.getGettransactionreportresponse();
+
 		if (trr == null)
 			return new Gettransactionreportresponse[] {};
 		return trr;
 
 	}
 
-	public Gettransactionreportresponse[] getTransactionSummaryReport()
-			throws RemoteException, DataServiceFault {
-		Gettransactionreport gtrp = new Gettransactionreport();
-		GettransactionreportresponsesE gtrrE = rservice
-				.gettransactionreport(gtrp);
-		Gettransactionreportresponses gtrr = gtrrE
-				.getGettransactionreportresponses();
-		// String[] s = new String[]{};
-		Gettransactionreportresponse[] trr = gtrr
-				.getGettransactionreportresponse();
+	public Gettransactionsummaryreportresponse[] getTransactionSummaryReport(
+			String sd, String ed) throws RemoteException, DataServiceFault {
+		Gettransactionsummaryreport gtrp = new Gettransactionsummaryreport();
+		gtrp.setFromdate(sd);
+		gtrp.setTodate(ed);
+		Gettransactionsummaryreportresponse[] trr = rservice
+				.gettransactionsummaryreport(gtrp)
+				.getGettransactionsummaryreportresponses()
+				.getGettransactionsummaryreportresponse();
+
 		if (trr == null)
-			return new Gettransactionreportresponse[] {};
+			return new Gettransactionsummaryreportresponse[] {};
 		return trr;
 
 	}
 
-	public Getfloatmanagementfloatresponse[] getFloatManagementReport()
-			throws RemoteException, DataServiceFault {
+	public Getfloatmanagementfloatresponse[] getFloatManagementReport(
+			String sd, String ed) throws RemoteException, DataServiceFault {
+
 		Getfloatmanagementreport gfmrp = new Getfloatmanagementreport();
+		gfmrp.setFromdate(sd);
+		gfmrp.setTodate(ed);
 
 		Getfloatmanagementfloatresponse[] fmr = rservice
 				.getfloatmanagementreport(gfmrp)
@@ -171,7 +185,30 @@ public class ReportingService {
 		GetfeesandcommissionreportresponsesE gfcrrE = rservice
 				.getfeesandcommissionreport(gfcrp);
 
+		Getfeesandcommissionreportresponses rps = gfcrrE
+				.getGetfeesandcommissionreportresponses();
+		Getfeesandcommissionreportresponses rp = rps
+				.getGetfeesandcommissionreportresponses();
+
 		return null;
+
+	}
+
+	public Getfeesandcommissionsummaryreportresponse[] getFeesAndCommissionSummaryReport(
+			String d1, String d2) throws RemoteException, DataServiceFault {
+		Getfeesandcommissionsummaryreport gfcrp = new Getfeesandcommissionsummaryreport();
+		gfcrp.setFromdate(d1);
+		gfcrp.setTodate(d2);
+		GetfeesandcommissionsummaryreportresponsesE gfcrrE = rservice
+				.getfeesandcommissionsummaryreport(gfcrp);
+
+		Getfeesandcommissionsummaryreportresponses rps = gfcrrE
+				.getGetfeesandcommissionsummaryreportresponses();
+		Getfeesandcommissionsummaryreportresponse[] rp = rps
+				.getGetfeesandcommissionsummaryreportresponse();
+		if (rp == null)
+			return new Getfeesandcommissionsummaryreportresponse[] {};
+		return rp;
 
 	}
 

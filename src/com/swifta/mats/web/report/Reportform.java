@@ -1,7 +1,6 @@
 package com.swifta.mats.web.report;
 
 import java.math.BigDecimal;
-import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
@@ -32,7 +31,6 @@ import com.swifta.mats.web.Initializer;
 import com.swifta.mats.web.MatsWebPortalUI;
 import com.swifta.mats.web.usermanagement.PagedTableCustom;
 import com.swifta.mats.web.utils.ReportingService;
-import com.swifta.sub.mats.reporting.DataServiceFault;
 import com.vaadin.addon.tableexport.ExcelExport;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
@@ -131,13 +129,13 @@ public class Reportform extends VerticalLayout {
 	private TextField tFTID;
 	private HashMap<String, String> hmPerms;
 
-	private ReportingService rs;
+	private ReportingService reportService;
 
 	Reportform() {
 		setPerms();
-		if (rs == null)
+		if (reportService == null)
 			try {
-				rs = new ReportingService();
+				reportService = new ReportingService();
 			} catch (AxisFault e) {
 
 				e.printStackTrace();
@@ -1321,15 +1319,98 @@ public class Reportform extends VerticalLayout {
 				return;
 			}
 
-			try {
-				rs.getTransactionReport();
-			} catch (RemoteException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (DataServiceFault e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
+			/*
+			 * try { rs.getTransactionReport();
+			 * 
+			 * int x = x + 1;
+			 * 
+			 * for (Gettransactionreportresponse r :
+			 * reportService.getTransactionReport()) {
+			 * 
+			 * String transactiontype = r.getTransactiontype(); // String amount
+			 * = rs.getString("Amount"); //Date date = r.getCreatedon(); String
+			 * d = sdf.format(date); String transactionID =
+			 * r.getTransactionid(); String sender = r.getSender(); String
+			 * status = r.getStatus(); //String amount = r.; //String receiver =
+			 * rs.getString("Reciever"); //String partner = r.getSender();
+			 * 
+			 * if (!ht.containsKey("Agent/Sender")) { TreeSet<String> arrL = new
+			 * TreeSet<>(); arrL.add(sender); ht.put("Agent/Sender", arrL); }
+			 * else { ht.get("Agent/Sender").add(sender); }
+			 * 
+			 * if (!ht.containsKey("Partner")) { TreeSet<String> arrL = new
+			 * TreeSet<>(); arrL.add(partner); ht.put("Partner", arrL); } else {
+			 * ht.get("Partner").add(partner); }
+			 * 
+			 * if (!ht.containsKey("Transaction Type")) { TreeSet<String> arrL =
+			 * new TreeSet<>(); arrL.add(transactiontype);
+			 * ht.put("Transaction Type", arrL); } else {
+			 * ht.get("Transaction Type").add(transactiontype); }
+			 * 
+			 * if (!ht.containsKey("Status")) { TreeSet<String> arrL = new
+			 * TreeSet<>(); arrL.add(status); ht.put("Status", arrL); } else {
+			 * ht.get("Status").add(status); }
+			 * 
+			 * itemId = container2.addItem();
+			 * 
+			 * trItem = container2.getItem(itemId);
+			 * 
+			 * Property<String> tdPropertyserial = trItem
+			 * .getItemProperty("S/N");
+			 * 
+			 * Property<String> tdPropertytransactiondate = trItem
+			 * .getItemProperty("Date"); Property<String>
+			 * tdPropertytransactionid = trItem
+			 * .getItemProperty("Transaction ID"); Property<String>
+			 * tdPropertyamount = trItem .getItemProperty("Amount (\u20A6)");
+			 * 
+			 * Property<String> tdPropertyreceiver = trItem
+			 * .getItemProperty("Receiver"); Property<String>
+			 * tdPropertytransactiontype = trItem
+			 * .getItemProperty("Transaction Type"); // Property<String>
+			 * tdPropertyamount = trItem // .getItemProperty("Amount (\u20A6)");
+			 * Property<String> tdPropertysender = trItem
+			 * .getItemProperty("Agent/Sender"); // Property<String>
+			 * tdPropertysenderonbehalfof = trItem //
+			 * .getItemProperty("Sent_on_behalf_of");
+			 * 
+			 * // Property<String> tdPropertyreceiver = trItem //
+			 * .getItemProperty("Receiver"); // Property<String>
+			 * tdPropertyreceiveronbehalfof = trItem //
+			 * .getItemProperty("Received_on_behalf_of"); Property<String>
+			 * tdPropertystatus = trItem .getItemProperty("Status");
+			 * Property<String> tdPropertypartner = trItem
+			 * .getItemProperty("Partner");
+			 * 
+			 * try { Double dn = Double.valueOf(amount); bdAmt =
+			 * BigDecimal.valueOf(dn + bdAmt.doubleValue()); } catch (Exception
+			 * e) {
+			 * 
+			 * }
+			 * 
+			 * tdPropertyserial.setValue(String.valueOf(x));
+			 * tdPropertytransactionid.setValue(transactionID);
+			 * tdPropertytransactiondate.setValue(d);
+			 * tdPropertytransactiontype.setValue(transactiontype); //
+			 * tdPropertyamount.setValue(amount);
+			 * tdPropertysender.setValue(sender);
+			 * tdPropertyamount.setValue(amount);
+			 * tdPropertyreceiver.setValue(receiver);
+			 * 
+			 * tdPropertystatus.setValue(status);
+			 * tdPropertypartner.setValue(partner);
+			 * 
+			 * if (x > 30) { x = 30; }
+			 * 
+			 * table.setPageLength(x); table.setSelectable(true);
+			 * table.setContainerDataSource(container2);
+			 * 
+			 * }
+			 * 
+			 * } catch (RemoteException | DataServiceFault e) {
+			 * 
+			 * e.printStackTrace(); }
+			 */
 
 			String drivers = "com.mysql.jdbc.Driver";
 			try {
