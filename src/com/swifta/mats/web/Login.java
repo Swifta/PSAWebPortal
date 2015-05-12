@@ -205,7 +205,7 @@ public class Login extends VerticalLayout implements View {
 					} else {
 
 						if (status.equals("false")) {
-							lPrompt.setValue("Invalid Username or Password.");
+							lPrompt.setValue("Invalid Username / Password.");
 
 						} else if (LoginService.webauthenticate(
 								tfUsername.getValue(), tfPassword.getValue())
