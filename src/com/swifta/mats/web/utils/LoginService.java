@@ -25,6 +25,7 @@ import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Webauthe
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.WebauthenticateResponse;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.WebauthenticateResponseE;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Webauthenticationrequestresponse;
+import com.vaadin.ui.UI;
 
 public class LoginService {
 	private ProvisioningStub provisioningStub;
@@ -141,6 +142,7 @@ public class LoginService {
 	public static Map<String, String> getUserDetails() {
 		if (hmUDetails == null)
 			return Collections.emptyMap();
+
 		return hmUDetails;
 
 	}
@@ -152,8 +154,6 @@ public class LoginService {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		String sdob = "Not Specified.";
 		if (kUD == null) {
-			System.out
-					.println("KKKKKKKKKKKKKKKK<>KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK");
 
 			return;
 		}
@@ -191,6 +191,9 @@ public class LoginService {
 		hmUDetails.put("State", kUD.getState());
 		hmUDetails.put("Street", kUD.getStreet());
 		hmUDetails.put("Username", kUD.getUsername());
+
+		UI.getCurrent().getSession()
+				.setAttribute("fn", hmUDetails.get("First Name"));
 
 		/*
 		 * hm.put("Username", rs.getString("un")); hm.put("Gender",

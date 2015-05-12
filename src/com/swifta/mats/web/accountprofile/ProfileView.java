@@ -49,9 +49,10 @@ public class ProfileView extends VerticalLayout implements View {
 
 	private void addHeader() {
 		setMargin(true);
-		Object user = UI.getCurrent().getSession().getAttribute("user");
-		if (user == null)
-			return;
+		Object user = UI.getCurrent().getSession().getAttribute("fn");
+		if (user == null) {
+			user = new String("Anonymous");
+		}
 		Button btnLogout = new Button("Logout");
 		Label lbUsername = new Label("Hi, " + user.toString());
 		lbUsername.setStyleName("lbel3");
