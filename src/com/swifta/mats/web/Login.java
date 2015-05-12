@@ -4,7 +4,6 @@ import java.util.logging.Logger;
 
 import org.apache.axis2.AxisFault;
 
-import com.swifta.mats.web.accountprofile.ProfileView;
 import com.swifta.mats.web.utils.LoginService;
 import com.vaadin.data.Validator;
 import com.vaadin.data.fieldgroup.FieldGroup;
@@ -13,6 +12,7 @@ import com.vaadin.data.util.PropertysetItem;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.Responsive;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -50,23 +50,22 @@ public class Login extends VerticalLayout implements View {
 
 		setSizeFull();
 		setStyleName("c_login_page");
+		Responsive.makeResponsive(this);
+
 		Panel panelLogin = new Panel();
 		panelLogin.setSizeUndefined();
 		panelLogin.setStyleName("panel_login");
-		VerticalLayout panelLoginContent = new VerticalLayout();
-		panelLoginContent.setStyleName("panel_login_content");
-		VerticalLayout logoContainer = new VerticalLayout();
-		logoContainer.setSizeUndefined();
-		logoContainer.setStyleName("logo_and_slogan_container");
-		ThemeResource rLogo = new ThemeResource("img/transfer.png");
 
-		// img/
+		VerticalLayout cLogo = new VerticalLayout();
+		cLogo.setSizeUndefined();
+		cLogo.setStyleName("c_logo_and_slogan");
+		ThemeResource rLogo = new ThemeResource("img/logo.png");
 		Embedded emb = new Embedded(null, rLogo);
 		emb.setDescription("MATS Logo");
-		logoContainer.addComponent(emb);
-		logoContainer.setComponentAlignment(emb, Alignment.MIDDLE_CENTER);
-		VerticalLayout loginLabelContainer = new VerticalLayout();
-		loginLabelContainer.setSizeUndefined();
+		cLogo.addComponent(emb);
+		cLogo.setComponentAlignment(emb, Alignment.MIDDLE_CENTER);
+		VerticalLayout cLoginLabel = new VerticalLayout();
+		cLoginLabel.setSizeUndefined();
 
 		lWelcome = new Label("Welcome to MATS WEB Portal.");
 		lWelcome.setStyleName("label_welcome");
@@ -74,29 +73,28 @@ public class Login extends VerticalLayout implements View {
 		lPrompt = new Label("Please enter your credentials to login.");
 		lPrompt.setStyleName("label_login_prompt");
 
-		loginLabelContainer.addComponent(lWelcome);
-		loginLabelContainer.setComponentAlignment(lWelcome,
-				Alignment.MIDDLE_CENTER);
-		loginLabelContainer.addComponent(lPrompt);
+		cLoginLabel.addComponent(lWelcome);
+		cLoginLabel.setComponentAlignment(lWelcome, Alignment.MIDDLE_CENTER);
+		cLoginLabel.addComponent(lPrompt);
 
-		VerticalLayout panelLoginAndLogoAndSloganContainer = new VerticalLayout();
-		panelLoginAndLogoAndSloganContainer.setSizeUndefined();
-		panelLoginAndLogoAndSloganContainer.setMargin(true);
-		panelLoginAndLogoAndSloganContainer.setSpacing(true);
-		addComponent(panelLoginAndLogoAndSloganContainer);
-		setComponentAlignment(panelLoginAndLogoAndSloganContainer,
-				Alignment.MIDDLE_CENTER);
-		panelLoginAndLogoAndSloganContainer.addComponent(logoContainer);
-		panelLoginAndLogoAndSloganContainer.setComponentAlignment(
-				logoContainer, Alignment.MIDDLE_CENTER);
+		VerticalLayout cLogoPanel = new VerticalLayout();
+		cLogoPanel.setSizeUndefined();
+		cLogoPanel.setStyleName("c_logo_panel");
+		// cLogoPanel .setSizeFull();
+		cLogoPanel.setMargin(true);
+		cLogoPanel.setSpacing(true);
+		addComponent(cLogoPanel);
+		setComponentAlignment(cLogoPanel, Alignment.MIDDLE_CENTER);
+		cLogoPanel.addComponent(cLogo);
+		cLogoPanel.setComponentAlignment(cLogo, Alignment.MIDDLE_CENTER);
 
-		panelLoginAndLogoAndSloganContainer.addComponent(loginLabelContainer);
-		panelLoginAndLogoAndSloganContainer.setComponentAlignment(
-				loginLabelContainer, Alignment.MIDDLE_CENTER);
+		cLogoPanel.addComponent(cLoginLabel);
+		cLogoPanel.setComponentAlignment(cLoginLabel, Alignment.MIDDLE_CENTER);
 
-		panelLoginAndLogoAndSloganContainer.addComponent(panelLogin);
-		panelLoginAndLogoAndSloganContainer.setComponentAlignment(panelLogin,
-				Alignment.MIDDLE_CENTER);
+		cLogoPanel.addComponent(panelLogin);
+		cLogoPanel.setComponentAlignment(panelLogin, Alignment.MIDDLE_CENTER);
+
+		Responsive.makeResponsive(cLogoPanel);
 
 		Label lbVersion = new Label("MATS Platform v.1.0");
 		Label lbCopyright = new Label(
@@ -111,59 +109,29 @@ public class Login extends VerticalLayout implements View {
 		HorizontalLayout versionContainer = new HorizontalLayout();
 		versionContainer.setSizeUndefined();
 		versionContainer.addComponent(lbVersion);
-		// versionContainer.setComponentAlignment(lbVersion,
-		// Alignment.MIDDLE_CENTER);
 
-		// versionAndCopyrightContainer.addComponent(versionContainer);
-		// versionAndCopyrightContainer.setComponentAlignment(versionContainer,
-		// Alignment.MIDDLE_CENTER);
+		// Responsive.makeResponsive(panelLoginContent);
 
-		// versionAndCopyrightContainer.addComponent(copyrightContainer);
-		// versionAndCopyrightContainer.setComponentAlignment(copyrightContainer,
-		// Alignment.MIDDLE_CENTER);
+		cLogoPanel.addComponent(versionContainer);
+		cLogoPanel.setComponentAlignment(versionContainer,
+				Alignment.BOTTOM_CENTER);
 
-		// panelLoginAndLogoAndSloganContainer.addComponent(versionAndCopyrightContainer);
-		panelLoginAndLogoAndSloganContainer.addComponent(versionContainer);
-		panelLoginAndLogoAndSloganContainer.setComponentAlignment(
-				versionContainer, Alignment.MIDDLE_CENTER);
+		cLogoPanel.addComponent(copyrightContainer);
+		cLogoPanel.setComponentAlignment(copyrightContainer,
+				Alignment.BOTTOM_CENTER);
 
-		panelLoginAndLogoAndSloganContainer.addComponent(copyrightContainer);
-		panelLoginAndLogoAndSloganContainer.setComponentAlignment(
-				copyrightContainer, Alignment.MIDDLE_CENTER);
-		// panelLoginAndLogoAndSloganContainer.setComponentAlignment(versionAndCopyrightContainer,
-		// Alignment.MIDDLE_CENTER);
+		VerticalLayout cLoginFields = new VerticalLayout();
+		cLoginFields.setStyleName("c_login_fields");
 
-		/*
-		 * panelLoginAndLogoAndSloganContainer.addComponent(lPrompt);
-		 * panelLoginAndLogoAndSloganContainer.setComponentAlignment(lPrompt,
-		 * Alignment.MIDDLE_CENTER);
-		 */
+		cLoginFields.setMargin(true);
+		cLoginFields.setSpacing(true);
 
-		// make logoAndSloganContainer to be exactly the same width as paneLogin
-		// System.out.println(panelLoginContent.getWidth());
-		// System.out.println(panelLogin.getWidth());
-		// System.out.println(panelLoginContent.getWidthUnits());
-		// logoAndSloganContainer.setWidth('"'+panelLogin.getWidth() +
-		// ""+panelLogin.getWidthUnits());
-
-		/*
-		 * hLayout.addComponent(panelLogin); hLayout.setSizeFull();
-		 * hLayout.setComponentAlignment(panelLogin, Alignment.MIDDLE_CENTER);
-		 * hLayout.setStyleName("panel_container");
-		 */
-
-		panelLoginContent.setSizeUndefined();
-		panelLoginContent.setMargin(true);
-		panelLoginContent.setSpacing(true);
-		// panelLogin.setStyleName("login_panel");
 		tfUsername = new TextField();
 		tfUsername.setInputPrompt("Username");
 		tfUsername.setDescription("Username");
 		tfUsername.setStyleName("username_text_field");
 		tfUsername.addValidator(new LoginValidator());
-		// tfUsername.validate();
-		// tfUsername.setImmediate(true);
-		// tfUsername.setRequired(true);
+
 		tfUsername.setValidationVisible(false);
 		tfUsername.setNullRepresentation("");
 
@@ -173,30 +141,16 @@ public class Login extends VerticalLayout implements View {
 		tfPassword.addValidator(new LoginValidator());
 		tfPassword.setValidationVisible(false);
 		tfPassword.setNullRepresentation("");
-		// tfPassword.setRequired(true);
-		// tfPassword.addValidator(new);
 
 		btnLogin = new Button("Login");
 		btnLogin.setClickShortcut(KeyCode.ENTER);
 		btnLogin.setStyleName(Reindeer.BUTTON_DEFAULT);
-		panelLoginContent.addComponent(tfUsername);
-		panelLoginContent.addComponent(tfPassword);
-		panelLoginContent.addComponent(btnLogin);
-		// panelLoginContent.addComponent(userLogin);
-		panelLogin.setContent(panelLoginContent);
-		panelLoginContent.setComponentAlignment(btnLogin,
-				Alignment.BOTTOM_RIGHT);
-		// panelLoginContent.setComponentAlignment(userLogin,
-		// Alignment.BOTTOM_CENTER);
-		// hLayout.setComponentAlignment(btnLogin, Alignment.);
-		// panelLogin.
+		cLoginFields.addComponent(tfUsername);
+		cLoginFields.addComponent(tfPassword);
+		cLoginFields.addComponent(btnLogin);
 
-		// layout.addComponent(button);
-		/* layout.setStyleName("hLayout_container"); */
-
-		setSizeFull();
-		// layout.setSpacing(true);
-		/* layout.setComponentAlignment(hLayout, Alignment.MIDDLE_CENTER); */
+		panelLogin.setContent(cLoginFields);
+		cLoginFields.setComponentAlignment(btnLogin, Alignment.BOTTOM_RIGHT);
 
 		btnLogin.addClickListener(new Button.ClickListener() {
 
@@ -242,13 +196,9 @@ public class Login extends VerticalLayout implements View {
 						// mx//.navigateTo(WorkSpace.WORK_SPACE);
 
 						Initializer initts = new Initializer();
-						UI.getCurrent()
-								.getNavigator()
-								.addView(ProfileView.Prof,
-										new ProfileView(initts.getTS()));
-
 						UI.getCurrent().getNavigator()
-								.navigateTo(ProfileView.Prof);
+								.addView(Main.WS, new Main(initts.getTS()));
+						UI.getCurrent().getNavigator().navigateTo(Main.WS);
 
 						logger.info("---------------after getting navigator to workspace:::Login");
 

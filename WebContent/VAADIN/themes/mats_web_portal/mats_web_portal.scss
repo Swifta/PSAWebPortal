@@ -86,10 +86,10 @@
  			  
  }
  
-.panel_login_content.v-margin-left   {padding-left:   60px;}
-.panel_login_content.v-margin-right  {padding-right:  60px;}
-.panel_login_content.v-margin-top    {padding-top:    60px;}
-.panel_login_content.v-margin-bottom {padding-bottom: 60px;}
+.c_login_fields.v-margin-left   {padding-left:   60px;}
+.c_login_fields.v-margin-right  {padding-right:  60px;}
+.c_login_fields.v-margin-top    {padding-top:    60px;}
+.c_login_fields.v-margin-bottom {padding-bottom: 60px;}
 
 .logo_and_slogan_container{
 	//background:#FF0;
@@ -1319,25 +1319,122 @@ ul.empty li{
 }
 
 
-.frm_profile_name .tbody [class*="lastrow"] > td{
-	padding-bottom: 0;
-	background: #F00;
+
+ .c_login_page[width-range~="500px-"] {
+
+	//background: #F0F;
+	padding: 0;
+	margin: 0;
+}
+
+
+.c_login_page[width-range~="0-499px"] {
+
+	//background: #F0F;
+	margin: 0;
+	padding: 0 !important;
+}
+
+
+.c_login_page[width-range~="0-499px"] .c_logo_panel{
+
+	width: 100%;
+	//background: #00F;
+	margin: 0;
+	padding: 0 !important;
+	height: 80%;
+	padding-top: auto !important;
+	padding-bottom: auto !important;
+	
 
 }
 
-.frm_profile_name{
-	margin-top: 5px;
-}
-
-.frm_profile_name .tbody [class*="firstrow"] > td{
-	padding-top: 0;
-	background: #F0F;
-}
-
-.my_profile_spacing{
-	padding: 10px ;
+.c_login_page[width-range~="0-499px"] .c_logo_and_slogan {
+	width: 90%;
+	margin: 0;
+	padding: 5% 5% 0 5%;
 	//background: #F00;
+	
+	
+	
 }
+
+
+.c_login_page[width-range~="0-499px"] .c_logo_and_slogan img {
+	width: 60%;
+	
+	margin: 0 auto !important;
+	padding: 0;
+	//background: #0F0;
+	
+	
+	
+	
+}
+
+.c_login_page[width-range~="0-499px"] .c_logo_and_slogan .v-embedded-image{
+
+	text-align: center;
+	//background: #656;
+}
+
+.c_login_page[width-range~="0-499px"] .c_login_fields {
+	width: 100%;
+	margin: 0;
+	padding: 10px;
+	//background: #367;
+	
+}
+
+
+.c_login_page[width-range~="0-499px"] .panel_login{
+	width: 80%;
+	margin: 10px;
+	padding: 0px;
+	//height: 100%;
+	//background: #EBA;
+}
+
+
+.c_login_page[height-range~="499px-"] .panel_login{
+	//width: 80%;
+	//background: #245;
+	height: 100%;
+
+}
+
+.c_login_page[height-range~="499px-"] .panel_login{
+	//width: 80%;
+	//background: #245;
+	height: 100%;
+
+}
+
+.c_login_page[height-range~="299px-"] .c_logo_panel{
+	width: 80%;
+	//background: #FE5;
+	
+
+}
+
+
+.c_login_page[width-range~="0-499px"] .c_login_fields .v-textfield{
+
+		//background: #000;
+		width: 100%;
+		
+}
+
+
+ .c_login_page[width-range~="0-499px"] .c_login_fields.v-margin-left   {padding-left:   40px;}
+.c_login_page[width-range~="0-499px"] .c_login_fields.v-margin-right  {padding-right:  40px;}
+.c_login_page[width-range~="0-499px"] .c_login_fields.v-margin-top    {padding-top:    40px;}
+.c_login_page[width-range~="0-499px"] .c_login_fields.v-margin-bottom {padding-bottom: 40px;}
+
+
+
+
+
 
 	
 
