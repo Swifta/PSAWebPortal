@@ -1,169 +1,179 @@
 package com.swifta.mats.web.utils;
 
-import java.rmi.RemoteException;
-import java.util.logging.Logger;
+import java.math.BigDecimal;
 
-import org.apache.axis2.AxisFault;
+import org.apache.axis2.addressing.EndpointReference;
 
 import com.swifta.mats.web.MatsWebPortalUI;
-import com.swifta.sub.mats.operation.financial.v1_0.FinancialsStub.StatusCode;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Deletecommission;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.DeletecommissionE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.DeletecommissionResponse;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.DeletecommissionResponseE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Deletecommissionrequestresponse;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Editcommission;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.EditcommissionE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.EditcommissionResponse;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.EditcommissionResponseE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Editcommissionrequestresponse;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ServiceCommission;
-import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ServiceFeeConditionTypes;
-import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ServiceFeeModelTypes;
-import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ServiceFees;
-import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Servicefeeandcomissionrequestresponse;
-import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Setupservicefeesandcommission;
-import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.SetupservicefeesandcommissionE;
-import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.SetupservicefeesandcommissionResponse;
-import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.SetupservicefeesandcommissionResponseE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Servicecommissionrequestresponse;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Setupcommission;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.SetupcommissionE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.SetupcommissionResponse;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.SetupcommissionResponseE;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub;
+import com.vaadin.ui.UI;
 
 public class CommissionService {
-	private ProvisioningStub provisioningStub;
-
-	// static String esbendpoint =
-	// "http://127.0.0.1:8280/services/Provisionservice";
 
 	final static String esbendpoint = MatsWebPortalUI.conf.ESB;
-	private static final Logger logger = Logger
-			.getLogger(CommissionService.class.getName());
-	public String statusMessage = "";
+	final static String loggedInUser = UI.getCurrent().getSession()
+			.getAttribute("user").toString();
 
-	public boolean setFeesAndCommission(String mmoId, int transactionTypeId,
-			ServiceCommission[] serviceCommissionArray,
-			ServiceFees[] serviceFeesArray) {
-		boolean status = false;
-		logger.info("--------------------------Inside Fees and Commission");
-		SetupservicefeesandcommissionE setupservicefeesandcommissionE = new SetupservicefeesandcommissionE();
-		Setupservicefeesandcommission setupservicefeesandcommission = new Setupservicefeesandcommission();
+	static ProvisioningStub matsStub;
+	static MatsreportingserviceStub matsReportstub;
 
-		logger.info("--------------------------After setting setup fees and commission"
-				+ setupservicefeesandcommission);
-		// ServiceCommission newServiceCommission = new ServiceCommission();
+	org.apache.axis2.client.ServiceClient _serviceClient = null;
 
-		for (int i = 0; i < serviceCommissionArray.length; i++) {
-			logger.info("--------------------------Iterating commission:::"
-					+ serviceCommissionArray[i].getCommissionfee());
-			logger.info("--------------------------Iterating commission:::"
-					+ serviceCommissionArray[i].getCommissionfeetype());
-			logger.info("--------------------------Iterating commission:::"
-					+ serviceCommissionArray[i].getMaximumamount());
-			logger.info("--------------------------Iterating commission:::"
-					+ serviceCommissionArray[i].getMinimumamount());
-			logger.info("--------------------------Iterating commission:::"
-					+ serviceCommissionArray[i].getServicecommissioncondition());
-			logger.info("--------------------------Iterating commission:::"
-					+ serviceCommissionArray[i].getServicecommissionmodeltype());
-			// either cashin cashout ID
-			logger.info("--------------------------Iterating commission:::"
-					+ serviceCommissionArray[i].getTransactiontypeid());
-		}
+	private static EndpointReference targetEPR = new EndpointReference(
+			esbendpoint);
 
-		setupservicefeesandcommission
-				.setServicecommissiondetails(serviceCommissionArray);
-		logger.info("--------------------------After setting commission array "
-				+ serviceCommissionArray);
-		logger.info("--------------------------After setting commission array size is"
-				+ serviceCommissionArray.length);
-		for (int i = 0; i < serviceFeesArray.length; i++) {
-			// ServiceFeesInterfaceChoice_type0 feeType = new
-			// ServiceFeesInterfaceChoice_type0();
+	public static String setupCommission(String loggedInUser,
+			BigDecimal commissionfeefortrnxfee, Integer commissionsetuptype,
+			ServiceCommission[] servicecommission,
+			Integer servicefeepropertiesid, Integer transactiontypeid,
+			Integer accountholderid) throws Exception {
 
-			// ServiceFeesInterfaceChoice_type0[] feeTypeArray = new
-			// ServiceFeesInterfaceChoice_type0[1];
-			// feeTypeArray[0] = feeType;
-			logger.info("--------------------------Iterating service fee:::"
-					+ serviceFeesArray[i].getMaximumamount());
-			logger.info("--------------------------Iterating commission:::"
-					+ serviceFeesArray[i].getMinimumamount()); //
-			logger.info("--------------------------Iterating service fee:::"
-					+ serviceFeesArray[i].getServicefee());
-			/*
-			 * feeTypeArray = serviceFeesArray[i]
-			 * .getServiceFeesInterfaceChoice_type0(); for (int j = 0; j <
-			 * feeTypeArray.length; j++) {
-			 * logger.info("--------------------------Iterating service fee type:::"
-			 * + feeTypeArray[j].getMaximumamount());
-			 * logger.info("--------------------------Iterating service fee type:::"
-			 * + feeTypeArray[j].getMinimumamount());
-			 * logger.info("--------------------------Iterating service fee type:::"
-			 * + feeTypeArray[j].getServicefee());
-			 * logger.info("--------------------------Iterating service fee type:::"
-			 * + feeTypeArray[j].getTransactiontypeid());
-			 * logger.info("--------------------------Iterating service fee type:::"
-			 * + feeTypeArray[j].getServicefeetype()); }
-			 */
-			logger.info("--------------------------Iterating service fee:::"
-					+ serviceFeesArray[i].getServicefeetype());
-			logger.info("--------------------------Iterating service fee:::"
-					+ serviceFeesArray[i].getTransactiontypeid());
+		matsStub = new ProvisioningStub(esbendpoint);
 
-		}
+		String statusMessage = "";
 
-		setupservicefeesandcommission
-				.setServicefeecondition(ServiceFeeConditionTypes.TRANSACTIONTYPE);
-		logger.info("--------------------------After setting service fee condition "
-				+ "TRANSACTIONTYPE");
-		setupservicefeesandcommission.setServicefeedetails(serviceFeesArray);
-		logger.info("--------------------------After setting service fees array "
-				+ serviceFeesArray);
-		logger.info("--------------------------After setting service fees array size "
-				+ serviceFeesArray.length);
-		setupservicefeesandcommission
-				.setServicefeemodel(ServiceFeeModelTypes.TIERED);
-		logger.info("--------------------------After service fee model "
-				+ "TIERED");
-		setupservicefeesandcommission.setUserresourceid(mmoId);
-		logger.info("--------------------------After setting mmoId " + mmoId);
-		setupservicefeesandcommissionE
-				.setSetupservicefeesandcommission(setupservicefeesandcommission);
-		SetupservicefeesandcommissionResponseE feesAndCommissionResponseE = new SetupservicefeesandcommissionResponseE();
-		try {
-			provisioningStub = new ProvisioningStub(esbendpoint);
-			long timeOutInMilliSeconds = (5 * 36 * 1000);
-			provisioningStub._getServiceClient().getOptions()
-					.setTimeOutInMilliSeconds(timeOutInMilliSeconds);
-			feesAndCommissionResponseE = provisioningStub
-					.setupservicefeesandcommission(setupservicefeesandcommissionE);
-		} catch (AxisFault e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		Setupcommission setupcommission = new Setupcommission();
+		setupcommission.setCommissionfeefortrnxfee(commissionfeefortrnxfee);
+		setupcommission.setCommissionsetuptype(commissionsetuptype);
+		setupcommission.setLoggedinUser(loggedInUser);
+		setupcommission.setServicecommissiondetails(servicecommission);
+		setupcommission.setServicefeepropertiesid(servicefeepropertiesid);
+		setupcommission.setTransactiontypeid(transactiontypeid);
+		setupcommission.setUserresourceid(accountholderid);
 
-		if (feesAndCommissionResponseE != null) {
-			logger.info("--------------------------feesAndCommissionResponseE is not null");
-			SetupservicefeesandcommissionResponse setupservicefeesandcommissionResponse = feesAndCommissionResponseE
-					.getSetupservicefeesandcommissionResponse();
-			Servicefeeandcomissionrequestresponse response = null;
-			if (setupservicefeesandcommissionResponse != null) {
-				logger.info("--------------------------setupservicefeesandcommissionResponse is not null");
-				response = setupservicefeesandcommissionResponse.get_return();
-				if (response != null) {
-					logger.info(response.getResponsemessage()
-							+ "--------------------------response is not null"
-							+ response.getStatuscode());
-					if (response.getStatuscode().toString()
-							.equalsIgnoreCase(StatusCode.COMPLETED.toString())) {
-						status = true;
+		SetupcommissionE setupcommissionE = new SetupcommissionE();
+		setupcommissionE.setSetupcommission(setupcommission);
 
-					}
+		SetupcommissionResponseE response = matsStub
+				.setupcommission(setupcommissionE);
+
+		if (response != null) {
+			SetupcommissionResponse response2 = response
+					.getSetupcommissionResponse();
+			if (response2 != null) {
+				Servicecommissionrequestresponse response3 = response2
+						.get_return();
+				if (response3 != null) {
+					statusMessage = response3.getResponsemessage();
 				} else {
-					logger.info("--------------------------response is null");
-
+					statusMessage = "Response3 is empty";
 				}
+
 			} else {
-				logger.info("--------------------------setupservicefeesandcommissionResponse is null");
+				statusMessage = "Response2 is empty";
 			}
-
-			statusMessage = response.getResponsemessage();
-
 		} else {
-			logger.info("--------------------------feesAndCommissionResponseE is null");
+			statusMessage = "Response1 is empty";
 		}
 
-		return status;
+		return statusMessage;
+
 	}
+
+	public static String editCommission(String loggedInUser,
+			BigDecimal commissionfeefortrnxfee, Integer commissionsetuptype,
+			ServiceCommission[] servicecommission,
+			Integer servicefeepropertiesid, Integer transactiontypeid,
+			Integer accountholderid) throws Exception {
+		matsStub = new ProvisioningStub(esbendpoint);
+
+		String statusMessage = "";
+
+		Editcommission editcommission = new Editcommission();
+		editcommission.setCommissionfeefortrnxfee(commissionfeefortrnxfee);
+		editcommission.setCommissionsetuptype(commissionsetuptype);
+		editcommission.setLoggedinUser(loggedInUser);
+		editcommission.setServicecommissiondetails(servicecommission);
+		editcommission.setServicefeepropertiesid(servicefeepropertiesid);
+		editcommission.setTransactiontypeid(transactiontypeid);
+		editcommission.setUserresourceid(accountholderid);
+
+		EditcommissionE editcommissionE = new EditcommissionE();
+		editcommissionE.setEditcommission(editcommission);
+
+		EditcommissionResponseE response = matsStub
+				.editcommission(editcommissionE);
+
+		if (response != null) {
+			EditcommissionResponse response2 = response
+					.getEditcommissionResponse();
+			if (response2 != null) {
+				Editcommissionrequestresponse response3 = response2
+						.get_return();
+				if (response3 != null) {
+					statusMessage = response3.getResponsemessage();
+				} else {
+					statusMessage = "Response3 is empty";
+				}
+
+			} else {
+				statusMessage = "Response2 is empty";
+			}
+		} else {
+			statusMessage = "Response1 is empty";
+		}
+
+		return statusMessage;
+
+	}
+
+	public static String deleteCommission(String loggedInUser,
+			Integer transactiontypeid, Integer accountholderid,
+			Integer servicefeepropertiesid) throws Exception {
+		matsStub = new ProvisioningStub(esbendpoint);
+
+		String statusMessage = "";
+
+		Deletecommission deletecommission = new Deletecommission();
+		deletecommission.setLoggedinUser(loggedInUser);
+		deletecommission.setTransactiontypeid(transactiontypeid);
+		deletecommission.setUserresourceid(accountholderid);
+		deletecommission.setServicefeepropertiesid(servicefeepropertiesid);
+
+		DeletecommissionE deletecommissionE = new DeletecommissionE();
+		deletecommissionE.setDeletecommission(deletecommission);
+
+		DeletecommissionResponseE response = matsStub
+				.deletecommission(deletecommissionE);
+
+		if (response != null) {
+			DeletecommissionResponse response2 = response
+					.getDeletecommissionResponse();
+			if (response2 != null) {
+				Deletecommissionrequestresponse response3 = response2
+						.get_return();
+				if (response3 != null) {
+					statusMessage = response3.getResponsemessage();
+				} else {
+					statusMessage = "Response3 is empty";
+				}
+
+			} else {
+				statusMessage = "Response2 is empty";
+			}
+		} else {
+			statusMessage = "Response1 is empty";
+		}
+
+		return statusMessage;
+
+	}
+
 }

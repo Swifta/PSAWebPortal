@@ -967,15 +967,15 @@ public class FeesAndCommModule {
 					.getField("Min").getValue().toString().trim())));
 			sc[i].setMaximumamount(BigDecimal.valueOf(Float.valueOf(rfg
 					.getField("Max").getValue().toString().trim())));
-			sc[i].setServicecommissioncondition(ProvisioningStub.ServiceCommissionConditionTypes.Factory
-					.fromValue(conType));
-			sc[i].setServicecommissionmodeltype(ProvisioningStub.ServiceCommissionModelTypes.Factory
-					.fromValue(modType));
-			sc[i].setCommissionfeetype(ProvisioningStub.ServiceCommissionmatrix.Factory
-					.fromValue(mfg.getField("Mat").getValue().toString().trim()));
+			// sc[i].setServicecommissioncondition(ProvisioningStub.ServiceCommissionConditionTypes.Factory
+			// .fromValue(conType));
+			// sc[i].setServicecommissionmodeltype(ProvisioningStub.ServiceCommissionModelTypes.Factory
+			// .fromValue(modType));
+			// sc[i].setCommissionfeetype(ProvisioningStub.ServiceCommissionmatrix.Factory
+			// .fromValue(mfg.getField("Mat").getValue().toString().trim()));
 			sc[i].setCommissionfee(BigDecimal.valueOf(Float.valueOf(mfg
 					.getField("Amt").getValue().toString().trim())));
-			sc[i].setTransactiontypeid(txID);
+			// sc[i].setTransactiontypeid(txID);
 
 		}
 

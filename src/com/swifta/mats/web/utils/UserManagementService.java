@@ -43,10 +43,20 @@ import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Changepa
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ChangepasswordResponseE;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Changepasswordrequestresponse;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Credentials;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.DeleteProfileThreshold;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.DeleteProfileThresholdE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.DeleteProfileThresholdResponse;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.DeleteProfileThresholdResponseE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.DeleteProfileThresholdrequestresponse;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.EditProfile;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.EditProfileE;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.EditProfileResponse;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.EditProfileResponseE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.EditProfileThreshold;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.EditProfileThresholdE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.EditProfileThresholdResponse;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.EditProfileThresholdResponseE;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.EditProfileThresholdrequestresponse;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.EditProfilerequestresponse;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Identification;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Linkaccount;
@@ -709,7 +719,7 @@ public class UserManagementService {
 					AddProfilerequestresponse response3 = response2
 							.get_return();
 					if (response3 != null) {
-						statusMessage = response3.getResponseMessage();
+						statusMessage = response3.getResponsemessage();
 					}
 
 					else {
@@ -755,56 +765,6 @@ public class UserManagementService {
 
 	}
 
-	public static String addProfileThreshold(String profilename,
-			int[] transactiontypeids, int profileid, int thresholdtypeid,
-			int profiletypeid, String value) throws Exception {
-
-		String statusMessage = "";
-		matsStub = new ProvisioningStub(esbendpoint);
-
-		AddProfileThresholdE addProfileThresholdE = new AddProfileThresholdE();
-		AddProfileThreshold addProfileThreshold = new AddProfileThreshold();
-
-		addProfileThreshold.setLoggedinUser(UI.getCurrent().getSession()
-				.getAttribute("user").toString());
-		addProfileThreshold.setProfilename(profilename);
-		addProfileThreshold.setProfileid(profileid);
-		addProfileThreshold.setAction(transactiontypeids);
-		addProfileThreshold.setThresholdtypeid(thresholdtypeid);
-		addProfileThreshold.setProfiletypeid(profiletypeid);
-		addProfileThreshold.setValue(value);
-
-		addProfileThresholdE.setAddProfileThreshold(addProfileThreshold);
-
-		AddProfileThresholdResponseE response = matsStub
-				.addProfileThreshold(addProfileThresholdE);
-
-		if (response != null) {
-			AddProfileThresholdResponse response2 = response
-					.getAddProfileThresholdResponse();
-			if (response2 != null) {
-				AddProfileThresholdrequestresponse response3 = response2
-						.get_return();
-				if (response3 != null) {
-					statusMessage = response3.getResponseMessage();
-				}
-
-				else {
-					statusMessage = "Response3 is empty";
-				}
-
-			} else {
-				statusMessage = "addprofilethreshold request Response is empty";
-			}
-
-		} else {
-			statusMessage = "addprofilethreshold request Response is empty";
-		}
-
-		return statusMessage;
-
-	}
-
 	public static String editProfile(String profilename, String oldprofilename,
 			int profileid) throws Exception {
 		String statusMessage = "";
@@ -833,7 +793,7 @@ public class UserManagementService {
 					EditProfilerequestresponse response3 = response2
 							.get_return();
 					if (response3 != null) {
-						statusMessage = response3.getResponseMessage();
+						statusMessage = response3.getResponsemessage();
 					}
 
 					else {
@@ -907,7 +867,7 @@ public class UserManagementService {
 					RemoveProfilerequestresponse response3 = response2
 							.get_return();
 					if (response3 != null) {
-						statusMessage = response3.getResponseMessage();
+						statusMessage = response3.getResponsemessage();
 					}
 
 					else {
@@ -978,7 +938,7 @@ public class UserManagementService {
 					RemoveProfilePermissionrequestresponse response3 = response2
 							.get_return();
 					if (response3 != null) {
-						statusMessage = response3.getResponseMessage();
+						statusMessage = response3.getResponsemessage();
 					}
 
 					else {
@@ -1049,7 +1009,7 @@ public class UserManagementService {
 					SetProfilePermissionrequestresponse response3 = response2
 							.get_return();
 					if (response3 != null) {
-						statusMessage = response3.getResponseMessage();
+						statusMessage = response3.getResponsemessage();
 					}
 
 					else {
@@ -1088,6 +1048,152 @@ public class UserManagementService {
 				statusMessage = "REQUEST CANNOT BE COMPLETED AT THIS MOMENT, TRY AGAIN LATER";
 				e1.printStackTrace();
 			}
+		}
+
+		return statusMessage;
+
+	}
+
+	public static String addProfileThreshold(String profilename,
+			int[] transactiontypeids, int profileid, int thresholdtypeid,
+			int profiletypeid, String value) throws Exception {
+
+		String statusMessage = "";
+		matsStub = new ProvisioningStub(esbendpoint);
+
+		AddProfileThresholdE addProfileThresholdE = new AddProfileThresholdE();
+		AddProfileThreshold addProfileThreshold = new AddProfileThreshold();
+
+		addProfileThreshold.setLoggedinUser(UI.getCurrent().getSession()
+				.getAttribute("user").toString());
+		addProfileThreshold.setProfilename(profilename);
+		addProfileThreshold.setProfileid(profileid);
+		addProfileThreshold.setAction(transactiontypeids);
+		addProfileThreshold.setThresholdtypeid(thresholdtypeid);
+		addProfileThreshold.setProfiletypeid(profiletypeid);
+		addProfileThreshold.setValue(value);
+
+		addProfileThresholdE.setAddProfileThreshold(addProfileThreshold);
+
+		AddProfileThresholdResponseE response = matsStub
+				.addProfileThreshold(addProfileThresholdE);
+
+		if (response != null) {
+			AddProfileThresholdResponse response2 = response
+					.getAddProfileThresholdResponse();
+			if (response2 != null) {
+				AddProfileThresholdrequestresponse response3 = response2
+						.get_return();
+				if (response3 != null) {
+					statusMessage = response3.getResponsemessage();
+				}
+
+				else {
+					statusMessage = "Response3 is empty";
+				}
+
+			} else {
+				statusMessage = "addprofilethreshold request Response is empty";
+			}
+
+		} else {
+			statusMessage = "addprofilethreshold request Response is empty";
+		}
+
+		return statusMessage;
+
+	}
+
+	public static String editProfileThreshold(String profilename,
+			int[] transactiontypeids, int profileid, int thresholdtypeid,
+			int profiletypeid, String value) throws Exception {
+
+		String statusMessage = "";
+		matsStub = new ProvisioningStub(esbendpoint);
+
+		EditProfileThresholdE editProfileThresholdE = new EditProfileThresholdE();
+		EditProfileThreshold editProfileThreshold = new EditProfileThreshold();
+
+		editProfileThreshold.setLoggedinUser(UI.getCurrent().getSession()
+				.getAttribute("user").toString());
+		editProfileThreshold.setProfilename(profilename);
+		editProfileThreshold.setProfileid(profileid);
+		editProfileThreshold.setAction(transactiontypeids);
+		editProfileThreshold.setThresholdtypeid(thresholdtypeid);
+		editProfileThreshold.setProfiletypeid(profiletypeid);
+		editProfileThreshold.setValue(value);
+
+		editProfileThresholdE.setEditProfileThreshold(editProfileThreshold);
+
+		EditProfileThresholdResponseE response = matsStub
+				.editProfileThreshold(editProfileThresholdE);
+
+		if (response != null) {
+			EditProfileThresholdResponse response2 = response
+					.getEditProfileThresholdResponse();
+			if (response2 != null) {
+				EditProfileThresholdrequestresponse response3 = response2
+						.get_return();
+				if (response3 != null) {
+					statusMessage = response3.getResponsemessage();
+				}
+
+				else {
+					statusMessage = "Response3 is empty";
+				}
+
+			} else {
+				statusMessage = "addprofilethreshold request Response is empty";
+			}
+
+		} else {
+			statusMessage = "addprofilethreshold request Response is empty";
+		}
+
+		return statusMessage;
+
+	}
+
+	public static String deleteProfileThreshold(int[] transactiontypeids,
+			int profileid) throws Exception {
+
+		String statusMessage = "";
+		matsStub = new ProvisioningStub(esbendpoint);
+
+		DeleteProfileThresholdE deleteProfileThresholdE = new DeleteProfileThresholdE();
+		DeleteProfileThreshold deleteProfileThreshold = new DeleteProfileThreshold();
+
+		deleteProfileThreshold.setLoggedinUser(UI.getCurrent().getSession()
+				.getAttribute("user").toString());
+		deleteProfileThreshold.setProfileid(profileid);
+		deleteProfileThreshold.setAction(transactiontypeids);
+
+		deleteProfileThresholdE
+				.setDeleteProfileThreshold(deleteProfileThreshold);
+
+		DeleteProfileThresholdResponseE response = matsStub
+				.deleteProfileThreshold(deleteProfileThresholdE);
+
+		if (response != null) {
+			DeleteProfileThresholdResponse response2 = response
+					.getDeleteProfileThresholdResponse();
+			if (response2 != null) {
+				DeleteProfileThresholdrequestresponse response3 = response2
+						.get_return();
+				if (response3 != null) {
+					statusMessage = response3.getResponsemessage();
+				}
+
+				else {
+					statusMessage = "Response3 is empty";
+				}
+
+			} else {
+				statusMessage = "addprofilethreshold request Response is empty";
+			}
+
+		} else {
+			statusMessage = "addprofilethreshold request Response is empty";
 		}
 
 		return statusMessage;
