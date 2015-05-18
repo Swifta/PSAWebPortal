@@ -47,7 +47,7 @@ public class ProfileView extends VerticalLayout implements View {
 		addMenu();
 	}
 
-	private void addHeader() {
+	public void addHeader() {
 		setMargin(true);
 		Object user = UI.getCurrent().getSession().getAttribute("fn");
 		if (user == null) {
@@ -80,6 +80,8 @@ public class ProfileView extends VerticalLayout implements View {
 
 	private void addMenu() {
 		addComponent(ts);
+		setComponentAlignment(ts, Alignment.TOP_CENTER);
+		setStyleName("my_profile_v_container");
 	}
 
 	private void d() {

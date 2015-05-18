@@ -57,7 +57,7 @@ public class WorkSpaceManageFeesAndComm {
 		HorizontalLayout pf = null;
 		if (Initializer.setUserPermissions.contains(hmPerms
 				.get("man_set_fees_commission"))) {
-			pf = apm.getFeesContainer(FeesAndCommModule.FEES);
+			pf = apm.getFeesContainer(FeesAndCommModule.FEES, false);
 		} else {
 			pf = apm.getExistingFeesContainer(FeesAndCommModule.EXISTING);
 		}
@@ -108,7 +108,8 @@ public class WorkSpaceManageFeesAndComm {
 		}
 
 		if (!prevSearchFrag.contains(frag)) {
-			apm.apmModifier(action, cContent);
+			apm.apmModifier(action, cContent, prevSearchFrag.toString()
+					.contains(new String("existing")));
 			prevSearchFrag.add(frag);
 		}
 

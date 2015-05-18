@@ -36,7 +36,7 @@ public class Initializer {
 		setUserPermissions = new HashSet<>();
 		for (String perm : LoginService.getUserPermissions()) {
 			setUserPermissions.add(perm.toLowerCase());
-			// System.out.println(perm);
+			System.out.println(perm);
 		}
 
 		/*

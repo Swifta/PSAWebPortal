@@ -17,10 +17,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.axis2.AxisFault;
+
 import com.swifta.mats.web.Initializer;
 import com.swifta.mats.web.MatsWebPortalUI;
+import com.swifta.mats.web.utils.ReportingService;
 import com.swifta.mats.web.utils.UserManagementService;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub;
+import com.swifta.sub.mats.reporting.DataServiceFault;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Profile;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -28,6 +33,7 @@ import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.Validator;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.util.IndexedContainer;
+import com.vaadin.data.validator.DateRangeValidator;
 import com.vaadin.event.FieldEvents.FocusEvent;
 import com.vaadin.event.FieldEvents.FocusListener;
 import com.vaadin.event.ShortcutAction.KeyCode;
@@ -145,6 +151,8 @@ public class UserDetailsModule {
 	private HashMap<String, String> hmPerms;
 
 	private Window pop = new Window("Comfirm profile removal");
+
+	private Map<String, String> hmProfiles;
 
 	public UserDetailsModule() {
 
@@ -321,7 +329,8 @@ public class UserDetailsModule {
 
 		final BtnTabLike btnLinks = new BtnTabLike("Manage Downlines", null);
 
-		final BtnTabLike btnProfile = new BtnTabLike("User Profile", null);
+		final BtnTabLike btnProfile = new BtnTabLike("Statement", null);
+		btnProfile.setDescription("View statement");
 
 		final BtnTabLike btnAccount = new BtnTabLike("Account", null);
 		// BtnTabLike btnAuth = new BtnTabLike("Authentication", null);
@@ -329,15 +338,18 @@ public class UserDetailsModule {
 		cManageAndAddTab.addComponent(btnPersonal);
 		cManageAndAddTab.addComponent(btnAccount);
 
+		if (hmProfiles == null)
+			getProfiles();
+
 		if (xcontainer.getItem(xrid).getItemProperty("Profile Type").getValue()
-				.toString().equals("MATS_DEALER_USER_PROFILE")) {
+				.toString().equals(hmProfiles.get("11"))) {
 			if (Initializer.setUserPermissions.contains(hmPerms.get("unlink"))
 					|| Initializer.setUserPermissions.contains(hmPerms
 							.get("link")))
 				cManageAndAddTab.addComponent(btnLinks);
 		}
 
-		// cManageAndAddTab.addComponent(btnProfile);
+		cManageAndAddTab.addComponent(btnProfile);
 
 		// cManageAndAddTab.addComponent(btnAuth);
 		cManageAndAddTab.addComponent(btnLog);
@@ -1023,15 +1035,7 @@ public class UserDetailsModule {
 		if (cBtnEditCancel != null)
 			cBtnEditCancel.setVisible(false);
 
-		HashMap<Integer, String> profToID = new HashMap<>();
-
-		profToID.put(1, "MATS_ADMIN_USER_PROFILE");
-		profToID.put(3, "MATS_FINANCIAL_CONTROLLER_USER_PROFILE");
-		profToID.put(4, "MATS_CUSTOMER_CARE_USER_PROFILE");
-		profToID.put(6, "MATS_SUPER_AGENT_USER_PROFILE");
-		profToID.put(7, "MATS_SUB_AGENT_USER_PROFILE");
-		profToID.put(11, "MATS_DEALER_USER_PROFILE");
-		profToID.put(15, "MATS_SERVICE_PROVIDER_USER_PROFILE");
+		// profToID = new HashMap<>();
 
 		VerticalLayout cAgentInfo = new VerticalLayout();
 		cAgentInfo.setMargin(new MarginInfo(true, false, true, false));
@@ -1391,8 +1395,11 @@ public class UserDetailsModule {
 
 		comboHierarchy = new ComboBox("Profile");
 
-		Set<Entry<Integer, String>> set = profToID.entrySet();
-		for (Entry<Integer, String> e : set) {
+		if (hmProfiles == null)
+			getProfiles();
+
+		Set<Entry<String, String>> set = hmProfiles.entrySet();
+		for (Entry<String, String> e : set) {
 			comboHierarchy.addItem(e.getKey());
 			comboHierarchy.setItemCaption(e.getKey(), e.getValue());
 		}
@@ -1552,8 +1559,7 @@ public class UserDetailsModule {
 				Iterator<Entry<Integer, String>> itr = es.iterator();
 				comboCountry.setNullSelectionAllowed(false);
 				while (itr.hasNext()) {
-					Entry<Integer, String> e = (Entry<Integer, String>) itr
-							.next();
+					Entry<Integer, String> e = itr.next();
 					comboCountry.addItem(e.getKey());
 					comboCountry.setItemCaption(e.getKey(), e.getValue());
 				}
@@ -2100,8 +2106,6 @@ public class UserDetailsModule {
 
 		String strResponse = "";
 		String idtype = "";
-		UserManagementService ums = new UserManagementService();
-
 		try {
 
 			try {
@@ -2139,7 +2143,7 @@ public class UserDetailsModule {
 					.toString();
 			int country = (comboCountry.getValue() == null) ? 0 : Integer
 					.valueOf(comboCountry.getValue().toString());
-			Date dob = (dFDoB.getValue() == null) ? new Date() : (Date) dFDoB
+			Date dob = (dFDoB.getValue() == null) ? new Date() : dFDoB
 					.getValue();
 			String employer = (tFEmp.getValue() == null) ? "" : tFEmp
 					.getValue().toString();
@@ -2172,12 +2176,12 @@ public class UserDetailsModule {
 					.getValue().toString();
 			String prov = (tFProv.getValue() == null) ? "" : tFProv.getValue()
 					.toString();
-			Date doe = (dFDoE.getValue() == null) ? new Date() : (Date) dFDoE
+			Date doe = (dFDoE.getValue() == null) ? new Date() : dFDoE
 					.getValue();
 			String idno = (tFIDNo.getValue() == null) ? "" : tFIDNo.getValue()
 					.toString();
 
-			Date doi = (dFDoI.getValue() == null) ? new Date() : (Date) dFDoI
+			Date doi = (dFDoI.getValue() == null) ? new Date() : dFDoI
 					.getValue();
 
 			String issuer = (tFIssuer.getValue() == null) ? "" : tFIssuer
@@ -2234,11 +2238,12 @@ public class UserDetailsModule {
 			System.out.println("idtype>>>>> "
 					+ ProvisioningStub.IdentificationType.PASSP.toString());
 
-			strResponse = ums.registerUser(bacc, bid, bd, clrno, cur, accEmail,
-					msisdn, profid, secQn, secAns, tAndC, un, country, dob,
-					employer, fn, gender, lang, ln, lgid, mn, occ, pref,
-					stateid, suff, city, pcode, str, prov, doe, idno, idtype,
-					doi, issuer, pem, pmno, pamno, sem, smno, samno);
+			strResponse = UserManagementService.registerUser(bacc, bid, bd,
+					clrno, cur, accEmail, msisdn, profid, secQn, secAns, tAndC,
+					un, country, dob, employer, fn, gender, lang, ln, lgid, mn,
+					occ, pref, stateid, suff, city, pcode, str, prov, doe,
+					idno, idtype, doi, issuer, pem, pmno, pamno, sem, smno,
+					samno);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -2299,6 +2304,95 @@ public class UserDetailsModule {
 		c.addComponent(cAgentInfo);
 
 		return c;
+
+	}
+
+	private Table getStatementsTable() {
+
+		IndexedContainer container = new IndexedContainer();
+
+		container.addContainerProperty("S/N", Integer.class, 0);
+		container.addContainerProperty("Date", String.class, null);
+		container.addContainerProperty("Txn. Type", String.class, null);
+		container.addContainerProperty("Amount", String.class, null);
+		container.addContainerProperty("Sender", Button.class, null);
+		container.addContainerProperty("Receiver", Button.class, null);
+		container.addContainerProperty("Amount", Button.class, null);
+		container.addContainerProperty("Partner", Button.class, null);
+
+		Table tb = new Table();
+		tb.setContainerDataSource(container);
+		tb.setPageLength(1);
+
+		/*
+		 * StringBuilder sb = new StringBuilder();
+		 * 
+		 * sb.append(
+		 * " SELECT concat(ahd.firstname,' ',ahd.lastname) as Name, ah.username as 'username', ah.msisdn as msisdn, ah.email as email "
+		 * ); sb.append(
+		 * " FROM linkaccountrelations pl, accountholders ah, accountholderdetails ahd "
+		 * ); sb.append(" where linkstatus = 'LINKED' ");
+		 * sb.append(" and ah.accountholderdetailid = ahd.accountdetailsid ");
+		 * sb.append(" and pl.childuserresourceid = ah.accountholderid ");
+		 * sb.append(
+		 * " and parentuserresourceid in (select accountholderid from accountholders "
+		 * ); sb.append(" where (username = '" + curUser + "'))");
+		 * 
+		 * String drivers = "com.mysql.jdbc.Driver"; try { Class<?> driver_class
+		 * = Class.forName(drivers); Driver driver = (Driver)
+		 * driver_class.newInstance(); DriverManager.registerDriver(driver);
+		 * 
+		 * Connection conn = DriverManager.getConnection(
+		 * MatsWebPortalUI.conf.DB, MatsWebPortalUI.conf.UN,
+		 * MatsWebPortalUI.conf.PW);
+		 * 
+		 * Statement stmt = conn.createStatement();
+		 * 
+		 * ResultSet rs = stmt.executeQuery(sb.toString());
+		 * 
+		 * int x = 0; Property<String> pUn; Property<String> pMsisdn;
+		 * Property<String> pEmail; Property<Integer> pSn; Property<Button>
+		 * pBtn;
+		 * 
+		 * String un; String msisdn; String email; Object rid; Button btnLink;
+		 * Item r;
+		 * 
+		 * while (rs.next()) {
+		 * 
+		 * x++;
+		 * 
+		 * un = rs.getString("username"); msisdn = rs.getString("msisdn"); email
+		 * = rs.getString("email");
+		 * 
+		 * rid = container.addItem(); r = container.getItem(rid);
+		 * 
+		 * pSn = r.getItemProperty("S/N"); pUn = r.getItemProperty("Username");
+		 * pMsisdn = r.getItemProperty("MSISDN"); pEmail =
+		 * r.getItemProperty("Email"); pBtn = r.getItemProperty("Action");
+		 * btnLink = new Button(); btnLink.setIcon(FontAwesome.UNLINK);
+		 * btnLink.setStyleName("btn_link");
+		 * btnLink.setDescription("Unlink this account.");
+		 * btnLink.addClickListener(new UNLinkClickHandler());
+		 * btnLink.setId(un); btnLink.setData(rid); btnLink.setEnabled(false);
+		 * 
+		 * if (Initializer.setUserPermissions.contains(hmPerms .get("unlink")))
+		 * btnLink.setEnabled(true);
+		 * 
+		 * pSn.setValue(x); pUn.setValue(un); pMsisdn.setValue(msisdn);
+		 * pEmail.setValue(email); pBtn.setValue(btnLink);
+		 * 
+		 * }
+		 * 
+		 * tb.setContainerDataSource(container); if (x > 30) x = 30;
+		 * tb.setPageLength(x);
+		 * 
+		 * } catch (SQLException | ClassNotFoundException |
+		 * InstantiationException | IllegalAccessException e) {
+		 * 
+		 * errorHandler(e); }
+		 */
+
+		return tb;
 
 	}
 
@@ -2697,68 +2791,80 @@ public class UserDetailsModule {
 	private HorizontalLayout getPC() {
 
 		VerticalLayout cAgentInfo = new VerticalLayout();
-		final HorizontalLayout cPlaceholder = new HorizontalLayout();
 		cAgentInfo.setMargin(new MarginInfo(true, true, true, true));
 		cAgentInfo.setStyleName("c_details_test");
 
 		final VerticalLayout cLBody = new VerticalLayout();
 
 		cLBody.setStyleName("c_body_visible");
-		tb = new Table("Linked child accounts");
-		// addLinksTable();
+		// Table tb = new Table("Statement");
 
-		final VerticalLayout cAllProf = new VerticalLayout();
+		Label lb = new Label(curUser + "'s Account Statement as: ");
+		cLBody.addComponent(lb);
+		cLBody.setComponentAlignment(lb, Alignment.TOP_LEFT);
 
-		HorizontalLayout cProfActions = new HorizontalLayout();
-		final FormLayout cProfName = new FormLayout();
+		HorizontalLayout cDF = new HorizontalLayout();
+		cDF.setSizeUndefined();
+		cDF.setSpacing(true);
+		cDF.setMargin(new MarginInfo(false, true, true, false));
+		final PopupDateField dSDate = new PopupDateField("From Date");
+		final PopupDateField dToDate = new PopupDateField("To Date");
 
-		cProfName.setStyleName("frm_profile_name");
-		cProfName.setSizeUndefined();
+		Button btnLoad = new Button("Load");
+		btnLoad.setDescription("Load statement");
+		btnLoad.setStyleName("btn_link");
 
-		final Label lbProf = new Label();
-		final TextField tFProf = new TextField();
+		cDF.addComponent(dSDate);
+		cDF.addComponent(dToDate);
+		HorizontalLayout cBtn = new HorizontalLayout();
+		cBtn.setHeight("100%");
+		cBtn.setWidthUndefined();
+		cBtn.addComponent(btnLoad);
+		cBtn.setComponentAlignment(btnLoad, Alignment.BOTTOM_LEFT);
+		cDF.addComponent(cBtn);
+		cLBody.addComponent(cDF);
 
-		lbProf.setCaption("Profile Name: ");
-		lbProf.setValue("Certified Authorized User.");
+		cal = Calendar.getInstance();
+		Date dToday = cal.getTime();
+		dSDate.setValue(dToday);
+		dToDate.setValue(dToday);
 
-		tFProf.setCaption(lbProf.getCaption());
-		cProfName.addComponent(lbProf);
+		cal.set(1970, 0, 1);
+		Date dMin = cal.getTime();
 
-		final Button btnEdit = new Button();
-		btnEdit.setIcon(FontAwesome.EDIT);
-		btnEdit.setStyleName("btn_link");
-		btnEdit.setDescription("Edit profile name");
+		/*
+		 * dSDate.addValidator(new DateRangeValidator(
+		 * "Invalid date. Please select a date Earlier/Today.", dMin, dToday,
+		 * null));
+		 */
 
-		final Button btnCancel = new Button();
-		btnCancel.setIcon(FontAwesome.UNDO);
-		btnCancel.setStyleName("btn_link");
-		btnCancel.setDescription("Cancel Profile name editting.");
+		DateRangeValidator drv = new DateRangeValidator(
+				"Invalid date. Please select a date Earlier/Today.", dMin,
+				dToday, null);
+		dSDate.addValidator(drv);
+		dToDate.addValidator(drv);
 
-		Button btnAdd = new Button("+");
-		// btnAdd.setIcon(FontAwesome.EDIT);
-		btnAdd.setStyleName("btn_link");
-		btnAdd.setDescription("Set new profile");
+		dSDate.setRequired(true);
+		dSDate.setImmediate(true);
 
-		Button btnRemove = new Button("-");
-		// btnRemove.setIcon(FontAwesome.EDIT);
-		btnRemove.setStyleName("btn_link");
-		btnRemove.setDescription("Remove current profile");
+		dToDate.setRequired(true);
+		dToDate.setImmediate(true);
 
-		// cProf.addComponent(cProfName);
-		cProfActions.addComponent(btnEdit);
-		cProfActions.addComponent(btnCancel);
-		cProfActions.addComponent(btnAdd);
-		cProfActions.addComponent(btnRemove);
+		btnLoad.addClickListener(new Button.ClickListener() {
+			private static final long serialVersionUID = -8427226211153164650L;
 
-		btnCancel.setVisible(false);
+			@Override
+			public void buttonClick(ClickEvent event) {
 
-		cAllProf.addComponent(cProfName);
-		cAllProf.addComponent(cProfActions);
-		cAllProf.setComponentAlignment(cProfActions, Alignment.TOP_CENTER);
+				if (dSDate.getValue().compareTo(dToDate.getValue()) == -1) {
+					// TODO Check for NULL pointer dates
+				}
 
-		cLBody.addComponent(cAllProf);
+			}
+		});
 
-		// cLBody.addComponent(tb);
+		Table tb = getStatementsTable();
+		cLBody.addComponent(tb);
 
 		tb.setSelectable(true);
 
@@ -2768,232 +2874,51 @@ public class UserDetailsModule {
 		btnLink.setIcon(FontAwesome.LINK);
 		btnLink.setDescription("Link new account.");
 
-		// cLBody.addComponent(btnLink);
-		// cLBody.setComponentAlignment(btnLink, Alignment.TOP_LEFT);
+		if (Initializer.setUserPermissions.contains(hmPerms.get("link"))) {
+			cLBody.addComponent(btnLink);
+			cLBody.setComponentAlignment(btnLink, Alignment.TOP_LEFT);
+		}
 		btnLink.addClickListener(new LinkClickHandler());
 
 		cPlaceholder.setVisible(false);
-		addLinkUserContainer();
+		// addLinkUserContainer();
 		cPlaceholder.setWidth("100%");
 
 		cLBody.addComponent(cPlaceholder);
 		cLBody.setComponentAlignment(cPlaceholder, Alignment.TOP_CENTER);
+
 		HorizontalLayout c = new HorizontalLayout();
 		c.addComponent(cAgentInfo);
-
-		btnEdit.addClickListener(new Button.ClickListener() {
-
-			private static final long serialVersionUID = -8427226211153164650L;
-
-			@Override
-			public void buttonClick(ClickEvent event) {
-
-				if (btnEdit.getIcon().equals(FontAwesome.EDIT)) {
-
-					tFProf.setValue(lbProf.getValue());
-					tFProf.selectAll();
-					cProfName.replaceComponent(lbProf, tFProf);
-					btnEdit.setIcon(FontAwesome.SAVE);
-					btnCancel.setVisible(true);
-					return;
-
-				} else if (btnEdit.getIcon().equals(FontAwesome.SAVE)) {
-
-					lbProf.setValue(tFProf.getValue());
-					cProfName.replaceComponent(tFProf, lbProf);
-					btnEdit.setIcon(FontAwesome.EDIT);
-					btnCancel.setVisible(false);
-
-					return;
-				}
-				lbProf.setValue(tFProf.getValue());
-				cProfName.replaceComponent(tFProf, lbProf);
-				btnEdit.setIcon(FontAwesome.EDIT);
-				btnCancel.setVisible(false);
-
-			}
-		});
-
-		btnCancel.addClickListener(new Button.ClickListener() {
-			private static final long serialVersionUID = -2870045546205986347L;
-
-			@Override
-			public void buttonClick(ClickEvent event) {
-				cProfName.replaceComponent(tFProf, lbProf);
-				btnEdit.setIcon(FontAwesome.EDIT);
-				btnCancel.setVisible(false);
-
-			}
-		});
-
-		btnAdd.addClickListener(new AddProfileHandler(cAllProf, cPlaceholder));
-
-		btnRemove.addClickListener(new RemoveProfileHandler(pop));
 
 		return c;
 
 	}
 
-	private class RemoveProfileHandler implements Button.ClickListener {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		private Window pop;
-		private Button btnCancel;
-		private Button btnComfirm;
+	private void getProfiles() {
+		ReportingService rs = null;
 
-		RemoveProfileHandler(final Window pop) {
-			this.pop = pop;
+		if (rs == null) {
+			try {
+				rs = new ReportingService();
+			} catch (AxisFault e) {
 
-			VerticalLayout cComfirm = new VerticalLayout();
-
-			Label lbComfrim = new Label("Current user profile will be removed!");
-
-			btnComfirm = new Button("Remove Profile");
-			btnComfirm.setStyleName("btn_link");
-			btnComfirm.setDescription("Remove current profile");
-
-			btnCancel = new Button("Cancel");
-			btnCancel.setStyleName("btn_link");
-			btnCancel.setDescription("Cancel Profile removal");
-
-			HorizontalLayout cBtns = new HorizontalLayout();
-			cBtns.addComponent(btnComfirm);
-			cBtns.addComponent(btnCancel);
-
-			cBtns.setSpacing(true);
-
-			cComfirm.addComponent(lbComfrim);
-			cComfirm.addComponent(cBtns);
-
-			cComfirm.setSpacing(true);
-			cComfirm.setMargin(true);
-
-			cComfirm.setComponentAlignment(lbComfrim, Alignment.TOP_CENTER);
-			cComfirm.setComponentAlignment(cBtns, Alignment.TOP_CENTER);
-
-			pop.setContent(cComfirm);
-
-			btnComfirm.addClickListener(new Button.ClickListener() {
-
-				/**
-				 * 
-				 */
-				private static final long serialVersionUID = 1L;
-
-				@Override
-				public void buttonClick(ClickEvent event) {
-
-					pop.close();
-
-				}
-			});
-
-			btnCancel.addClickListener(new Button.ClickListener() {
-
-				/**
-				 * 
-				 */
-				private static final long serialVersionUID = 1L;
-
-				@Override
-				public void buttonClick(ClickEvent event) {
-
-					pop.close();
-
-				}
-			});
-
+				e.printStackTrace();
+			}
 		}
 
-		@Override
-		public void buttonClick(ClickEvent event) {
-			UI.getCurrent().addWindow(pop);
-			pop.center();
+		try {
+			Map<String, String> hmTemp = new HashMap<>();
+			for (Profile profile : rs.getProfiles()) {
+				hmTemp.put(profile.getProfileid(), profile.getProfilename());
 
+			}
+
+			hmProfiles = hmTemp;
+			hmProfiles.put("ALL", "0");
+
+		} catch (RemoteException | DataServiceFault e) {
+			e.printStackTrace();
 		}
-
-	}
-
-	private class AddProfileHandler implements Button.ClickListener {
-
-		private static final long serialVersionUID = -9065514577173650677L;
-		private VerticalLayout cAddProf;
-		private HorizontalLayout cBtns;
-		private TextField tFProf;
-		private ComboBox combo;
-		private Button btnCancel;
-		private Button btnSave;
-		private VerticalLayout cAllProf;
-		private HorizontalLayout cPlaceholder;
-
-		AddProfileHandler(final VerticalLayout cAllProf,
-				final HorizontalLayout cPlaceholder) {
-			this.cAllProf = cAllProf;
-			this.cPlaceholder = cPlaceholder;
-			cAddProf = new VerticalLayout();
-			cBtns = new HorizontalLayout();
-			cAddProf.setMargin(new MarginInfo(true, false, false, false));
-
-			tFProf = new TextField("Profile Name");
-			combo = new ComboBox("Profile");
-			btnSave = new Button();
-			btnSave.setIcon(FontAwesome.SAVE);
-			btnSave.setStyleName("btn_link");
-			btnSave.setDescription("Save new profile");
-
-			btnCancel = new Button();
-			btnCancel.setStyleName("btn_link");
-			btnCancel.setIcon(FontAwesome.UNDO);
-			btnCancel.setDescription("Cancel setting new profile");
-
-			cAddProf.addComponent(tFProf);
-			cAddProf.addComponent(combo);
-			cBtns.addComponent(btnSave);
-			cBtns.addComponent(btnCancel);
-			cAddProf.addComponent(cBtns);
-
-			cPlaceholder.addComponent(cAddProf);
-
-			btnCancel.addClickListener(new Button.ClickListener() {
-
-				private static final long serialVersionUID = 3115121215716705673L;
-
-				@Override
-				public void buttonClick(ClickEvent event) {
-
-					cAllProf.setVisible(true);
-					cPlaceholder.setVisible(false);
-
-				}
-			});
-
-			btnSave.addClickListener(new Button.ClickListener() {
-
-				/**
-				 * 
-				 */
-				private static final long serialVersionUID = 7591799098570751956L;
-
-				@Override
-				public void buttonClick(ClickEvent event) {
-
-					cAllProf.setVisible(true);
-					cPlaceholder.setVisible(false);
-
-				}
-			});
-
-		}
-
-		@Override
-		public void buttonClick(ClickEvent event) {
-			cPlaceholder.setVisible(true);
-			cAllProf.setVisible(false);
-
-		}
-
 	}
 
 }

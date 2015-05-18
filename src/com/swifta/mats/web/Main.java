@@ -28,6 +28,7 @@ import com.vaadin.data.util.filter.Compare.LessOrEqual;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -79,11 +80,12 @@ public class Main extends VerticalLayout implements View {
 		addMenu();
 	}
 
-	private void addHeader() {
+	public void addHeader() {
 		setMargin(true);
-		Object user = UI.getCurrent().getSession().getAttribute("user");
-		if (user == null)
-			return;
+		Object user = UI.getCurrent().getSession().getAttribute("fn");
+		if (user == null) {
+			user = new String("Anonymous");
+		}
 		Button btnLogout = new Button("Logout");
 		Label lbUsername = new Label("Hi, " + user.toString());
 		lbUsername.setStyleName("lbel3");
@@ -102,6 +104,7 @@ public class Main extends VerticalLayout implements View {
 			public void buttonClick(ClickEvent event) {
 				UI.getCurrent().getSession().setAttribute("user", null);
 				UI.getCurrent().getNavigator().navigateTo(Login.LOGIN);
+				VaadinSession.getCurrent().close();
 
 			}
 		});

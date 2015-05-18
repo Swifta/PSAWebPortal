@@ -11,6 +11,8 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map.Entry;
@@ -87,6 +89,8 @@ public class FeesAndCommModule {
 	private Double dcamt;
 	private NumberFormat nf;
 	private DecimalFormatSymbols dfs;
+	private boolean isEditFees = false;
+	private Table tbFees;
 
 	// private boolean isExistingInit = false;
 	// private boolean isOthersInit = false;
@@ -137,6 +141,7 @@ public class FeesAndCommModule {
 		comboMat.addItem(arrMatValues[1]);
 		comboMat.setItemCaption(arrMatValues[1], "Fixed");
 		comboMat.select(arrMatValues[0]);
+		comboMat.setNullSelectionAllowed(false);
 
 		final TextField tfAmt = new TextField();
 		cMat.addComponent(comboMat);
@@ -353,9 +358,8 @@ public class FeesAndCommModule {
 		public void validate(Object v) throws InvalidValueException,
 				NumberFormatException {
 
-			if (!isTiered) {
+			if (!isTiered)
 				return;
-			}
 
 			if (v.toString().trim().isEmpty())
 				return;
@@ -420,7 +424,8 @@ public class FeesAndCommModule {
 		@Override
 		public void validate(Object v) throws InvalidValueException,
 				NumberFormatException {
-
+			if (v == null)
+				return;
 			if (v.toString().trim().isEmpty())
 				return;
 
@@ -455,6 +460,11 @@ public class FeesAndCommModule {
 		addMatrix();
 	}
 
+	private void add(Table tb) {
+		addRange(tb);
+		addMatrix(tb);
+	}
+
 	private void add(ArrayList<ArrayList<FieldGroup>> allFG) {
 		addRange(allFG.get(0));
 		addMatrix(allFG.get(1));
@@ -484,6 +494,234 @@ public class FeesAndCommModule {
 			cMin.addComponent(rfg.getField("Min"));
 			cMax.addComponent(rfg.getField("Max"));
 			arrLRangeFG.add(rfg);
+		}
+
+	}
+
+	private void addRange(Table tb) {
+
+		VerticalLayout cMin = cArrLItemContent.get(0);
+		VerticalLayout cMax = cArrLItemContent.get(1);
+
+		Collection<?> rids = null;
+		// Collection<?> rids = tb.getContainerDataSource().getItemIds();
+		if (rids == null)
+			rids = Arrays.asList(new String[] { "101", "1000" });
+		for (Object rid : rids) {
+			final TextField tfMin = new TextField();
+			final TextField tfMax = new TextField();
+			cMin.addComponent(tfMin);
+			cMax.addComponent(tfMax);
+
+			Property<String> pMin = new ObjectProperty<>(rid.toString());
+			Property<String> pMax = new ObjectProperty<>(rid.toString());
+
+			Item row = new PropertysetItem();
+			row.addItemProperty("Min", pMin);
+			row.addItemProperty("Max", pMax);
+			FieldGroup fg = new FieldGroup(row);
+			fg.bind(tfMin, "Min");
+			fg.bind(tfMax, "Max");
+			arrLRangeFG.add(fg);
+			int index = arrLRangeFG.size() - 1;
+			tfMin.addValidator(new RangeHouseKeeper(tfMin, tfMax, index));
+			tfMax.addValidator(new RangeHouseKeeper(tfMin, tfMax, index));
+			tfMin.setValidationVisible(true);
+			tfMax.setValidationVisible(true);
+			tfMin.setImmediate(true);
+			tfMax.setImmediate(true);
+
+			if (!isTiered) {
+				tfMin.setValue("0.00");
+				tfMin.setEnabled(false);
+				tfMax.setValue("0.00");
+				tfMax.setEnabled(false);
+			}
+
+			fg.addCommitHandler(new CommitHandler() {
+				private static final long serialVersionUID = -4960371331680442909L;
+
+				@Override
+				public void preCommit(CommitEvent commitEvent)
+						throws CommitException {
+					tfMin.setRequired(false);
+					tfMax.setRequired(false);
+					if (tfMin.getValue().trim().isEmpty()) {
+						tfMin.setRequired(true);
+						Notification.show(
+								"Fields marked with (*) are required.",
+								Notification.Type.WARNING_MESSAGE);
+						throw new CommitException("Field required.");
+					}
+					if (tfMax.getValue().trim().isEmpty()) {
+						tfMax.setRequired(true);
+						Notification.show(
+								"Fields marked with (*) are required.",
+								Notification.Type.WARNING_MESSAGE);
+						throw new CommitException("Field required.");
+					} else {
+						tfMin.setRequired(false);
+						tfMax.setRequired(false);
+						return;
+					}
+
+				}
+
+				@Override
+				public void postCommit(CommitEvent commitEvent)
+						throws CommitException {
+
+				}
+
+			});
+
+			tfMin.addValueChangeListener(new ValueChangeListener() {
+				private static final long serialVersionUID = -47504574989952155L;
+
+				@Override
+				public void valueChange(ValueChangeEvent event) {
+					try {
+						tfMin.setComponentError(null);
+						tfMax.setComponentError(null);
+						tfMin.validate();
+					} catch (MethodException e) {
+
+					}
+				}
+
+			});
+
+			tfMax.addValueChangeListener(new ValueChangeListener() {
+				private static final long serialVersionUID = -4750457473552155L;
+
+				@Override
+				public void valueChange(ValueChangeEvent event) {
+					try {
+						tfMax.setComponentError(null);
+						tfMin.setComponentError(null);
+						tfMax.validate();
+					} catch (MethodException e) {
+
+					}
+
+				}
+
+			});
+		}
+
+	}
+
+	private void addMatrix(Table tb) {
+		VerticalLayout cMat = cArrLItemContent.get(2);
+		VerticalLayout cAmt = cArrLItemContent.get(3);
+
+		Collection<?> rids = null;
+		// Collection<?> rids = tb.getContainerDataSource().getItemIds();
+		if (rids == null)
+			rids = Arrays.asList(new String[] { "xy", "xm" });
+		for (Object rid : rids) {
+
+			final ComboBox comboMat = new ComboBox();
+			comboMat.addItem(arrMatValues[0]);
+			comboMat.setItemCaption(arrMatValues[0], "%");
+			comboMat.addItem(arrMatValues[1]);
+			comboMat.setItemCaption(arrMatValues[1], "Fixed");
+			comboMat.select(arrMatValues[0]);
+
+			comboMat.setNullSelectionAllowed(false);
+
+			final TextField tfAmt = new TextField();
+			cMat.addComponent(comboMat);
+			cAmt.addComponent(tfAmt);
+
+			Property<String> pMat = new ObjectProperty<>(arrMatValues[0]);
+			Property<String> pAmt = new ObjectProperty<>("100");
+
+			Item row = new PropertysetItem();
+			row.addItemProperty("Mat", pMat);
+			row.addItemProperty("Amt", pAmt);
+			FieldGroup fg = new FieldGroup(row);
+			fg.bind(comboMat, "Mat");
+			fg.bind(tfAmt, "Amt");
+			arrLMatFG.add(fg);
+
+			comboMat.addValidator(new MatrixHouseKeeper(comboMat, tfAmt));
+			tfAmt.addValidator(new MatrixHouseKeeper(comboMat, tfAmt));
+			comboMat.setValidationVisible(true);
+			tfAmt.setValidationVisible(true);
+			comboMat.setImmediate(true);
+			tfAmt.setImmediate(true);
+
+			fg.addCommitHandler(new CommitHandler() {
+				private static final long serialVersionUID = -4960371331680442909L;
+
+				@Override
+				public void preCommit(CommitEvent commitEvent)
+						throws CommitException {
+					tfAmt.setRequired(false);
+					comboMat.setRequired(false);
+					if (comboMat.getValue() == null) {
+						comboMat.setRequired(true);
+						Notification.show(
+								"Fields marked with (*) are required.",
+								Notification.Type.WARNING_MESSAGE);
+						throw new CommitException("Field required.");
+					} else if (tfAmt.getValue().trim().isEmpty()) {
+						tfAmt.setRequired(true);
+						Notification.show(
+								"Fields marked with (*) are required.",
+								Notification.Type.WARNING_MESSAGE);
+						throw new CommitException("Field required.");
+					} else {
+						tfAmt.setRequired(false);
+						comboMat.setRequired(false);
+						return;
+					}
+
+				}
+
+				@Override
+				public void postCommit(CommitEvent commitEvent)
+						throws CommitException {
+
+				}
+
+			});
+
+			comboMat.addValueChangeListener(new ValueChangeListener() {
+				private static final long serialVersionUID = -47504574989952155L;
+
+				@Override
+				public void valueChange(ValueChangeEvent event) {
+					try {
+						comboMat.setComponentError(null);
+						tfAmt.setComponentError(null);
+						comboMat.validate();
+					} catch (MethodException e) {
+
+					}
+				}
+
+			});
+
+			tfAmt.addValueChangeListener(new ValueChangeListener() {
+				private static final long serialVersionUID = -4750457473552155L;
+
+				@Override
+				public void valueChange(ValueChangeEvent event) {
+					try {
+						tfAmt.setComponentError(null);
+						comboMat.setComponentError(null);
+						tfAmt.validate();
+
+					} catch (MethodException e) {
+
+					}
+
+				}
+
+			});
+
 		}
 
 	}
@@ -538,7 +776,7 @@ public class FeesAndCommModule {
 
 	}
 
-	public HorizontalLayout getFeesContainer(String type) {
+	public HorizontalLayout getFeesContainer(String type, boolean isEditFees) {
 
 		cArrLItemContent = new ArrayList<>(4);
 		arrLRangeFG = new ArrayList<>();
@@ -900,27 +1138,33 @@ public class FeesAndCommModule {
 			}
 		});
 
-		if (hmAllFG.size() == 0) {
-			add();
+		if (!isEditFees) {
+
+			if (hmAllFG.size() == 0) {
+				add();
+				return cManage;
+			}
+
+			if (!hmAllFG.containsKey(type)) {
+				add();
+				return cManage;
+			}
+
+			ArrayList<ArrayList<FieldGroup>> allFG = hmAllFG.get(type);
+			FieldGroup dfg = hmDFG.get(type);
+			String mt = dfg.getField("MODID").getValue().toString().trim();
+			String ct = dfg.getField("CONID").getValue().toString().trim();
+			isTiered = mt.equals(arrModelValues[0]);
+			comboModelType.select(mt);
+			comboConditionType.select(ct);
+
+			add(allFG);
+
+			return cManage;
+		} else {
+			add(tbFees);
 			return cManage;
 		}
-
-		if (!hmAllFG.containsKey(type)) {
-			add();
-			return cManage;
-		}
-
-		ArrayList<ArrayList<FieldGroup>> allFG = hmAllFG.get(type);
-		FieldGroup dfg = hmDFG.get(type);
-		String mt = dfg.getField("MODID").getValue().toString().trim();
-		String ct = dfg.getField("CONID").getValue().toString().trim();
-		isTiered = mt.equals(arrModelValues[0]);
-		comboModelType.select(mt);
-		comboConditionType.select(ct);
-
-		add(allFG);
-
-		return cManage;
 	}
 
 	private void commit() {
@@ -1144,7 +1388,7 @@ public class FeesAndCommModule {
 		}
 	}
 
-	void apmModifier(String strTbName, HorizontalLayout cContent) {
+	void apmModifier(String strTbName, HorizontalLayout cContent, boolean isEdit) {
 
 		cContent.removeAllComponents();
 		if (strTbName.equals(EXISTING)) {
@@ -1152,7 +1396,7 @@ public class FeesAndCommModule {
 			ischanged = true;
 			return;
 		}
-		cContent.addComponent(getFeesContainer(strTbName));
+		cContent.addComponent(getFeesContainer(strTbName, isEdit));
 		if (lookedTab != null) {
 			if (lookedTab.equals(strTbName)) {
 				comboOp.setEnabled(true);
@@ -1405,17 +1649,61 @@ public class FeesAndCommModule {
 
 		VerticalLayout cItemContentTier = new VerticalLayout();
 		cArrLItemContent.add(cItemContentTier);
-		Table tb = getPseudoTableFees(hmOpx.get(op), hmTxType.get(type));
-		lbAttr = new Label("Tier(Fees), Total Amount: " + nf.format(dfamt));
-		lbAttr.setSizeFull();
-		lbAttr.setStyleName("label_add_user attr");
-		cItemContentTier.addComponent(lbAttr);
+		Table tb = new Table();// getPseudoTableFees(hmOpx.get(op),
+								// hmTxType.get(type));
+		// lbAttr = new Label("Tier(Fees), Total Amount: " + nf.format(dfamt));
+		// lbAttr.setSizeFull();
+		// lbAttr.setStyleName("label_add_user attr");
+		// cItemContentTier.addComponent(lbAttr);
 		cItemContentTier.addComponent(tb);
+
+		Button btnEdit = new Button();
+		btnEdit.setDescription("Edit configurations.");
+		btnEdit.setIcon(FontAwesome.EDIT);
+
 		cAttrItem.addComponent(cItemContentTier);
 
 		cAttr.addComponent(cAttrItem);
+		cAttr.addComponent(btnEdit);
+		cAttr.setComponentAlignment(btnEdit, Alignment.BOTTOM_RIGHT);
 		cAttr.setWidth("100%");
 		cAttr.setHeightUndefined();
+
+		btnEdit.addClickListener(new Button.ClickListener() {
+
+			/**
+			 * TODO BTNEDIT
+			 */
+			private static final long serialVersionUID = -9222917320315332078L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+
+				if (!isSettingsURL) {
+					String s = UI.getCurrent().getPage().getUriFragment();
+					curURL = (s.indexOf('?') == -1) ? s + "/" : s.substring(0,
+							s.indexOf('?'));
+					isSettingsURL = true;
+				}
+
+				ManageFeesAndCommModule.btnComm.setStyleName("btn_tab_like");
+				ManageFeesAndCommModule.btnComm.setEnabled(true);
+
+				ManageFeesAndCommModule.btnExisting
+						.setStyleName("btn_tab_like");
+				ManageFeesAndCommModule.btnExisting.setEnabled(true);
+				ManageFeesAndCommModule.btnFees
+						.setStyleName("btn_tab_like btn_tab_like_active");
+				ManageFeesAndCommModule.btnFees.setEnabled(false);
+
+				String url = curURL + "?action=" + FEES;
+
+				if (WorkSpaceManageFeesAndComm.prevSearchFrag.contains(url))
+					WorkSpaceManageFeesAndComm.prevSearchFrag.remove(url);
+				UI.getCurrent().getPage().setUriFragment(url);
+
+			}
+		});
 
 		cC.addComponent(cAttr);
 
@@ -1453,12 +1741,18 @@ public class FeesAndCommModule {
 
 		VerticalLayout cItemContentTier = new VerticalLayout();
 		cArrLItemContent.add(cItemContentTier);
-		Table tb = getCommissionPseudoTable(hmOpx.get(op), hmTxType.get(type));
-		lbAttr = new Label("Tier(Commission), Total Amount: "
-				+ nf.format(dcamt));
-		lbAttr.setSizeFull();
-		lbAttr.setStyleName("label_add_user attr");
-		cItemContentTier.addComponent(lbAttr);
+		Table tb = new Table();
+		IndexedContainer ctnr = new IndexedContainer();
+
+		tb.setContainerDataSource(ctnr);
+		tb.setSizeUndefined();
+		// getCommissionPseudoTable(hmOpx.get(op),
+		// hmTxType.get(type));
+		// lbAttr = new Label("Tier(Commission), Total Amount: "
+		// + nf.format(dcamt));
+		// lbAttr.setSizeFull();
+		// lbAttr.setStyleName("label_add_user attr");
+		// cItemContentTier.addComponent(lbAttr);
 		cItemContentTier.addComponent(tb);
 		cAttrItem.addComponent(cItemContentTier);
 
@@ -1469,6 +1763,46 @@ public class FeesAndCommModule {
 		cC.addComponent(cAttr);
 
 		cC.addComponent(cAttr);
+
+		Button btnEdit = new Button();
+		btnEdit.setDescription("Edit configurations.");
+		btnEdit.setIcon(FontAwesome.EDIT);
+
+		cAttr.addComponent(btnEdit);
+		cAttr.setComponentAlignment(btnEdit, Alignment.BOTTOM_RIGHT);
+
+		btnEdit.addClickListener(new Button.ClickListener() {
+
+			private static final long serialVersionUID = -9222917320315332078L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+
+				if (!isSettingsURL) {
+					String s = UI.getCurrent().getPage().getUriFragment();
+					curURL = (s.indexOf('?') == -1) ? s + "/" : s.substring(0,
+							s.indexOf('?'));
+					isSettingsURL = true;
+				}
+
+				ManageFeesAndCommModule.btnFees.setStyleName("btn_tab_like");
+				ManageFeesAndCommModule.btnFees.setEnabled(true);
+
+				ManageFeesAndCommModule.btnExisting
+						.setStyleName("btn_tab_like");
+				ManageFeesAndCommModule.btnExisting.setEnabled(true);
+				ManageFeesAndCommModule.btnComm
+						.setStyleName("btn_tab_like btn_tab_like_active");
+				ManageFeesAndCommModule.btnComm.setEnabled(false);
+
+				String url = curURL + "?action=" + COMMISSION;
+
+				if (WorkSpaceManageFeesAndComm.prevSearchFrag.contains(url))
+					WorkSpaceManageFeesAndComm.prevSearchFrag.remove(url);
+				UI.getCurrent().getPage().setUriFragment(url);
+
+			}
+		});
 
 	}
 
