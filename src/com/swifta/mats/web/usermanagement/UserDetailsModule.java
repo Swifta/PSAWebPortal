@@ -2856,8 +2856,26 @@ public class UserDetailsModule {
 			@Override
 			public void buttonClick(ClickEvent event) {
 
-				if (dSDate.getValue().compareTo(dToDate.getValue()) == -1) {
-					// TODO Check for NULL pointer dates
+				if (dSDate.getValue() == null) {
+					Notification.show("Please specify \"From date.\"",
+							Notification.Type.ERROR_MESSAGE);
+					dSDate.focus();
+					return;
+				}
+
+				if (dToDate.getValue() == null) {
+					Notification.show("Please specify \"To date.\"",
+							Notification.Type.ERROR_MESSAGE);
+					dToDate.focus();
+					return;
+				}
+
+				if (dSDate.getValue().compareTo(dToDate.getValue()) == 1) {
+					Notification
+							.show("\"Start date can not be bigger than \"To date\"\"",
+									Notification.Type.ERROR_MESSAGE);
+					dSDate.focus();
+					return;
 				}
 
 			}
