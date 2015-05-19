@@ -88,7 +88,7 @@ public class FeesAndCommissionModuleClone {
 			cTemp = getFeesC();
 			cProfile = cTemp;
 		} else {
-			cTemp = getPermissionsC();
+			cTemp = getCommissionsC();
 			cPerm = cTemp;
 		}
 
@@ -187,13 +187,13 @@ public class FeesAndCommissionModuleClone {
 
 				if (!isfromsub) {
 					if (cPerm == null)
-						cPerm = getPermissionsC();
+						cPerm = getCommissionsC();
 					p = (HorizontalLayout) cStage.getComponent(0);
 					cStage.replaceComponent(p, cPerm);
 
 				} else {
 					if (cPerm == null)
-						cPerm = getPermissionsC();
+						cPerm = getCommissionsC();
 					prevL = (HorizontalLayout) cStage.getComponent(0);
 					cStage.replaceComponent(prevL, cPerm);
 
@@ -216,7 +216,7 @@ public class FeesAndCommissionModuleClone {
 		return cMain;
 	}
 
-	private HorizontalLayout getPermissionsC() {
+	private HorizontalLayout getFeesC() {
 		VerticalLayout cAgentInfo = new VerticalLayout();
 		final HorizontalLayout cPlaceholder = new HorizontalLayout();
 		cAgentInfo.setMargin(new MarginInfo(true, true, true, true));
@@ -240,7 +240,7 @@ public class FeesAndCommissionModuleClone {
 
 		final Label lbProf = new Label();
 		final Label lb = new Label();
-		lb.setValue("Manage Commissions");
+		lb.setValue("Manage Fees");
 		final TextField tFProf = new TextField();
 		comboPermProfiles = new ComboBox("Select Operator: ");
 
@@ -261,12 +261,12 @@ public class FeesAndCommissionModuleClone {
 		final Button btnCancel = new Button();
 		btnCancel.setIcon(FontAwesome.UNDO);
 		btnCancel.setStyleName("btn_link");
-		btnCancel.setDescription("Cancel editting Commissions");
+		btnCancel.setDescription("Cancel editting Fees");
 
 		final Button btnAdd = new Button("+");
 		// btnAdd.setIcon(FontAwesome.UNDO);
 		btnAdd.setStyleName("btn_link");
-		btnAdd.setDescription("Comfigure fees");
+		btnAdd.setDescription("Add Fees Comfigurations");
 		btnAdd.setVisible(false);
 
 		cProfNameAndAddBtn.addComponent(cProfName);
@@ -680,7 +680,7 @@ public class FeesAndCommissionModuleClone {
 
 	}
 
-	private HorizontalLayout getFeesC() {
+	private HorizontalLayout getCommissionsC() {
 
 		VerticalLayout cAgentInfo = new VerticalLayout();
 		final HorizontalLayout cPlaceholder = new HorizontalLayout();
@@ -737,7 +737,7 @@ public class FeesAndCommissionModuleClone {
 		Button btnAdd = new Button("+");
 		// btnAdd.setIcon(FontAwesome.EDIT);
 		btnAdd.setStyleName("btn_link");
-		btnAdd.setDescription("Add new profile");
+		btnAdd.setDescription("Add new fees");
 
 		Button btnRemove = new Button("-");
 		// btnRemove.setIcon(FontAwesome.EDIT);
