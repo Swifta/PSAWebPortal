@@ -150,6 +150,7 @@ public class Settings extends VerticalLayout {
 
 	private WorkSpaceManageFeesAndComm wmfac;
 	private ProfilesAndPermissionsModule ppm;
+	private FeesAndCommissionModuleClone fcm;
 
 	public HorizontalLayout Addlabel() {
 		setMargin(true);
@@ -204,7 +205,13 @@ public class Settings extends VerticalLayout {
 						.contains(hmFeesCommPermissions
 								.get("man_existing_fees_commission")))
 			cIcon.addComponent(het4);
-		cIcon.addComponent(het5);
+
+		if (Initializer.setUserPermissions.contains(hmFeesCommPermissions
+				.get("man_set_fees_commission"))
+				|| Initializer.setUserPermissions
+						.contains(hmFeesCommPermissions
+								.get("man_existing_fees_commission")))
+			cIcon.addComponent(het5);
 		cIcon.addComponent(het6);
 
 		het2.addLayoutClickListener(new LayoutClickListener() {
@@ -245,6 +252,29 @@ public class Settings extends VerticalLayout {
 				laying.removeAllComponents();
 				laying.addComponent(cmfac);
 				laying.setComponentAlignment(cmfac, Alignment.TOP_LEFT);
+				laying.setSizeFull();
+
+			}
+
+		});
+
+		het5.addLayoutClickListener(new LayoutClickListener() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1706822656417754591L;
+
+			@Override
+			public void layoutClick(LayoutClickEvent event) {
+
+				if (fcm == null)
+					fcm = new FeesAndCommissionModuleClone(back,
+							hmProfPermPermissions);
+				VerticalLayout cfcm = fcm.getMainContainer();
+
+				laying.removeAllComponents();
+				laying.addComponent(cfcm);
+				laying.setComponentAlignment(cfcm, Alignment.TOP_CENTER);
 				laying.setSizeFull();
 
 			}

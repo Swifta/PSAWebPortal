@@ -2319,7 +2319,7 @@ public class BE2 {
 					+ con_prof
 					+ con_email
 					+ " limit 100;";
-			// System.out.println(qx);
+			System.out.println("Search Users query: " + qx);
 
 			Statement stmt = conn.createStatement();
 

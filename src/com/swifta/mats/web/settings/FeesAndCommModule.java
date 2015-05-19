@@ -19,9 +19,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import com.swifta.mats.web.MatsWebPortalUI;
-import com.swifta.mats.web.usermanagement.NotifCustom;
 import com.swifta.mats.web.utils.CommissionService;
-import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ServiceCommission;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ServiceFees;
 import com.vaadin.data.Item;
@@ -1185,12 +1183,12 @@ public class FeesAndCommModule {
 			sf[i].setMaximumamount(BigDecimal.valueOf(Float.valueOf(rfg
 					.getField("Max").getValue().toString().trim())));
 
-			sf[i].setServicefeetype(ProvisioningStub.ServiceFeematrix.Factory
-					.fromValue(mfg.getField("Mat").getValue().toString().trim()));
+			// sf[i].setServicefeetype(ProvisioningStub.ServiceFeematrix.Factory
+			// .fromValue(mfg.getField("Mat").getValue().toString().trim()));
 
-			sf[i].setServicefee(BigDecimal.valueOf(Float.valueOf(mfg
-					.getField("Amt").getValue().toString().trim())));
-			sf[i].setTransactiontypeid(txID);
+			// sf[i].setServicefee(BigDecimal.valueOf(Float.valueOf(mfg
+			// .getField("Amt").getValue().toString().trim())));
+			// sf[i].setTransactiontypeid(txID);
 
 		}
 
@@ -1225,31 +1223,31 @@ public class FeesAndCommModule {
 
 		CommissionService cs = new CommissionService();
 
-		try {
-			if (cs.setFeesAndCommission(opID, txID, sc, sf)) {
-				if (cs.statusMessage == null) {
-					NotifCustom.show("Fees / Commission ",
-							"Tariff information saved successfully!");
-					resetFields(lookedTab);
-
-				} else {
-
-					Notification.show("Tariff saving FAILED: "
-							+ cs.statusMessage,
-							Notification.Type.WARNING_MESSAGE);
-					isReset = false;
-				}
-
-			} else {
-				Notification.show("Tariff saving FAILED: " + cs.statusMessage,
-						Notification.Type.ERROR_MESSAGE);
-				isReset = false;
-			}
-		} catch (Exception ce) {
-			ce.printStackTrace();
-			isReset = false;
-			return;
-		}
+		// try {
+		// if (cs.setFeesAndCommission(opID, txID, sc, sf)) {
+		// if (cs.statusMessage == null) {
+		// NotifCustom.show("Fees / Commission ",
+		// "Tariff information saved successfully!");
+		// resetFields(lookedTab);
+		//
+		// } else {
+		//
+		// Notification.show("Tariff saving FAILED: "
+		// + cs.statusMessage,
+		// Notification.Type.WARNING_MESSAGE);
+		// isReset = false;
+		// }
+		//
+		// } else {
+		// Notification.show("Tariff saving FAILED: " + cs.statusMessage,
+		// Notification.Type.ERROR_MESSAGE);
+		// isReset = false;
+		// }
+		// } catch (Exception ce) {
+		// ce.printStackTrace();
+		// isReset = false;
+		// return;
+		// }
 
 	}
 
