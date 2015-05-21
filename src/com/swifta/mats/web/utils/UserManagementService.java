@@ -87,6 +87,7 @@ import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.RemovePr
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.RemoveProfilerequestresponse;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.SecondaryContactInfo;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Securityquestions;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ServiceFees;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.SetDefaultaccountrequestresponse;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.SetProfilePermission;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.SetProfilePermissionE;
@@ -102,6 +103,8 @@ import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Setparen
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.SetparentaccountResponse;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.SetparentaccountResponseE;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Setparentrequestresponse;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Setupservicefees;
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.SetupservicefeesE;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.UnLinkaccountrequestresponse;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.Unlinkaccount;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.UnlinkaccountE;
@@ -129,8 +132,8 @@ public class UserManagementService {
 	// "http://127.0.0.1:8280/services/Provisionservice";
 
 	final static String esbendpoint = MatsWebPortalUI.conf.ESB;
-	final static String loggedInUser = UI.getCurrent().getSession()
-			.getAttribute("user").toString();
+	final static String loggedInUser = "admin";// UI.getCurrent().getSession()
+	// .getAttribute("user").toString();
 
 	static ProvisioningStub matsStub;
 	static MatsreportingserviceStub matsReportstub;
@@ -1340,6 +1343,22 @@ public class UserManagementService {
 					getpermission.getPermissions());
 		return hm;
 
+	}
+
+	public static void setupfeesBySp(String user, Integer sp, Integer ttid,
+			Integer sct, ServiceFees[] sfdetails) throws RemoteException {
+		matsStub = new ProvisioningStub(esbendpoint);
+		Setupservicefees setupservicefees = new Setupservicefees();
+
+		setupservicefees.setLoggedinUser(user);
+		setupservicefees.setUserresourceid(sp);
+		setupservicefees.setTransactiontypeid(ttid);
+		setupservicefees.setServiceconfigtype(sct);
+		setupservicefees.setServicefeedetails(sfdetails);
+
+		SetupservicefeesE ssfe = new SetupservicefeesE();
+		ssfe.setSetupservicefees(setupservicefees);
+		matsStub.setupservicefees(ssfe);
 	}
 
 }

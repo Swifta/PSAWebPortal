@@ -1,5 +1,6 @@
 package com.swifta.mats.web.utils;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.HashMap;
@@ -9,6 +10,7 @@ import java.util.Set;
 
 import org.apache.axis2.AxisFault;
 
+import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub.ServiceFees;
 import com.swifta.sub.mats.reporting.DataServiceFault;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getfeesandcommissionreportresponse;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getfeesandcommissionsummaryreportresponse;
@@ -16,6 +18,7 @@ import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getfloatmanagement
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Gettransactionreportresponse;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Gettransactionsummaryreportresponse;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Profile;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Servicefee;
 
 public class Client {
 
@@ -48,11 +51,16 @@ public class Client {
 
 			// Client.getUserPermissions();
 
-			getTransactionSummary();
-			getTransaction();
-			getFCR();
-			getFCSR();
-			getFMR();
+			// getServiceProviders();
+
+			// getTransactionSummary();
+			// getTransaction();
+			// getFCR();
+			// getFCSR();
+			// getFMR();
+			// getServiceProviders();
+			// setupFeesBySp();
+			getFeesBySp();
 
 			// Client.removeProfilePermission();
 
@@ -580,8 +588,43 @@ public class Client {
 
 		}
 	}
-	// public static void getactive() throws Exception {
-	//
-	// UserManagementService.getactiveprofilepermission(1);
-	// }
+
+	public static void getServiceProviders() throws RemoteException,
+			DataServiceFault {
+		ReportingService rs = new ReportingService();
+		for (Entry<String, String> e : rs.getServiceProviders().entrySet())
+			System.out.println(e.getKey() + " : " + e.getValue());
+
+	}
+
+	public static void getFeesBySp() throws RemoteException, DataServiceFault {
+		System.out.println("Fetching fees for 19...");
+		ReportingService rs = new ReportingService();
+		for (Servicefee sf : rs.getFeesBySP("admin", 20)) {
+			System.out.println(sf.getTransactiontypeid());
+			System.out.println(sf.getTransactiontype());
+			System.out.println(sf.getMinimumamount());
+			System.out.println(sf.getMaximumamount());
+			System.out.println(sf.getService_fee_type());
+			System.out.println(sf.getServicefeecondition());
+			System.out.println(sf.getServicefeecondition());
+			System.out.println(sf.getService_fee());
+		}
+
+	}
+
+	public static void setupFeesBySp() throws RemoteException, DataServiceFault {
+		System.out.println("Settings fees for spid 7...");
+		ServiceFees[] arrSF = new ServiceFees[1];
+
+		// System.out.println(BigDecimal.valueOf(40D));
+		arrSF[0] = new ServiceFees();
+		arrSF[0].setMinimumamount(BigDecimal.valueOf(40D));
+		arrSF[0].setMaximumamount(new BigDecimal(50D));
+		arrSF[0].setServicefeetype("PERCENT");
+		arrSF[0].setServicefee(new BigDecimal(10D));
+		UserManagementService.setupfeesBySp("admin", 7, 5, 1, arrSF);
+
+	}
+
 }

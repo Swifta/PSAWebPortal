@@ -206,12 +206,13 @@ public class Settings extends VerticalLayout {
 								.get("man_existing_fees_commission")))
 			cIcon.addComponent(het4);
 
-		if (Initializer.setUserPermissions.contains(hmFeesCommPermissions
-				.get("man_set_fees_commission"))
-				|| Initializer.setUserPermissions
-						.contains(hmFeesCommPermissions
-								.get("man_existing_fees_commission")))
-			cIcon.addComponent(het5);
+		/*
+		 * if (Initializer.setUserPermissions.contains(hmFeesCommPermissions
+		 * .get("man_set_fees_commission")) || Initializer.setUserPermissions
+		 * .contains(hmFeesCommPermissions
+		 * .get("man_existing_fees_commission")))
+		 */
+		cIcon.addComponent(het5);
 		cIcon.addComponent(het6);
 
 		het2.addLayoutClickListener(new LayoutClickListener() {
