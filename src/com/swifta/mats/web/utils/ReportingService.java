@@ -14,6 +14,7 @@ import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Commissionfee;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Existingservicefee;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getavailableservicefee;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getcommissionbysp;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getexistingthresholdsettings;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getfeesandcommissionreport;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getfeesandcommissionreportresponse;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getfeesandcommissionreportresponses;
@@ -29,7 +30,7 @@ import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getprofiles;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getprofiletypes;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getservicefeebysp;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getserviceproviders;
-import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getthresholdsettings;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getthresholdsetting;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getthresholdtypes;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Gettransactionreport;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Gettransactionreportresponse;
@@ -306,11 +307,43 @@ public class ReportingService {
 
 	}
 
-	private void getThresholdByProfile(String pid) throws RemoteException,
-			DataServiceFault {
-		Getthresholdsettings getthresholdsettings = new Getthresholdsettings();
-		// getthresholdsettings.se
-		getthresholdsettings.setProfileid(pid);
-		// rservice.getthresholdsettings(getthresholdsettings).get;
+	public Map<String, HashMap<String, HashMap<String, String>>> getExistingThresholds()
+			throws RemoteException, DataServiceFault {
+		Getexistingthresholdsettings getthresholdsettings = new Getexistingthresholdsettings();
+
+		Getthresholdsetting[] ts = rservice
+				.getexistingthresholdsettings(getthresholdsettings)
+				.getGetthresholdsettings().getGetthresholdsetting();
+		if (ts == null)
+			return Collections.emptyMap();
+
+		Map<String, HashMap<String, HashMap<String, String>>> hmGen = new HashMap<>();
+		for (Getthresholdsetting t : ts) {
+			String pt = t.getProfileid();
+			if (!hmGen.containsKey(pt)) {
+				HashMap<String, HashMap<String, String>> hmTT = new HashMap<>();
+				HashMap<String, String> hmThreshold = new HashMap<>();
+				hmThreshold.put("threshold_type_id", t.getThresholdtypeid());
+				hmThreshold.put("limit", t.getValue());
+				hmTT.put(t.getTransactiontypeid(), hmThreshold);
+				hmGen.put(t.getProfileid(), hmTT);
+				continue;
+			}
+
+			HashMap<String, HashMap<String, String>> hmTT = hmGen.get(pt);
+			if (!hmTT.containsKey(t.getTransactiontypeid())) {
+
+				HashMap<String, String> hmThreshold = new HashMap<>();
+				hmThreshold.put("threshold_type_id", t.getThresholdtypeid());
+				hmThreshold.put("limit", t.getValue());
+				hmTT.put(t.getThresholdtypeid(), hmThreshold);
+				continue;
+
+			}
+
+		}
+
+		return hmGen;
+
 	}
 }
