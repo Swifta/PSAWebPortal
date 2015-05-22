@@ -95,6 +95,7 @@ public class FeesAndCommissionModuleClone {
 	private boolean isProfileNameChanged = false;
 	private ReportingService rs;
 
+	private ComboBox comboAllFCOperatorsm;
 	private ComboBox comboAllFeesOperators;
 	private ComboBox comboAllCommissionOperators;
 	private ComboBox comboProfiles;
@@ -120,7 +121,11 @@ public class FeesAndCommissionModuleClone {
 	private BtnTabLike btnPermissions;
 
 	private TreeMap<String, String> tmExistingTransactionTypes = new TreeMap<>();
-	private ComboBox comboTT;
+	private ComboBox comboxTT;
+
+	private ComboBox comboFeesTT;
+
+	private ComboBox comboCommissionsTT;
 
 	private HashMap<String, String> hmOp;
 	private HashMap<String, Integer> hmOpx;
@@ -230,11 +235,11 @@ public class FeesAndCommissionModuleClone {
 		if (!btnProfiles.isEnabled()) {
 			cTemp = getFeesC();
 			cProfile = cTemp;
-			// isCommission = false;
+			isCommission = false;
 		} else {
 			cTemp = getCommissionsC();
 			cPerm = cTemp;
-			// isCommission = true;
+			isCommission = true;
 		}
 
 		cStage.addComponent(cTemp);
@@ -297,14 +302,18 @@ public class FeesAndCommissionModuleClone {
 				btnPermissions.setEnabled(true);
 				btnPermissions.setStyleName("btn_tab_like");
 
+				isCommission = false;
+
 				if (!isfromsub) {
 					if (cProfile == null)
 						cProfile = getFeesC();
+
 					p = (HorizontalLayout) cStage.getComponent(0);
 					cStage.replaceComponent(p, cProfile);
 					// isCommission = false;
 
 				} else {
+					// comboAllFCOperators = comboAllFeesOperators;
 					prevL = (HorizontalLayout) cStage.getComponent(0);
 					cStage.replaceComponent(prevL, cProfile);
 					isfromsub = false;
@@ -332,6 +341,8 @@ public class FeesAndCommissionModuleClone {
 				btnProfiles.setEnabled(true);
 				btnProfiles.setStyleName("btn_tab_like");
 
+				isCommission = true;
+
 				if (!isfromsub) {
 					if (cPerm == null)
 						cPerm = getCommissionsC();
@@ -341,6 +352,7 @@ public class FeesAndCommissionModuleClone {
 				} else {
 					if (cPerm == null)
 						cPerm = getCommissionsC();
+					// comboAllFCOperators = comboAllCommissionOperators;
 					prevL = (HorizontalLayout) cStage.getComponent(0);
 					cStage.replaceComponent(prevL, cPerm);
 
@@ -391,13 +403,16 @@ public class FeesAndCommissionModuleClone {
 		lb.setValue("Manage Fees");
 		final TextField tFProf = new TextField();
 		comboAllFeesOperators = new ComboBox("Select Operator: ");
+
+		// comboAllFeesOperators = comboAllFCOperators;
+
 		//
 		// OptionGroup optSetupType = new OptionGroup("Commission setup type");
 		// optSetupType.addItem("Fees");
 		// optSetupType.addItem("Tiered");
 
-		comboTT = new ComboBox("Transaction Type");
-		comboTT.setVisible(false);
+		comboFeesTT = new ComboBox("Transaction Type");
+		comboFeesTT.setVisible(false);
 
 		lbProf.setCaption("Selected Operator: ");
 		lbProf.setValue("None.");
@@ -408,7 +423,7 @@ public class FeesAndCommissionModuleClone {
 		cProfName.addComponent(comboAllFeesOperators);
 		cProfName.addComponent(lbProf);
 
-		cProfName.addComponent(comboTT);
+		cProfName.addComponent(comboFeesTT);
 
 		// comboTT.setVisible(false);
 
@@ -540,6 +555,11 @@ public class FeesAndCommissionModuleClone {
 						lbProf.setCaption("Selected Operator: ");
 						lbProf.setValue(pname);
 
+						if (hmAllOperators == null
+								|| hmAllOperators.size() == 0) {
+							hmAllOperators = getOperators();
+						}
+
 						// System.outhmAllOperators.get(pname)
 
 						hmServiceFees = getServiceFees(Integer
@@ -553,7 +573,7 @@ public class FeesAndCommissionModuleClone {
 									"No existing Fees Configurations for Operator \""
 											+ pname);
 							btnAdd.setVisible(true);
-							comboTT.setVisible(false);
+							comboFeesTT.setVisible(false);
 							isExistingFeeConfig = false;
 							isNewFeeConfig = true;
 
@@ -563,10 +583,10 @@ public class FeesAndCommissionModuleClone {
 						isExistingFeeConfig = true;
 						isNewFeeConfig = false;
 
-						comboTT.setVisible(true);
-						comboTT.removeAllItems();
+						comboFeesTT.setVisible(true);
+						comboFeesTT.removeAllItems();
 						for (String str : hmServiceFees.keySet()) {
-							comboTT.addItem(str);
+							comboFeesTT.addItem(str);
 						}
 
 						cPlaceholder.setVisible(false);
@@ -578,7 +598,7 @@ public class FeesAndCommissionModuleClone {
 					}
 				});
 
-		comboTT.addValueChangeListener(new ValueChangeListener() {
+		comboFeesTT.addValueChangeListener(new ValueChangeListener() {
 
 			private static final long serialVersionUID = 8620847994138095490L;
 
@@ -629,7 +649,13 @@ public class FeesAndCommissionModuleClone {
 			public void focus(FocusEvent event) {
 
 				// if (!isPermProfilesAdded)
+
+				System.out.println(comboAllFeesOperators.getCaption() + "kkkkk");
+
+				comboAllFeesOperators.addItem("kxkm,dm,m,md");
 				addOperators(comboAllFeesOperators);
+
+				System.out.println("Are you reaching here");
 				// isPermProfilesAdded = true;
 
 			}
@@ -726,10 +752,10 @@ public class FeesAndCommissionModuleClone {
 				hmInActivePerms = getInActivePermissions(pid);
 
 				tcsInactiveAndActive.removeAllItems();
-				comboTT.removeAllItems();
-				comboTT.setVisible(true);
+				comboFeesTT.removeAllItems();
+				comboFeesTT.setVisible(true);
 
-				addTransactionTypes(comboTT);
+				addTransactionTypes(comboFeesTT);
 
 				// TODO Important Swapping
 
@@ -1126,8 +1152,8 @@ public class FeesAndCommissionModuleClone {
 		//
 		// NotifCustom.show("Response", response);
 		// hmAllOperators.put(pnNew, pid.toString());
-		// comboAllFeesOperators.removeAllItems();
-		// comboAllFeesOperators.select(null);
+		// comboAllFCOperators.removeAllItems();
+		// comboAllFCOperators.select(null);
 		//
 		// return;
 		// }
@@ -1193,10 +1219,11 @@ public class FeesAndCommissionModuleClone {
 		final Label lb = new Label();
 		lb.setValue("Manage Commissions");
 		final TextField tFProf = new TextField();
-		comboAllFeesOperators = new ComboBox("Select Operator: ");
+		comboAllCommissionOperators = new ComboBox("Select Operator: ");
+		// comboAllCommissionOperators = comboAllFCOperators;
 
-		comboTT = new ComboBox("Transaction Type");
-		comboTT.setVisible(false);
+		comboCommissionsTT = new ComboBox("Transaction Type");
+		comboCommissionsTT.setVisible(false);
 
 		optSetupType = new OptionGroup("Commission Setup Type");
 		optSetupType.addItem(1);
@@ -1213,12 +1240,12 @@ public class FeesAndCommissionModuleClone {
 		cAllProf.addComponent(lb);
 		lb.setStyleName("label_search_user");
 		cAllProf.setComponentAlignment(lb, Alignment.TOP_CENTER);
-		cProfName.addComponent(comboAllFeesOperators);
+		cProfName.addComponent(comboAllCommissionOperators);
 		cProfName.addComponent(lbProf);
 
 		cProfName.addComponent(optSetupType);
 
-		cProfName.addComponent(comboTT);
+		cProfName.addComponent(comboCommissionsTT);
 
 		// comboTT.setVisible(false);
 
@@ -1369,7 +1396,8 @@ public class FeesAndCommissionModuleClone {
 
 				if (isExistingFeeConfig) {
 
-					displayFeesConfigurations(tb, comboTT.getValue().toString());
+					displayFeesConfigurations(tb, comboCommissionsTT.getValue()
+							.toString());
 					cPermsList.removeAllComponents();
 					cPermsList.addComponent(tb);
 					cPlaceholderx.setVisible(true);
@@ -1380,9 +1408,9 @@ public class FeesAndCommissionModuleClone {
 					cPermsActions.setVisible(true);
 					optSetupType.setEnabled(false);
 				} else {
-					comboTT.select(null);
-					comboAllFeesOperators.select(null);
-					comboTT.setVisible(false);
+					comboCommissionsTT.select(null);
+					comboAllCommissionOperators.select(null);
+					comboCommissionsTT.setVisible(false);
 					// optSetupType.setVisible(false);
 				}
 
@@ -1436,7 +1464,7 @@ public class FeesAndCommissionModuleClone {
 					// System.out
 					// .println("-------vvvvv--vv---v-v----------------");
 					// String pname =
-					// comboAllFeesOperators.getValue().toString()
+					// comboAllFCOperators.getValue().toString()
 					// .trim();
 					// hmServiceFees = getServiceFees(Integer
 					// .parseInt(hmAllOperators.get(pname)));
@@ -1454,10 +1482,10 @@ public class FeesAndCommissionModuleClone {
 					//
 					// optSetupType.setVisible(false);
 					// optSetupType.setEnabled(true);
-					comboAllFeesOperators.select(null);
-					comboAllFeesOperators.setValue(null);
-					comboTT.setEnabled(true);
-					comboTT.setVisible(false);
+					comboAllCommissionOperators.select(null);
+					comboAllCommissionOperators.setValue(null);
+					comboCommissionsTT.setEnabled(true);
+					comboCommissionsTT.setVisible(false);
 				}
 
 			}
@@ -1480,13 +1508,13 @@ public class FeesAndCommissionModuleClone {
 				if (!isEditFees) {
 					if (Integer.valueOf(obj.toString()) == 1) {
 						isOptTiered = false;
-						addTransactionTypes(comboTT);
+						addTransactionTypes(comboCommissionsTT);
 						tFCommValue.setValue("");
 
 						System.out.println("I love ....");
 					} else {
 						isOptTiered = true;
-						addTransactionTypes(comboTT);
+						addTransactionTypes(comboCommissionsTT);
 						// cPermsActions.setVisible(true);
 
 						System.out.println("I love x....");
@@ -1515,7 +1543,7 @@ public class FeesAndCommissionModuleClone {
 						cPlaceholderx.setVisible(true);
 						optSetupType.setVisible(true);
 						optSetupType.setEnabled(true);
-						comboTT.setEnabled(false);
+						comboCommissionsTT.setEnabled(false);
 
 						System.out.println("I love ....");
 
@@ -1523,13 +1551,13 @@ public class FeesAndCommissionModuleClone {
 
 				}
 
-				comboTT.setVisible(true);
+				comboCommissionsTT.setVisible(true);
 
 			}
 
 		});
 
-		comboAllFeesOperators
+		comboAllCommissionOperators
 				.addValueChangeListener(new Property.ValueChangeListener() {
 
 					private static final long serialVersionUID = -1655803841445897977L;
@@ -1538,7 +1566,7 @@ public class FeesAndCommissionModuleClone {
 					public void valueChange(ValueChangeEvent event) {
 						hmServiceCommission.clear();
 						optSetupType.setVisible(false);
-						comboTT.setEnabled(true);
+						comboCommissionsTT.setEnabled(true);
 
 						// tbFees.removeAllItems();
 
@@ -1570,7 +1598,7 @@ public class FeesAndCommissionModuleClone {
 									"No existing Commissions Configurations for Operator \""
 											+ pname);
 							btnAdd.setVisible(true);
-							comboTT.setVisible(false);
+							comboCommissionsTT.setVisible(false);
 							isExistingFeeConfig = false;
 							isNewFeeConfig = true;
 
@@ -1580,10 +1608,10 @@ public class FeesAndCommissionModuleClone {
 						isExistingFeeConfig = true;
 						isNewFeeConfig = false;
 
-						comboTT.setVisible(true);
-						comboTT.removeAllItems();
+						comboCommissionsTT.setVisible(true);
+						comboCommissionsTT.removeAllItems();
 						for (String str : hmServiceCommission.keySet()) {
-							comboTT.addItem(str);
+							comboCommissionsTT.addItem(str);
 						}
 
 						cPlaceholderx.setVisible(false);
@@ -1595,7 +1623,7 @@ public class FeesAndCommissionModuleClone {
 					}
 				});
 
-		comboTT.addValueChangeListener(new ValueChangeListener() {
+		comboCommissionsTT.addValueChangeListener(new ValueChangeListener() {
 
 			private static final long serialVersionUID = 8620847994138095490L;
 
@@ -1677,7 +1705,7 @@ public class FeesAndCommissionModuleClone {
 
 		});
 
-		comboAllFeesOperators.addFocusListener(new FocusListener() {
+		comboAllCommissionOperators.addFocusListener(new FocusListener() {
 
 			private static final long serialVersionUID = 1583773393542597237L;
 
@@ -1685,7 +1713,7 @@ public class FeesAndCommissionModuleClone {
 			public void focus(FocusEvent event) {
 
 				// if (!isPermProfilesAdded)
-				addOperators(comboAllFeesOperators);
+				addOperators(comboAllCommissionOperators);
 				// isPermProfilesAdded = true;
 
 			}
@@ -1702,8 +1730,8 @@ public class FeesAndCommissionModuleClone {
 			@Override
 			public void buttonClick(ClickEvent event) {
 
-				String pname = comboAllFeesOperators
-						.getItemCaption(comboAllFeesOperators.getValue());
+				String pname = comboAllCommissionOperators
+						.getItemCaption(comboAllCommissionOperators.getValue());
 				Integer pid = Integer.parseInt(hmAllOperators.get(pname));
 
 				if (btnEdit.getIcon().equals(FontAwesome.EDIT)) {
@@ -1736,7 +1764,7 @@ public class FeesAndCommissionModuleClone {
 					cPlaceholderx.setVisible(true);
 					optSetupType.setVisible(true);
 					optSetupType.setEnabled(true);
-					comboTT.setEnabled(false);
+					comboCommissionsTT.setEnabled(false);
 
 				}
 
@@ -1752,13 +1780,13 @@ public class FeesAndCommissionModuleClone {
 
 				if (isCommission) {
 
-					comboAllFeesOperators.select(null);
-					comboAllFeesOperators.setValue(null);
-					comboTT.setVisible(false);
+					comboAllCommissionOperators.select(null);
+					comboAllCommissionOperators.setValue(null);
+					comboCommissionsTT.setVisible(false);
 
 					return;
 				}
-				String pn = comboAllFeesOperators.getValue().toString();
+				String pn = comboAllCommissionOperators.getValue().toString();
 				hmServiceCommission.clear();
 
 				hmServiceCommission = getServiceCommissions(Integer
@@ -1798,7 +1826,15 @@ public class FeesAndCommissionModuleClone {
 				optSetupType.setEnabled(true);
 				optSetupType.select(null);
 
-				String pn = comboAllFeesOperators.getValue().toString();
+				ComboBox comboAllFCOperators = null;
+
+				if (isCommission)
+
+					comboAllFCOperators = comboAllCommissionOperators;
+				else
+					comboAllFCOperators = comboAllFeesOperators;
+
+				String pn = comboAllFCOperators.getValue().toString();
 				Integer pid = Integer.parseInt(hmAllOperators.get(pn));
 
 				btnCancel.setVisible(true);
@@ -1812,11 +1848,11 @@ public class FeesAndCommissionModuleClone {
 				hmInActivePerms = getInActivePermissions(pid);
 
 				tcsInactiveAndActive.removeAllItems();
-				comboTT.removeAllItems();
+				comboCommissionsTT.removeAllItems();
 				// comboTT.setVisible(true);
 				optSetupType.setVisible(true);
 
-				addTransactionTypes(comboTT);
+				addTransactionTypes(comboCommissionsTT);
 
 				// TODO Important Swapping
 
@@ -1897,18 +1933,19 @@ public class FeesAndCommissionModuleClone {
 
 					pop.close();
 
-					String pn = comboAllFeesOperators.getValue().toString();
+					String pn = comboAllCommissionOperators.getValue()
+							.toString();
 					Integer pid = Integer.parseInt(hmAllOperators.get(pn));
 					String response = null;
 
 					try {
 
 						Integer opID = Integer.parseInt(hmAllOperators
-								.get(comboAllFeesOperators.getValue()
+								.get(comboAllCommissionOperators.getValue()
 										.toString().trim()));
 
 						Integer txID = Integer.valueOf(hmTransactionTypes
-								.get(comboTT.getValue().toString()));
+								.get(comboFeesTT.getValue().toString()));
 
 						response = FeeService.deleteServicefee(UI.getCurrent()
 								.getSession().getAttribute("user").toString(),
@@ -1921,8 +1958,8 @@ public class FeesAndCommissionModuleClone {
 
 							NotifCustom.show("Response", response);//
 							cPlaceholder.setVisible(false);
-							comboTT.setVisible(false);
-							comboAllFeesOperators.select(null);
+							comboFeesTT.setVisible(false);
+							comboAllCommissionOperators.select(null);
 
 						}
 					} catch (Exception e) {
@@ -1956,7 +1993,8 @@ public class FeesAndCommissionModuleClone {
 		public void buttonClick(ClickEvent event) {
 			lbComfirm.setValue("Please comfirm removal of  "
 					+ comboAllFeesOperators.getValue() + " 's "
-					+ comboTT.getValue().toString() + " Fees Configurations");
+					+ comboFeesTT.getValue().toString()
+					+ " Fees Configurations");
 			UI.getCurrent().addWindow(pop);
 
 			pop.center();
@@ -2029,9 +2067,9 @@ public class FeesAndCommissionModuleClone {
 					Integer txID = 0;
 					if (!isOptTiered) {
 						setupPropertyID = Integer.valueOf(hmExistingFees
-								.get(comboTT.getValue().toString()));
+								.get(comboCommissionsTT.getValue().toString()));
 
-						String s = comboTT.getValue().toString();
+						String s = comboCommissionsTT.getValue().toString();
 						if (!isExistingFeeConfig) {
 
 							s = s.substring(s.indexOf("-") + 1, s.length())
@@ -2041,14 +2079,14 @@ public class FeesAndCommissionModuleClone {
 
 					} else {
 
-						txID = Integer.valueOf(hmTransactionTypes.get(comboTT
-								.getValue().toString()));
+						txID = Integer.valueOf(hmTransactionTypes
+								.get(comboCommissionsTT.getValue().toString()));
 					}
 
 					try {
 
 						Integer opID = Integer.parseInt(hmAllOperators
-								.get(comboAllFeesOperators.getValue()
+								.get(comboAllCommissionOperators.getValue()
 										.toString().trim()));
 
 						response = CommissionService.deleteCommission(UI
@@ -2063,8 +2101,8 @@ public class FeesAndCommissionModuleClone {
 
 							NotifCustom.show("Response", response);//
 							cPlaceholder.setVisible(false);
-							comboTT.setVisible(false);
-							comboAllFeesOperators.select(null);
+							comboCommissionsTT.setVisible(false);
+							comboAllCommissionOperators.select(null);
 
 						}
 					} catch (Exception e) {
@@ -2098,8 +2136,8 @@ public class FeesAndCommissionModuleClone {
 		@Override
 		public void buttonClick(ClickEvent event) {
 			lbComfirm.setValue("Please comfirm removal of  "
-					+ comboAllFeesOperators.getValue() + " 's "
-					+ comboTT.getValue().toString()
+					+ comboAllCommissionOperators.getValue() + " 's "
+					+ comboCommissionsTT.getValue().toString()
 					+ " Commissions Configurations");
 			UI.getCurrent().addWindow(pop);
 
@@ -2328,15 +2366,22 @@ public class FeesAndCommissionModuleClone {
 
 			hmAllOperators = rs.getServiceProviders();
 
+			combo.removeAllItems();
+
+			System.out.println(hmAllOperators.size()
+					+ "::::THIS IS TRUE:::::::");
+
 			Set<Entry<String, String>> set = hmAllOperators.entrySet();
 			for (Entry<String, String> e : set) {
 				Object key = e.getKey();
+				// comboAllFCOperators.addItem(key);
 				combo.addItem(key);
+				System.out.println(key.toString());
 
 			}
 
 		} catch (RemoteException | DataServiceFault e) {
-
+			Notification.show("Error", Notification.Type.ERROR_MESSAGE);
 			e.printStackTrace();
 		}
 
@@ -2839,12 +2884,23 @@ public class FeesAndCommissionModuleClone {
 			@Override
 			public void preCommit(CommitEvent commitEvent)
 					throws CommitException {
-				comboAllFeesOperators.setRequired(false);
+
+				ComboBox comboAllFCOperators = null;
+				ComboBox comboTT = null;
+				if (isCommission) {
+					comboAllFCOperators = comboAllCommissionOperators;
+					comboTT = comboCommissionsTT;
+				} else {
+					comboAllFCOperators = comboAllFeesOperators;
+					comboTT = comboFeesTT;
+				}
+
+				comboAllFCOperators.setRequired(false);
 				comboConditionType.setRequired(false);
 				comboModelType.setRequired(false);
 				comboTT.setRequired(false);
-				if (comboAllFeesOperators.getValue() == null) {
-					comboAllFeesOperators.setRequired(true);
+				if (comboAllFCOperators.getValue() == null) {
+					comboAllFCOperators.setRequired(true);
 					Notification.show("Field marked with (*) is required.",
 							Notification.Type.WARNING_MESSAGE);
 					throw new CommitException("Field is required.");
@@ -2866,7 +2922,7 @@ public class FeesAndCommissionModuleClone {
 							Notification.Type.WARNING_MESSAGE);
 					throw new CommitException("Field is required.");
 				} else {
-					comboAllFeesOperators.setRequired(false);
+					comboAllFCOperators.setRequired(false);
 					comboConditionType.setRequired(false);
 					comboModelType.setRequired(false);
 					comboTT.setRequired(false);
@@ -2882,7 +2938,7 @@ public class FeesAndCommissionModuleClone {
 
 		});
 
-		// comboAllFeesOperators.addFocusListener(new FocusListener() {
+		// comboAllFCOperators.addFocusListener(new FocusListener() {
 		// private static final long serialVersionUID = 1470960826655063334L;
 		//
 		// @Override
@@ -2892,8 +2948,8 @@ public class FeesAndCommissionModuleClone {
 		// Set<Entry<String, String>> es = (Set<Entry<String, String>>) hmOp
 		// .entrySet();
 		// for (Entry<String, String> e : es) {
-		// comboAllFeesOperators.addItem(e.getKey());
-		// comboAllFeesOperators.setItemCaption(e.getKey(),
+		// comboAllFCOperators.addItem(e.getKey());
+		// comboAllFCOperators.setItemCaption(e.getKey(),
 		// e.getValue());
 		// }
 		//
@@ -2902,7 +2958,7 @@ public class FeesAndCommissionModuleClone {
 		// });
 
 		// cChoose.addComponent(lbChoose);
-		// cChoose.addComponent(comboAllFeesOperators);
+		// cChoose.addComponent(comboAllFCOperators);
 
 		// cChoose.addComponent(comboConditionType);
 		// cChoose.addComponent(comboModelType);
@@ -2916,13 +2972,23 @@ public class FeesAndCommissionModuleClone {
 
 		// final Label tFOp = new Label();
 		// tFOp.setCaption("Selected Operator: ");
-		// tFOp.setValue(comboAllFeesOperators
-		// .getItemCaption(comboAllFeesOperators.getValue()));
+		// tFOp.setValue(comboAllFCOperators
+		// .getItemCaption(comboAllFCOperators.getValue()));
 		// tFOp.setStyleName("label_add_user");
 
 		FormLayout cOp = new FormLayout();
 		// cOp.addComponent(tFOp);
 		cAttr.addComponent(cOp);
+
+		ComboBox comboAllFCOperators = null;
+		ComboBox comboTT = null;
+		if (isCommission) {
+			comboAllFCOperators = comboAllCommissionOperators;
+			comboTT = comboCommissionsTT;
+		} else {
+			comboAllFCOperators = comboAllFeesOperators;
+			comboTT = comboFeesTT;
+		}
 
 		HorizontalLayout cAttrItem = new HorizontalLayout();
 		VerticalLayout cItemContent = new VerticalLayout();
@@ -3021,19 +3087,29 @@ public class FeesAndCommissionModuleClone {
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 
+				ComboBox comboAllFCOperators = null;
+				ComboBox comboTT = null;
+				if (isCommission) {
+					comboAllFCOperators = comboAllCommissionOperators;
+					comboTT = comboCommissionsTT;
+				} else {
+					comboAllFCOperators = comboAllFeesOperators;
+					comboTT = comboFeesTT;
+				}
+
 				lbAttrVal.setValue(comboTT.getItemCaption(comboTT.getValue()));
 			}
 
 		});
 
-		comboAllFeesOperators.addValueChangeListener(new ValueChangeListener() {
+		comboAllFCOperators.addValueChangeListener(new ValueChangeListener() {
 
 			private static final long serialVersionUID = -4750457498573552155L;
 
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-				// tFOp.setValue(comboAllFeesOperators
-				// .getItemCaption(comboAllFeesOperators.getValue()));
+				// tFOp.setValue(comboAllFCOperators
+				// .getItemCaption(comboAllFCOperators.getValue()));
 			}
 
 		});
@@ -3043,6 +3119,16 @@ public class FeesAndCommissionModuleClone {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
+
+				ComboBox comboAllFCOperators = null;
+				ComboBox comboTT = null;
+				if (isCommission) {
+					comboAllFCOperators = comboAllCommissionOperators;
+					comboTT = comboCommissionsTT;
+				} else {
+					comboAllFCOperators = comboAllFeesOperators;
+					comboTT = comboFeesTT;
+				}
 
 				if (isCommission) {
 
@@ -3059,8 +3145,8 @@ public class FeesAndCommissionModuleClone {
 
 					// CANCEL
 
-					// comboAllFeesOperators.select(null);
-					// comboAllFeesOperators.setValue(null);
+					// comboAllFCOperators.select(null);
+					// comboAllFCOperators.setValue(null);
 					// comboTT.setVisible(false);
 					return;
 				}
@@ -3171,10 +3257,20 @@ public class FeesAndCommissionModuleClone {
 				if (isReadyToCommit(tabType, otherfg)) {
 					if (commit(cPlaceholder)) {
 
+						ComboBox comboAllFCOperators = null;
+						ComboBox comboTT = null;
+						if (isCommission) {
+							comboAllFCOperators = comboAllCommissionOperators;
+							comboTT = comboCommissionsTT;
+						} else {
+							comboAllFCOperators = comboAllFeesOperators;
+							comboTT = comboFeesTT;
+						}
+
 						if (isCommission) {
 							System.out
 									.println("-------vvvvv--vv---v-v----------------");
-							String pname = comboAllFeesOperators.getValue()
+							String pname = comboAllFCOperators.getValue()
 									.toString().trim();
 							hmServiceFees = getServiceFees(Integer
 									.parseInt(hmAllOperators.get(pname)));
@@ -3204,8 +3300,8 @@ public class FeesAndCommissionModuleClone {
 
 							isEditFees = false;
 
-							// comboAllFeesOperators.select(null);
-							// comboAllFeesOperators.setValue(null);
+							// comboAllFCOperators.select(null);
+							// comboAllFCOperators.setValue(null);
 							// comboTT.setVisible(false);
 							comboTT.setEnabled(false);
 							// comboTT.select(null);
@@ -3216,7 +3312,7 @@ public class FeesAndCommissionModuleClone {
 
 						}
 
-						String pname = comboAllFeesOperators.getValue()
+						String pname = comboAllFCOperators.getValue()
 								.toString().trim();
 						hmServiceFees = getServiceFees(Integer
 								.parseInt(hmAllOperators.get(pname)));
@@ -3273,6 +3369,7 @@ public class FeesAndCommissionModuleClone {
 			add(tbFees);
 			return cManage;
 		}
+
 	}
 
 	private void removeAll() {
@@ -3976,9 +4073,9 @@ public class FeesAndCommissionModuleClone {
 	}
 
 	private boolean isReadyToCommit(String type, FieldGroup dfg) {
-		// comboAllFeesOperators.setRequired(false);
-		// if (comboAllFeesOperators.getValue() != null) {
-		// comboAllFeesOperators.setRequired(true);
+		// comboAllFCOperators.setRequired(false);
+		// if (comboAllFCOperators.getValue() != null) {
+		// comboAllFCOperators.setRequired(true);
 		// Notification.show("Field marked with (*) is required.",
 		// Notification.Type.WARNING_MESSAGE);
 		// return false;
@@ -4084,8 +4181,20 @@ public class FeesAndCommissionModuleClone {
 
 	private boolean commit(HorizontalLayout cPlaceholder) {
 
-		Integer opID = Integer.parseInt(hmAllOperators
-				.get(comboAllFeesOperators.getValue().toString().trim()));
+		ComboBox comboAllFCOperators = null;
+		ComboBox comboTT = null;
+
+		if (isCommission) {
+
+			comboAllFCOperators = comboAllCommissionOperators;
+			comboTT = comboCommissionsTT;
+		} else {
+			comboAllFCOperators = comboAllFeesOperators;
+			comboTT = comboFeesTT;
+		}
+
+		Integer opID = Integer.parseInt(hmAllOperators.get(comboAllFCOperators
+				.getValue().toString().trim()));
 
 		Integer txID = 0;
 
@@ -4428,12 +4537,7 @@ public class FeesAndCommissionModuleClone {
 				for (Entry<String, String> e : set) {
 					Object key = e.getKey();
 
-					System.out.println(key + "--vvvv Key----------");
-					System.out.println(comboAllFeesOperators.getValue()
-							.toString() + "------   Combo------");
-
-					String operator = comboAllFeesOperators.getValue()
-							.toString();
+					String operator = combo.getValue().toString();
 					String opTT = key.toString();
 
 					if (opTT.contains(operator)) {
@@ -4485,6 +4589,27 @@ public class FeesAndCommissionModuleClone {
 		try {
 
 			return rs.getTransactionTypes();
+		} catch (RemoteException | DataServiceFault e) {
+			e.printStackTrace();
+			return Collections.emptyMap();
+
+		}
+
+	}
+
+	private Map<String, String> getOperators() {
+		if (rs == null) {
+			try {
+				rs = new ReportingService();
+			} catch (AxisFault e) {
+
+				e.printStackTrace();
+			}
+		}
+
+		try {
+
+			return rs.getServiceProviders();
 		} catch (RemoteException | DataServiceFault e) {
 			e.printStackTrace();
 			return Collections.emptyMap();
