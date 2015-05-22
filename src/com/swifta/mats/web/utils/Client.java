@@ -48,7 +48,7 @@ public class Client {
 
 			// Client.getThresholdTypes();
 
-			// Client.getTransactionTypes();
+			Client.getTransactionTypes();
 
 			// Client.getUserPermissions();
 
@@ -634,7 +634,7 @@ public class Client {
 			DataServiceFault {
 		ReportingService rs = new ReportingService();
 		Map<String, HashMap<String, HashMap<String, String>>> hmGen = rs
-				.getExistingThresholds();
+				.getExistingThresholds("1");
 
 		System.out.print(hmGen.size() + ": Configurations...");
 		Iterator<Entry<String, HashMap<String, HashMap<String, String>>>> itr = hmGen

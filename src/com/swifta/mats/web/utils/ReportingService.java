@@ -131,8 +131,12 @@ public class ReportingService {
 			return Collections.emptyMap();
 		Map<String, String> hm = new HashMap<>();
 
-		for (Transactiontype tty : transactiontype)
+		for (Transactiontype tty : transactiontype) {
 			hm.put(tty.getTransactiontype(), tty.getTransactiontypeid());
+			System.err.println("FROM BACKEND TT: " + tty.getTransactiontype());
+			System.err.println("FROM BACKEND TTID "
+					+ tty.getTransactiontypeid());
+		}
 
 		return hm;
 
@@ -307,10 +311,10 @@ public class ReportingService {
 
 	}
 
-	public Map<String, HashMap<String, HashMap<String, String>>> getExistingThresholds()
-			throws RemoteException, DataServiceFault {
+	public Map<String, HashMap<String, HashMap<String, String>>> getExistingThresholds(
+			String pid) throws RemoteException, DataServiceFault {
 		Getexistingthresholdsettings getthresholdsettings = new Getexistingthresholdsettings();
-
+		getthresholdsettings.setProfileid(pid);
 		Getthresholdsetting[] ts = rservice
 				.getexistingthresholdsettings(getthresholdsettings)
 				.getGetthresholdsettings().getGetthresholdsetting();
@@ -336,7 +340,8 @@ public class ReportingService {
 				HashMap<String, String> hmThreshold = new HashMap<>();
 				hmThreshold.put("threshold_type_id", t.getThresholdtypeid());
 				hmThreshold.put("limit", t.getValue());
-				hmTT.put(t.getThresholdtypeid(), hmThreshold);
+				hmTT.put(t.getProfiletypeid(), hmThreshold);
+
 				continue;
 
 			}
