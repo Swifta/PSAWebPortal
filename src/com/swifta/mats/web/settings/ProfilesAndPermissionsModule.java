@@ -49,6 +49,8 @@ public class ProfilesAndPermissionsModule {
 
 	private Label lbThreshold;
 
+	private HorizontalLayout cNewThresholdBtns;
+
 	private TextField tfThresholdAmount;
 
 	private VerticalLayout cMain = new VerticalLayout();
@@ -94,6 +96,8 @@ public class ProfilesAndPermissionsModule {
 	private BtnTabLike btnPermissions;
 
 	private String profileTID = null;
+
+	private HashMap<String, HashMap<String, String>> hmThresholdProperties;
 
 	// private HorizontalLayout cjust;
 
@@ -1124,6 +1128,8 @@ public class ProfilesAndPermissionsModule {
 		HorizontalLayout cBtnsNew = new HorizontalLayout();
 		cBtnsNew.addComponent(btnNewSave);
 		cBtnsNew.addComponent(btnNewCancel);
+
+		cNewThresholdBtns = cBtnsNew;
 
 		VerticalLayout cBeforePlaceHolder = new VerticalLayout();
 
@@ -2479,17 +2485,6 @@ public class ProfilesAndPermissionsModule {
 
 						for (Object rid : containerxyz.getItemIds()) {
 
-							// Item r = containerxyz.getItem(rid);
-							//
-							// System.out.println(r.toString());
-							//
-							// Property<String> p = r
-							// .getItemProperty("Transaction Type");
-							//
-							// System.out.println(p.toString());
-							//
-							// System.out.println(p.getValue());
-
 							String idsx = tb.getItem(rid)
 									.getItemProperty("Transaction Type")
 									.getValue().toString();
@@ -2655,7 +2650,7 @@ public class ProfilesAndPermissionsModule {
 			btnDelete.setStyleName("btn_link");
 			btnDelete.setIcon(FontAwesome.RECYCLE);
 
-			Button btnEdit = new Button();
+			final Button btnEdit = new Button();
 			btnEdit.setDescription("Edit Threshold");
 			btnEdit.setStyleName("btn_link");
 			btnEdit.setIcon(FontAwesome.EDIT);
@@ -2685,8 +2680,90 @@ public class ProfilesAndPermissionsModule {
 
 				@Override
 				public void buttonClick(ClickEvent event) {
+					if (btnEdit.getIcon().equals(FontAwesome.EDIT)) {
+						reloadFields(c);
 
-					reloadFields(c);
+						btnEdit.setIcon(FontAwesome.SAVE);
+						btnEdit.setDescription("Save New Threshold Value");
+
+						return;
+					}
+
+					if (tfThresholdAmount.getValue() == null
+							|| tfThresholdAmount.getValue().toString().trim()
+									.isEmpty()) {
+						Notification.show("Pleas provide amount",
+								Notification.Type.ERROR_MESSAGE);
+
+						tfThresholdAmount.focus();
+						return;
+					}
+
+					String pn = comboThresholdProfiles.getValue().toString();
+					Integer pid = Integer.parseInt(hmAllProfiles.get(pn));
+					ArrayList<String> ctids = new ArrayList<String>();
+
+					for (Object rid : c.getItemIds()) {
+
+						String idsx = c.getItem(rid)
+								.getItemProperty("Transaction Type").getValue()
+								.toString();
+
+						ctids.add(hmTransactionTypes.get(idsx));
+						System.out.println(idsx);
+
+					}
+
+					int[] ttids = new int[ctids.size()];
+					int ix = 0;
+					for (Object tid : ctids) {
+						ttids[ix] = Integer.valueOf(tid.toString()).intValue();
+						ix++;
+					}
+
+					Profile profile = hmProfIDs.get(pn);
+					String threshold = comboExistingThresholds.getValue()
+							.toString();
+
+					String amount = tfThresholdAmount.getValue();
+
+					HashMap<String, String> hm = hmExistingThresholds.get("");
+
+					String response = null;
+
+					try {
+
+						System.out.println(pn + " : " + pid);
+						response = UserManagementService.editProfileThreshold(
+								pn, ttids, (int) pid,
+								Integer.parseInt(threshold),
+								Integer.parseInt(profile.getProfiletypeid()),
+								amount);
+
+					} catch (Exception e) {
+						Notification.show(e.getMessage(),
+								Notification.Type.ERROR_MESSAGE);
+						e.printStackTrace();
+						return;
+					}
+					if (response == null || response.trim().isEmpty()) {
+						Notification.show("Unknown operation status",
+								Notification.Type.ERROR_MESSAGE);
+						return;
+					}
+
+					if (response.toUpperCase().contains("SUCCESS")) {
+						NotifCustom.show("Threshold", pn
+								+ "'s Threshold was successfully configured.");
+
+						return;
+					} else {
+						Notification.show(response,
+								Notification.Type.ERROR_MESSAGE);
+					}
+					// UserManagementService.editProfileThreshold(profilename,
+					// transactiontypeids, profileid, thresholdtypeid,
+					// profiletypeid, value);
 
 				}
 			});
@@ -2812,6 +2889,10 @@ public class ProfilesAndPermissionsModule {
 		tfThresholdAmount.setValue(container
 				.getItem(container.getItemIds().iterator().next())
 				.getItemProperty("Threshold Value").getValue().toString());
+
+		comboExistingThresholds.setVisible(false);
+		optMultT.setVisible(false);
+		cNewThresholdBtns.setVisible(false);
 
 		return;
 	}
