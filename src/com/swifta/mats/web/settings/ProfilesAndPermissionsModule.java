@@ -959,9 +959,9 @@ public class ProfilesAndPermissionsModule {
 
 					isProfileNameChanged = false;
 
-					Object profileName = comboProfiles.getValue();
+					Object profileName = comboThresholdProfiles.getValue();
 					Integer pid = Integer.parseInt(hmAllProfiles
-							.get(profileName.toString()));
+							.get(profileName.toString().trim()));
 					String pnOld = profileName.toString();
 
 					System.out.println(" New PN: " + pnNew + " Old PN: "
@@ -973,8 +973,8 @@ public class ProfilesAndPermissionsModule {
 						response = UserManagementService.editProfile(pnNew,
 								pnOld, pid);
 
-						comboProfiles.addItem(pnNew);
-						comboProfiles.select(pnNew);
+						comboThresholdProfiles.addItem(pnNew);
+						comboThresholdProfiles.select(pnNew);
 						// hmAllProfiles.remove(pnOld);
 
 						if (response == null || response.trim().isEmpty()) {
@@ -1031,8 +1031,8 @@ public class ProfilesAndPermissionsModule {
 		btnAdd.addClickListener(new AddProfileHandler(cAllProf, cPlaceholder));
 
 		btnRemove.addClickListener(new RemoveProfileHandler(pop));
-		btnThreshold.addClickListener(new SetThresholdHandler(cAllProf,
-				cPlaceholderx));
+		// btnThreshold.addClickListener(new SetThresholdHandler(cAllProf,
+		// cPlaceholderx));
 
 		return c;
 
@@ -1360,11 +1360,11 @@ public class ProfilesAndPermissionsModule {
 			}
 		});
 
-		btnAdd.addClickListener(new AddThresholdHandler(cAllProf, cPlaceholder));
+		btnAdd.addClickListener(new SetThresholdHandler(cAllProf, cPlaceholder));
 
 		btnRemove.addClickListener(new RemoveProfileHandler(pop));
-		btnThreshold.addClickListener(new SetThresholdHandler(cAllProf,
-				cPlaceholderx));
+		// btnThreshold.addClickListener(new SetThresholdHandler(cAllProf,
+		// cPlaceholderx));
 
 		return c;
 
@@ -1848,6 +1848,20 @@ public class ProfilesAndPermissionsModule {
 	}
 
 	private void addProfiles(ComboBox combo) {
+		hmProfIDs.clear();
+		initProfiles();
+
+		Set<Entry<String, String>> set = hmAllProfiles.entrySet();
+		for (Entry<String, String> e : set) {
+
+			Object key = e.getKey();
+			combo.addItem(key);
+
+		}
+
+	}
+
+	private void initProfiles() {
 
 		if (rs == null) {
 			try {
@@ -1869,13 +1883,6 @@ public class ProfilesAndPermissionsModule {
 			}
 
 			hmAllProfiles = hmTemp;
-			Set<Entry<String, String>> set = hmAllProfiles.entrySet();
-			for (Entry<String, String> e : set) {
-
-				Object key = e.getKey();
-				combo.addItem(key);
-
-			}
 
 		} catch (RemoteException | DataServiceFault e) {
 
@@ -1933,18 +1940,18 @@ public class ProfilesAndPermissionsModule {
 			optMultTrans.setCaption("Transaction Type");
 			optMultTrans.setMultiSelect(true);
 
-			comboThresholds = new ComboBox();
-			comboThresholds.setCaption("Threshold");
+			combo = new ComboBox();
+			combo.setCaption("Threshold");
 			// optMultTransactionTypes.setMultiSelect(true);
 
 			HorizontalLayout cThresholds = new HorizontalLayout();
 
 			cTransactionTypes = new HorizontalLayout();
 
-			cThresholds.addComponent(comboThresholds);
+			cThresholds.addComponent(combo);
 
 			cTransactionTypes.addComponent(optMultTrans);
-			Label lb = new Label("Select Threshold and Transaction Type(s)");
+			Label lb = new Label("Configure threshold");
 			cAddProf.addComponent(lb);
 			cAddProf.addComponent(tFProfx);
 			tFProfx.setEnabled(false);
@@ -1993,7 +2000,7 @@ public class ProfilesAndPermissionsModule {
 				@Override
 				public void buttonClick(ClickEvent event) {
 
-					Object spn = comboProfiles.getValue();
+					Object spn = comboThresholdProfiles.getValue();
 					if (spn == null || spn.toString().trim().isEmpty()) {
 						Notification.show("Please provide a profile name",
 								Notification.Type.ERROR_MESSAGE);
@@ -2012,11 +2019,11 @@ public class ProfilesAndPermissionsModule {
 							return;
 						}
 
-					if (comboThresholds.getValue() == null) {
+					if (combo.getValue() == null) {
 						Notification.show("Please select a Threshold",
 								Notification.Type.ERROR_MESSAGE);
 
-						comboThresholds.focus();
+						combo.focus();
 						return;
 					}
 
@@ -2042,7 +2049,7 @@ public class ProfilesAndPermissionsModule {
 					}
 
 					Profile profile = hmProfIDs.get(pn);
-					String threshold = comboThresholds.getValue().toString();
+					String threshold = combo.getValue().toString();
 
 					String amount = tFProf.getValue();
 
@@ -2090,7 +2097,17 @@ public class ProfilesAndPermissionsModule {
 		@Override
 		public void buttonClick(ClickEvent event) {
 
-			ptid = hmProfIDs.get(comboProfiles.getValue().toString())
+			Object obj = comboThresholdProfiles.getValue();
+			if (obj == null || obj.toString().trim().isEmpty()) {
+				NotifCustom.show("Prompt", "Please select a profile Type.");
+				return;
+			}
+
+			if (hmProfIDs == null || hmProfIDs.size() == 0)
+				initProfiles();
+
+			ptid = hmProfIDs.get(
+					comboThresholdProfiles.getValue().toString().trim())
 					.getProfiletypeid();
 
 			if (ptid.equals("3")) {
@@ -2103,7 +2120,7 @@ public class ProfilesAndPermissionsModule {
 			tFProfx.setEnabled(true);
 			tFProfx.setReadOnly(false);
 
-			tFProfx.setValue(comboProfiles.getValue().toString());
+			tFProfx.setValue(comboThresholdProfiles.getValue().toString());
 
 			tFProfx.setEnabled(false);
 			tFProfx.setReadOnly(true);
@@ -2112,7 +2129,7 @@ public class ProfilesAndPermissionsModule {
 			cAllProf.setVisible(false);
 			tFProf.setValue("");
 			combo.select(null);
-			addThresholds(comboThresholds, ptid);
+			addThresholds(combo, ptid);
 			addTransactionTypes(optMultTrans);
 
 		}
@@ -2154,6 +2171,8 @@ public class ProfilesAndPermissionsModule {
 		private void addTransactionTypes(OptionGroup optMult) {
 			optMult.removeAllItems();
 
+			System.out.println(optMult.getCaption() + ": -------");
+
 			if (rs == null) {
 				try {
 					rs = new ReportingService();
@@ -2166,12 +2185,16 @@ public class ProfilesAndPermissionsModule {
 			try {
 
 				hmTransactionTypes = rs.getTransactionTypes();
+
+				// System.out.println(hmTransactionTypes.size() + ": --------");
 				Set<Entry<String, String>> set = hmTransactionTypes.entrySet();
 				for (Entry<String, String> e : set) {
 
-					Object key = e.getKey();
+					Object key = e.getValue();
 					optMult.addItem(key);
-					optMult.setItemCaption(key, e.getValue());
+					optMult.setItemCaption(key, e.getKey());
+
+					System.out.println(key + " : " + e.getValue());
 
 				}
 
