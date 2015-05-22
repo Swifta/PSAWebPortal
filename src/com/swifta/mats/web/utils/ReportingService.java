@@ -29,6 +29,7 @@ import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getprofiles;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getprofiletypes;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getservicefeebysp;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getserviceproviders;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getthresholdsettings;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getthresholdtypes;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Gettransactionreport;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Gettransactionreportresponse;
@@ -132,8 +133,6 @@ public class ReportingService {
 		for (Transactiontype tty : transactiontype)
 			hm.put(tty.getTransactiontype(), tty.getTransactiontypeid());
 
-		System.out.println("kjfjkfjkfkjkjfkjfkjfkjfkjkfkfkf----------------"
-				+ hm.size());
 		return hm;
 
 	}
@@ -305,5 +304,13 @@ public class ReportingService {
 			return new Commissionfee[] {};
 		return cf;
 
+	}
+
+	private void getThresholdByProfile(String pid) throws RemoteException,
+			DataServiceFault {
+		Getthresholdsettings getthresholdsettings = new Getthresholdsettings();
+		// getthresholdsettings.se
+		getthresholdsettings.setProfileid(pid);
+		// rservice.getthresholdsettings(getthresholdsettings).get;
 	}
 }

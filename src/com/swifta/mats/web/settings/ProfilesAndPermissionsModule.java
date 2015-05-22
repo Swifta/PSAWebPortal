@@ -57,6 +57,7 @@ public class ProfilesAndPermissionsModule {
 	private ComboBox comboPermProfiles;
 	private ComboBox comboProfiles;
 	private ComboBox comboThresholdProfiles;
+	private ComboBox comboExistingThresholds;
 	private Map<String, String> hmAllProfiles;
 	private Map<String, String> hmProfileTypes;
 	private Map<String, String> hmThresholdTypes;
@@ -1061,20 +1062,28 @@ public class ProfilesAndPermissionsModule {
 		cProfName.setStyleName("frm_profile_name");
 		cProfName.setSizeUndefined();
 
+		final Label lbThreshold = new Label();
 		final Label lbProf = new Label();
+
 		final Label lb = new Label();
 		lb.setValue("Manage Thresholds");
-		final TextField tFProf = new TextField();
+		final TextField tfThreshold = new TextField();
 		comboThresholdProfiles = new ComboBox("Select Profile: ");
 
+		comboExistingThresholds = new ComboBox("Select Threshold: ");
+
+		lbThreshold.setCaption("Threshold Name: ");
+		lbThreshold.setValue("None.");
 		lbProf.setCaption("Profile Name: ");
 		lbProf.setValue("None.");
-		tFProf.setCaption(lbProf.getCaption());
+		tfThreshold.setCaption(lbThreshold.getCaption());
 		cAllProf.addComponent(lb);
 		lb.setStyleName("label_search_user");
 		cAllProf.setComponentAlignment(lb, Alignment.TOP_CENTER);
 		cProfName.addComponent(comboThresholdProfiles);
 		cProfName.addComponent(lbProf);
+		cProfName.addComponent(comboExistingThresholds);
+		cProfName.addComponent(lbThreshold);
 
 		final Button btnEdit = new Button();
 		btnEdit.setIcon(FontAwesome.EDIT);
@@ -1148,7 +1157,39 @@ public class ProfilesAndPermissionsModule {
 		HorizontalLayout c = new HorizontalLayout();
 		c.addComponent(cAgentInfo);
 
+		comboExistingThresholds.setVisible(false);
+		lbThreshold.setVisible(false);
+
+		// VerticalLayout cThreshold = new VerticalLayout();
+		// cThreshold.addComponent(comboExistingThresholds);
+		// cThreshold.addComponent(lbThreshold);
+
 		comboThresholdProfiles
+				.addValueChangeListener(new Property.ValueChangeListener() {
+
+					private static final long serialVersionUID = -1655803841445897977L;
+
+					@Override
+					public void valueChange(ValueChangeEvent event) {
+
+						Object obj = event.getProperty().getValue();
+
+						if (obj == null) {
+
+							lbProf.setValue("None.");
+							comboExistingThresholds.setValue(null);
+							comboExistingThresholds.setVisible(false);
+							lbThreshold.setVisible(false);
+							return;
+						}
+
+						lbProf.setValue(obj.toString());
+						comboExistingThresholds.setVisible(true);
+						lbThreshold.setVisible(true);
+					}
+				});
+
+		comboExistingThresholds
 				.addValueChangeListener(new Property.ValueChangeListener() {
 
 					private static final long serialVersionUID = -1655803841445897977L;
@@ -1158,13 +1199,14 @@ public class ProfilesAndPermissionsModule {
 
 						if (event.getProperty().getValue() != null) {
 							cProfActions.setVisible(true);
-							lbProf.setValue(comboThresholdProfiles
+							lbThreshold.setValue(comboThresholdProfiles
 									.getItemCaption(event.getProperty()
 											.getValue()));
 						} else {
 							cProfActions.setVisible(false);
-							lbProf.setValue("None.");
-							cProfName.replaceComponent(tFProf, lbProf);
+							lbThreshold.setValue("None.");
+							cProfName
+									.replaceComponent(tfThreshold, lbThreshold);
 
 						}
 					}
@@ -1188,7 +1230,7 @@ public class ProfilesAndPermissionsModule {
 
 		});
 
-		tFProf.addValueChangeListener(new Property.ValueChangeListener() {
+		tfThreshold.addValueChangeListener(new Property.ValueChangeListener() {
 
 			private static final long serialVersionUID = -1655803841445897977L;
 
@@ -1209,9 +1251,9 @@ public class ProfilesAndPermissionsModule {
 
 				if (btnEdit.getIcon().equals(FontAwesome.EDIT)) {
 					isProfileNameChanged = false;
-					tFProf.setValue(lbProf.getValue());
-					tFProf.selectAll();
-					cProfName.replaceComponent(lbProf, tFProf);
+					tfThreshold.setValue(lbThreshold.getValue());
+					tfThreshold.selectAll();
+					cProfName.replaceComponent(lbThreshold, tfThreshold);
 					btnEdit.setIcon(FontAwesome.SAVE);
 					btnEdit.setDescription("Save changes");
 					btnCancel.setVisible(true);
@@ -1222,11 +1264,11 @@ public class ProfilesAndPermissionsModule {
 					if (!isProfileNameChanged)
 						return;
 
-					String pnNew = tFProf.getValue();
+					String pnNew = tfThreshold.getValue();
 					if (pnNew == null || pnNew.trim().trim().isEmpty()) {
 						Notification.show("Please provide new profile name.",
 								Notification.Type.ERROR_MESSAGE);
-						tFProf.focus();
+						tfThreshold.focus();
 						return;
 					}
 
@@ -1236,12 +1278,12 @@ public class ProfilesAndPermissionsModule {
 										+ pnNew
 										+ "\" already exists. Please provide unique profile name.",
 										Notification.Type.ERROR_MESSAGE);
-						tFProf.focus();
+						tfThreshold.focus();
 						return;
 					}
 
-					lbProf.setValue(tFProf.getValue());
-					cProfName.replaceComponent(tFProf, lbProf);
+					lbThreshold.setValue(tfThreshold.getValue());
+					cProfName.replaceComponent(tfThreshold, lbThreshold);
 					btnEdit.setIcon(FontAwesome.EDIT);
 					btnEdit.setDescription("Edit Threshold name");
 					btnCancel.setVisible(false);
@@ -1274,8 +1316,9 @@ public class ProfilesAndPermissionsModule {
 						}
 
 						if (response.toUpperCase().contains("SUCCESSFUL")) {
-							lbProf.setValue(tFProf.getValue());
-							cProfName.replaceComponent(tFProf, lbProf);
+							lbThreshold.setValue(tfThreshold.getValue());
+							cProfName
+									.replaceComponent(tfThreshold, lbThreshold);
 							btnEdit.setIcon(FontAwesome.EDIT);
 							btnEdit.setDescription("Edit Threshold name");
 							btnCancel.setVisible(false);
@@ -1309,7 +1352,7 @@ public class ProfilesAndPermissionsModule {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-				cProfName.replaceComponent(tFProf, lbProf);
+				cProfName.replaceComponent(tfThreshold, lbThreshold);
 				btnEdit.setIcon(FontAwesome.EDIT);
 				btnEdit.setDescription("Edit Threshold name");
 				btnCancel.setVisible(false);
@@ -1317,7 +1360,7 @@ public class ProfilesAndPermissionsModule {
 			}
 		});
 
-		btnAdd.addClickListener(new AddProfileHandler(cAllProf, cPlaceholder));
+		btnAdd.addClickListener(new AddThresholdHandler(cAllProf, cPlaceholder));
 
 		btnRemove.addClickListener(new RemoveProfileHandler(pop));
 		btnThreshold.addClickListener(new SetThresholdHandler(cAllProf,
@@ -1457,6 +1500,171 @@ public class ProfilesAndPermissionsModule {
 		private HorizontalLayout cPlaceholder;
 
 		AddProfileHandler(final VerticalLayout cAllProf,
+				final HorizontalLayout cPlaceholder) {
+			this.cAllProf = cAllProf;
+			this.cPlaceholder = cPlaceholder;
+			cAddProf = new VerticalLayout();
+			cBtns = new HorizontalLayout();
+			cAddProf.setMargin(new MarginInfo(true, false, false, false));
+
+			tFProf = new TextField("Profile Name");
+			combo = new ComboBox("Profile Type");
+			combo.setValue(null);
+			combo.setNullSelectionAllowed(false);
+
+			btnSave = new Button();
+			btnSave.setIcon(FontAwesome.SAVE);
+			btnSave.setStyleName("btn_link");
+			btnSave.setDescription("Save new profile");
+
+			btnCancel = new Button();
+			btnCancel.setStyleName("btn_link");
+			btnCancel.setIcon(FontAwesome.UNDO);
+			btnCancel.setDescription("Cancel setting new profile");
+
+			cAddProf.addComponent(tFProf);
+			cAddProf.addComponent(combo);
+			cBtns.addComponent(btnSave);
+			cBtns.addComponent(btnCancel);
+			cAddProf.addComponent(cBtns);
+
+			cPlaceholder.addComponent(cAddProf);
+
+			combo.addFocusListener(new FocusListener() {
+				private static final long serialVersionUID = -7814943757729564782L;
+
+				@Override
+				public void focus(FocusEvent event) {
+
+					if (hmProfileTypes != null)
+						return;
+					addProfileTypes(combo);
+
+				}
+
+			});
+
+			tFProf.addValueChangeListener(new ValueChangeListener() {
+
+				private static final long serialVersionUID = 4362210247953246281L;
+
+				@Override
+				public void valueChange(ValueChangeEvent event) {
+
+					if (hmAllProfiles == null)
+						addProfiles(comboProfiles);
+
+				}
+
+			});
+
+			btnCancel.addClickListener(new Button.ClickListener() {
+
+				private static final long serialVersionUID = 3115121215716705673L;
+
+				@Override
+				public void buttonClick(ClickEvent event) {
+
+					cAllProf.setVisible(true);
+					cPlaceholder.setVisible(false);
+
+				}
+			});
+
+			btnSave.addClickListener(new Button.ClickListener() {
+
+				private static final long serialVersionUID = 7591799098570751956L;
+
+				@Override
+				public void buttonClick(ClickEvent event) {
+
+					String pn = tFProf.getValue();
+					if (pn == null || pn.trim().isEmpty()) {
+						Notification.show("Please provide a profile name",
+								Notification.Type.ERROR_MESSAGE);
+						tFProf.focus();
+						return;
+					}
+
+					if (combo.getValue() == null) {
+						Notification.show("Please select a profile",
+								Notification.Type.ERROR_MESSAGE);
+						return;
+					}
+
+					if (hmAllProfiles.containsKey(pn)) {
+						Notification
+								.show(pn
+										+ " already exists. Please provide a unique profile name.",
+										Notification.Type.ERROR_MESSAGE);
+						return;
+					}
+
+					Object profileID = combo.getValue();
+					Integer pid = Integer.parseInt(profileID.toString());
+					String response = null;
+
+					try {
+
+						System.out.println(pn + " : " + pid);
+						response = UserManagementService.addProfile(pn, pid);
+
+					} catch (Exception e) {
+						Notification.show(e.getMessage(),
+								Notification.Type.ERROR_MESSAGE);
+						e.printStackTrace();
+						return;
+					}
+					if (response == null || response.trim().isEmpty()) {
+						Notification.show("Unknown operation status",
+								Notification.Type.ERROR_MESSAGE);
+						return;
+					}
+
+					if (response.toUpperCase().contains("SUCCESS")) {
+						NotifCustom.show("Add profile", pn
+								+ " added successfully.");
+						tFProf.setValue("");
+						// hmAllProfiles.put(pn, pid.toString());
+						// comboProfiles.addItem(pn);
+						cAllProf.setVisible(true);
+						cPlaceholder.setVisible(false);
+						combo.select(null);
+						return;
+					} else {
+						Notification.show(response,
+								Notification.Type.ERROR_MESSAGE);
+					}
+
+				}
+			});
+
+		}
+
+		@Override
+		public void buttonClick(ClickEvent event) {
+			cPlaceholder.setVisible(true);
+			cAllProf.setVisible(false);
+			tFProf.setValue("");
+			combo.select(null);
+
+		}
+
+	}
+
+	private class AddThresholdHandler implements Button.ClickListener {
+
+		private static final long serialVersionUID = -9065514577173650677L;
+		private VerticalLayout cAddProf;
+		private HorizontalLayout cBtns;
+		private TextField tFProf;
+		private ComboBox combo;
+		private Button btnCancel;
+		private Button btnSave;
+		private VerticalLayout cAllProf;
+		private HorizontalLayout cPlaceholder;
+
+		AddThresholdHandler(final VerticalLayout cAllProf,
 				final HorizontalLayout cPlaceholder) {
 			this.cAllProf = cAllProf;
 			this.cPlaceholder = cPlaceholder;
