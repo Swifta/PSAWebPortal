@@ -53,6 +53,7 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 public class FeesAndCommModule {
+
 	HorizontalLayout udc;
 	private ArrayList<VerticalLayout> cArrLItemContent;
 	private ArrayList<FieldGroup> arrLRangeFG;

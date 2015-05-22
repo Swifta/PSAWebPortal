@@ -10,6 +10,10 @@ import org.apache.axis2.AxisFault;
 import com.swifta.mats.web.MatsWebPortalUI;
 import com.swifta.sub.mats.reporting.DataServiceFault;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Commissionfee;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Existingservicefee;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getavailableservicefee;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getcommissionbysp;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getfeesandcommissionreport;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getfeesandcommissionreportresponse;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getfeesandcommissionreportresponses;
@@ -23,6 +27,9 @@ import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getfloatmanagement
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getministatementreport;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getprofiles;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getprofiletypes;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getservicefeebysp;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getserviceproviders;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getthresholdsettings;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getthresholdtypes;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Gettransactionreport;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Gettransactionreportresponse;
@@ -37,6 +44,8 @@ import com.swifta.sub.mats.reporting.MatsreportingserviceStub.ProfilesE;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Profiletype;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Profiletypes;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.ProfiletypesE;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Servicefee;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Serviceprovider;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Thresholdtype;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Thresholdtypes;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.ThresholdtypesE;
@@ -106,6 +115,7 @@ public class ReportingService {
 
 	public Map<String, String> getTransactionTypes() throws RemoteException,
 			DataServiceFault {
+
 		Gettransactiontypes gettransactiontypes = new Gettransactiontypes();
 
 		TransactiontypesE transactiontypesE = rservice
@@ -121,7 +131,8 @@ public class ReportingService {
 		Map<String, String> hm = new HashMap<>();
 
 		for (Transactiontype tty : transactiontype)
-			hm.put(tty.getTransactiontypeid(), tty.getTransactiontype());
+			hm.put(tty.getTransactiontype(), tty.getTransactiontypeid());
+
 		return hm;
 
 	}
@@ -231,4 +242,75 @@ public class ReportingService {
 
 	}
 
+	public Map<String, String> getServiceProviders() throws RemoteException,
+			DataServiceFault {
+		Getserviceproviders getserviceproviders = new Getserviceproviders();
+
+		Serviceprovider[] arrServiceProvider = rservice
+				.getserviceproviders(getserviceproviders).getServiceproviders()
+				.getServiceprovider();
+		if (arrServiceProvider == null)
+			return Collections.emptyMap();
+		Map<String, String> hm = new HashMap<>();
+		for (Serviceprovider sp : arrServiceProvider)
+			hm.put(sp.getUsername(), sp.getAccountholderid());
+		return hm;
+	}
+
+	public Servicefee[] getFeesBySP(String user, Integer spid)
+			throws RemoteException, DataServiceFault {
+		Getservicefeebysp getservicefeebysp = new Getservicefeebysp();
+		getservicefeebysp.setLoggedInUser(user);
+		getservicefeebysp.setSpaccountholderid(spid);
+		Servicefee[] arrServicefee = rservice
+				.getservicefeebysp(getservicefeebysp).getServicefees()
+				.getServicefee();
+
+		if (arrServicefee == null)
+			return new Servicefee[] {};
+
+		return arrServicefee;
+	}
+
+	public Map<String, String> getAvailableFees(String user)
+			throws RemoteException, DataServiceFault {
+		Getavailableservicefee getavailableservicefee = new Getavailableservicefee();
+		getavailableservicefee.setLoggedInUser(user);
+
+		Existingservicefee[] arrEf = rservice
+				.getavailableservicefee(getavailableservicefee)
+				.getExistingservicefees().getExistingservicefee();
+		// arrEf[0].get
+
+		if (arrEf == null)
+			return Collections.emptyMap();
+		Map<String, String> hm = new HashMap<>();
+		for (Existingservicefee esf : arrEf)
+			hm.put(esf.getTransactionfee(),
+					String.valueOf(esf.getServicefeepropertiesid()));
+		return hm;
+	}
+
+	public Commissionfee[] getCommissionBySp(String user, Integer spid)
+			throws RemoteException, DataServiceFault {
+		Getcommissionbysp getcommissionbysp = new Getcommissionbysp();
+
+		getcommissionbysp.setLoggedInUser(user);
+		getcommissionbysp.setSpaccountholderid(spid);
+		Commissionfee[] cf = rservice.getcommissionbysp(getcommissionbysp)
+				.getCommissionfees().getCommissionfee();
+
+		if (cf == null)
+			return new Commissionfee[] {};
+		return cf;
+
+	}
+
+	private void getThresholdByProfile(String pid) throws RemoteException,
+			DataServiceFault {
+		Getthresholdsettings getthresholdsettings = new Getthresholdsettings();
+		// getthresholdsettings.se
+		getthresholdsettings.setProfileid(pid);
+		// rservice.getthresholdsettings(getthresholdsettings).get;
+	}
 }

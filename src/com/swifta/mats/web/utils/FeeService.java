@@ -76,6 +76,8 @@ public class FeeService {
 			statusMessage = "Response1 is empty";
 		}
 
+		System.out.println(statusMessage);
+
 		return statusMessage;
 
 	}
@@ -127,20 +129,20 @@ public class FeeService {
 			Integer transactiontypeid, Integer accountholderid)
 			throws Exception {
 		matsStub = new ProvisioningStub(esbendpoint);
-
+	
 		String statusMessage = "";
-
+	
 		Deleteservicefees deleteservicefees = new Deleteservicefees();
 		deleteservicefees.setLoggedinUser(loggedInUser);
 		deleteservicefees.setTransactiontypeid(transactiontypeid);
 		deleteservicefees.setUserresourceid(accountholderid);
-
+	
 		DeleteservicefeesE deleteservicefeesE = new DeleteservicefeesE();
 		deleteservicefeesE.setDeleteservicefees(deleteservicefees);
-
+	
 		DeleteservicefeesResponseE response = matsStub
 				.deleteservicefees(deleteservicefeesE);
-
+	
 		if (response != null) {
 			DeleteservicefeesResponse response2 = response
 					.getDeleteservicefeesResponse();
@@ -151,16 +153,16 @@ public class FeeService {
 				} else {
 					statusMessage = "Response3 is empty";
 				}
-
+	
 			} else {
 				statusMessage = "Response2 is empty";
 			}
 		} else {
 			statusMessage = "Response1 is empty";
 		}
-
+	
 		return statusMessage;
-
+	
 	}
 
 }

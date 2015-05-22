@@ -46,6 +46,7 @@ public class ProfilesAndPermissionsModule {
 	private HorizontalLayout cStage = new HorizontalLayout();
 	private HorizontalLayout p;
 	private HorizontalLayout cProfile;
+	private HorizontalLayout cThreshold;
 	private HorizontalLayout cPerm;
 	private HorizontalLayout prevL;
 	private Window pop = new Window("Comfirm profile removal");
@@ -55,6 +56,8 @@ public class ProfilesAndPermissionsModule {
 
 	private ComboBox comboPermProfiles;
 	private ComboBox comboProfiles;
+	private ComboBox comboThresholdProfiles;
+	private ComboBox comboExistingThresholds;
 	private Map<String, String> hmAllProfiles;
 	private Map<String, String> hmProfileTypes;
 	private Map<String, String> hmThresholdTypes;
@@ -73,6 +76,7 @@ public class ProfilesAndPermissionsModule {
 
 	private HashMap<String, String> hmProfPermPermissions;
 	private BtnTabLike btnProfiles;
+	private BtnTabLike btnThresholds;
 	private BtnTabLike btnPermissions;
 
 	// private HorizontalLayout cjust;
@@ -87,6 +91,9 @@ public class ProfilesAndPermissionsModule {
 		if (!btnProfiles.isEnabled()) {
 			cTemp = getProfileC();
 			cProfile = cTemp;
+		} else if (!btnThresholds.isEnabled() && cTemp == null) {
+			cTemp = getThresholdC();
+			cThreshold = cTemp;
 		} else {
 			cTemp = getPermissionsC();
 			cPerm = cTemp;
@@ -109,6 +116,7 @@ public class ProfilesAndPermissionsModule {
 		BtnTabLike btnTemp = null;
 
 		btnProfiles = new BtnTabLike("Profiles", null);
+		btnThresholds = new BtnTabLike("Thresholds", null);
 		btnPermissions = new BtnTabLike("Permissions", null);
 		if (Initializer.setUserPermissions.contains(hmProfPermPermissions
 				.get("edit_profile"))
@@ -121,6 +129,20 @@ public class ProfilesAndPermissionsModule {
 						.contains(hmProfPermPermissions.get("add_threshold"))) {
 			cMainMenu.addComponent(btnProfiles);
 			btnTemp = btnProfiles;
+		}
+
+		if (Initializer.setUserPermissions.contains(hmProfPermPermissions
+				.get("edit_profile"))
+
+				|| Initializer.setUserPermissions
+						.contains(hmProfPermPermissions.get("add_profile"))
+				|| Initializer.setUserPermissions
+						.contains(hmProfPermPermissions.get("remove_profile"))
+				|| Initializer.setUserPermissions
+						.contains(hmProfPermPermissions.get("add_threshold"))) {
+			cMainMenu.addComponent(btnThresholds);
+			if (btnTemp == null)
+				btnTemp = btnThresholds;
 		}
 
 		if (Initializer.setUserPermissions.contains(hmProfPermPermissions
@@ -149,8 +171,14 @@ public class ProfilesAndPermissionsModule {
 				if (!btnPermissions.isEnabled())
 					p = cPerm;
 
+				if (!btnThresholds.isEnabled())
+					p = cThreshold;
+
 				btnPermissions.setEnabled(true);
 				btnPermissions.setStyleName("btn_tab_like");
+
+				btnThresholds.setEnabled(true);
+				btnThresholds.setStyleName("btn_tab_like");
 
 				if (!isfromsub) {
 					if (cProfile == null)
@@ -160,6 +188,41 @@ public class ProfilesAndPermissionsModule {
 				} else {
 					prevL = (HorizontalLayout) cStage.getComponent(0);
 					cStage.replaceComponent(prevL, cProfile);
+					isfromsub = false;
+				}
+
+			}
+		});
+
+		btnThresholds.addClickListener(new Button.ClickListener() {
+			private static final long serialVersionUID = 8237565312571186332L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+
+				btnThresholds.setEnabled(false);
+				btnThresholds.setStyleName("btn_tab_like btn_tab_like_active");
+
+				if (!btnPermissions.isEnabled())
+					p = cPerm;
+
+				if (!btnProfiles.isEnabled())
+					p = cProfile;
+
+				btnPermissions.setEnabled(true);
+				btnPermissions.setStyleName("btn_tab_like");
+
+				btnProfiles.setEnabled(true);
+				btnProfiles.setStyleName("btn_tab_like");
+
+				if (!isfromsub) {
+					if (cThreshold == null)
+						cThreshold = getThresholdC();
+					p = (HorizontalLayout) cStage.getComponent(0);
+					cStage.replaceComponent(p, cThreshold);
+				} else {
+					prevL = (HorizontalLayout) cStage.getComponent(0);
+					cStage.replaceComponent(prevL, cThreshold);
 					isfromsub = false;
 				}
 
@@ -182,8 +245,14 @@ public class ProfilesAndPermissionsModule {
 				if (!btnProfiles.isEnabled())
 					p = cProfile;
 
+				if (!btnThresholds.isEnabled())
+					p = cThreshold;
+
 				btnProfiles.setEnabled(true);
 				btnProfiles.setStyleName("btn_tab_like");
+
+				btnThresholds.setEnabled(true);
+				btnThresholds.setStyleName("btn_tab_like");
 
 				if (!isfromsub) {
 					if (cPerm == null)
@@ -969,6 +1038,338 @@ public class ProfilesAndPermissionsModule {
 
 	}
 
+	private HorizontalLayout getThresholdC() {
+
+		VerticalLayout cAgentInfo = new VerticalLayout();
+		final HorizontalLayout cPlaceholder = new HorizontalLayout();
+		final HorizontalLayout cPlaceholderx = new HorizontalLayout();
+		cAgentInfo.setMargin(new MarginInfo(true, true, true, true));
+		// cAgentInfo.setStyleName("c_details_test");
+
+		final VerticalLayout cLBody = new VerticalLayout();
+
+		cLBody.setStyleName("c_body_visible");
+
+		// addLinksTable();
+
+		final VerticalLayout cAllProf = new VerticalLayout();
+
+		final HorizontalLayout cProfActions = new HorizontalLayout();
+		cProfActions.setVisible(false);
+		HorizontalLayout cProfNameAndAddBtn = new HorizontalLayout();
+		final FormLayout cProfName = new FormLayout();
+
+		cProfName.setStyleName("frm_profile_name");
+		cProfName.setSizeUndefined();
+
+		final Label lbThreshold = new Label();
+		final Label lbProf = new Label();
+
+		final Label lb = new Label();
+		lb.setValue("Manage Thresholds");
+		final TextField tfThreshold = new TextField();
+		comboThresholdProfiles = new ComboBox("Select Profile: ");
+
+		comboExistingThresholds = new ComboBox("Select Threshold: ");
+
+		lbThreshold.setCaption("Threshold Name: ");
+		lbThreshold.setValue("None.");
+		lbProf.setCaption("Profile Name: ");
+		lbProf.setValue("None.");
+		tfThreshold.setCaption(lbThreshold.getCaption());
+		cAllProf.addComponent(lb);
+		lb.setStyleName("label_search_user");
+		cAllProf.setComponentAlignment(lb, Alignment.TOP_CENTER);
+		cProfName.addComponent(comboThresholdProfiles);
+		cProfName.addComponent(lbProf);
+		cProfName.addComponent(comboExistingThresholds);
+		cProfName.addComponent(lbThreshold);
+
+		final Button btnEdit = new Button();
+		btnEdit.setIcon(FontAwesome.EDIT);
+		btnEdit.setStyleName("btn_link");
+		btnEdit.setDescription("Edit Threshold name");
+
+		final Button btnThreshold = new Button("T");
+		// btnThreshold.setIcon(FontAwesome.T);
+		btnThreshold.setStyleName("btn_link");
+		btnThreshold.setDescription("Set profile threshold");
+
+		final Button btnCancel = new Button();
+		btnCancel.setIcon(FontAwesome.UNDO);
+		btnCancel.setStyleName("btn_link");
+		btnCancel.setDescription("Cancel Threshold name editting.");
+
+		Button btnAdd = new Button("+");
+		// btnAdd.setIcon(FontAwesome.EDIT);
+		btnAdd.setStyleName("btn_link");
+		btnAdd.setDescription("Add new Threshold");
+
+		Button btnRemove = new Button("-");
+		// btnRemove.setIcon(FontAwesome.EDIT);
+		btnRemove.setStyleName("btn_link");
+		btnRemove.setDescription("Remove current Threshold");
+
+		cProfNameAndAddBtn.addComponent(cProfName);
+		// cProf.addComponent(cProfName);
+		if (Initializer.setUserPermissions.contains(hmProfPermPermissions
+				.get("add_profile")))
+			cProfNameAndAddBtn.addComponent(btnAdd);
+
+		// cProf.addComponent(cProfName);
+		if (Initializer.setUserPermissions.contains(hmProfPermPermissions
+				.get("edit_profile")))
+			cProfActions.addComponent(btnEdit);
+		cProfActions.addComponent(btnCancel);
+		// cProfActions.addComponent(btnAdd);
+		if (Initializer.setUserPermissions.contains(hmProfPermPermissions
+				.get("add_threshold")))
+			cProfActions.addComponent(btnThreshold);
+		if (Initializer.setUserPermissions.contains(hmProfPermPermissions
+				.get("remove_profile")))
+			cProfActions.addComponent(btnRemove);
+
+		btnCancel.setVisible(false);
+
+		cAllProf.addComponent(cProfNameAndAddBtn);
+		cAllProf.addComponent(cProfActions);
+		cAllProf.setComponentAlignment(cProfActions, Alignment.TOP_CENTER);
+
+		cLBody.addComponent(cAllProf);
+
+		// cLBody.addComponent(tb);
+
+		cAgentInfo.addComponent(cLBody);
+
+		// cLBody.addComponent(btnLink);
+		// cLBody.setComponentAlignment(btnLink, Alignment.TOP_LEFT);
+
+		cPlaceholder.setVisible(false);
+		cPlaceholderx.setVisible(false);
+		// addLinkUserContainer();
+		cPlaceholder.setWidth("100%");
+		cPlaceholderx.setWidth("100%");
+
+		cLBody.addComponent(cPlaceholder);
+		cLBody.addComponent(cPlaceholderx);
+		cLBody.setComponentAlignment(cPlaceholder, Alignment.TOP_CENTER);
+		cLBody.setComponentAlignment(cPlaceholderx, Alignment.TOP_CENTER);
+		HorizontalLayout c = new HorizontalLayout();
+		c.addComponent(cAgentInfo);
+
+		comboExistingThresholds.setVisible(false);
+		lbThreshold.setVisible(false);
+
+		// VerticalLayout cThreshold = new VerticalLayout();
+		// cThreshold.addComponent(comboExistingThresholds);
+		// cThreshold.addComponent(lbThreshold);
+
+		comboThresholdProfiles
+				.addValueChangeListener(new Property.ValueChangeListener() {
+
+					private static final long serialVersionUID = -1655803841445897977L;
+
+					@Override
+					public void valueChange(ValueChangeEvent event) {
+
+						Object obj = event.getProperty().getValue();
+
+						if (obj == null) {
+
+							lbProf.setValue("None.");
+							comboExistingThresholds.setValue(null);
+							comboExistingThresholds.setVisible(false);
+							lbThreshold.setVisible(false);
+							return;
+						}
+
+						lbProf.setValue(obj.toString());
+						comboExistingThresholds.setVisible(true);
+						lbThreshold.setVisible(true);
+					}
+				});
+
+		comboExistingThresholds
+				.addValueChangeListener(new Property.ValueChangeListener() {
+
+					private static final long serialVersionUID = -1655803841445897977L;
+
+					@Override
+					public void valueChange(ValueChangeEvent event) {
+
+						if (event.getProperty().getValue() != null) {
+							cProfActions.setVisible(true);
+							lbThreshold.setValue(comboThresholdProfiles
+									.getItemCaption(event.getProperty()
+											.getValue()));
+						} else {
+							cProfActions.setVisible(false);
+							lbThreshold.setValue("None.");
+							cProfName
+									.replaceComponent(tfThreshold, lbThreshold);
+
+						}
+					}
+				});
+
+		comboThresholdProfiles.addFocusListener(new FocusListener() {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1583773393542597237L;
+
+			@Override
+			public void focus(FocusEvent event) {
+
+				comboThresholdProfiles.removeAllItems();
+				addProfiles(comboThresholdProfiles);
+				comboThresholdProfiles.select(null);
+
+			}
+
+		});
+
+		tfThreshold.addValueChangeListener(new Property.ValueChangeListener() {
+
+			private static final long serialVersionUID = -1655803841445897977L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+
+				isProfileNameChanged = true;
+
+			}
+		});
+
+		btnEdit.addClickListener(new Button.ClickListener() {
+
+			private static final long serialVersionUID = -8427226211153164650L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+
+				if (btnEdit.getIcon().equals(FontAwesome.EDIT)) {
+					isProfileNameChanged = false;
+					tfThreshold.setValue(lbThreshold.getValue());
+					tfThreshold.selectAll();
+					cProfName.replaceComponent(lbThreshold, tfThreshold);
+					btnEdit.setIcon(FontAwesome.SAVE);
+					btnEdit.setDescription("Save changes");
+					btnCancel.setVisible(true);
+					return;
+
+				} else if (btnEdit.getIcon().equals(FontAwesome.SAVE)) {
+
+					if (!isProfileNameChanged)
+						return;
+
+					String pnNew = tfThreshold.getValue();
+					if (pnNew == null || pnNew.trim().trim().isEmpty()) {
+						Notification.show("Please provide new profile name.",
+								Notification.Type.ERROR_MESSAGE);
+						tfThreshold.focus();
+						return;
+					}
+
+					if (hmAllProfiles.containsKey(pnNew.trim())) {
+						Notification
+								.show("\""
+										+ pnNew
+										+ "\" already exists. Please provide unique profile name.",
+										Notification.Type.ERROR_MESSAGE);
+						tfThreshold.focus();
+						return;
+					}
+
+					lbThreshold.setValue(tfThreshold.getValue());
+					cProfName.replaceComponent(tfThreshold, lbThreshold);
+					btnEdit.setIcon(FontAwesome.EDIT);
+					btnEdit.setDescription("Edit Threshold name");
+					btnCancel.setVisible(false);
+
+					isProfileNameChanged = false;
+
+					Object profileName = comboThresholdProfiles.getValue();
+					Integer pid = Integer.parseInt(hmAllProfiles
+							.get(profileName.toString()));
+					String pnOld = profileName.toString();
+
+					System.out.println(" New PN: " + pnNew + " Old PN: "
+							+ pnOld + " PID:" + pid);
+
+					String response = null;
+
+					try {
+						response = UserManagementService.editProfile(pnNew,
+								pnOld, pid);
+
+						comboThresholdProfiles.addItem(pnNew);
+						comboThresholdProfiles.select(pnNew);
+						// hmAllProfiles.remove(pnOld);
+
+						if (response == null || response.trim().isEmpty()) {
+							Notification.show("No reponse from the server",
+									Notification.Type.ERROR_MESSAGE);
+							return;
+
+						}
+
+						if (response.toUpperCase().contains("SUCCESSFUL")) {
+							lbThreshold.setValue(tfThreshold.getValue());
+							cProfName
+									.replaceComponent(tfThreshold, lbThreshold);
+							btnEdit.setIcon(FontAwesome.EDIT);
+							btnEdit.setDescription("Edit Threshold name");
+							btnCancel.setVisible(false);
+
+							NotifCustom.show("Response", response);
+							hmAllProfiles.put(pnNew, pid.toString());
+							comboPermProfiles.removeAllItems();
+							comboPermProfiles.select(null);
+
+							return;
+						}
+
+						Notification.show(response,
+								Notification.Type.ERROR_MESSAGE);
+
+					} catch (Exception e) {
+
+						Notification.show(e.getMessage(),
+								Notification.Type.ERROR_MESSAGE);
+
+						e.printStackTrace();
+					}
+
+				}
+
+			}
+		});
+
+		btnCancel.addClickListener(new Button.ClickListener() {
+			private static final long serialVersionUID = -2870045546205986347L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				cProfName.replaceComponent(tfThreshold, lbThreshold);
+				btnEdit.setIcon(FontAwesome.EDIT);
+				btnEdit.setDescription("Edit Threshold name");
+				btnCancel.setVisible(false);
+
+			}
+		});
+
+		btnAdd.addClickListener(new AddThresholdHandler(cAllProf, cPlaceholder));
+
+		btnRemove.addClickListener(new RemoveProfileHandler(pop));
+		btnThreshold.addClickListener(new SetThresholdHandler(cAllProf,
+				cPlaceholderx));
+
+		return c;
+
+	}
+
 	private class RemoveProfileHandler implements Button.ClickListener {
 		/**
 		 * 
@@ -1099,6 +1500,171 @@ public class ProfilesAndPermissionsModule {
 		private HorizontalLayout cPlaceholder;
 
 		AddProfileHandler(final VerticalLayout cAllProf,
+				final HorizontalLayout cPlaceholder) {
+			this.cAllProf = cAllProf;
+			this.cPlaceholder = cPlaceholder;
+			cAddProf = new VerticalLayout();
+			cBtns = new HorizontalLayout();
+			cAddProf.setMargin(new MarginInfo(true, false, false, false));
+
+			tFProf = new TextField("Profile Name");
+			combo = new ComboBox("Profile Type");
+			combo.setValue(null);
+			combo.setNullSelectionAllowed(false);
+
+			btnSave = new Button();
+			btnSave.setIcon(FontAwesome.SAVE);
+			btnSave.setStyleName("btn_link");
+			btnSave.setDescription("Save new profile");
+
+			btnCancel = new Button();
+			btnCancel.setStyleName("btn_link");
+			btnCancel.setIcon(FontAwesome.UNDO);
+			btnCancel.setDescription("Cancel setting new profile");
+
+			cAddProf.addComponent(tFProf);
+			cAddProf.addComponent(combo);
+			cBtns.addComponent(btnSave);
+			cBtns.addComponent(btnCancel);
+			cAddProf.addComponent(cBtns);
+
+			cPlaceholder.addComponent(cAddProf);
+
+			combo.addFocusListener(new FocusListener() {
+				private static final long serialVersionUID = -7814943757729564782L;
+
+				@Override
+				public void focus(FocusEvent event) {
+
+					if (hmProfileTypes != null)
+						return;
+					addProfileTypes(combo);
+
+				}
+
+			});
+
+			tFProf.addValueChangeListener(new ValueChangeListener() {
+
+				private static final long serialVersionUID = 4362210247953246281L;
+
+				@Override
+				public void valueChange(ValueChangeEvent event) {
+
+					if (hmAllProfiles == null)
+						addProfiles(comboProfiles);
+
+				}
+
+			});
+
+			btnCancel.addClickListener(new Button.ClickListener() {
+
+				private static final long serialVersionUID = 3115121215716705673L;
+
+				@Override
+				public void buttonClick(ClickEvent event) {
+
+					cAllProf.setVisible(true);
+					cPlaceholder.setVisible(false);
+
+				}
+			});
+
+			btnSave.addClickListener(new Button.ClickListener() {
+
+				private static final long serialVersionUID = 7591799098570751956L;
+
+				@Override
+				public void buttonClick(ClickEvent event) {
+
+					String pn = tFProf.getValue();
+					if (pn == null || pn.trim().isEmpty()) {
+						Notification.show("Please provide a profile name",
+								Notification.Type.ERROR_MESSAGE);
+						tFProf.focus();
+						return;
+					}
+
+					if (combo.getValue() == null) {
+						Notification.show("Please select a profile",
+								Notification.Type.ERROR_MESSAGE);
+						return;
+					}
+
+					if (hmAllProfiles.containsKey(pn)) {
+						Notification
+								.show(pn
+										+ " already exists. Please provide a unique profile name.",
+										Notification.Type.ERROR_MESSAGE);
+						return;
+					}
+
+					Object profileID = combo.getValue();
+					Integer pid = Integer.parseInt(profileID.toString());
+					String response = null;
+
+					try {
+
+						System.out.println(pn + " : " + pid);
+						response = UserManagementService.addProfile(pn, pid);
+
+					} catch (Exception e) {
+						Notification.show(e.getMessage(),
+								Notification.Type.ERROR_MESSAGE);
+						e.printStackTrace();
+						return;
+					}
+					if (response == null || response.trim().isEmpty()) {
+						Notification.show("Unknown operation status",
+								Notification.Type.ERROR_MESSAGE);
+						return;
+					}
+
+					if (response.toUpperCase().contains("SUCCESS")) {
+						NotifCustom.show("Add profile", pn
+								+ " added successfully.");
+						tFProf.setValue("");
+						// hmAllProfiles.put(pn, pid.toString());
+						// comboProfiles.addItem(pn);
+						cAllProf.setVisible(true);
+						cPlaceholder.setVisible(false);
+						combo.select(null);
+						return;
+					} else {
+						Notification.show(response,
+								Notification.Type.ERROR_MESSAGE);
+					}
+
+				}
+			});
+
+		}
+
+		@Override
+		public void buttonClick(ClickEvent event) {
+			cPlaceholder.setVisible(true);
+			cAllProf.setVisible(false);
+			tFProf.setValue("");
+			combo.select(null);
+
+		}
+
+	}
+
+	private class AddThresholdHandler implements Button.ClickListener {
+
+		private static final long serialVersionUID = -9065514577173650677L;
+		private VerticalLayout cAddProf;
+		private HorizontalLayout cBtns;
+		private TextField tFProf;
+		private ComboBox combo;
+		private Button btnCancel;
+		private Button btnSave;
+		private VerticalLayout cAllProf;
+		private HorizontalLayout cPlaceholder;
+
+		AddThresholdHandler(final VerticalLayout cAllProf,
 				final HorizontalLayout cPlaceholder) {
 			this.cAllProf = cAllProf;
 			this.cPlaceholder = cPlaceholder;

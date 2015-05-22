@@ -93,9 +93,9 @@ public class CommissionService {
 			Integer servicefeepropertiesid, Integer transactiontypeid,
 			Integer accountholderid) throws Exception {
 		matsStub = new ProvisioningStub(esbendpoint);
-
+	
 		String statusMessage = "";
-
+	
 		Editcommission editcommission = new Editcommission();
 		editcommission.setCommissionfeefortrnxfee(commissionfeefortrnxfee);
 		editcommission.setCommissionsetuptype(commissionsetuptype);
@@ -104,13 +104,13 @@ public class CommissionService {
 		editcommission.setServicefeepropertiesid(servicefeepropertiesid);
 		editcommission.setTransactiontypeid(transactiontypeid);
 		editcommission.setUserresourceid(accountholderid);
-
+	
 		EditcommissionE editcommissionE = new EditcommissionE();
 		editcommissionE.setEditcommission(editcommission);
-
+	
 		EditcommissionResponseE response = matsStub
 				.editcommission(editcommissionE);
-
+	
 		if (response != null) {
 			EditcommissionResponse response2 = response
 					.getEditcommissionResponse();
@@ -122,16 +122,16 @@ public class CommissionService {
 				} else {
 					statusMessage = "Response3 is empty";
 				}
-
+	
 			} else {
 				statusMessage = "Response2 is empty";
 			}
 		} else {
 			statusMessage = "Response1 is empty";
 		}
-
+	
 		return statusMessage;
-
+	
 	}
 
 	public static String deleteCommission(String loggedInUser,
