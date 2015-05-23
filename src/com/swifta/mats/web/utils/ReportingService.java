@@ -96,9 +96,13 @@ public class ReportingService {
 	public Map<String, String> getThresholdTypes(String ptid)
 			throws RemoteException, DataServiceFault {
 		Getthresholdtypes getthresholdtypes = new Getthresholdtypes();
+
+		// System.out.println(ptid);
+
 		getthresholdtypes.setProfiletypeid(ptid);
 		ThresholdtypesE thresholdtypesE = rservice
 				.getthresholdtypes(getthresholdtypes);
+
 		// thresholdtypesE.set
 		// getthresholdtypes.setProfiletypeid("3");
 

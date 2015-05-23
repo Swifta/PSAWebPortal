@@ -1262,11 +1262,10 @@ public class ProfilesAndPermissionsModule {
 			@Override
 			public void buttonClick(ClickEvent event) {
 
-				String obj = comboThresholdProfiles.getValue().toString();
-				lbProf.setValue(obj.toString());
-				String spid = hmAllProfiles.get(obj);
-				profileTID = hmProfIDs.get(obj.trim()).getProfiletypeid();
-				initNew(spid);
+				String pn = comboThresholdProfiles.getValue().toString();
+				lbProf.setValue(pn);
+				profileTID = hmProfIDs.get(pn).getProfiletypeid();
+				initNew(profileTID);
 				cPlaceholder.setVisible(false);
 				cPlaceholder.removeAllComponents();
 				btnAddThreshold.setVisible(false);
@@ -1463,14 +1462,13 @@ public class ProfilesAndPermissionsModule {
 						lbProf.setValue(obj.toString());
 						comboX.setVisible(true);
 
-						String spid = hmAllProfiles.get(comboThresholdProfiles
-								.getValue().toString());
+						String pn = comboThresholdProfiles.getValue()
+								.toString();
 
-						profileTID = hmProfIDs.get(
-								comboThresholdProfiles.getValue().toString()
-										.trim()).getProfiletypeid();
+						System.out.println(pn);
+						profileTID = hmProfIDs.get(pn).getProfiletypeid();
 
-						initExisting(spid);
+						initExisting(profileTID);
 
 					}
 				});
@@ -2781,6 +2779,7 @@ public class ProfilesAndPermissionsModule {
 				btnEdit.setEnabled(false);
 				btnEdit.setIcon(FontAwesome.ELLIPSIS_H);
 				btnEdit.setImmediate(true);
+				String amount = tfThresholdAmount.getValue();
 				tfThresholdAmount.setReadOnly(true);
 				tfThresholdAmount.setImmediate(true);
 
@@ -2821,12 +2820,6 @@ public class ProfilesAndPermissionsModule {
 					ix++;
 				}
 
-				Profile profile = hmProfIDs.get(pn);
-				// String threshold = comboExistingThresholds.getValue()
-				// .toString();
-
-				String amount = tfThresholdAmount.getValue();
-
 				HashMap<String, String> hm = hmExistingThresholdTypes
 						.get(hmTransactionTypes.get(transactionType));
 
@@ -2853,12 +2846,14 @@ public class ProfilesAndPermissionsModule {
 					btnEdit.setEnabled(true);
 					btnEdit.setIcon(FontAwesome.EDIT);
 					btnAddThreshold.setVisible(true);
+					tfThresholdAmount.setReadOnly(false);
 					e.printStackTrace();
 					return;
 				}
 				if (response == null || response.trim().isEmpty()) {
 					Notification.show("Unknown operation status",
 							Notification.Type.ERROR_MESSAGE);
+					tfThresholdAmount.setReadOnly(false);
 					return;
 				}
 
@@ -2914,12 +2909,14 @@ public class ProfilesAndPermissionsModule {
 				if (btnEdit.getIcon().equals(FontAwesome.SAVE)) {
 					btnEdit.setIcon(FontAwesome.EDIT);
 					tfThresholdAmount.setVisible(false);
+					tfThresholdAmount.setReadOnly(false);
 					btnAddThreshold.setVisible(true);
 
 				} else {
 
 					comboX.select(null);
 					tfThresholdAmount.setVisible(false);
+					tfThresholdAmount.setReadOnly(false);
 					cBeforePlaceHolder.addComponent(btnAddThreshold);
 					cBeforePlaceHolder.setComponentAlignment(btnAddThreshold,
 							Alignment.TOP_CENTER);
@@ -2968,8 +2965,8 @@ public class ProfilesAndPermissionsModule {
 				comboExistingThresholds
 						.setItemCaption(e.getKey(), e.getValue());
 
-				// System.out.println("ID: " + e.getValue() + "CAP:" +
-				// e.getKey());
+				System.out.println("ID: " + e.getValue() + "CAP:" + e.getKey());
+
 			}
 
 		} catch (RemoteException | DataServiceFault e) {
