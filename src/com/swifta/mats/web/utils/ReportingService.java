@@ -329,6 +329,7 @@ public class ReportingService {
 				HashMap<String, String> hmThreshold = new HashMap<>();
 				hmThreshold.put("threshold_type_id", t.getThresholdtypeid());
 				hmThreshold.put("limit", t.getValue());
+				hmThreshold.put("profile_type_id", t.getProfiletypeid());
 				hmTT.put(t.getTransactiontypeid(), hmThreshold);
 				hmGen.put(t.getProfileid(), hmTT);
 				continue;
@@ -339,6 +340,7 @@ public class ReportingService {
 
 				HashMap<String, String> hmThreshold = new HashMap<>();
 				hmThreshold.put("threshold_type_id", t.getThresholdtypeid());
+				hmThreshold.put("profile_type_id", t.getProfiletypeid());
 				hmThreshold.put("limit", t.getValue());
 				hmTT.put(t.getProfiletypeid(), hmThreshold);
 
