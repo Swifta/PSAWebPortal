@@ -1265,7 +1265,7 @@ public class ProfilesAndPermissionsModule {
 				String pn = comboThresholdProfiles.getValue().toString();
 				lbProf.setValue(pn);
 				profileTID = hmProfIDs.get(pn).getProfiletypeid();
-				initNew(profileTID);
+				initNew(pn);
 				cPlaceholder.setVisible(false);
 				cPlaceholder.removeAllComponents();
 				btnAddThreshold.setVisible(false);
@@ -1291,15 +1291,15 @@ public class ProfilesAndPermissionsModule {
 					return;
 				}
 
-				if (!profileTID.equals("3"))
-					if (optMultT.getValue() == null
-							|| ((Collection<?>) optMultT.getValue()).size() == 0) {
-						Notification.show(
-								"Please select at least a Transaction Type",
-								Notification.Type.ERROR_MESSAGE);
-						optMultT.focus();
-						return;
-					}
+				// if (!profileTID.equals("3"))
+				if (optMultT.getValue() == null
+						|| ((Collection<?>) optMultT.getValue()).size() == 0) {
+					Notification.show(
+							"Please select at least a Transaction Type",
+							Notification.Type.ERROR_MESSAGE);
+					optMultT.focus();
+					return;
+				}
 
 				if (comboExistingThresholds.getValue() == null) {
 					Notification.show("Please select a Threshold",
@@ -1330,8 +1330,13 @@ public class ProfilesAndPermissionsModule {
 					ix++;
 				}
 
+				if (ix == 0) {
+					ttids = new int[0];
+				}
+
 				Profile profile = hmProfIDs.get(pn);
-				String threshold = comboExistingThresholds.getValue()
+
+				String threshold_type_id = comboExistingThresholds.getValue()
 						.toString();
 
 				String amount = tfThresholdAmount.getValue();
@@ -1341,8 +1346,25 @@ public class ProfilesAndPermissionsModule {
 				try {
 
 					System.out.println(pn + " : " + pid);
+
+					System.out.println("Profile Name: " + pn);
+					System.out.println("Profile ID: " + pid);
+					System.out.println("Threshold Type ID: "
+							+ threshold_type_id);
+					System.out.println("Profile Type ID: "
+							+ profile.getProfiletypeid());
+					System.out.println("Transaction Type ID 1: "
+							+ ((ttids.length == 1) ? ttids[0] : "NONE"));
+
+					System.out.println("Transaction Type ID 2: "
+							+ ((ttids.length == 2) ? ttids[1] : "NONE"));
+					System.out.println("THRESHOLD VALUE: " + amount);
+
+					System.out.println("SAVE THRESHOLD RESPONSE: " + response);
+
 					response = UserManagementService.addProfileThreshold(pn,
-							ttids, (int) pid, Integer.parseInt(threshold),
+							ttids, (int) pid,
+							Integer.parseInt(threshold_type_id),
 							Integer.parseInt(profile.getProfiletypeid()),
 							amount);
 
@@ -1468,7 +1490,7 @@ public class ProfilesAndPermissionsModule {
 						System.out.println(pn);
 						profileTID = hmProfIDs.get(pn).getProfiletypeid();
 
-						initExisting(profileTID);
+						initExisting(pn);
 
 					}
 				});
@@ -1522,12 +1544,12 @@ public class ProfilesAndPermissionsModule {
 					// cPlaceholder.setVisible(false);
 					// TODO
 
-					if (profileTID.equals("3")) {
-						optMultT.setVisible(false);
-
-					} else {
-						optMultT.setVisible(true);
-					}
+					// if (profileTID.equals("3")) {
+					// optMultT.setVisible(false);
+					//
+					// } else {
+					// optMultT.setVisible(true);
+					// }
 
 					displayExistingThresholds(cPlaceholder,
 							comboX.getItemCaption(comboX.getValue()));
@@ -2931,7 +2953,7 @@ public class ProfilesAndPermissionsModule {
 
 	}
 
-	private void initThresholdTypes(String pid) {
+	private void initThresholdTypes(String pn) {
 
 		comboExistingThresholds.removeAllItems();
 
@@ -2947,7 +2969,7 @@ public class ProfilesAndPermissionsModule {
 		try {
 
 			Map<String, String> hm = hmThresholdTypesByID = rs
-					.getThresholdTypes(pid);
+					.getThresholdTypes(hmProfIDs.get(pn).getProfiletypeid());
 			if (hm == null || hm.size() == 0) {
 				hmThresholdTypesByID.clear();
 				hmThresholdTypes.clear();
@@ -2976,23 +2998,31 @@ public class ProfilesAndPermissionsModule {
 
 	}
 
-	private void initExisting(String pid) {
-		initExistingThresholdTypes(pid);
-		initComponentsForExisting(pid);
-		initThresholdTypes(pid);
+	private void initExisting(String pn) {
+		initExistingThresholdTypes(pn);
+		initComponentsForExisting();
+		initThresholdTypes(pn);
 	}
 
-	private void initNew(String pid) {
-		initThresholdTypes(pid);
+	private void initNew(String pn) {
+		initThresholdTypes(pn);
 		initTransactionTypes();
-		initComponentsForNew(pid);
+		initComponentsForNew();
 	}
 
-	private void initComponentsForNew(String pid) {
+	private void initComponentsForNew() {
 		comboX.setVisible(false);
 		tfThresholdAmount.setValue("");
-		tfThresholdAmount.setVisible(true);
+		// if (profileTID.equals("3")) {
+		// optMultT.setVisible(false);
+		// optMultT.removeAllItems();
+		// optMultT.select(null);
+		// } else {
+		// optMultT.setVisible(true);
+		// }
 		optMultT.setVisible(true);
+		tfThresholdAmount.setVisible(true);
+
 		lbThreshold.setVisible(true);
 		comboExistingThresholds.setVisible(true);
 		cNewThresholdBtns.setVisible(true);
@@ -3001,7 +3031,7 @@ public class ProfilesAndPermissionsModule {
 
 	}
 
-	private void initComponentsForExisting(String pid) {
+	private void initComponentsForExisting() {
 
 		comboX.removeAllItems();
 		comboX.setVisible(false);
@@ -3042,7 +3072,7 @@ public class ProfilesAndPermissionsModule {
 
 	}
 
-	private void initExistingThresholdTypes(String pid) {
+	private void initExistingThresholdTypes(String pn) {
 		comboX.removeAllItems();
 		if (rs == null) {
 			try {
@@ -3056,6 +3086,8 @@ public class ProfilesAndPermissionsModule {
 		try {
 
 			hmThresholdTypes.clear();
+
+			String pid = hmAllProfiles.get(pn);
 			hmExistingThresholdTypes = rs.getExistingThresholds(pid).get(pid);
 			if (hmExistingThresholdTypes == null) {
 				hmExistingThresholdTypes = new HashMap<>();
