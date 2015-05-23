@@ -2581,7 +2581,7 @@ public class ProfilesAndPermissionsModule {
 
 		cPlaceholder.setVisible(true);
 
-		int x = 0;
+		int x = 1;
 
 		ArrayList<HashMap<String, String>> arr = hmExistingThresholdTypes
 				.get(ttid);
