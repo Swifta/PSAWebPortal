@@ -1,6 +1,7 @@
 package com.swifta.mats.web.utils;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -315,7 +316,7 @@ public class ReportingService {
 
 	}
 
-	public Map<String, HashMap<String, HashMap<String, String>>> getExistingThresholds(
+	public Map<String, ArrayList<HashMap<String, String>>> getExistingThresholds(
 			String pid) throws RemoteException, DataServiceFault {
 		Getexistingthresholdsettings getthresholdsettings = new Getexistingthresholdsettings();
 		getthresholdsettings.setProfileid(pid);
@@ -325,36 +326,39 @@ public class ReportingService {
 		if (ts == null)
 			return Collections.emptyMap();
 
-		Map<String, HashMap<String, HashMap<String, String>>> hmGen = new HashMap<>();
+		Map<String, ArrayList<HashMap<String, String>>> hmTT = new HashMap<>();
+
+		int x = 0;
+
 		for (Getthresholdsetting t : ts) {
-			String pt = t.getProfileid();
-			if (!hmGen.containsKey(pt)) {
-				HashMap<String, HashMap<String, String>> hmTT = new HashMap<>();
+			x++;
+			String ttid = t.getTransactiontypeid();
+			if (!hmTT.containsKey(ttid)) {
+				ArrayList<HashMap<String, String>> arr = new ArrayList<>();
+				// HashMap<String, HashMap<String, String>> hmTT = new
+				// HashMap<>();
 				HashMap<String, String> hmThreshold = new HashMap<>();
 				hmThreshold.put("threshold_type_id", t.getThresholdtypeid());
 				hmThreshold.put("limit", t.getValue());
 				hmThreshold.put("profile_type_id", t.getProfiletypeid());
-				hmTT.put(t.getTransactiontypeid(), hmThreshold);
-				hmGen.put(t.getProfileid(), hmTT);
+
+				arr.add(hmThreshold);
+				hmTT.put(ttid, arr);
+
 				continue;
 			}
 
-			HashMap<String, HashMap<String, String>> hmTT = hmGen.get(pt);
-			if (!hmTT.containsKey(t.getTransactiontypeid())) {
-
-				HashMap<String, String> hmThreshold = new HashMap<>();
-				hmThreshold.put("threshold_type_id", t.getThresholdtypeid());
-				hmThreshold.put("profile_type_id", t.getProfiletypeid());
-				hmThreshold.put("limit", t.getValue());
-				hmTT.put(t.getProfiletypeid(), hmThreshold);
-
-				continue;
-
-			}
+			HashMap<String, String> hmThreshold = new HashMap<>();
+			hmThreshold.put("threshold_type_id", t.getThresholdtypeid());
+			hmThreshold.put("profile_type_id", t.getProfiletypeid());
+			hmThreshold.put("limit", t.getValue());
+			hmTT.get(ttid).add(hmThreshold);
 
 		}
 
-		return hmGen;
+		System.out.println("Threshold Count: " + x);
+
+		return hmTT;
 
 	}
 }

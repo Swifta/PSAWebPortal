@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -56,6 +57,8 @@ public class ProfilesAndPermissionsModule {
 	private String curThresholdValue = null;
 
 	private VerticalLayout cBeforePlaceHolder;
+	private ComboBox comboXTH;
+
 	private ComboBox comboX;
 
 	private VerticalLayout cMain = new VerticalLayout();
@@ -86,7 +89,7 @@ public class ProfilesAndPermissionsModule {
 	private Map<String, String> hmActivePerms = new HashMap<>();
 	private Map<String, String> hmInActivePerms = new HashMap<>();
 
-	private HashMap<String, HashMap<String, String>> hmExistingThresholdTypes = new HashMap<>();
+	private Map<String, ArrayList<HashMap<String, String>>> hmExistingThresholdTypes = new HashMap<>();
 
 	private TwinColSelect tcsInactiveAndActive;
 	private Profile[] profiles;
@@ -105,7 +108,13 @@ public class ProfilesAndPermissionsModule {
 
 	private String profileTID = null;
 
+	private HashSet<String> setExistingTT = new HashSet<>();
+	private HashMap<String, HashSet<String>> hmETH = new HashMap<>();
+	private HashMap<String, HashSet<String>> hmNONETH = new HashMap<>();
+
 	private HashMap<String, HashMap<String, String>> hmThresholdProperties;
+
+	private boolean isEditThresholdPossible = false;
 
 	// private HorizontalLayout cjust;
 
@@ -1084,7 +1093,6 @@ public class ProfilesAndPermissionsModule {
 
 		final HorizontalLayout cProfActions = new HorizontalLayout();
 		cProfActions.setVisible(false);
-		HorizontalLayout cProfNameAndAddBtn = new HorizontalLayout();
 		final FormLayout cProfName = new FormLayout();
 
 		cProfName.setStyleName("frm_profile_name");
@@ -1106,6 +1114,10 @@ public class ProfilesAndPermissionsModule {
 		comboX.setCaption("Select Transaction Type: ");
 		comboX.setVisible(false);
 
+		comboXTH = new ComboBox();
+		comboXTH.setCaption("Select Threshold Type: ");
+		comboXTH.setVisible(false);
+
 		comboExistingThresholds = new ComboBox("Select Threshold: ");
 
 		lbThreshold.setCaption("Threshold Name: ");
@@ -1124,6 +1136,7 @@ public class ProfilesAndPermissionsModule {
 		cProfName.addComponent(comboThresholdProfiles);
 		cProfName.addComponent(lbProf);
 		cProfName.addComponent(comboX);
+		cProfName.addComponent(comboXTH);
 		cProfName.addComponent(optMultT);
 		cProfName.addComponent(comboExistingThresholds);
 		// cProfName.addComponent(lbThreshold);
@@ -1252,6 +1265,57 @@ public class ProfilesAndPermissionsModule {
 		// cThreshold.addComponent(comboExistingThresholds);
 		// cThreshold.addComponent(lbThreshold);
 
+		optMultT.addValueChangeListener(new ValueChangeListener() {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 978654770702305394L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+
+				if (isEditThresholdPossible) {
+
+					Collection<?> vals = null;
+
+					comboExistingThresholds.removeAllItems();
+
+					vals = (Collection<?>) optMultT.getValue();
+
+					if (vals.size() == 1) {
+
+						Iterator<?> itr = vals.iterator();
+						while (itr.hasNext()) {
+							String ttid = itr.next().toString();
+
+							System.out.println("Transaction Type: " + ttid);
+
+							Set<String> set = hmNONETH.get(ttid);
+							if (set == null) {
+
+								return;
+
+							}
+
+							for (String e : set) {
+								System.out.println("THTID " + e);
+								comboExistingThresholds.addItem(e);
+
+								System.out.println("THT CAPTION "
+										+ hmThresholdTypesByID.get(e));
+								comboExistingThresholds.setItemCaption(e,
+										hmThresholdTypesByID.get(e));
+							}
+						}
+					}
+
+				}
+
+			}
+
+		});
+
 		btnAdd.addClickListener(new Button.ClickListener() {
 
 			/**
@@ -1282,6 +1346,8 @@ public class ProfilesAndPermissionsModule {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
+
+				String threshold_type_id = null;
 
 				Object spn = comboThresholdProfiles.getValue();
 				if (spn == null || spn.toString().trim().isEmpty()) {
@@ -1319,6 +1385,20 @@ public class ProfilesAndPermissionsModule {
 					return;
 				}
 
+				try {
+
+					Double.parseDouble(tfThresholdAmount.getValue());
+
+				} catch (Exception e) {
+
+					Notification.show(
+							"Invalid Amount. Enter only Numbers please.",
+							Notification.Type.ERROR_MESSAGE);
+
+					tfThresholdAmount.focus();
+					return;
+				}
+
 				String pn = spn.toString();
 				Integer pid = Integer.parseInt(hmAllProfiles.get(pn));
 				Collection<?> ctids = (Collection<?>) optMultT.getValue();
@@ -1336,7 +1416,7 @@ public class ProfilesAndPermissionsModule {
 
 				Profile profile = hmProfIDs.get(pn);
 
-				String threshold_type_id = comboExistingThresholds.getValue()
+				threshold_type_id = comboExistingThresholds.getValue()
 						.toString();
 
 				String amount = tfThresholdAmount.getValue();
@@ -1387,10 +1467,23 @@ public class ProfilesAndPermissionsModule {
 					// cAllProf.setVisible(true);
 					cPlaceholder.setVisible(false);
 
-					Object temp = comboThresholdProfiles.getValue();
+					// Object temp = comboThresholdProfiles.getValue();
 					comboThresholdProfiles.select(null);
-					comboThresholdProfiles.select(temp);
-					comboX.select(ctids.iterator().next());
+					// comboThresholdProfiles.select(temp);
+					// comboXTH.select(ctids.iterator().next());
+					// comboX.select(ctids.iterator().next());
+
+					for (int ttid : ttids)
+
+						if (!hmNONETH.containsKey(String.valueOf(ttid))) {
+							HashSet<String> hs = new HashSet<>();
+							hs.add(threshold_type_id);
+
+							hmNONETH.put(String.valueOf(ttid), hs);
+						} else {
+							hmNONETH.get(String.valueOf(ttid)).add(
+									threshold_type_id);
+						}
 
 					return;
 				} else {
@@ -1457,6 +1550,9 @@ public class ProfilesAndPermissionsModule {
 
 						Object obj = event.getProperty().getValue();
 
+						isEditThresholdPossible = false;
+						// setExistingTH.clear();
+
 						if (obj == null) {
 							// TODO
 							lbProf.setValue("None.");
@@ -1472,6 +1568,7 @@ public class ProfilesAndPermissionsModule {
 							optMultT.setVisible(false);
 							optMultT.setValue(null);
 							cPlaceholder.setVisible(false);
+							comboXTH.setVisible(false);
 							comboX.setVisible(false);
 
 							btnAddThreshold.setVisible(false);
@@ -1482,6 +1579,7 @@ public class ProfilesAndPermissionsModule {
 						}
 
 						lbProf.setValue(obj.toString());
+						comboXTH.setVisible(true);
 						comboX.setVisible(true);
 
 						String pn = comboThresholdProfiles.getValue()
@@ -1496,6 +1594,40 @@ public class ProfilesAndPermissionsModule {
 				});
 
 		comboX.addValueChangeListener(new Property.ValueChangeListener() {
+
+			private static final long serialVersionUID = -1655803841445897977L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+
+				comboXTH.removeAllItems();
+
+				Iterator<Entry<String, ArrayList<HashMap<String, String>>>> itr = hmExistingThresholdTypes
+						.entrySet().iterator();
+
+				Iterator<String> itrx = hmExistingThresholdTypes.keySet()
+						.iterator();
+
+				while (itrx.hasNext()) {
+					String e = itrx.next();
+
+					if (!e.equals(comboX.getValue())) {
+						continue;
+					}
+					for (HashMap<String, String> hm : hmExistingThresholdTypes
+							.get(e)) {
+						String ex = hm.get("threshold_type_id");
+						comboXTH.addItem(ex);
+						comboXTH.setItemCaption(ex,
+								hmThresholdTypesByID.get(ex));
+					}
+
+				}
+
+			}
+		});
+
+		comboXTH.addValueChangeListener(new Property.ValueChangeListener() {
 
 			private static final long serialVersionUID = -1655803841445897977L;
 
@@ -1528,6 +1660,12 @@ public class ProfilesAndPermissionsModule {
 
 				} else {
 
+					if (comboXTH.getValue() == null) {
+						NotifCustom.show("Promt",
+								"Please select a Transaction Types.");
+						return;
+					}
+
 					// TODO
 					// lbProf.setValue("None.");
 					// comboExistingThresholds.setValue(null);
@@ -1551,12 +1689,13 @@ public class ProfilesAndPermissionsModule {
 					// optMultT.setVisible(true);
 					// }
 
-					displayExistingThresholds(cPlaceholder,
-							comboX.getItemCaption(comboX.getValue()));
+					displayExistingThresholds(cPlaceholder, comboX.getValue()
+							.toString(), comboXTH.getValue().toString());
 
 					comboExistingThresholds.setVisible(false);
 					lbThreshold.setVisible(false);
 					// comboExistingThresholds.setVisible(false);
+					comboXTH.setVisible(true);
 					comboX.setVisible(true);
 					tfThresholdAmount.setVisible(false);
 					optMultT.setVisible(false);
@@ -1978,171 +2117,7 @@ public class ProfilesAndPermissionsModule {
 						cAllProf.setVisible(true);
 						cPlaceholder.setVisible(false);
 						combo.select(null);
-						return;
-					} else {
-						Notification.show(response,
-								Notification.Type.ERROR_MESSAGE);
-					}
 
-				}
-			});
-
-		}
-
-		@Override
-		public void buttonClick(ClickEvent event) {
-			cPlaceholder.setVisible(true);
-			cAllProf.setVisible(false);
-			tFProf.setValue("");
-			combo.select(null);
-
-		}
-
-	}
-
-	private class AddThresholdHandler implements Button.ClickListener {
-
-		private static final long serialVersionUID = -9065514577173650677L;
-		private VerticalLayout cAddProf;
-		private HorizontalLayout cBtns;
-		private TextField tFProf;
-		private ComboBox combo;
-		private Button btnCancel;
-		private Button btnSave;
-		private VerticalLayout cAllProf;
-		private HorizontalLayout cPlaceholder;
-
-		AddThresholdHandler(final VerticalLayout cAllProf,
-				final HorizontalLayout cPlaceholder) {
-			this.cAllProf = cAllProf;
-			this.cPlaceholder = cPlaceholder;
-			cAddProf = new VerticalLayout();
-			cBtns = new HorizontalLayout();
-			cAddProf.setMargin(new MarginInfo(true, false, false, false));
-
-			tFProf = new TextField("Profile Name");
-			combo = new ComboBox("Profile Type");
-			combo.setValue(null);
-			combo.setNullSelectionAllowed(false);
-
-			btnSave = new Button();
-			btnSave.setIcon(FontAwesome.SAVE);
-			btnSave.setStyleName("btn_link");
-			btnSave.setDescription("Save new profile");
-
-			btnCancel = new Button();
-			btnCancel.setStyleName("btn_link");
-			btnCancel.setIcon(FontAwesome.UNDO);
-			btnCancel.setDescription("Cancel setting new profile");
-
-			cAddProf.addComponent(tFProf);
-			cAddProf.addComponent(combo);
-			cBtns.addComponent(btnSave);
-			cBtns.addComponent(btnCancel);
-			cAddProf.addComponent(cBtns);
-
-			cPlaceholder.addComponent(cAddProf);
-
-			combo.addFocusListener(new FocusListener() {
-				private static final long serialVersionUID = -7814943757729564782L;
-
-				@Override
-				public void focus(FocusEvent event) {
-
-					if (hmProfileTypes != null)
-						return;
-					addProfileTypes(combo);
-
-				}
-
-			});
-
-			tFProf.addValueChangeListener(new ValueChangeListener() {
-
-				private static final long serialVersionUID = 4362210247953246281L;
-
-				@Override
-				public void valueChange(ValueChangeEvent event) {
-
-					if (hmAllProfiles == null)
-						addProfiles(comboProfiles);
-
-				}
-
-			});
-
-			btnCancel.addClickListener(new Button.ClickListener() {
-
-				private static final long serialVersionUID = 3115121215716705673L;
-
-				@Override
-				public void buttonClick(ClickEvent event) {
-
-					cAllProf.setVisible(true);
-					cPlaceholder.setVisible(false);
-
-				}
-			});
-
-			btnSave.addClickListener(new Button.ClickListener() {
-
-				private static final long serialVersionUID = 7591799098570751956L;
-
-				@Override
-				public void buttonClick(ClickEvent event) {
-
-					String pn = tFProf.getValue();
-					if (pn == null || pn.trim().isEmpty()) {
-						Notification.show("Please provide a profile name",
-								Notification.Type.ERROR_MESSAGE);
-						tFProf.focus();
-						return;
-					}
-
-					if (combo.getValue() == null) {
-						Notification.show("Please select a profile",
-								Notification.Type.ERROR_MESSAGE);
-						return;
-					}
-
-					if (hmAllProfiles.containsKey(pn)) {
-						Notification
-								.show(pn
-										+ " already exists. Please provide a unique profile name.",
-										Notification.Type.ERROR_MESSAGE);
-						return;
-					}
-
-					Object profileID = combo.getValue();
-					Integer pid = Integer.parseInt(profileID.toString());
-					String response = null;
-
-					try {
-
-						System.out.println(pn + " : " + pid);
-						response = UserManagementService.addProfile(pn, pid);
-
-					} catch (Exception e) {
-						Notification.show(e.getMessage(),
-								Notification.Type.ERROR_MESSAGE);
-						e.printStackTrace();
-						return;
-					}
-					if (response == null || response.trim().isEmpty()) {
-						Notification.show("Unknown operation status",
-								Notification.Type.ERROR_MESSAGE);
-						return;
-					}
-
-					if (response.toUpperCase().contains("SUCCESS")) {
-						NotifCustom.show("Add profile", pn
-								+ " added successfully.");
-						tFProf.setValue("");
-						// hmAllProfiles.put(pn, pid.toString());
-						// comboProfiles.addItem(pn);
-						cAllProf.setVisible(true);
-						cPlaceholder.setVisible(false);
-						combo.select(null);
 						return;
 					} else {
 						Notification.show(response,
@@ -2254,194 +2229,6 @@ public class ProfilesAndPermissionsModule {
 		private String ptid;
 		private HorizontalLayout cTransactionTypes;
 
-		SetThresholdHandler(final VerticalLayout cAllProf,
-				final HorizontalLayout cPlaceholder) {
-			this.cAllProf = cAllProf;
-			this.cPlaceholder = cPlaceholder;
-			cAddProf = new VerticalLayout();
-			cBtns = new HorizontalLayout();
-			cAddProf.setMargin(new MarginInfo(true, false, false, false));
-
-			tFProfx = new TextField();
-			tFProf = new TextField();
-			tFProf.setCaption("Amount");
-			tFProfx.setCaption("Selected Profile: ");
-			tFProf.setCaption("Amount");
-			combo = new ComboBox("Profile Type");
-			combo.setValue(null);
-			combo.setNullSelectionAllowed(false);
-
-			btnSave = new Button();
-			btnSave.setIcon(FontAwesome.SAVE);
-			btnSave.setStyleName("btn_link");
-			btnSave.setDescription("Save new profile");
-
-			btnCancel = new Button();
-			btnCancel.setStyleName("btn_link");
-			btnCancel.setIcon(FontAwesome.UNDO);
-			btnCancel.setDescription("Cancel setting new profile");
-
-			cAddProf.addComponent(tFProf);
-			// cAddProf.addComponent(combo);
-
-			optMultTrans = new OptionGroup();
-			optMultTrans.setCaption("Transaction Type");
-			optMultTrans.setMultiSelect(true);
-
-			combo = new ComboBox();
-			combo.setCaption("Threshold");
-			// optMultTransactionTypes.setMultiSelect(true);
-
-			HorizontalLayout cThresholds = new HorizontalLayout();
-
-			cTransactionTypes = new HorizontalLayout();
-
-			cThresholds.addComponent(combo);
-
-			cTransactionTypes.addComponent(optMultTrans);
-			Label lb = new Label("Configure threshold");
-			cAddProf.addComponent(lb);
-			cAddProf.addComponent(tFProfx);
-			tFProfx.setEnabled(false);
-			tFProfx.setReadOnly(true);
-			// tFProfx.set
-
-			cAddProf.addComponent(cTransactionTypes);
-			cAddProf.addComponent(cThresholds);
-			cAddProf.addComponent(tFProf);
-
-			cPlaceholder.setSpacing(true);
-
-			cBtns.addComponent(btnSave);
-			cBtns.addComponent(btnCancel);
-			cAddProf.addComponent(cBtns);
-
-			cPlaceholder.addComponent(cAddProf);
-
-			combo.addFocusListener(new FocusListener() {
-				private static final long serialVersionUID = -7814943757729564782L;
-
-				@Override
-				public void focus(FocusEvent event) {
-
-				}
-
-			});
-
-			btnCancel.addClickListener(new Button.ClickListener() {
-
-				private static final long serialVersionUID = 3115121215716705673L;
-
-				@Override
-				public void buttonClick(ClickEvent event) {
-
-					cAllProf.setVisible(true);
-					cPlaceholder.setVisible(false);
-
-				}
-			});
-
-			btnSave.addClickListener(new Button.ClickListener() {
-
-				private static final long serialVersionUID = 7591799098570751956L;
-
-				@Override
-				public void buttonClick(ClickEvent event) {
-
-					Object spn = comboThresholdProfiles.getValue();
-					if (spn == null || spn.toString().trim().isEmpty()) {
-						Notification.show("Please provide a profile name",
-								Notification.Type.ERROR_MESSAGE);
-
-						return;
-					}
-
-					if (!ptid.equals("3"))
-						if (optMultTrans.getValue() == null
-								|| ((Collection<?>) optMultTrans.getValue())
-										.size() == 0) {
-							Notification
-									.show("Please select at least a Transaction Type",
-											Notification.Type.ERROR_MESSAGE);
-							optMultTrans.focus();
-							return;
-						}
-
-					if (combo.getValue() == null) {
-						Notification.show("Please select a Threshold",
-								Notification.Type.ERROR_MESSAGE);
-
-						combo.focus();
-						return;
-					}
-
-					if (tFProf.getValue() == null
-							|| tFProf.getValue().toString().trim().isEmpty()) {
-						Notification.show("Pleas provide amount",
-								Notification.Type.ERROR_MESSAGE);
-
-						tFProf.focus();
-						return;
-					}
-
-					String pn = spn.toString();
-					Integer pid = Integer.parseInt(hmAllProfiles.get(pn));
-					Collection<?> ctids = (Collection<?>) optMultTrans
-							.getValue();
-
-					int[] ttids = new int[ctids.size()];
-					int ix = 0;
-					for (Object tid : ctids) {
-						ttids[ix] = Integer.valueOf(tid.toString()).intValue();
-						ix++;
-					}
-
-					Profile profile = hmProfIDs.get(pn);
-					String threshold = combo.getValue().toString();
-
-					String amount = tFProf.getValue();
-
-					String response = null;
-
-					try {
-
-						System.out.println(pn + " : " + pid);
-						response = UserManagementService.addProfileThreshold(
-								pn, ttids, (int) pid,
-								Integer.parseInt(threshold),
-								Integer.parseInt(profile.getProfiletypeid()),
-								amount);
-
-					} catch (Exception e) {
-						Notification.show(e.getMessage(),
-								Notification.Type.ERROR_MESSAGE);
-						e.printStackTrace();
-						return;
-					}
-					if (response == null || response.trim().isEmpty()) {
-						Notification.show("Unknown operation status",
-								Notification.Type.ERROR_MESSAGE);
-						return;
-					}
-
-					if (response.toUpperCase().contains("SUCCESS")) {
-						NotifCustom.show("Threshold", pn
-								+ "'s Threshold was successfully configured.");
-
-						cAllProf.setVisible(true);
-						cPlaceholder.setVisible(false);
-
-						return;
-					} else {
-						Notification.show(response,
-								Notification.Type.ERROR_MESSAGE);
-					}
-
-				}
-			});
-
-		}
-
 		@Override
 		public void buttonClick(ClickEvent event) {
 
@@ -2522,7 +2309,98 @@ public class ProfilesAndPermissionsModule {
 	private void initTransactionTypes() {
 
 		try {
+
+			if (isEditThresholdPossible) {
+
+				optMultT.removeAllItems();
+				comboExistingThresholds.removeAllItems();
+
+				Iterator<Entry<String, HashSet<String>>> i = hmETH.entrySet()
+						.iterator();
+
+				while (i.hasNext()) {
+					Entry<String, HashSet<String>> e = i.next();
+
+					System.out.print(e.getKey());
+					System.out.print("[");
+					for (String s : e.getValue())
+						System.out.print(", " + s);
+
+					System.out.println("]");
+
+				}
+
+				Iterator<Entry<String, String>> itrx = hmTransactionTypes
+						.entrySet().iterator();
+
+				System.out.println("THE OTHER Total THT: "
+						+ hmThresholdTypes.size());
+
+				int x = 0;
+
+				while (itrx.hasNext()) {
+
+					Iterator<Entry<String, String>> itr = hmThresholdTypes
+							.entrySet().iterator();
+
+					Entry<String, String> exTT = itrx.next();
+
+					String TTID = exTT.getValue();
+
+					System.out.print(TTID);
+					System.out.print("[");
+
+					while (itr.hasNext()) {
+						x++;
+
+						Entry<String, String> eTHT = itr.next();
+
+						String THTID = eTHT.getValue();
+
+						System.out.print(", " + THTID);
+						//
+						// System.out.println(THTID + " THTID");
+						//
+						// System.out.println(TTID + " TTID");
+
+						HashSet<String> set = hmETH.get(TTID);
+
+						if (set == null || !set.contains(THTID)) {
+							optMultT.addItem(TTID);
+							optMultT.setItemCaption(TTID,
+									hmTransactionTypesByID.get(TTID));
+
+							comboExistingThresholds.addItem(THTID);
+							comboExistingThresholds.setItemCaption(THTID,
+									hmThresholdTypesByID.get(THTID));
+
+							// System.out.println("Vallue: " + TTID);
+							// System.out.println("Caption: "
+							// + hmThresholdTypesByID.get(TTID));
+
+							if (!hmNONETH.containsKey(TTID)) {
+								HashSet<String> hs = new HashSet<>();
+								hs.add(THTID);
+
+								hmNONETH.put(TTID, hs);
+							} else {
+								hmNONETH.get(TTID).add(THTID);
+							}
+						}
+
+					}
+
+					System.out.println("]");
+
+				}
+
+				System.out.println("FINAL COUNT: " + x);
+
+				return;
+			}
+
 			optMultT.removeAllItems();
+
 			hmTransactionTypesByID.clear();
 			hmTransactionTypes = rs.getTransactionTypes();
 
@@ -2531,8 +2409,10 @@ public class ProfilesAndPermissionsModule {
 			while (itr.hasNext()) {
 				Entry<String, String> e = itr.next();
 				hmTransactionTypesByID.put(e.getValue(), e.getKey());
+				// if (setExistingTT.contains(e.getKey())) {
 				optMultT.addItem(e.getValue());
 				optMultT.setItemCaption(e.getValue(), e.getKey());
+				// }
 
 			}
 
@@ -2688,274 +2568,302 @@ public class ProfilesAndPermissionsModule {
 
 	@SuppressWarnings("unchecked")
 	private void displayExistingThresholds(HorizontalLayout cPlaceholder,
-			String tt) {
+			String ttid, String thtid) {
 
-		String ttid = hmTransactionTypes.get(tt);
+		isEditThresholdPossible = true;
 
-		HashMap<String, String> hm = hmExistingThresholdTypes.get(ttid);
+		initTransactionTypes();
 
+		System.out.println("VALUE OF NONETH IN DISPLAY: " + hmNONETH.size());
+
+		// String ttid = hmTransactionTypes.get(tt);
 		cPlaceholder.removeAllComponents();
 
 		cPlaceholder.setVisible(true);
 
-		VerticalLayout cT = new VerticalLayout();
-
-		final Table tb = new Table(tt + " Threshold configurations");
-		final IndexedContainer c = new IndexedContainer();
-		c.addContainerProperty("S/N", String.class, "");
-		c.addContainerProperty("Transaction Type", String.class, "");
-		c.addContainerProperty("Threshold Type", String.class, "");
-		c.addContainerProperty("Threshold Value", String.class, "");
-
 		int x = 0;
 
-		x++;
+		ArrayList<HashMap<String, String>> arr = hmExistingThresholdTypes
+				.get(ttid);
 
-		Object rid = c.addItem();
-		Item r = c.getItem(rid);
-		r.getItemProperty("S/N").setValue(String.valueOf(x));
-		r.getItemProperty("Transaction Type").setValue(tt);
+		System.out.println(arr.size());
 
-		r.getItemProperty("Threshold Type").setValue(
-				hmThresholdTypesByID.get(hm.get("threshold_type_id")));
+		VerticalLayout cAllTables = new VerticalLayout();
+		cPlaceholder.addComponent(cAllTables);
+		cAllTables.setSpacing(true);
 
-		r.getItemProperty("Threshold Value").setValue(hm.get("limit"));
+		String tt = hmTransactionTypesByID.get(ttid);
 
-		tb.setContainerDataSource(c);
-		if (x > 30)
-			x = 30;
-		tb.setPageLength(x);
-		tb.setSelectable(true);
+		for (HashMap<String, String> hm : arr) {
 
-		Button btnDelete = new Button();
-		btnDelete.setDescription("Delete Threshold");
-		btnDelete.setStyleName("btn_link");
-		btnDelete.setIcon(FontAwesome.RECYCLE);
+			String thtidx = hm.get("threshold_type_id");
 
-		final Button btnEdit = new Button();
-		btnEdit.setDescription("Edit Threshold");
-		btnEdit.setStyleName("btn_link");
-		btnEdit.setIcon(FontAwesome.EDIT);
+			if (!thtidx.equals(thtid)) {
+				continue;
+			}
 
-		Button btnCancel = new Button();
-		btnCancel.setDescription("Cancel");
-		btnCancel.setStyleName("btn_link");
-		btnCancel.setIcon(FontAwesome.UNDO);
+			VerticalLayout cT = new VerticalLayout();
+			cAllTables.addComponent(cT);
 
-		HorizontalLayout cBtns = new HorizontalLayout();
-		cBtns.addComponent(btnEdit);
-		cBtns.addComponent(btnAddThreshold);
-		btnAddThreshold.setVisible(true);
-		cBtns.addComponent(btnDelete);
-		cBtns.addComponent(btnCancel);
+			final Table tb = new Table(tt + " Threshold configurations");
+			final IndexedContainer c = new IndexedContainer();
+			c.addContainerProperty("S/N", String.class, "");
+			c.addContainerProperty("Transaction Type", String.class, "");
+			c.addContainerProperty("Threshold Type", String.class, "");
+			c.addContainerProperty("Threshold Value", String.class, "");
 
-		cT.addComponent(tb);
-		cT.addComponent(cBtns);
+			Object rid = c.addItem();
+			Item r = c.getItem(rid);
+			r.getItemProperty("S/N").setValue(String.valueOf(x));
+			r.getItemProperty("Transaction Type").setValue(tt);
 
-		cT.setComponentAlignment(cBtns, Alignment.BOTTOM_RIGHT);
-		cPlaceholder.addComponent(cT);
+			r.getItemProperty("Threshold Type").setValue(
+					hmThresholdTypesByID.get(thtidx));
 
-		btnEdit.addClickListener(new Button.ClickListener() {
+			r.getItemProperty("Threshold Value").setValue(hm.get("limit"));
 
-			/**
-				 * 
-				 */
-			private static final long serialVersionUID = -3936125405952974484L;
+			tb.setContainerDataSource(c);
+			if (x > 30)
+				x = 30;
+			tb.setPageLength(1);
+			tb.setSelectable(true);
 
-			@Override
-			public void buttonClick(ClickEvent event) {
+			Button btnDelete = new Button();
+			btnDelete.setDescription("Delete Threshold");
+			btnDelete.setStyleName("btn_link");
+			btnDelete.setIcon(FontAwesome.RECYCLE);
 
-				if (btnEdit.getIcon().equals(FontAwesome.ELLIPSIS_H)) {
-					return;
-				}
+			final Button btnEdit = new Button();
+			btnEdit.setDescription("Edit Threshold");
+			btnEdit.setStyleName("btn_link");
+			btnEdit.setIcon(FontAwesome.EDIT);
 
-				if (btnEdit.getIcon().equals(FontAwesome.EDIT)) {
-					reloadFields(c);
-					btnAddThreshold.setVisible(false);
-					btnEdit.setIcon(FontAwesome.SAVE);
-					btnEdit.setDescription("Save New Threshold Value");
+			Button btnCancel = new Button();
+			btnCancel.setDescription("Cancel");
+			btnCancel.setStyleName("btn_link");
+			btnCancel.setIcon(FontAwesome.UNDO);
 
-					return;
-				}
-
-				if (tfThresholdAmount.getValue() == null
-						|| tfThresholdAmount.getValue().toString().trim()
-								.isEmpty()) {
-					Notification.show("Pleas provide amount",
-							Notification.Type.ERROR_MESSAGE);
-
-					tfThresholdAmount.focus();
-					return;
-				}
-
-				if (Double.parseDouble(curThresholdValue) == Double
-						.parseDouble(tfThresholdAmount.getValue().toString()
-								.trim())) {
-
-					NotifCustom.show("Message",
-							"No changes to save. Please make changes and save");
-
-					return;
-				}
-
-				btnEdit.setEnabled(false);
-				btnEdit.setIcon(FontAwesome.ELLIPSIS_H);
-				btnEdit.setImmediate(true);
-				String amount = tfThresholdAmount.getValue();
-				tfThresholdAmount.setReadOnly(true);
-				tfThresholdAmount.setImmediate(true);
-
-				String pn = comboThresholdProfiles.getValue().toString();
-				Integer pid = Integer.parseInt(hmAllProfiles.get(pn));
-				ArrayList<String> ctids = new ArrayList<String>();
-
-				String transactionType = null;
-				String transactionTypeID = null;
-				String thresholdType = null;
-				String thresholdTypeID = null;
-
-				for (Object rid : c.getItemIds()) {
-
-					String idsx = c.getItem(rid)
-							.getItemProperty("Transaction Type").getValue()
-							.toString();
-
-					transactionTypeID = hmTransactionTypes.get(idsx);
-
-					ctids.add(transactionTypeID);
-					System.out.println(idsx);
-
-					transactionType = idsx;
-
-					thresholdType = c.getItem(rid)
-							.getItemProperty("Threshold Type").getValue()
-							.toString();
-
-				}
-
-				System.out.println("ThresholdType: " + thresholdType);
-
-				int[] ttids = new int[ctids.size()];
-				int ix = 0;
-				for (Object tid : ctids) {
-					ttids[ix] = Integer.valueOf(tid.toString()).intValue();
-					ix++;
-				}
-
-				HashMap<String, String> hm = hmExistingThresholdTypes
-						.get(hmTransactionTypes.get(transactionType));
-
-				System.out.println("Any transaction type: " + transactionType);
-
-				System.out.println(hm.size() + " Are null?");
-
-				String profiletypeid = hm.get("profile_type_id");
-				thresholdTypeID = hmThresholdTypes.get(thresholdType);
-
-				String response = null;
-
-				try {
-
-					System.out.println(pn + " : " + pid);
-					response = UserManagementService.editProfileThreshold(pn,
-							ttids, (int) pid,
-							Integer.parseInt(thresholdTypeID),
-							Integer.parseInt(profiletypeid), amount);
-
-				} catch (Exception e) {
-					Notification.show(e.getMessage(),
-							Notification.Type.ERROR_MESSAGE);
-					btnEdit.setEnabled(true);
-					btnEdit.setIcon(FontAwesome.EDIT);
-					btnAddThreshold.setVisible(true);
-					tfThresholdAmount.setReadOnly(false);
-					e.printStackTrace();
-					return;
-				}
-				if (response == null || response.trim().isEmpty()) {
-					Notification.show("Unknown operation status",
-							Notification.Type.ERROR_MESSAGE);
-					tfThresholdAmount.setReadOnly(false);
-					return;
-				}
-
-				btnEdit.setEnabled(false);
-				tfThresholdAmount.setReadOnly(true);
-
-				if (response.toUpperCase().contains("SUCCESS")) {
-					NotifCustom.show("Threshold", pn
-							+ "'s Threshold was successfully configured.");
-
-					btnEdit.setIcon(FontAwesome.EDIT);
-					tfThresholdAmount.setVisible(false);
-					tfThresholdAmount.setReadOnly(false);
-					btnAddThreshold.setVisible(true);
-					btnEdit.setEnabled(true);
-
-					c.getItem(c.getItemIds().iterator().next())
-							.getItemProperty("Threshold Value")
-							.setValue(tfThresholdAmount.getValue());
-					tb.setContainerDataSource(c);
-					tb.setPageLength(c.size());
-
-					return;
-				} else {
-					tfThresholdAmount.setReadOnly(false);
-					btnAddThreshold.setVisible(true);
-					btnEdit.setEnabled(true);
-					btnEdit.setIcon(FontAwesome.EDIT);
-
-					Notification
-							.show(response, Notification.Type.ERROR_MESSAGE);
-				}
-
-				// UserManagementService.editProfileThreshold(profilename,
-				// transactiontypeids, profileid, thresholdtypeid,
-				// profiletypeid, value);
+			HorizontalLayout cBtns = new HorizontalLayout();
+			cBtns.addComponent(btnEdit);
+			if (hmNONETH.size() == 0) {
+				btnAddThreshold.setVisible(false);
+			} else {
+				cBtns.addComponent(btnAddThreshold);
+				btnAddThreshold.setVisible(true);
 
 			}
-		});
+			cBtns.addComponent(btnDelete);
+			cBtns.addComponent(btnCancel);
 
-		btnDelete.addClickListener(new RemoveThresholdHandler(new Window(), c));
+			cT.addComponent(tb);
+			cT.addComponent(cBtns);
 
-		btnCancel.addClickListener(new Button.ClickListener() {
+			cT.setComponentAlignment(cBtns, Alignment.BOTTOM_RIGHT);
 
-			/**
-				 * 
-				 */
-			private static final long serialVersionUID = -5230632418750433091L;
+			btnEdit.addClickListener(new Button.ClickListener() {
 
-			@Override
-			public void buttonClick(ClickEvent event) {
+				/**
+	 *
+	 */
+				private static final long serialVersionUID = -3936125405952974484L;
 
-				if (btnEdit.getIcon().equals(FontAwesome.SAVE)) {
-					btnEdit.setIcon(FontAwesome.EDIT);
-					tfThresholdAmount.setVisible(false);
-					tfThresholdAmount.setReadOnly(false);
-					btnAddThreshold.setVisible(true);
+				@Override
+				public void buttonClick(ClickEvent event) {
 
-				} else {
+					if (btnEdit.getIcon().equals(FontAwesome.ELLIPSIS_H)) {
+						return;
+					}
 
-					comboX.select(null);
-					tfThresholdAmount.setVisible(false);
-					tfThresholdAmount.setReadOnly(false);
-					cBeforePlaceHolder.addComponent(btnAddThreshold);
-					cBeforePlaceHolder.setComponentAlignment(btnAddThreshold,
-							Alignment.TOP_CENTER);
-					btnAddThreshold.setVisible(false);
+					if (btnEdit.getIcon().equals(FontAwesome.EDIT)) {
+						reloadFields(c);
+						btnAddThreshold.setVisible(false);
+						btnEdit.setIcon(FontAwesome.SAVE);
+						btnEdit.setDescription("Save New Threshold Value");
+
+						return;
+					}
+
+					if (tfThresholdAmount.getValue() == null
+							|| tfThresholdAmount.getValue().toString().trim()
+									.isEmpty()) {
+						Notification.show("Pleas provide amount",
+								Notification.Type.ERROR_MESSAGE);
+
+						tfThresholdAmount.focus();
+						return;
+					}
+
+					if (Double.parseDouble(curThresholdValue) == Double
+							.parseDouble(tfThresholdAmount.getValue()
+									.toString().trim())) {
+
+						NotifCustom
+								.show("Message",
+										"No changes to save. Please make changes and save");
+
+						return;
+					}
+
+					btnEdit.setEnabled(false);
+					btnEdit.setIcon(FontAwesome.ELLIPSIS_H);
+					btnEdit.setImmediate(true);
+					String amount = tfThresholdAmount.getValue();
+					tfThresholdAmount.setReadOnly(true);
+					tfThresholdAmount.setImmediate(true);
+
+					String pn = comboThresholdProfiles.getValue().toString();
+					Integer pid = Integer.parseInt(hmAllProfiles.get(pn));
+					ArrayList<String> ctids = new ArrayList<String>();
+
+					String transactionType = null;
+					String transactionTypeID = null;
+					String thresholdType = null;
+					String thresholdTypeID = null;
+
+					for (Object rid : c.getItemIds()) {
+
+						String idsx = c.getItem(rid)
+								.getItemProperty("Transaction Type").getValue()
+								.toString();
+
+						transactionTypeID = hmTransactionTypes.get(idsx);
+
+						ctids.add(transactionTypeID);
+						System.out.println(idsx);
+
+						transactionType = idsx;
+
+						thresholdType = c.getItem(rid)
+								.getItemProperty("Threshold Type").getValue()
+								.toString();
+
+					}
+
+					System.out.println("ThresholdType: " + thresholdType);
+
+					int[] ttids = new int[ctids.size()];
+					int ix = 0;
+					for (Object tid : ctids) {
+						ttids[ix] = Integer.valueOf(tid.toString()).intValue();
+						ix++;
+					}
+
+					// HashMap<String, String> hm = hmExistingThresholdTypes
+					// .get(hmTransactionTypes.get(transactionType));
+
+					System.out.println("Any transaction type: "
+							+ transactionType);
+
+					// System.out.println(hm.size() + " Are null?");
+
+					String profiletypeid = profileTID;
+					thresholdTypeID = hmThresholdTypes.get(thresholdType);
+
+					String response = null;
+
+					try {
+
+						System.out.println(pn + " : " + pid);
+						response = UserManagementService.editProfileThreshold(
+								pn, ttids, (int) pid,
+								Integer.parseInt(thresholdTypeID),
+								Integer.parseInt(profiletypeid), amount);
+
+					} catch (Exception e) {
+						Notification.show(e.getMessage(),
+								Notification.Type.ERROR_MESSAGE);
+						btnEdit.setEnabled(true);
+						btnEdit.setIcon(FontAwesome.EDIT);
+						btnAddThreshold.setVisible(true);
+						tfThresholdAmount.setReadOnly(false);
+						e.printStackTrace();
+						return;
+					}
+					if (response == null || response.trim().isEmpty()) {
+						Notification.show("Unknown operation status",
+								Notification.Type.ERROR_MESSAGE);
+						tfThresholdAmount.setReadOnly(false);
+						return;
+					}
+
+					btnEdit.setEnabled(false);
+					tfThresholdAmount.setReadOnly(true);
+
+					if (response.toUpperCase().contains("SUCCESS")) {
+						NotifCustom.show("Threshold", pn
+								+ "'s Threshold was successfully configured.");
+
+						btnEdit.setIcon(FontAwesome.EDIT);
+						tfThresholdAmount.setVisible(false);
+						tfThresholdAmount.setReadOnly(false);
+						btnAddThreshold.setVisible(true);
+						btnEdit.setEnabled(true);
+
+						c.getItem(c.getItemIds().iterator().next())
+								.getItemProperty("Threshold Value")
+								.setValue(tfThresholdAmount.getValue());
+						tb.setContainerDataSource(c);
+						tb.setPageLength(c.size());
+
+						return;
+					} else {
+						tfThresholdAmount.setReadOnly(false);
+						btnAddThreshold.setVisible(true);
+						btnEdit.setEnabled(true);
+						btnEdit.setIcon(FontAwesome.EDIT);
+
+						Notification.show(response,
+								Notification.Type.ERROR_MESSAGE);
+					}
+
+					// UserManagementService.editProfileThreshold(profilename,
+					// transactiontypeids, profileid, thresholdtypeid,
+					// profiletypeid, value);
 
 				}
+			});
 
-			}
-		});
+			btnDelete.addClickListener(new RemoveThresholdHandler(new Window(),
+					c));
 
-		cPlaceholder.setSpacing(true);
+			btnCancel.addClickListener(new Button.ClickListener() {
+
+				/**
+	 *
+	 */
+				private static final long serialVersionUID = -5230632418750433091L;
+
+				@Override
+				public void buttonClick(ClickEvent event) {
+
+					if (btnEdit.getIcon().equals(FontAwesome.SAVE)) {
+						btnEdit.setIcon(FontAwesome.EDIT);
+						tfThresholdAmount.setVisible(false);
+						tfThresholdAmount.setReadOnly(false);
+						btnAddThreshold.setVisible(true);
+
+					} else {
+
+						comboXTH.select(null);
+						comboX.select(null);
+						tfThresholdAmount.setVisible(false);
+						tfThresholdAmount.setReadOnly(false);
+						cBeforePlaceHolder.addComponent(btnAddThreshold);
+						cBeforePlaceHolder.setComponentAlignment(
+								btnAddThreshold, Alignment.TOP_CENTER);
+						btnAddThreshold.setVisible(false);
+						isEditThresholdPossible = false;
+
+					}
+
+				}
+			});
+
+		}
 
 	}
 
 	private void initThresholdTypes(String pn) {
-
-		comboExistingThresholds.removeAllItems();
 
 		if (rs == null) {
 			try {
@@ -2978,16 +2886,21 @@ public class ProfilesAndPermissionsModule {
 
 			hmThresholdTypesByID = hm;
 			hmThresholdTypes.clear();
+
+			comboExistingThresholds.removeAllItems();
+
 			Iterator<Entry<String, String>> itr = hmThresholdTypesByID
 					.entrySet().iterator();
 			while (itr.hasNext()) {
 				Entry<String, String> e = itr.next();
 				hmThresholdTypes.put(e.getValue(), e.getKey());
+
+				// if (!isEditThresholdPossible) {
+
 				comboExistingThresholds.addItem(e.getKey());
 				comboExistingThresholds
 						.setItemCaption(e.getKey(), e.getValue());
-
-				System.out.println("ID: " + e.getValue() + "CAP:" + e.getKey());
+				// }
 
 			}
 
@@ -3000,8 +2913,9 @@ public class ProfilesAndPermissionsModule {
 
 	private void initExisting(String pn) {
 		initExistingThresholdTypes(pn);
-		initComponentsForExisting();
 		initThresholdTypes(pn);
+		initComponentsForExisting();
+
 	}
 
 	private void initNew(String pn) {
@@ -3011,6 +2925,7 @@ public class ProfilesAndPermissionsModule {
 	}
 
 	private void initComponentsForNew() {
+		comboXTH.setVisible(false);
 		comboX.setVisible(false);
 		tfThresholdAmount.setValue("");
 		// if (profileTID.equals("3")) {
@@ -3033,7 +2948,9 @@ public class ProfilesAndPermissionsModule {
 
 	private void initComponentsForExisting() {
 
+		comboXTH.removeAllItems();
 		comboX.removeAllItems();
+		comboXTH.setVisible(false);
 		comboX.setVisible(false);
 		tfThresholdAmount.setValue("");
 		tfThresholdAmount.setVisible(false);
@@ -3051,6 +2968,10 @@ public class ProfilesAndPermissionsModule {
 					Alignment.TOP_CENTER);
 			btnAddThreshold.setVisible(true);
 
+			hmETH.clear();
+			hmNONETH.clear();
+			setExistingTT.clear();
+
 			NotifCustom
 					.show("Message",
 							"No Existing Threshold Configurations for selected Profile");
@@ -3059,20 +2980,54 @@ public class ProfilesAndPermissionsModule {
 		}
 
 		initTransactionTypes();
-		Iterator<Entry<String, HashMap<String, String>>> itr = hmExistingThresholdTypes
+		Iterator<Entry<String, ArrayList<HashMap<String, String>>>> itr = hmExistingThresholdTypes
 				.entrySet().iterator();
-		while (itr.hasNext()) {
 
-			Entry<String, HashMap<String, String>> e = itr.next();
-			comboX.addItem(e.getKey());
-			comboX.setItemCaption(e.getKey(),
-					hmTransactionTypesByID.get(e.getKey()));
+		Iterator<String> itrx = hmExistingThresholdTypes.keySet().iterator();
+
+		/*
+		 * Clear previous existing Transaction Types
+		 */
+
+		setExistingTT.clear();
+		hmETH.clear();
+		hmNONETH.clear();
+
+		while (itrx.hasNext()) {
+
+			String e = itrx.next();
+
+			for (HashMap<String, String> hm : hmExistingThresholdTypes.get(e)) {
+				String ex = hm.get("threshold_type_id");
+				comboXTH.addItem(ex);
+				comboXTH.setItemCaption(ex, hmThresholdTypesByID.get(ex));
+				System.out.println("Vallue: " + ex);
+				System.out.println("Caption: " + hmThresholdTypesByID.get(ex));
+				if (!hmETH.containsKey(e)) {
+					HashSet<String> set = new HashSet<>();
+					set.add(ex);
+					hmETH.put(e, set);
+				} else {
+					hmETH.get(e).add(ex);
+				}
+
+			}
+
+			// System.out.println("Caption: " + hmTransactionTypesByID.get(e));
+			// System.out.println("Value: " + e);
+
+			comboX.addItem(e);
+			comboX.setItemCaption(e, hmTransactionTypesByID.get(e));
+			setExistingTT.add(e);
+
 		}
+		comboXTH.setVisible(true);
 		comboX.setVisible(true);
 
 	}
 
 	private void initExistingThresholdTypes(String pn) {
+		comboXTH.removeAllItems();
 		comboX.removeAllItems();
 		if (rs == null) {
 			try {
@@ -3088,7 +3043,8 @@ public class ProfilesAndPermissionsModule {
 			hmThresholdTypes.clear();
 
 			String pid = hmAllProfiles.get(pn);
-			hmExistingThresholdTypes = rs.getExistingThresholds(pid).get(pid);
+			hmExistingThresholdTypes = rs.getExistingThresholds(pid);
+			// System.out.println("RETURN: " + hmExistingThresholdTypes.size());
 			if (hmExistingThresholdTypes == null) {
 				hmExistingThresholdTypes = new HashMap<>();
 				return;
@@ -3098,17 +3054,6 @@ public class ProfilesAndPermissionsModule {
 		} catch (RemoteException | DataServiceFault e) {
 
 			e.printStackTrace();
-		}
-
-	}
-
-	private void addTransactionTypes() {
-
-		comboX.removeAllItems();
-		optMultT.removeAllItems();
-		initTransactionTypes();
-		if (hmExistingThresholdTypes.size() == 0) {
-			return;
 		}
 
 	}

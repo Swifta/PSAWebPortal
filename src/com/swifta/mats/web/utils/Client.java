@@ -2,6 +2,7 @@ package com.swifta.mats.web.utils;
 
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -633,50 +634,22 @@ public class Client {
 	public static void getExistingThresholds() throws RemoteException,
 			DataServiceFault {
 		ReportingService rs = new ReportingService();
-		Map<String, HashMap<String, HashMap<String, String>>> hmGen = rs
+		Map<String, ArrayList<HashMap<String, String>>> hmGen = rs
 				.getExistingThresholds("1");
 
 		System.out.print(hmGen.size() + ": Configurations...");
-		Iterator<Entry<String, HashMap<String, HashMap<String, String>>>> itr = hmGen
+		Iterator<Entry<String, ArrayList<HashMap<String, String>>>> itr = hmGen
 				.entrySet().iterator();
 		while (itr.hasNext()) {
-			Entry<String, HashMap<String, HashMap<String, String>>> e = itr
-					.next();
+			Entry<String, ArrayList<HashMap<String, String>>> e = itr.next();
 			System.out
 					.println("--------------------------------------------------------");
 			System.out.println();
 			System.out.println("Current Profile ID: " + e.getKey());
 			System.out.println(".....................................");
 
-			Iterator<Entry<String, HashMap<String, String>>> itrTT = e
-					.getValue().entrySet().iterator();
-
-			while (itrTT.hasNext()) {
-				Entry<String, HashMap<String, String>> eTT = itrTT.next();
-				System.out.println();
-				System.out.println("Current TRANSACTION TYPE ID: "
-						+ eTT.getKey() + " of " + e.getKey());
-				System.out
-						.println("___________________________________________________");
-
-				Iterator<Entry<String, String>> itrThresh = eTT.getValue()
-						.entrySet().iterator();
-				while (itrThresh.hasNext()) {
-					Entry<String, String> eThresh = itrThresh.next();
-					System.out.println();
-					System.out.println("Current Threshold TYPE ID: "
-							+ eThresh.getKey() + " of " + eThresh.getKey());
-					System.out.println("Current Threshold Value: "
-							+ eThresh.getKey() + " of " + eThresh.getValue());
-					System.out
-							.println("-------------------------------------------------------");
-
-				}
-
-				System.out.println("NEXTNEXT:");
-			}
+			Iterator<HashMap<String, String>> itrTT = e.getValue().iterator();
 
 		}
 	}
-
 }
