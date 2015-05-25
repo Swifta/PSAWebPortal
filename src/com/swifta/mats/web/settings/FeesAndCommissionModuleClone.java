@@ -10,13 +10,14 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.TreeMap;
 
 import org.apache.axis2.AxisFault;
 
@@ -69,19 +70,20 @@ import com.vaadin.ui.Window;
 
 public class FeesAndCommissionModuleClone {
 
+	private Button btnAddCommissions;
+	private HorizontalLayout cCommissionBeforePlaceholder;
+
 	private ArrayList<VerticalLayout> cArrLItemContent;
 	private ArrayList<FieldGroup> arrLRangeFG;
 	private ArrayList<FieldGroup> arrLMatFG;
-	private boolean isTiered;
+	private boolean isTieredx;
 	private ArrayList<ArrayList<FieldGroup>> arrLAllFG;
 	private HashMap<String, ArrayList<ArrayList<FieldGroup>>> hmAllFG;
 	private String tabType = null;
 	private String[] arrMatValues;
 	private String[] arrModelValues;
 	private String[] arrConValues;
-	ArrayList<FieldGroup> prfg;
-	ArrayList<FieldGroup> pmfg;
-	FieldGroup otherfg;
+	private FieldGroup otherfg;
 	boolean isReset = false;
 
 	private VerticalLayout cMain = new VerticalLayout();
@@ -92,17 +94,16 @@ public class FeesAndCommissionModuleClone {
 	private HorizontalLayout prevL;
 	private Window pop = new Window("Comfirm Fees Deletion");
 	private boolean isfromsub;
-	private boolean isProfileNameChanged = false;
 	private ReportingService rs;
 
-	private ComboBox comboAllFCOperatorsm;
 	private ComboBox comboAllFeesOperators;
 	private ComboBox comboAllCommissionOperators;
 	private ComboBox comboProfiles;
 	private Map<String, String> hmAllOperators;
 	private Map<String, String> hmProfileTypes;
-	private Map<String, String> hmThresholdTypes;
 	private Map<String, String> hmTransactionTypes;
+	private Map<String, String> hmExistingFeesTransactionTypes = new HashMap<>();
+	private Map<String, String> hmExistingCommissionTransactionTypes = new HashMap<>();
 	private Map<String, Profile> hmProfIDs = new HashMap<>();
 
 	private Map<String, LinkedHashSet<Servicefee>> hmServiceFees = new HashMap<>();
@@ -110,53 +111,42 @@ public class FeesAndCommissionModuleClone {
 	private Map<String, String> hmInActivePerms = new HashMap<>();
 
 	private TwinColSelect tcsInactiveAndActive;
-	private Profile[] profiles;
 
-	private OptionGroup optMultTrans;
-	private ComboBox comboThresholds;
 	private Button back;
 
 	private HashMap<String, String> hmProfPermPermissions;
 	private BtnTabLike btnProfiles;
 	private BtnTabLike btnPermissions;
 
-	private TreeMap<String, String> tmExistingTransactionTypes = new TreeMap<>();
-	private ComboBox comboxTT;
-
 	private ComboBox comboFeesTT;
 
 	private ComboBox comboCommissionsTT;
 
-	private HashMap<String, String> hmOp;
-	private HashMap<String, Integer> hmOpx;
-	private HashMap<String, Integer> hmTxType = new HashMap<>();
-
-	private boolean ischanged = true;
-	private VerticalLayout cCX;
 	private Double dfamt;
-	private Double dcamt;
 	private NumberFormat nf;
 	private DecimalFormatSymbols dfs;
+	private boolean isEditCommissions = false;
 	private boolean isEditFees = false;
+
+	private boolean isEdit = false;
+
 	private Table tbFees;
 	HashMap<String, FieldGroup> hmDFG;
-	private static String lookedTab = null;
-	private ComboBox comboTxType;
 
 	public final static String COMMISSION = "Commission";
 	public final static String FEES = "Fees";
-	private static final boolean isExistingFeeConfiguration = false;
 
-	private boolean isSettingsURL = false;
-	private String curURL = null;
 	private boolean isNewFeeConfig = false;
 	private boolean isExistingFeeConfig = false;
 
+	private boolean isNewCommissionsConfig = false;
+	private boolean isExistingCommissionsConfig = false;
+
 	private Component cTempComponent = null;
 
-	private Button btnEditFees = null;
-	private Button btnCancelFees = null;
-	private Button btnDeleteFees = null;
+	private Button btnEditFees;
+	private Button btnCancelFees;
+	private Button btnDeleteFees;
 
 	private Button btnCancelCommissions = null;
 	private Button btnDeleteCommissions = null;
@@ -164,11 +154,18 @@ public class FeesAndCommissionModuleClone {
 
 	private boolean isCommission = false;
 
-	private Map<String, String> hmExistingFees;
+	private Hashtable<String, String> hmExistingFees = new Hashtable<>();
+
+	private HashSet<String> setExistingFeesTT = new HashSet<>();
+
+	private HashSet<String> setExistingCommTT = new HashSet<>();
 
 	private LinkedHashSet<String> setNoneTier = new LinkedHashSet<>();
 	private LinkedHashMap<String, String[]> hmTiers = new LinkedHashMap<>();
 	private LinkedHashMap<String, LinkedHashSet<String>> hmNewTiers = new LinkedHashMap<>();
+
+	private boolean isFromDisplayFees = false;
+	private boolean isFromDisplayCommissions = false;
 
 	// None Tiers setupType, setupProperyid, commValue,
 	// Tiers range, fcount, amount
@@ -178,7 +175,13 @@ public class FeesAndCommissionModuleClone {
 	private boolean isOptTiered = true;
 	private OptionGroup optSetupType;
 
+	private Button btnAddFees;
+
 	private TextField tFCommValue;
+
+	private HorizontalLayout cFeesBeforePlaceholder;
+
+	private boolean isOptTieredTemp = false;
 
 	FeesAndCommissionModuleClone(Button back,
 			HashMap<String, String> hmProfPermPermissions) {
@@ -200,33 +203,11 @@ public class FeesAndCommissionModuleClone {
 		dfs.setCurrencySymbol("\u20A6");
 		((DecimalFormat) nf).setDecimalFormatSymbols(dfs);
 
-		hmTxType.put("CASHIN", 4);
-		hmTxType.put("CASHOUT", 5);
-		hmTxType.put("PAYMENT SEND", 6);
-		hmTxType.put("PAYMENT RECEIVE", 7);
-		hmTxType.put("3rd PARTY PAYMENT", 17);
-
-		// comboOp = new ComboBox("Operator");
-		comboTxType = new ComboBox("Transaction Type");
-		comboTxType.addItem(4);
-		comboTxType.setItemCaption(4, "CASHIN");
-		comboTxType.addItem(5);
-		comboTxType.setItemCaption(5, "CASHOUT");
-		comboTxType.addItem(6);
-		comboTxType.setItemCaption(6, "PAYMENT SEND");
-		comboTxType.addItem(7);
-		comboTxType.setItemCaption(7, "PAYMENT RECEIVE");
-		comboTxType.addItem(17);
-		comboTxType.setItemCaption(17, "3rd PARTY PAYMENT");
-		comboTxType.select(4);
 		hmAllFG = new HashMap<>();
 		hmDFG = new HashMap<>();
 		arrMatValues = new String[] { "PERCENT", "FIXED" };
 		arrModelValues = new String[] { "TIERED", "NOTAPPLICABLE" };
 		arrConValues = new String[] { "AMOUNT", "FEE" };
-
-		hmOp = new HashMap<>();
-		hmOpx = new HashMap<>();
 
 		this.hmProfPermPermissions = hmProfPermPermissions;
 		this.back = back;
@@ -293,6 +274,8 @@ public class FeesAndCommissionModuleClone {
 			@Override
 			public void buttonClick(ClickEvent event) {
 
+				isCommission = false;
+
 				btnProfiles.setEnabled(false);
 				btnProfiles.setStyleName("btn_tab_like btn_tab_like_active");
 
@@ -334,6 +317,8 @@ public class FeesAndCommissionModuleClone {
 
 				btnPermissions.setEnabled(false);
 				btnPermissions.setStyleName("btn_tab_like btn_tab_like_active");
+
+				isCommission = true;
 
 				if (!btnProfiles.isEnabled())
 					p = cProfile;
@@ -377,6 +362,7 @@ public class FeesAndCommissionModuleClone {
 
 	private HorizontalLayout getFeesC() {
 		isCommission = false;
+
 		VerticalLayout cAgentInfo = new VerticalLayout();
 		final HorizontalLayout cPlaceholder = new HorizontalLayout();
 		cAgentInfo.setMargin(new MarginInfo(true, true, true, true));
@@ -448,8 +434,10 @@ public class FeesAndCommissionModuleClone {
 		final Button btnAdd = new Button("+");
 		// btnAdd.setIcon(FontAwesome.UNDO);
 		btnAdd.setStyleName("btn_link");
-		btnAdd.setDescription("Add Fees Comfigurations");
+		btnAdd.setDescription("Add New Fees Comfigurations");
 		btnAdd.setVisible(false);
+
+		btnAddFees = btnAdd;
 
 		// VerticalLayout cAddBtn = new VerticalLayout();
 		// cAddBtn.setWidthUndefined();
@@ -465,18 +453,21 @@ public class FeesAndCommissionModuleClone {
 				.get("set_permissions")))
 			cPermsActions.addComponent(btnEdit);
 
+		// cPermsActions.addComponent(btnAdd);
+
 		cPermsActions.addComponent(btnDelete);
-
-		cPermsActions.addComponent(btnCancel);
-
-		// cProfActions.addComponent(btnAdd);
-
-		btnCancel.setVisible(false);
 
 		cAllProf.addComponent(cProfNameAndAddBtn);
 		cAllProf.setComponentAlignment(cProfNameAndAddBtn, Alignment.TOP_CENTER);
-		cAllProf.addComponent(btnAdd);
-		cAllProf.setComponentAlignment(btnAdd, Alignment.TOP_CENTER);
+
+		cFeesBeforePlaceholder = new HorizontalLayout();
+		cFeesBeforePlaceholder.addComponent(btnAddFees);
+
+		cFeesBeforePlaceholder.setComponentAlignment(btnAddFees,
+				Alignment.TOP_CENTER);
+		cAllProf.addComponent(cFeesBeforePlaceholder);
+		cAllProf.setComponentAlignment(cFeesBeforePlaceholder,
+				Alignment.TOP_CENTER);
 
 		// cAllProf.addComponent(cPermsActions);
 		// cAllProf.setComponentAlignment(cProfActions, Alignment.TOP_CENTER);
@@ -509,7 +500,7 @@ public class FeesAndCommissionModuleClone {
 		cPlaceholder.addComponent(tb);
 
 		final VerticalLayout cPermsAndBtns = new VerticalLayout();
-		final HorizontalLayout cPermsList = new HorizontalLayout();
+		final VerticalLayout cPermsList = new VerticalLayout();
 		cPermsList.addComponent(tb);
 		cTempComponent = tb;
 		cPermsAndBtns.addComponent(cPermsList);
@@ -538,6 +529,10 @@ public class FeesAndCommissionModuleClone {
 					@Override
 					public void valueChange(ValueChangeEvent event) {
 						hmServiceFees.clear();
+						comboFeesTT.setEnabled(true);
+						isFromDisplayFees = false;
+						isEditFees = false;
+
 						// tbFees.removeAllItems();
 
 						Object objPname = event.getProperty().getValue();
@@ -577,6 +572,11 @@ public class FeesAndCommissionModuleClone {
 							isExistingFeeConfig = false;
 							isNewFeeConfig = true;
 
+							cFeesBeforePlaceholder.addComponent(btnAddFees);
+							cFeesBeforePlaceholder.setComponentAlignment(
+									btnAddFees, Alignment.TOP_CENTER);
+							btnAddFees.setVisible(true);
+
 							return;
 						}
 
@@ -585,8 +585,10 @@ public class FeesAndCommissionModuleClone {
 
 						comboFeesTT.setVisible(true);
 						comboFeesTT.removeAllItems();
+						setExistingFeesTT.clear();
 						for (String str : hmServiceFees.keySet()) {
 							comboFeesTT.addItem(str);
+							setExistingFeesTT.add(str);
 						}
 
 						cPlaceholder.setVisible(false);
@@ -612,12 +614,16 @@ public class FeesAndCommissionModuleClone {
 				}
 
 				if (isExistingFeeConfig) {
-
-					displayFeesConfigurations(tb, obj.toString());
+					displayFeesConfigurations(tb, obj.toString(), cPermsActions);
 					cPermsList.removeAllComponents();
 					cPermsList.addComponent(tb);
 					cTempComponent = tb;
 					cPlaceholder.setVisible(true);
+
+					System.out.println("Size of set: "
+							+ setExistingFeesTT.size());
+					System.out.println("Size of TT: "
+							+ hmTransactionTypes.size());
 
 					return;
 				}
@@ -627,12 +633,18 @@ public class FeesAndCommissionModuleClone {
 					// System.out.println("Adding New Fees...........xx");
 					Component c = null;
 
-					c = getAddFeesC(FEES, false, cPlaceholder, btnAdd,
+					isEditFees = false;
+
+					c = getAddFeesC(FEES, isEditFees, cPlaceholder, btnAdd,
 							cPermsList, tb, cPermsActions);
+
+					cPermsActions.setVisible(false);
 					cPermsList.removeAllComponents();
 					cPermsList.addComponent(c);
 					cTempComponent = c;
 					cPlaceholder.setVisible(true);
+					btnAddFees.setVisible(false);
+
 					return;
 
 				}
@@ -650,19 +662,16 @@ public class FeesAndCommissionModuleClone {
 
 				// if (!isPermProfilesAdded)
 
-				System.out.println(comboAllFeesOperators.getCaption() + "kkkkk");
-
-				comboAllFeesOperators.addItem("kxkm,dm,m,md");
-				addOperators(comboAllFeesOperators);
-
-				System.out.println("Are you reaching here");
-				// isPermProfilesAdded = true;
+				if (comboAllFeesOperators.getItemIds().size() == 0) {
+					addOperators(comboAllFeesOperators);
+					initTransactionTypes();
+				}
 
 			}
 
 		});
 
-		btnEdit.addClickListener(new Button.ClickListener() {
+		btnEditFees.addClickListener(new Button.ClickListener() {
 
 			/**
 			 * 
@@ -678,17 +687,21 @@ public class FeesAndCommissionModuleClone {
 
 				if (btnEdit.getIcon().equals(FontAwesome.EDIT)) {
 					btnCancel.setVisible(true);
-					btnEdit.setIcon(FontAwesome.SAVE);
-					btnEdit.setDescription("Save changes");
+					btnEditFees.setIcon(FontAwesome.SAVE);
+					btnEditFees.setDescription("Save changes");
 
 					// hmServiceFees.clear();
 
-					Component c = getAddFeesC(FEES, true, cPlaceholder, btnAdd,
-							cPermsList, tb, cPermsActions);
+					isEditFees = true;
+					Component c = getAddFeesC(FEES, isEditFees, cPlaceholder,
+							btnAdd, cPermsList, tb, cPermsActions);
+					cPermsActions.setVisible(false);
 					cPermsList.removeAllComponents();
 					cPermsList.replaceComponent(cTempComponent, c);
 					cTempComponent = c;
 					cPlaceholder.setVisible(true);
+
+					comboFeesTT.setEnabled(false);
 
 				}
 
@@ -722,6 +735,8 @@ public class FeesAndCommissionModuleClone {
 				btnEdit.setDescription("Edit permissions");
 				btnEdit.setEnabled(true);
 				btnAdd.setVisible(false);
+
+				btnEditFees.setEnabled(true);
 
 				if (pCount == 0) {
 					cPlaceholder.setVisible(false);
@@ -757,17 +772,15 @@ public class FeesAndCommissionModuleClone {
 
 				addTransactionTypes(comboFeesTT);
 
-				// TODO Important Swapping
-
-				// cPermsList.replaceComponent(tb, tcsInactiveAndActive);
-
+				isExistingFeeConfig = false;
 				isNewFeeConfig = true;
 
 			}
 
 		});
 
-		btnDelete.addClickListener(new RemoveFeesHandler(pop, cPlaceholder));
+		btnDelete.addClickListener(new RemoveFeesHandler(new Window(
+				"Delete Fees"), cPlaceholder));
 
 		return c;
 	}
@@ -787,9 +800,7 @@ public class FeesAndCommissionModuleClone {
 			Map<String, LinkedHashSet<Servicefee>> hm = new HashMap<>();
 			int i = 0;
 
-			if (hmTransactionTypes == null)
-				hmTransactionTypes = new HashMap<>();
-			hmTransactionTypes.clear();
+			hmExistingFeesTransactionTypes.clear();
 
 			for (Servicefee sf : rs.getFeesBySP(UI.getCurrent().getSession()
 					.getAttribute("user").toString(), spid)) {
@@ -799,8 +810,9 @@ public class FeesAndCommissionModuleClone {
 					LinkedHashSet<Servicefee> hset = new LinkedHashSet<>();
 					hset.add(sf);
 					hm.put(transactionType, hset);
-					hmTransactionTypes.put(sf.getTransactiontype().toString(),
-							String.valueOf(sf.getTransactiontypeid()));
+					hmExistingFeesTransactionTypes.put(sf.getTransactiontype()
+							.toString(), String.valueOf(sf
+							.getTransactiontypeid()));
 					continue;
 				}
 				hm.get(transactionType).add(sf);
@@ -835,20 +847,10 @@ public class FeesAndCommissionModuleClone {
 			Map<String, LinkedHashSet<Commissionfee>> hm = new HashMap<>();
 			int i = 0;
 
-			if (hmTransactionTypes == null)
-				hmTransactionTypes = new HashMap<>();
-			hmTransactionTypes.clear();
-
-			if (hmExistingFees == null)
-				hmExistingFees = new HashMap<>();
 			hmExistingFees.clear();
+			hmExistingCommissionTransactionTypes.clear();
 
 			String scc = new String("TIEREDAMOUNT");
-
-			System.out.println("Service Provide id: " + spid);
-			System.out.println("Size: "
-					+ rs.getCommissionBySp(UI.getCurrent().getSession()
-							.getAttribute("user").toString(), spid).length);
 
 			for (Commissionfee cf : rs.getCommissionBySp(UI.getCurrent()
 					.getSession().getAttribute("user").toString(), spid)) {
@@ -866,13 +868,13 @@ public class FeesAndCommissionModuleClone {
 					setNoneTier.add(String.valueOf(cf
 							.getServicefeepropertiesid()));
 
-					hmTransactionTypes.put(cf.getTransactiontype(),
+					hmExistingFees.put(cf.getTransactiontype(),
+							String.valueOf(cf.getServicefeepropertiesid()));
+					hmExistingCommissionTransactionTypes.put(
+							cf.getTransactiontype(),
 							String.valueOf(cf.getTransactiontypeid()));
 					isOptTiered = cf.getServicecommissioncondition()
 							.equals(scc);
-
-					hmExistingFees.put(cf.getTransactiontype(),
-							String.valueOf(cf.getServicefeepropertiesid()));
 
 					continue;
 				}
@@ -1272,6 +1274,12 @@ public class FeesAndCommissionModuleClone {
 		// btnAdd.setIcon(FontAwesome.UNDO);
 		btnAdd.setStyleName("btn_link");
 		btnAdd.setDescription("Add Commissions Comfigurations");
+
+		cCommissionBeforePlaceholder = new HorizontalLayout();
+		cCommissionBeforePlaceholder.addComponent(btnAdd);
+		cCommissionBeforePlaceholder.setComponentAlignment(btnAdd,
+				Alignment.TOP_CENTER);
+		btnAddCommissions = btnAdd;
 		btnAdd.setVisible(false);
 
 		// VerticalLayout cAddBtn = new VerticalLayout();
@@ -1290,7 +1298,7 @@ public class FeesAndCommissionModuleClone {
 
 		cPermsActions.addComponent(btnDelete);
 
-		cPermsActions.addComponent(btnCancel);
+		// cPermsActions.addComponent(btnCancel);
 
 		// cProfActions.addComponent(btnAdd);
 
@@ -1299,8 +1307,9 @@ public class FeesAndCommissionModuleClone {
 		cAllProf.addComponent(cProfNameAndAddBtn);
 
 		cAllProf.setComponentAlignment(cProfNameAndAddBtn, Alignment.TOP_CENTER);
-		cAllProf.addComponent(btnAdd);
-		cAllProf.setComponentAlignment(btnAdd, Alignment.TOP_CENTER);
+		cAllProf.addComponent(cCommissionBeforePlaceholder);
+		cAllProf.setComponentAlignment(cCommissionBeforePlaceholder,
+				Alignment.TOP_CENTER);
 
 		// cAllProf.addComponent(cPermsActions);
 		// cAllProf.setComponentAlignment(cProfActions, Alignment.TOP_CENTER);
@@ -1333,9 +1342,8 @@ public class FeesAndCommissionModuleClone {
 		cPlaceholderx.addComponent(tb);
 
 		final VerticalLayout cPermsAndBtns = new VerticalLayout();
-		final HorizontalLayout cPermsList = new HorizontalLayout();
+		final VerticalLayout cPermsList = new VerticalLayout();
 		cPermsList.addComponent(tb);
-		cTempComponent = tb;
 		cPermsAndBtns.addComponent(cPermsList);
 		cPermsAndBtns.addComponent(cPermsActions);
 		cPlaceholderx.addComponent(cPermsAndBtns);
@@ -1394,25 +1402,52 @@ public class FeesAndCommissionModuleClone {
 			@Override
 			public void buttonClick(ClickEvent event) {
 
-				if (isExistingFeeConfig) {
+				String sx = comboCommissionsTT.getValue().toString();
 
-					displayFeesConfigurations(tb, comboCommissionsTT.getValue()
-							.toString());
-					cPermsList.removeAllComponents();
-					cPermsList.addComponent(tb);
-					cPlaceholderx.setVisible(true);
-					isEditFees = false;
-					btnEditFees.setIcon(FontAwesome.EDIT);
-					btnEditFees.setDescription("Edit Configurations Fees");
-
-					cPermsActions.setVisible(true);
-					optSetupType.setEnabled(false);
-				} else {
-					comboCommissionsTT.select(null);
-					comboAllCommissionOperators.select(null);
-					comboCommissionsTT.setVisible(false);
-					// optSetupType.setVisible(false);
+				if (sx.indexOf("-") != -1) {
+					sx = sx.substring(sx.indexOf("-") + 1, sx.length()).trim();
 				}
+
+				// comboAllCommissionOperators.select(null);
+
+				comboAllCommissionOperators.select(null);
+
+				// btnEditCommissions.setIcon(FontAwesome.EDIT);
+				// btnEditCommissions
+				// .setDescription("Edit Commission Configurations");
+				//
+				// if (isFromDisplayCommissions) {
+				// optSetupType.setEnabled(false);
+				// comboCommissionsTT.setEnabled(true);
+				// isExistingCommissionsConfig = true;
+				// isNewCommissionsConfig = false;
+				// isEditCommissions = false;
+				// comboCommissionsTT.removeAllItems();
+				//
+				// for (String s : setExistingCommTT)
+				// comboCommissionsTT.addItem(s);
+				//
+				// comboCommissionsTT.select(sx);
+				//
+				// isEdit = false;
+				//
+				// if (isFromDisplayCommissions)
+				//
+				// if (isOptTieredTemp) {
+				// optSetupType.select(2);
+				//
+				// } else {
+				// optSetupType.select(1);
+				// }
+				//
+				// return;
+				//
+				// } else {
+				// comboCommissionsTT.setVisible(true);
+				// comboCommissionsTT.setEnabled(true);
+				// comboCommissionsTT.select(null);
+				// optSetupType.setVisible(true);
+				// }
 
 			}
 		});
@@ -1457,35 +1492,50 @@ public class FeesAndCommissionModuleClone {
 				}
 
 				if (commit(cPlaceholderx)) {
-					if (hmTransactionTypes == null
-							|| hmTransactionTypes.size() == 0)
-						hmTransactionTypes = getTransactionTypes();
 
-					// System.out
-					// .println("-------vvvvv--vv---v-v----------------");
-					// String pname =
-					// comboAllFCOperators.getValue().toString()
+					comboAllCommissionOperators.select(null);
+
+					// String sx = comboCommissionsTT.getValue().toString();
+					//
+					// if (sx.indexOf("-") != -1) {
+					// sx = sx.substring(sx.indexOf("-") + 1, sx.length())
 					// .trim();
-					// hmServiceFees = getServiceFees(Integer
+					// }
+					//
+					// comboCommissionsTT.addItem(sx);
+					//
+					// btnEditCommissions.setIcon(FontAwesome.EDIT);
+					//
+					// String pname = comboAllCommissionOperators.getValue()
+					// .toString().trim();
+					//
+					// hmServiceCommission = getServiceCommissions(Integer
 					// .parseInt(hmAllOperators.get(pname)));
 					//
-					// displayFeesConfigurations(tb,
-					// comboTT.getValue().toString());
-					// cPermsList.removeAllComponents();
-					// cPermsList.addComponent(tb);
-					// cPlaceholderx.setVisible(true);
-					// isEditFees = false;
-					// btnEditCommissions.setIcon(FontAwesome.EDIT);
-					// btnEditCommissions
-					// .setDescription("Edit Commissions Configurations");
-					// btnCancelCommissions.setVisible(false);
+					// optSetupType.setVisible(true);
+					// optSetupType.setEnabled(false);
+					// comboCommissionsTT.setEnabled(true);
+					// isEdit = false;
 					//
-					// optSetupType.setVisible(false);
-					// optSetupType.setEnabled(true);
-					comboAllCommissionOperators.select(null);
-					comboAllCommissionOperators.setValue(null);
-					comboCommissionsTT.setEnabled(true);
-					comboCommissionsTT.setVisible(false);
+					// comboCommissionsTT.removeAllItems();
+					//
+					// boolean tempTier = false;
+					//
+					// if (isOptTiered) {
+					// tempTier = true;
+					// }
+					//
+					// isOptTiered = true;
+					// isFromDisplayCommissions = false;
+					// addTransactionTypes(comboCommissionsTT);
+					// comboCommissionsTT.setVisible(true);
+					// comboCommissionsTT.select(sx);
+					//
+					// if (tempTier)
+					// optSetupType.select(2);
+					// else
+					// optSetupType.select(1);
+
 				}
 
 			}
@@ -1503,53 +1553,100 @@ public class FeesAndCommissionModuleClone {
 
 					return;
 
-				// cPermsActions.setVisible(true);
+				if (Integer.valueOf(obj.toString()) == 1) {
+					isOptTiered = false;
+				} else {
+					isOptTiered = true;
 
-				if (!isEditFees) {
-					if (Integer.valueOf(obj.toString()) == 1) {
-						isOptTiered = false;
-						addTransactionTypes(comboCommissionsTT);
-						tFCommValue.setValue("");
-
-						System.out.println("I love ....");
-					} else {
-						isOptTiered = true;
-						addTransactionTypes(comboCommissionsTT);
-						// cPermsActions.setVisible(true);
-
-						System.out.println("I love x....");
-					}
 				}
 
-				if (isEditFees) {
+				if (isOptTiered) {
 
-					if (Integer.valueOf(obj.toString()) == 1) {
-						isOptTiered = false;
-						// cPermsActions.setVisible(false);
-						// tFCommValue.setValue("");
-						cPermsList.removeAllComponents();
-						cPermsList.addComponent(cCommValue);
-						cTempComponent = cCommValue;
-						cPlaceholderx.setVisible(true);
+					if (isEditCommissions) {
 
-					} else {
-						isOptTiered = true;
-						Component c = getAddFeesC(COMMISSION, true,
-								cPlaceholderx, btnAdd, cPermsList, tb,
-								cPermsActions);
+						Component c = getAddFeesC(COMMISSION,
+								isEditCommissions, cPlaceholderx, btnAdd,
+								cPermsList, tb, cPermsActions);
 						cPermsList.removeAllComponents();
-						cPermsList.replaceComponent(cTempComponent, c);
-						cTempComponent = c;
+
+						cPermsList.addComponent(c);
 						cPlaceholderx.setVisible(true);
 						optSetupType.setVisible(true);
 						optSetupType.setEnabled(true);
 						comboCommissionsTT.setEnabled(false);
 
-						System.out.println("I love ....");
+					} else {
+						addTransactionTypes(comboCommissionsTT);
+						cPermsList.removeAllComponents();
+						cPlaceholderx.setVisible(false);
+						comboCommissionsTT.setVisible(false);
+						tFCommValue.setValue("");
 
 					}
 
+				} else {
+
+					if (isEditCommissions) {
+
+						cPermsList.removeAllComponents();
+						cPermsList.addComponent(cCommValue);
+						cPlaceholderx.setVisible(true);
+
+					} else {
+
+						addTransactionTypes(comboCommissionsTT);
+						tFCommValue.setValue("");
+						cPermsList.removeAllComponents();
+						cPermsList.addComponent(cCommValue);
+						cPlaceholderx.setVisible(false);
+
+					}
 				}
+
+				// cPermsActions.setVisible(true);
+
+				//
+				// if (!isEditCommissions) {
+				// if (Integer.valueOf(obj.toString()) == 1) {
+				// isOptTiered = false;
+				// addTransactionTypes(comboCommissionsTT);
+				// tFCommValue.setValue("");
+				//
+				// System.out.println("I love ....");
+				// } else {
+				// isOptTiered = true;
+				// addTransactionTypes(comboCommissionsTT);
+				//
+				// System.out.println("I love x....");
+				// }
+				// }
+				//
+				// if (isEditCommissions) {
+				// if (Integer.valueOf(obj.toString()) == 1) {
+				// isOptTiered = false;
+				// // cPermsActions.setVisible(false);
+				// // tFCommValue.setValue("");
+				// cPermsList.removeAllComponents();
+				// cPermsList.addComponent(cCommValue);
+				// cTempComponent = cCommValue;
+				// cPlaceholderx.setVisible(true);
+				//
+				// } else {
+				// isOptTiered = true;
+				// Component c = getAddFeesC(COMMISSION,
+				// isEditCommissions, cPlaceholderx, btnAdd,
+				// cPermsList, tb, cPermsActions);
+				// cPermsList.removeAllComponents();
+				//
+				// cPermsList.addComponent(c);
+				// cPlaceholderx.setVisible(true);
+				// optSetupType.setVisible(true);
+				// optSetupType.setEnabled(true);
+				// comboCommissionsTT.setEnabled(false);
+				//
+				// }
+				//
+				// }
 
 				comboCommissionsTT.setVisible(true);
 
@@ -1566,9 +1663,26 @@ public class FeesAndCommissionModuleClone {
 					public void valueChange(ValueChangeEvent event) {
 						hmServiceCommission.clear();
 						optSetupType.setVisible(false);
+						isEditCommissions = false;
+						isExistingCommissionsConfig = false;
+						// isExistingCommissionsConfig = false;
+						tFCommValue.setValue("");
+						tFCommValue.setReadOnly(false);
 						comboCommissionsTT.setEnabled(true);
+						cPermsList.removeAllComponents();
 
-						// tbFees.removeAllItems();
+						comboCommissionsTT.setVisible(false);
+
+						isEditCommissions = false;
+
+						setExistingCommTT.clear();
+
+						isFromDisplayCommissions = false;
+
+						cCommissionBeforePlaceholder
+								.addComponent(btnAddCommissions);
+						cCommissionBeforePlaceholder.setComponentAlignment(
+								btnAddCommissions, Alignment.TOP_CENTER);
 
 						Object objPname = event.getProperty().getValue();
 						if (objPname == null) {
@@ -1599,19 +1713,20 @@ public class FeesAndCommissionModuleClone {
 											+ pname);
 							btnAdd.setVisible(true);
 							comboCommissionsTT.setVisible(false);
-							isExistingFeeConfig = false;
-							isNewFeeConfig = true;
+							isExistingCommissionsConfig = false;
+							isNewCommissionsConfig = true;
 
 							return;
 						}
 
-						isExistingFeeConfig = true;
-						isNewFeeConfig = false;
+						isExistingCommissionsConfig = true;
+						isNewCommissionsConfig = false;
 
 						comboCommissionsTT.setVisible(true);
 						comboCommissionsTT.removeAllItems();
 						for (String str : hmServiceCommission.keySet()) {
 							comboCommissionsTT.addItem(str);
+							setExistingCommTT.add(str);
 						}
 
 						cPlaceholderx.setVisible(false);
@@ -1637,22 +1752,25 @@ public class FeesAndCommissionModuleClone {
 					return;
 				}
 
-				if (!isOptTiered && !isExistingFeeConfig) {
+				if (!isOptTiered && !isExistingCommissionsConfig) {
 
 					tFCommValue.setValue("");
+					tFCommValue.setVisible(true);
 					cPermsList.removeAllComponents();
+					cPermsList.setVisible(true);
 					cPermsList.addComponent(cCommValue);
-					cTempComponent = cCommValue;
 					cPlaceholderx.setVisible(true);
 					cPermsActions.setVisible(false);
+
+					System.out.println("System here....");
 
 					return;
 
 				}
 
-				if (isExistingFeeConfig) {
+				if (isExistingCommissionsConfig) {
 
-					displayFeesConfigurations(tb, obj.toString());
+					displayFeesConfigurations(tb, obj.toString(), cPermsActions);
 					cPermsActions.setVisible(true);
 
 					if (isCommission) {
@@ -1676,22 +1794,14 @@ public class FeesAndCommissionModuleClone {
 					return;
 				}
 
-				if (isNewFeeConfig) {
+				if (isNewCommissionsConfig) {
 
-					System.out
-							.println(" COMMISSION...............mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm");
 					Component c = null;
-					if (isCommission) {
 
-						c = getAddFeesC(COMMISSION, false, cPlaceholderx,
-								btnAdd, cPermsList, tb, cPermsActions);
+					c = getAddFeesC(COMMISSION, isEditCommissions,
+							cPlaceholderx, btnAdd, cPermsList, tb,
+							cPermsActions);
 
-					} else {
-						c = getAddFeesC(FEES, false, cPlaceholderx, btnAdd,
-								cPermsList, tb, cPermsActions);
-					}
-
-					System.out.println("Adding New Fees...........xx");
 					cPermsList.removeAllComponents();
 					cPermsList.addComponent(c);
 					cTempComponent = c;
@@ -1712,9 +1822,10 @@ public class FeesAndCommissionModuleClone {
 			@Override
 			public void focus(FocusEvent event) {
 
-				// if (!isPermProfilesAdded)
-				addOperators(comboAllCommissionOperators);
-				// isPermProfilesAdded = true;
+				if (comboAllCommissionOperators.getItemIds().size() == 0) {
+					addOperators(comboAllCommissionOperators);
+					initTransactionTypes();
+				}
 
 			}
 
@@ -1734,15 +1845,17 @@ public class FeesAndCommissionModuleClone {
 						.getItemCaption(comboAllCommissionOperators.getValue());
 				Integer pid = Integer.parseInt(hmAllOperators.get(pname));
 
+				isEditCommissions = true;
+
+				if (isOptTiered) {
+					isOptTieredTemp = true;
+				} else {
+					isOptTieredTemp = false;
+				}
+
 				if (btnEdit.getIcon().equals(FontAwesome.EDIT)) {
 					cPermsActions.setVisible(false);
-					isEditFees = true;
-					// btnCancel.setVisible(true);
-					// btnEdit.setIcon(FontAwesome.SAVE);
-					// btnEdit.setDescription("Save changes");
-
-					// hmServiceFees.clear();
-
+					isEditCommissions = true;
 					Component c = null;
 					if (!isOptTiered) {
 						Object rid = tbFees.getItemIds().iterator().next();
@@ -1750,10 +1863,12 @@ public class FeesAndCommissionModuleClone {
 						tFCommValue.setValue(r.getItemProperty("Amount")
 								.getValue().toString());
 						c = cCommValue;
+
 					} else {
 
-						c = getAddFeesC(COMMISSION, true, cPlaceholderx,
-								btnAdd, cPermsList, tb, cPermsActions);
+						c = getAddFeesC(COMMISSION, isEditCommissions,
+								cPlaceholderx, btnAdd, cPermsList, tb,
+								cPermsActions);
 					}
 
 					cCommValue.setVisible(true);
@@ -1849,8 +1964,10 @@ public class FeesAndCommissionModuleClone {
 
 				tcsInactiveAndActive.removeAllItems();
 				comboCommissionsTT.removeAllItems();
-				// comboTT.setVisible(true);
+
 				optSetupType.setVisible(true);
+				comboCommissionsTT.setVisible(false);
+				comboCommissionsTT.setEnabled(true);
 
 				addTransactionTypes(comboCommissionsTT);
 
@@ -1858,9 +1975,12 @@ public class FeesAndCommissionModuleClone {
 
 				// cPermsList.replaceComponent(tb, tcsInactiveAndActive);
 
-				isNewFeeConfig = true;
+				isNewCommissionsConfig = true;
+				isExistingCommissionsConfig = false;
+				isEditCommissions = false;
 
-				System.out.println("-----In Configurations-------Period");
+				// if (isFromDisplayCommissions)
+				// optSetupType.select(2);
 
 				cPermsActions.setVisible(false);
 
@@ -1933,33 +2053,53 @@ public class FeesAndCommissionModuleClone {
 
 					pop.close();
 
-					String pn = comboAllCommissionOperators.getValue()
-							.toString();
+					String pn = comboAllFeesOperators.getValue().toString();
 					Integer pid = Integer.parseInt(hmAllOperators.get(pn));
 					String response = null;
 
 					try {
 
 						Integer opID = Integer.parseInt(hmAllOperators
-								.get(comboAllCommissionOperators.getValue()
+								.get(comboAllFeesOperators.getValue()
 										.toString().trim()));
 
+						String sx = comboFeesTT.getValue().toString();
+
+						if (sx.indexOf("-") != -1) {
+							sx = sx.substring(sx.indexOf("-") + 1, sx.length())
+									.trim();
+						}
+
 						Integer txID = Integer.valueOf(hmTransactionTypes
-								.get(comboFeesTT.getValue().toString()));
+								.get(sx));
 
 						response = FeeService.deleteServicefee(UI.getCurrent()
 								.getSession().getAttribute("user").toString(),
 								txID, opID);
 
 						System.out.println(response);
-						NotifCustom.show("Response", response);
+						// NotifCustom.show("Response", response);
 
 						if (response.equals("Service fee deleted successfully")) {
 
 							NotifCustom.show("Response", response);//
 							cPlaceholder.setVisible(false);
 							comboFeesTT.setVisible(false);
-							comboAllCommissionOperators.select(null);
+							comboAllFeesOperators.select(null);
+							return;
+
+						}
+						if (response == null || response.trim().isEmpty()) {
+
+							Notification
+									.show("Operation failed. Please try again later.",
+											Notification.Type.ERROR_MESSAGE);
+							return;
+
+						} else {
+
+							NotifCustom.show("Response", response);
+							return;
 
 						}
 					} catch (Exception e) {
@@ -2065,29 +2205,32 @@ public class FeesAndCommissionModuleClone {
 
 					Integer setupPropertyID = 0;
 					Integer txID = 0;
-					if (!isOptTiered) {
+
+					String sx = comboCommissionsTT.getValue().toString();
+
+					if (sx.indexOf("-") != -1) {
+						sx = sx.substring(sx.indexOf("-"), sx.length()).trim();
+					}
+
+					txID = Integer.valueOf(hmTransactionTypes.get(sx));
+
+					if (isCommission && !isOptTiered) {
 						setupPropertyID = Integer.valueOf(hmExistingFees
 								.get(comboCommissionsTT.getValue().toString()));
 
-						String s = comboCommissionsTT.getValue().toString();
-						if (!isExistingFeeConfig) {
-
-							s = s.substring(s.indexOf("-") + 1, s.length())
-									.trim();
-						}
-						txID = Integer.valueOf(hmTransactionTypes.get(s));
+						System.out.println("TTID ON NONETIERED: " + txID);
 
 					} else {
 
-						txID = Integer.valueOf(hmTransactionTypes
-								.get(comboCommissionsTT.getValue().toString()));
+						System.out.println("TTID ON TIERED: " + txID);
+
 					}
 
 					try {
 
-						Integer opID = Integer.parseInt(hmAllOperators
+						Integer opID = Integer.valueOf(hmAllOperators
 								.get(comboAllCommissionOperators.getValue()
-										.toString().trim()));
+										.toString()));
 
 						response = CommissionService.deleteCommission(UI
 								.getCurrent().getSession().getAttribute("user")
@@ -2099,17 +2242,42 @@ public class FeesAndCommissionModuleClone {
 						if (response
 								.equals("Service commission deleted successfully")) {
 
-							NotifCustom.show("Response", response);//
+							NotifCustom.show("Response", response);
 							cPlaceholder.setVisible(false);
 							comboCommissionsTT.setVisible(false);
+
 							comboAllCommissionOperators.select(null);
 
+							return;
+
 						}
+						if (response == null || response.trim().isEmpty()) {
+
+							Notification
+									.show("Operation failed. Please try again later.",
+											Notification.Type.ERROR_MESSAGE);
+
+							return;
+
+						} else {
+
+							NotifCustom.show("Response", response);
+							return;
+
+						}
+
 					} catch (Exception e) {
-						Notification.show(
-								"Oops... Commissions Deletion failed!",
+
+						Notification.show(response,
 								Notification.Type.ERROR_MESSAGE);
 						e.printStackTrace();
+
+						if (response == null) {
+							Notification
+									.show("Oops... Commissions Deletion failed. Try again later.",
+											Notification.Type.ERROR_MESSAGE);
+							e.printStackTrace();
+						}
 
 					}
 
@@ -2387,309 +2555,39 @@ public class FeesAndCommissionModuleClone {
 
 	}
 
-	private class SetThresholdHandler implements Button.ClickListener {
-
-		private static final long serialVersionUID = -9065514577173650677L;
-		private VerticalLayout cAddProf;
-		private HorizontalLayout cBtns;
-		private TextField tFProf;
-		private TextField tFProfx;
-		private ComboBox combo;
-		private Button btnCancel;
-		private Button btnSave;
-		private VerticalLayout cAllProf;
-		private HorizontalLayout cPlaceholder;
-		private String ptid;
-		private HorizontalLayout cTransactionTypes;
-
-		SetThresholdHandler(final VerticalLayout cAllProf,
-				final HorizontalLayout cPlaceholder) {
-			this.cAllProf = cAllProf;
-			this.cPlaceholder = cPlaceholder;
-			cAddProf = new VerticalLayout();
-			cBtns = new HorizontalLayout();
-			cAddProf.setMargin(new MarginInfo(true, false, false, false));
-
-			tFProfx = new TextField();
-			tFProf = new TextField();
-			tFProf.setCaption("Amount");
-			tFProfx.setCaption("Selected Profile: ");
-			tFProf.setCaption("Amount");
-			combo = new ComboBox("Profile Type");
-			combo.setValue(null);
-			combo.setNullSelectionAllowed(false);
-
-			btnSave = new Button();
-			btnSave.setIcon(FontAwesome.SAVE);
-			btnSave.setStyleName("btn_link");
-			btnSave.setDescription("Save new profile");
-
-			btnCancel = new Button();
-			btnCancel.setStyleName("btn_link");
-			btnCancel.setIcon(FontAwesome.UNDO);
-			btnCancel.setDescription("Cancel setting new profile");
-
-			cAddProf.addComponent(tFProf);
-			// cAddProf.addComponent(combo);
-
-			optMultTrans = new OptionGroup();
-			optMultTrans.setCaption("Transaction Type");
-			optMultTrans.setMultiSelect(true);
-
-			comboThresholds = new ComboBox();
-			comboThresholds.setCaption("Threshold");
-			// optMultTransactionTypes.setMultiSelect(true);
-
-			HorizontalLayout cThresholds = new HorizontalLayout();
-
-			cTransactionTypes = new HorizontalLayout();
-
-			cThresholds.addComponent(comboThresholds);
-
-			cTransactionTypes.addComponent(optMultTrans);
-			Label lb = new Label("Select Threshold and Transaction Type(s)");
-			cAddProf.addComponent(lb);
-			cAddProf.addComponent(tFProfx);
-			tFProfx.setEnabled(false);
-			tFProfx.setReadOnly(true);
-			// tFProfx.set
-
-			cAddProf.addComponent(cTransactionTypes);
-			cAddProf.addComponent(cThresholds);
-			cAddProf.addComponent(tFProf);
-
-			cPlaceholder.setSpacing(true);
-
-			cBtns.addComponent(btnSave);
-			cBtns.addComponent(btnCancel);
-			cAddProf.addComponent(cBtns);
-
-			cPlaceholder.addComponent(cAddProf);
-
-			combo.addFocusListener(new FocusListener() {
-				private static final long serialVersionUID = -7814943757729564782L;
-
-				@Override
-				public void focus(FocusEvent event) {
-
-				}
-
-			});
-
-			btnCancel.addClickListener(new Button.ClickListener() {
-
-				private static final long serialVersionUID = 3115121215716705673L;
-
-				@Override
-				public void buttonClick(ClickEvent event) {
-
-					cAllProf.setVisible(true);
-					cPlaceholder.setVisible(false);
-
-				}
-			});
-
-			btnSave.addClickListener(new Button.ClickListener() {
-
-				private static final long serialVersionUID = 7591799098570751956L;
-
-				@Override
-				public void buttonClick(ClickEvent event) {
-
-					Object spn = comboProfiles.getValue();
-					if (spn == null || spn.toString().trim().isEmpty()) {
-						Notification.show("Please provide a profile name",
-								Notification.Type.ERROR_MESSAGE);
-
-						return;
-					}
-
-					if (!ptid.equals("3"))
-						if (optMultTrans.getValue() == null
-								|| ((Collection<?>) optMultTrans.getValue())
-										.size() == 0) {
-							Notification
-									.show("Please select at least a Transaction Type",
-											Notification.Type.ERROR_MESSAGE);
-							optMultTrans.focus();
-							return;
-						}
-
-					if (comboThresholds.getValue() == null) {
-						Notification.show("Please select a Threshold",
-								Notification.Type.ERROR_MESSAGE);
-
-						comboThresholds.focus();
-						return;
-					}
-
-					if (tFProf.getValue() == null
-							|| tFProf.getValue().toString().trim().isEmpty()) {
-						Notification.show("Pleas provide amount",
-								Notification.Type.ERROR_MESSAGE);
-
-						tFProf.focus();
-						return;
-					}
-
-					String pn = spn.toString();
-					Integer pid = Integer.parseInt(hmAllOperators.get(pn));
-					Collection<?> ctids = (Collection<?>) optMultTrans
-							.getValue();
-
-					int[] ttids = new int[ctids.size()];
-					int ix = 0;
-					for (Object tid : ctids) {
-						ttids[ix] = Integer.valueOf(tid.toString()).intValue();
-						ix++;
-					}
-
-					Profile profile = hmProfIDs.get(pn);
-					String threshold = comboThresholds.getValue().toString();
-
-					String amount = tFProf.getValue();
-
-					String response = null;
-
-					try {
-
-						System.out.println(pn + " : " + pid);
-						response = UserManagementService.addProfileThreshold(
-								pn, ttids, (int) pid,
-								Integer.parseInt(threshold),
-								Integer.parseInt(profile.getProfiletypeid()),
-								amount);
-
-					} catch (Exception e) {
-						Notification.show(e.getMessage(),
-								Notification.Type.ERROR_MESSAGE);
-						e.printStackTrace();
-						return;
-					}
-					if (response == null || response.trim().isEmpty()) {
-						Notification.show("Unknown operation status",
-								Notification.Type.ERROR_MESSAGE);
-						return;
-					}
-
-					if (response.toUpperCase().contains("SUCCESS")) {
-						NotifCustom.show("Threshold", pn
-								+ "'s Threshold was successfully configured.");
-
-						cAllProf.setVisible(true);
-						cPlaceholder.setVisible(false);
-
-						return;
-					} else {
-						Notification.show(response,
-								Notification.Type.ERROR_MESSAGE);
-					}
-
-				}
-			});
-
-		}
-
-		@Override
-		public void buttonClick(ClickEvent event) {
-
-			ptid = hmProfIDs.get(comboProfiles.getValue().toString())
-					.getProfiletypeid();
-
-			if (ptid.equals("3")) {
-				optMultTrans.setVisible(false);
-
-			} else {
-				optMultTrans.setVisible(true);
-			}
-
-			tFProfx.setEnabled(true);
-			tFProfx.setReadOnly(false);
-
-			tFProfx.setValue(comboProfiles.getValue().toString());
-
-			tFProfx.setEnabled(false);
-			tFProfx.setReadOnly(true);
-
-			cPlaceholder.setVisible(true);
-			cAllProf.setVisible(false);
-			tFProf.setValue("");
-			combo.select(null);
-			addThresholds(comboThresholds, ptid);
-			// addTransactionTypes(optMultTrans);
-
-		}
-
-		private void addThresholds(ComboBox optMult, String pid) {
-			optMult.removeAllItems();
-
-			if (rs == null) {
-				try {
-					rs = new ReportingService();
-				} catch (AxisFault e) {
-
-					e.printStackTrace();
-				}
-			}
-
-			try {
-
-				// System.out.println(pid);
-
-				hmThresholdTypes = rs.getThresholdTypes(pid);
-
-				Set<Entry<String, String>> set = hmThresholdTypes.entrySet();
-				for (Entry<String, String> e : set) {
-
-					Object key = e.getKey();
-					optMult.addItem(key);
-					optMult.setItemCaption(key, e.getValue());
-
-				}
-
-			} catch (RemoteException | DataServiceFault e) {
-
-				e.printStackTrace();
-			}
-
-		}
-
-		private void addTransactionTypes(ComboBox combo) {
-			combo.removeAllItems();
-
-			if (rs == null) {
-				try {
-					rs = new ReportingService();
-				} catch (AxisFault e) {
-
-					e.printStackTrace();
-				}
-			}
-
-			try {
-
-				hmTransactionTypes = rs.getTransactionTypes();
-				Set<Entry<String, String>> set = hmTransactionTypes.entrySet();
-				for (Entry<String, String> e : set) {
-
-					Object key = e.getKey();
-					combo.addItem(key);
-					// combo.setItemCaption(key, e.getValue());
-
-				}
-
-			} catch (RemoteException | DataServiceFault e) {
-
-				e.printStackTrace();
-			}
-
-		}
-
-	}
-
 	@SuppressWarnings("unchecked")
-	private void displayFeesConfigurations(Table tb, String tt) {
+	private void displayFeesConfigurations(Table tb, String tt,
+			HorizontalLayout cPermsActions) {
 
+		if (!isCommission) {
+			isFromDisplayFees = true;
+
+			if (setExistingFeesTT.size() < hmTransactionTypes.size()) {
+				cPermsActions.addComponent(btnAddFees);
+				btnAddFees.setVisible(true);
+			} else {
+				btnAddFees.setVisible(false);
+				cFeesBeforePlaceholder.addComponent(btnAddFees);
+				cFeesBeforePlaceholder.setComponentAlignment(btnAddFees,
+						Alignment.TOP_CENTER);
+			}
+		} else {
+
+			isFromDisplayCommissions = true;
+
+			if (setExistingCommTT.size() < hmTransactionTypes.size()) {
+				cPermsActions.addComponent(btnAddCommissions);
+				btnAddCommissions.setVisible(true);
+			} else {
+				btnAddCommissions.setVisible(false);
+				cCommissionBeforePlaceholder.addComponent(btnAddCommissions);
+				cCommissionBeforePlaceholder.setComponentAlignment(
+						btnAddCommissions, Alignment.TOP_CENTER);
+			}
+
+		}
+
+		cPermsActions.setVisible(true);
 		IndexedContainer ct = new IndexedContainer();
 		ct.addContainerProperty("S/N", String.class, "");
 		ct.addContainerProperty("Min.", String.class, "");
@@ -2703,9 +2601,6 @@ public class FeesAndCommissionModuleClone {
 
 		if (isCommission)
 			try {
-
-				System.out.println(hmServiceCommission.size()
-						+ " :++++++++++++++++++");
 
 				for (Commissionfee sf : hmServiceCommission.get(tt)) {
 
@@ -2817,18 +2712,19 @@ public class FeesAndCommissionModuleClone {
 
 	}
 
-	private HorizontalLayout getAddFeesC(String type,
-			final boolean isEditFeesx, final HorizontalLayout cPlaceholder,
-			final Button btnx, final HorizontalLayout cPermsList,
-			final Table tb, final HorizontalLayout cPermsActions) {
+	private HorizontalLayout getAddFeesC(String type, boolean isEditx,
+			final HorizontalLayout cPlaceholder, final Button btnx,
+			final VerticalLayout cPermsList, final Table tb,
+			final HorizontalLayout cPermsActions) {
 
 		cArrLItemContent = new ArrayList<>(4);
 		arrLRangeFG = new ArrayList<>();
 		arrLMatFG = new ArrayList<>();
 		arrLAllFG = new ArrayList<>();
-		isTiered = true;
+
 		tabType = type;
-		isEditFees = isEditFeesx;
+
+		isEdit = isEditx;
 
 		HorizontalLayout cManage = new HorizontalLayout();
 
@@ -2853,19 +2749,19 @@ public class FeesAndCommissionModuleClone {
 		// cChoose.addComponent(lbAddUser);
 		// Label lbChoose = new Label("Please choose...");
 
-		final ComboBox comboConditionType = new ComboBox("Condition Type");
-		comboConditionType.addItem(arrConValues[0]);
-		comboConditionType.setItemCaption(arrConValues[0], "Amount");
-		comboConditionType.addItem(arrConValues[1]);
-		comboConditionType.setItemCaption(arrConValues[1], "Fee");
-		comboConditionType.select(arrConValues[0]);
+		// final ComboBox comboConditionType = new ComboBox("Condition Type");
+		// comboConditionType.addItem(arrConValues[0]);
+		// comboConditionType.setItemCaption(arrConValues[0], "Amount");
+		// comboConditionType.addItem(arrConValues[1]);
+		// comboConditionType.setItemCaption(arrConValues[1], "Fee");
+		// comboConditionType.select(arrConValues[0]);
 
-		final ComboBox comboModelType = new ComboBox("Model Type");
-		comboModelType.addItem(arrModelValues[0]);
-		comboModelType.setItemCaption(arrModelValues[0], "Tiered");
-		comboModelType.addItem(arrModelValues[1]);
-		comboModelType.setItemCaption(arrModelValues[1], "None");
-		comboModelType.select(arrModelValues[0]);
+		// final ComboBox comboModelTypex = new ComboBox("Model Type");
+		// comboModelType.addItem(arrModelValues[0]);
+		// comboModelType.setItemCaption(arrModelValues[0], "Tiered");
+		// comboModelType.addItem(arrModelValues[1]);
+		// comboModelType.setItemCaption(arrModelValues[1], "None");
+		// comboModelType.select(arrModelValues[0]);
 
 		Item row = new PropertysetItem();
 
@@ -2873,72 +2769,72 @@ public class FeesAndCommissionModuleClone {
 		Property<String> pmodelTypeID = new ObjectProperty<>(arrModelValues[0]);
 		row.addItemProperty("CONID", pconTypeID);
 		row.addItemProperty("MODID", pmodelTypeID);
+		//
+		// otherfg = new FieldGroup(row);
+		// otherfg.bind(comboConditionType, "CONID");
+		// otherfg.bind(comboModelType, "MODID");
 
-		otherfg = new FieldGroup(row);
-		otherfg.bind(comboConditionType, "CONID");
-		otherfg.bind(comboModelType, "MODID");
-
-		otherfg.addCommitHandler(new CommitHandler() {
-			private static final long serialVersionUID = 6144936023943646696L;
-
-			@Override
-			public void preCommit(CommitEvent commitEvent)
-					throws CommitException {
-
-				ComboBox comboAllFCOperators = null;
-				ComboBox comboTT = null;
-				if (isCommission) {
-					comboAllFCOperators = comboAllCommissionOperators;
-					comboTT = comboCommissionsTT;
-				} else {
-					comboAllFCOperators = comboAllFeesOperators;
-					comboTT = comboFeesTT;
-				}
-
-				comboAllFCOperators.setRequired(false);
-				comboConditionType.setRequired(false);
-				comboModelType.setRequired(false);
-				comboTT.setRequired(false);
-				if (comboAllFCOperators.getValue() == null) {
-					comboAllFCOperators.setRequired(true);
-					Notification.show("Field marked with (*) is required.",
-							Notification.Type.WARNING_MESSAGE);
-					throw new CommitException("Field is required.");
-				} else if (comboConditionType.getValue() == null) {
-					comboConditionType.setRequired(true);
-					Notification.show("Field marked with (*) is required.",
-							Notification.Type.WARNING_MESSAGE);
-					throw new CommitException("Field is required.");
-
-				} else if (comboModelType.getValue() == null) {
-					comboModelType.setRequired(true);
-					Notification.show("Field marked with (*) is required.",
-							Notification.Type.WARNING_MESSAGE);
-					throw new CommitException("Field is required.");
-
-				} else if (comboTT.getValue() == null) {
-					comboTT.setRequired(true);
-					Notification.show("Field marked with (*) is required.",
-							Notification.Type.WARNING_MESSAGE);
-					throw new CommitException("Field is required.");
-				} else {
-					comboAllFCOperators.setRequired(false);
-					comboConditionType.setRequired(false);
-					comboModelType.setRequired(false);
-					comboTT.setRequired(false);
-					return;
-				}
-			}
-
-			@Override
-			public void postCommit(CommitEvent commitEvent)
-					throws CommitException {
-
-			}
-
-		});
-
-		// comboAllFCOperators.addFocusListener(new FocusListener() {
+		// otherfg.addCommitHandler(new CommitHandler() {
+		// private static final long serialVersionUID = 6144936023943646696L;
+		//
+		// @Override
+		// public void preCommit(CommitEvent commitEvent)
+		// throws CommitException {
+		//
+		// ComboBox comboAllFCOperators = null;
+		// ComboBox comboTT = null;
+		// if (isCommission) {
+		// comboAllFCOperators = comboAllCommissionOperators;
+		// comboTT = comboCommissionsTT;
+		// } else {
+		// comboAllFCOperators = comboAllFeesOperators;
+		// comboTT = comboFeesTT;
+		// }
+		//
+		// comboAllFCOperators.setRequired(false);
+		// comboConditionType.setRequired(false);
+		// comboModelType.setRequired(false);
+		// comboTT.setRequired(false);
+		// if (comboAllFCOperators.getValue() == null) {
+		// comboAllFCOperators.setRequired(true);
+		// Notification.show("Field marked with (*) is required.",
+		// Notification.Type.WARNING_MESSAGE);
+		// throw new CommitException("Field is required.");
+		// } else if (comboConditionType.getValue() == null) {
+		// comboConditionType.setRequired(true);
+		// Notification.show("Field marked with (*) is required.",
+		// Notification.Type.WARNING_MESSAGE);
+		// throw new CommitException("Field is required.");
+		//
+		// } else if (comboModelType.getValue() == null) {
+		// comboModelType.setRequired(true);
+		// Notification.show("Field marked with (*) is required.",
+		// Notification.Type.WARNING_MESSAGE);
+		// throw new CommitException("Field is required.");
+		//
+		// } else if (comboTT.getValue() == null) {
+		// comboTT.setRequired(true);
+		// Notification.show("Field marked with (*) is required.",
+		// Notification.Type.WARNING_MESSAGE);
+		// throw new CommitException("Field is required.");
+		// } else {
+		// comboAllFCOperators.setRequired(false);
+		// comboConditionType.setRequired(false);
+		// comboModelType.setRequired(false);
+		// comboTT.setRequired(false);
+		// return;
+		// }
+		// }
+		//
+		// @Override
+		// public void postCommit(CommitEvent commitEvent)
+		// throws CommitException {
+		//
+		// }
+		//
+		// });
+		//
+		// // comboAllFCOperators.addFocusListener(new FocusListener() {
 		// private static final long serialVersionUID = 1470960826655063334L;
 		//
 		// @Override
@@ -2980,13 +2876,12 @@ public class FeesAndCommissionModuleClone {
 		// cOp.addComponent(tFOp);
 		cAttr.addComponent(cOp);
 
-		ComboBox comboAllFCOperators = null;
 		ComboBox comboTT = null;
 		if (isCommission) {
-			comboAllFCOperators = comboAllCommissionOperators;
+
 			comboTT = comboCommissionsTT;
 		} else {
-			comboAllFCOperators = comboAllFeesOperators;
+
 			comboTT = comboFeesTT;
 		}
 
@@ -3078,41 +2973,42 @@ public class FeesAndCommissionModuleClone {
 		// cManage.addComponent(cChoose);
 		cManage.addComponent(cAttr);
 
-		comboTT.setNullSelectionAllowed(false);
-
-		comboTT.addValueChangeListener(new ValueChangeListener() {
-
-			private static final long serialVersionUID = -4750457498573552155L;
-
-			@Override
-			public void valueChange(ValueChangeEvent event) {
-
-				ComboBox comboAllFCOperators = null;
-				ComboBox comboTT = null;
-				if (isCommission) {
-					comboAllFCOperators = comboAllCommissionOperators;
-					comboTT = comboCommissionsTT;
-				} else {
-					comboAllFCOperators = comboAllFeesOperators;
-					comboTT = comboFeesTT;
-				}
-
-				lbAttrVal.setValue(comboTT.getItemCaption(comboTT.getValue()));
-			}
-
-		});
-
-		comboAllFCOperators.addValueChangeListener(new ValueChangeListener() {
-
-			private static final long serialVersionUID = -4750457498573552155L;
-
-			@Override
-			public void valueChange(ValueChangeEvent event) {
-				// tFOp.setValue(comboAllFCOperators
-				// .getItemCaption(comboAllFCOperators.getValue()));
-			}
-
-		});
+		// comboTT.setNullSelectionAllowed(false);
+		//
+		// comboTT.addValueChangeListener(new ValueChangeListener() {
+		//
+		// private static final long serialVersionUID = -4750457498573552155L;
+		//
+		// @Override
+		// public void valueChange(ValueChangeEvent event) {
+		//
+		// ComboBox comboAllFCOperators = null;
+		// ComboBox comboTT = null;
+		// if (isCommission) {
+		// comboAllFCOperators = comboAllCommissionOperators;
+		// comboTT = comboCommissionsTT;
+		// } else {
+		// comboAllFCOperators = comboAllFeesOperators;
+		// comboTT = comboFeesTT;
+		// }
+		//
+		// lbAttrVal.setValue(comboTT.getItemCaption(comboTT.getValue()));
+		// }
+		//
+		// });
+		//
+		// comboAllFCOperators.addValueChangeListener(new ValueChangeListener()
+		// {
+		//
+		// private static final long serialVersionUID = -4750457498573552155L;
+		//
+		// @Override
+		// public void valueChange(ValueChangeEvent event) {
+		// // tFOp.setValue(comboAllFCOperators
+		// // .getItemCaption(comboAllFCOperators.getValue()));
+		// }
+		//
+		// });
 
 		btnCancel.addClickListener(new Button.ClickListener() {
 			private static final long serialVersionUID = -7697295961876196440L;
@@ -3120,108 +3016,191 @@ public class FeesAndCommissionModuleClone {
 			@Override
 			public void buttonClick(ClickEvent event) {
 
-				ComboBox comboAllFCOperators = null;
 				ComboBox comboTT = null;
 				if (isCommission) {
-					comboAllFCOperators = comboAllCommissionOperators;
 					comboTT = comboCommissionsTT;
 				} else {
-					comboAllFCOperators = comboAllFeesOperators;
 					comboTT = comboFeesTT;
 				}
 
+				String sx = comboCommissionsTT.getValue().toString();
+
+				if (sx.indexOf("-") != -1) {
+					sx = sx.substring(sx.indexOf("-") + 1, sx.length()).trim();
+				}
+
+				comboTT.select(null);
+				comboTT.setEnabled(true);
+				cPlaceholder.setVisible(false);
+
 				if (isCommission) {
 
-					displayFeesConfigurations(tb, comboTT.getValue().toString());
-					cPermsList.removeAllComponents();
-					cPermsList.addComponent(tb);
-					cPlaceholder.setVisible(true);
-					isEditFees = false;
-					btnEditFees.setIcon(FontAwesome.EDIT);
-					btnEditFees.setDescription("Edit Configurations Fees");
+					comboAllCommissionOperators.select(null);
 
-					cPermsActions.setVisible(true);
-					optSetupType.setEnabled(false);
+					// btnEditCommissions.setIcon(FontAwesome.EDIT);
+					// btnEditCommissions
+					// .setDescription("Edit Commission Configurations");
+					//
+					// if (isFromDisplayCommissions) {
+					// optSetupType.setEnabled(false);
+					// isExistingCommissionsConfig = true;
+					// isNewCommissionsConfig = false;
+					// isEditCommissions = false;
+					// comboTT.removeAllItems();
+					//
+					// for (String s : setExistingCommTT)
+					// comboTT.addItem(s);
+					//
+					// comboTT.select(sx);
+					//
+					// isEdit = false;
+					//
+					// if (isFromDisplayCommissions)
+					// if (isOptTieredTemp) {
+					// optSetupType.select(2);
+					//
+					// } else {
+					// optSetupType.select(1);
+					// }
+					//
+					// return;
+					//
+					// }
 
-					// CANCEL
-
-					// comboAllFCOperators.select(null);
-					// comboAllFCOperators.setValue(null);
-					// comboTT.setVisible(false);
 					return;
+
 				}
 
-				cPlaceholder.setVisible(false);
-				comboTT.setVisible(false);
-				btnx.setVisible(true);
-				isEditFees = false;
+				if (!isCommission) {
+
+					if (isFromDisplayFees) {
+						if (setExistingFeesTT.size() > 0) {
+							comboTT.removeAllItems();
+							for (String s : setExistingFeesTT)
+								comboTT.addItem(s);
+
+							isExistingFeeConfig = true;
+							isNewFeeConfig = false;
+
+							btnEditFees.setIcon(FontAwesome.EDIT);
+							btnEditFees
+									.setDescription("Edit Fees Configurations");
+
+							comboTT.select(setExistingFeesTT.iterator().next());
+
+							isEdit = false;
+
+							System.out.println("RIGHT HERE ");
+
+							return;
+
+						}
+
+					}
+
+				}
+
+				// if (isEdit) {
+				//
+				// displayFeesConfigurations(tb,
+				// comboTT.getValue().toString(), cPermsActions);
+				// cPermsList.removeAllComponents();
+				// cPermsList.addComponent(tb);
+				// cPlaceholder.setVisible(true);
+				//
+				// cPermsActions.setVisible(true);
+				// comboTT.setEnabled(true);
+				// String temp = comboTT.getValue().toString();
+				// comboTT.select(null);
+				// comboTT.select(temp);
+				//
+				// if (isCommission) {
+				// btnEditCommissions.setIcon(FontAwesome.EDIT);
+				// btnEditCommissions
+				// .setDescription("Edit Commission Configurations");
+				// optSetupType.setEnabled(false);
+				//
+				// } else {
+				//
+				// btnEditFees.setIcon(FontAwesome.EDIT);
+				// btnEditFees.setDescription("Edit Fees Configurations");
+				//
+				// }
+				//
+				// isEdit = false;
+				//
+				// } else {
+				// cPlaceholder.setVisible(false);
+				//
+				// }
+
 			}
 		});
 
-		comboConditionType.addValueChangeListener(new ValueChangeListener() {
+		// comboConditionType.addValueChangeListener(new ValueChangeListener() {
+		//
+		// private static final long serialVersionUID = -5878577330071011374L;
+		//
+		// @Override
+		// public void valueChange(ValueChangeEvent event) {
+		// if (event.getProperty().getValue() == null)
+		// return;
+		// if (event.getProperty().getValue().toString().trim()
+		// .equals(arrConValues[0])) {
+		// comboModelType.select(arrModelValues[0]);
+		// } else {
+		// comboModelType.select(arrModelValues[1]);
+		// }
+		// }
+		//
+		// });
 
-			private static final long serialVersionUID = -5878577330071011374L;
-
-			@Override
-			public void valueChange(ValueChangeEvent event) {
-				if (event.getProperty().getValue() == null)
-					return;
-				if (event.getProperty().getValue().toString().trim()
-						.equals(arrConValues[0])) {
-					comboModelType.select(arrModelValues[0]);
-				} else {
-					comboModelType.select(arrModelValues[1]);
-				}
-			}
-
-		});
-
-		comboModelType.addValueChangeListener(new ValueChangeListener() {
-			private static final long serialVersionUID = -6418325605387194047L;
-
-			@Override
-			public void valueChange(ValueChangeEvent event) {
-				if (comboModelType.getValue() == null)
-					return;
-				if (comboModelType.getValue().toString()
-						.equals(arrModelValues[0])) {
-
-					if (arrLRangeFG.size() == 0)
-						return;
-
-					removeAll();
-					FieldGroup fg = arrLRangeFG.get(0);
-					TextField min = (TextField) fg.getField("Min");
-					TextField max = (TextField) fg.getField("Max");
-					min.setValue("");
-					min.setEnabled(true);
-
-					max.setValue("");
-					max.setEnabled(true);
-					isTiered = true;
-					comboConditionType.select(arrConValues[0]);
-					return;
-
-				} else {
-					if (arrLRangeFG.size() == 0)
-						return;
-					removeAll();
-					FieldGroup fg = arrLRangeFG.get(0);
-					TextField min = (TextField) fg.getField("Min");
-					TextField max = (TextField) fg.getField("Max");
-					min.setValue("0.00");
-					min.setEnabled(false);
-
-					max.setValue("0.00");
-					max.setEnabled(false);
-					isTiered = false;
-					comboConditionType.select(arrConValues[1]);
-					return;
-				}
-
-			}
-
-		});
+		// comboModelType.addValueChangeListener(new ValueChangeListener() {
+		// private static final long serialVersionUID = -6418325605387194047L;
+		//
+		// @Override
+		// public void valueChange(ValueChangeEvent event) {
+		// if (comboModelType.getValue() == null)
+		// return;
+		// if (comboModelType.getValue().toString()
+		// .equals(arrModelValues[0])) {
+		//
+		// if (arrLRangeFG.size() == 0)
+		// return;
+		//
+		// removeAll();
+		// FieldGroup fg = arrLRangeFG.get(0);
+		// TextField min = (TextField) fg.getField("Min");
+		// TextField max = (TextField) fg.getField("Max");
+		// min.setValue("");
+		// min.setEnabled(true);
+		//
+		// max.setValue("");
+		// max.setEnabled(true);
+		// isTiered = true;
+		// comboConditionType.select(arrConValues[0]);
+		// return;
+		//
+		// } else {
+		// if (arrLRangeFG.size() == 0)
+		// return;
+		// removeAll();
+		// FieldGroup fg = arrLRangeFG.get(0);
+		// TextField min = (TextField) fg.getField("Min");
+		// TextField max = (TextField) fg.getField("Max");
+		// min.setValue("0.00");
+		// min.setEnabled(false);
+		//
+		// max.setValue("0.00");
+		// max.setEnabled(false);
+		// isTiered = false;
+		// comboConditionType.select(arrConValues[1]);
+		// return;
+		// }
+		//
+		// }
+		//
+		// });
 
 		btnAdd.addClickListener(new Button.ClickListener() {
 
@@ -3267,46 +3246,36 @@ public class FeesAndCommissionModuleClone {
 							comboTT = comboFeesTT;
 						}
 
+						String sx = comboCommissionsTT.getValue().toString();
+
+						if (sx.indexOf("-") != -1) {
+							sx = sx.substring(sx.indexOf("-") + 1, sx.length())
+									.trim();
+						}
+
 						if (isCommission) {
-							System.out
-									.println("-------vvvvv--vv---v-v----------------");
-							String pname = comboAllFCOperators.getValue()
-									.toString().trim();
-							hmServiceFees = getServiceFees(Integer
-									.parseInt(hmAllOperators.get(pname)));
 
-							hmServiceCommission = getServiceCommissions(Integer
-									.parseInt(hmAllOperators.get(pname)));
+							// String pname = comboAllFCOperators.getValue()
+							// .toString().trim();
+							//
+							// hmServiceCommission =
+							// getServiceCommissions(Integer
+							// .parseInt(hmAllOperators.get(pname)));
+							//
+							// optSetupType.setVisible(true);
+							// optSetupType.setEnabled(false);
+							// comboTT.setEnabled(true);
+							// isEdit = false;
+							//
+							// comboTT.removeAllItems();
+							// for (String s : setExistingCommTT)
+							// comboTT.addItem(s);
+							// comboTT.setVisible(true);
+							// comboTT.select(sx);
+							//
+							// btnEditCommissions.setIcon(FontAwesome.EDIT);
 
-							displayFeesConfigurations(tb, comboTT.getValue()
-									.toString());
-							cPermsList.removeAllComponents();
-							cPermsList.addComponent(tb);
-							cPlaceholder.setVisible(true);
-
-							btnEditCommissions.setIcon(FontAwesome.EDIT);
-							btnEditCommissions
-									.setDescription("Edit Commissions Configurations");
-							btnEditCommissions.setVisible(true);
-							btnDeleteCommissions.setVisible(true);
-
-							cPermsActions.setVisible(true);
-
-							btnCancelCommissions.setVisible(false);
-
-							optSetupType.setVisible(true);
-							optSetupType.setEnabled(false);
-							comboTT.setEnabled(false);
-
-							isEditFees = false;
-
-							// comboAllFCOperators.select(null);
-							// comboAllFCOperators.setValue(null);
-							// comboTT.setVisible(false);
-							comboTT.setEnabled(false);
-							// comboTT.select(null);
-
-							cPermsActions.setVisible(true);
+							comboAllFCOperators.select(null);
 
 							return;
 
@@ -3316,18 +3285,15 @@ public class FeesAndCommissionModuleClone {
 								.toString().trim();
 						hmServiceFees = getServiceFees(Integer
 								.parseInt(hmAllOperators.get(pname)));
+						comboTT.removeAllItems();
+						for (String s : setExistingFeesTT)
+							comboTT.addItem(s);
+						comboTT.setVisible(true);
+						comboTT.select(setExistingFeesTT.iterator().next());
 
-						displayFeesConfigurations(tb, comboTT.getValue()
-								.toString());
-						cPermsList.removeAllComponents();
-						cPermsList.addComponent(tb);
-						cPlaceholder.setVisible(true);
-						isEditFees = false;
+						isEdit = false;
 						btnEditFees.setIcon(FontAwesome.EDIT);
 						btnEditFees.setDescription("Edit Configurations Fees");
-						// btnCancelCommissions.setVisible(false);
-
-					} else {
 
 					}
 					return;
@@ -3342,7 +3308,7 @@ public class FeesAndCommissionModuleClone {
 
 		hmAllFG.clear();
 
-		if (!isEditFees) {
+		if (!isEdit) {
 
 			if (hmAllFG.size() == 0) {
 				add();
@@ -3356,11 +3322,11 @@ public class FeesAndCommissionModuleClone {
 
 			ArrayList<ArrayList<FieldGroup>> allFG = hmAllFG.get(type);
 			FieldGroup dfg = hmDFG.get(type);
-			String mt = dfg.getField("MODID").getValue().toString().trim();
-			String ct = dfg.getField("CONID").getValue().toString().trim();
-			isTiered = mt.equals(arrModelValues[0]);
-			comboModelType.select(mt);
-			comboConditionType.select(ct);
+			// String mt = dfg.getField("MODID").getValue().toString().trim();
+			// String ct = dfg.getField("CONID").getValue().toString().trim();
+			// isTiered = mt.equals(arrModelValues[0]);
+			// comboModelType.select(mt);
+			// comboConditionType.select(ct);
 
 			add(allFG);
 
@@ -3556,7 +3522,7 @@ public class FeesAndCommissionModuleClone {
 		tfMin.setImmediate(true);
 		tfMax.setImmediate(true);
 
-		if (!isTiered) {
+		if (!isOptTiered && isCommission) {
 			tfMin.setValue("0.00");
 			tfMin.setEnabled(false);
 			tfMax.setValue("0.00");
@@ -3653,7 +3619,7 @@ public class FeesAndCommissionModuleClone {
 		public void validate(Object v) throws InvalidValueException,
 				NumberFormatException {
 
-			if (!isTiered)
+			if (!isOptTiered)
 				return;
 
 			if (v.toString().trim().isEmpty())
@@ -3838,7 +3804,7 @@ public class FeesAndCommissionModuleClone {
 			tfMin.setImmediate(true);
 			tfMax.setImmediate(true);
 
-			if (!isOptTiered) {
+			if (!isOptTiered && isCommission) {
 
 				tfMin.setEnabled(false);
 
@@ -3986,7 +3952,7 @@ public class FeesAndCommissionModuleClone {
 			comboMat.setImmediate(true);
 			tfAmt.setImmediate(true);
 
-			if (!isOptTiered) {
+			if (!isOptTiered && isCommission) {
 				comboMat.setEnabled(false);
 				tfAmt.setEnabled(false);
 			}
@@ -4198,42 +4164,35 @@ public class FeesAndCommissionModuleClone {
 
 		Integer txID = 0;
 
-		if (hmTransactionTypes == null || hmTransactionTypes.size() == 0)
-			hmTransactionTypes = getTransactionTypes();
+		String sx = comboTT.getValue().toString();
+
+		if (sx.indexOf("-") != -1) {
+			sx = sx.substring(sx.indexOf("-") + 1, sx.length()).trim();
+		}
+
+		System.out.println(sx + " : Is Caption of TT");
+
+		txID = Integer.valueOf(hmTransactionTypes.get(sx));
 
 		if (isCommission) {
 
 			Integer setupPropertyID = 0;
-			BigDecimal commValue = BigDecimal.valueOf(0D);
+			BigDecimal commValue = BigDecimal.valueOf(0);
 			Integer setupType = Integer.valueOf(optSetupType.getValue()
 					.toString());
 
 			ServiceCommission[] cf = null;
-			if (!isOptTiered) {
+			if (isCommission && !isOptTiered) {
 				cf = new ServiceCommission[] {};
-
 				setupPropertyID = Integer.valueOf(hmExistingFees.get(comboTT
 						.getValue().toString()));
 
 				commValue = BigDecimal.valueOf(Double.valueOf(tFCommValue
 						.getValue()));
 
-				String s = comboTT.getValue().toString();
-				if (!isExistingFeeConfig) {
-
-					s = s.substring(s.indexOf("-") + 1, s.length()).trim();
-				}
-
-				System.out.println(":::::::::::::::::::::::::::" + s);
-				txID = Integer.valueOf(hmTransactionTypes.get(s));
-
-				System.out.println(hmTransactionTypes.size()
-						+ " :::::::::::::+++++++::::::::::::");
-
 			} else {
 
-				txID = Integer.valueOf(hmTransactionTypes.get(comboTT
-						.getValue().toString()));
+				System.out.println();
 
 				ArrayList<ArrayList<FieldGroup>> allFeesFG = hmAllFG
 						.get(COMMISSION);
@@ -4246,7 +4205,6 @@ public class FeesAndCommissionModuleClone {
 
 				boolean isDup = false;
 
-				System.out.print(hmTiers.get("max")[0] + ":  I love this.");
 				for (FieldGroup rfg : allRange) {
 					// FieldGroup rfg = allRange.get(i);
 					FieldGroup mfg = allMat.get(i);
@@ -4262,7 +4220,7 @@ public class FeesAndCommissionModuleClone {
 
 					String amt = mfg.getField("Amt").getValue().toString()
 							.trim();
-					if (isEditFees && !isDup) {
+					if (isEdit && !isDup) {
 
 						// if (Double.valueOf(hmTiers.get("min")[i]).equals(
 						// Double.valueOf(min))) {
@@ -4298,22 +4256,25 @@ public class FeesAndCommissionModuleClone {
 
 				}
 
-				if (isDup && isEditFees) {
-					NotifCustom
-							.show("Message",
-									"No Changes have been made. Please make changes and save.");
-					isDup = false;
-					return false;
-				}
 			}
 
 			String response;
 
-			if (isEditFees) {
+			if (isEdit) {
 
 				try {
-					response = CommissionService.editCommission(UI.getCurrent()
-							.getSession().getAttribute("user").toString(),
+
+					System.out.println("VALUE: " + commValue);
+					System.out.println("SETUPTYPE: " + setupType);
+					System.out.println("TTID: " + txID);
+					System.out.println("SETUPPROPERTYID: " + setupPropertyID);
+					System.out.println("OPID: " + opID);
+					System.out.println("CS Array: " + cf);
+
+					String user = UI.getCurrent().getSession()
+							.getAttribute("user").toString();
+
+					response = CommissionService.editCommission(user,
 							commValue, setupType, cf, setupPropertyID, txID,
 							opID);
 
@@ -4321,15 +4282,27 @@ public class FeesAndCommissionModuleClone {
 							&& response
 									.equals("Service commission configured successfully")) {
 
+						isExistingCommissionsConfig = true;
+						isNewCommissionsConfig = false;
+
 						NotifCustom.show("Response", response);
 
 						return true;
 					} else {
-						NotifCustom
-								.show("Response",
-										"Configuration saving FAILED. Please try again.");
-						System.err.println(response);
-						return false;
+						if (response == null || response.trim().isEmpty()) {
+
+							Notification
+									.show("Operation failed. Please try again later.",
+											Notification.Type.ERROR_MESSAGE);
+
+							return false;
+						} else {
+
+							NotifCustom.show("Response", response);
+
+							isReset = false;
+							return false;
+						}
 
 					}
 
@@ -4354,14 +4327,28 @@ public class FeesAndCommissionModuleClone {
 									.equals("Service commission configured successfully")) {
 
 						NotifCustom.show("Response", response);
+						isExistingCommissionsConfig = true;
+						isNewCommissionsConfig = false;
+						String curTT = sx;
+						setExistingCommTT.add(curTT);
 
 						return true;
 					} else {
-						NotifCustom
-								.show("Response",
-										"Configuration saving FAILED. Please try again.");
-						System.err.println(response);
-						return false;
+
+						if (response == null || response.trim().isEmpty()) {
+
+							Notification
+									.show("Operation failed. Please try again later.",
+											Notification.Type.ERROR_MESSAGE);
+
+							return false;
+						} else {
+
+							NotifCustom.show("Response", response);
+
+							isReset = false;
+							return false;
+						}
 					}
 					// Notification.show(response);
 					// System.out.println(response);
@@ -4379,8 +4366,8 @@ public class FeesAndCommissionModuleClone {
 
 		}
 
-		txID = Integer.valueOf(hmTransactionTypes.get(comboTT.getValue()
-				.toString()));
+		String curTT = comboTT.getValue().toString();
+
 		ArrayList<ArrayList<FieldGroup>> allFeesFG = hmAllFG.get(FEES);
 		ArrayList<FieldGroup> allRange = allFeesFG.get(0);
 		ArrayList<FieldGroup> allMat = allFeesFG.get(1);
@@ -4440,8 +4427,8 @@ public class FeesAndCommissionModuleClone {
 
 		// }
 
-		if (isEditFees) {
-			isEditFees = false;
+		if (isEdit) {
+			// isEditFees = false;
 			// loggedInUser, Serviceconfigtype, servicefess, transactiontypeid,
 			// accountholderid)
 			try {
@@ -4452,28 +4439,42 @@ public class FeesAndCommissionModuleClone {
 
 				System.out.println(response);
 				// NotifCustom.show("Response", response);
-				if (response.equals("Service fee configured successfully")) {
+				if (response != null
+						&& response
+								.equals("Service fee configured successfully")) {
 					isReset = true;
 
 					NotifCustom.show("Response", response);//
 					cPlaceholder.setVisible(false);
 
 					cPlaceholder.setVisible(true);
+					comboTT.setEnabled(true);
 
 					// TODO Cleanup after successful editing
 					return true;
 
 				} else {
-					NotifCustom.show("Response", response);
 
-					isReset = false;
-					return false;
+					if (response == null || response.trim().isEmpty()) {
+
+						Notification.show(
+								"Operation failed. Please try again later.",
+								Notification.Type.ERROR_MESSAGE);
+
+						return false;
+					} else {
+
+						NotifCustom.show("Response", response);
+
+						isReset = false;
+						return false;
+					}
 
 				}
 			} catch (Exception e) {
-				Notification
-						.show("Oops... Fees Configuration did not save successfully.",
-								Notification.Type.ERROR_MESSAGE);
+				Notification.show(
+						"Oops... Saving failed. Contact administsrator.",
+						Notification.Type.ERROR_MESSAGE);
 				e.printStackTrace();
 				isReset = false;
 				return false;
@@ -4481,35 +4482,72 @@ public class FeesAndCommissionModuleClone {
 
 		}
 
+		String response = null;
+
 		try {
 
-			String response = FeeService.setupServicefee(UI.getCurrent()
-					.getSession().getAttribute("user").toString(), 1, sf, txID,
-					opID);
+			response = FeeService.setupServicefee(UI.getCurrent().getSession()
+					.getAttribute("user").toString(), 1, sf, txID, opID);
 
 			if (response.equals("Service fee configured successfully")) {
 				isReset = true;
 				NotifCustom.show("Response", response);
 
-				System.out
-						.println("------------------------------------------kxkxkxk---------------");
+				isExistingFeeConfig = true;
+				isNewFeeConfig = false;
+				comboTT.removeAllItems();
+				for (String s : setExistingFeesTT)
+					comboTT.addItem(s);
+				setExistingFeesTT.add(curTT);
+
+				// } else {
+				// setExistingFeesTT.add(curTT);
+				// comboTT.removeItem(comboTT.getValue());
+				// }
+				//
+				// if (setExistingFeesTT.size() == hmTransactionTypes.size()) {
+				//
+				// isExistingFeeConfig = true;
+				// isNewFeeConfig = false;
+				//
+				// for (String s : setExistingFeesTT)
+				// comboTT.addItem(s);
+				//
+				// }
+
 				return true;
 
 			} else {
-				NotifCustom.show("Response", response);
 
-				isReset = false;
-				return false;
+				if (response == null || response.trim().isEmpty()) {
+
+					Notification.show(
+							"Operation failed. Please try again later.",
+							Notification.Type.ERROR_MESSAGE);
+
+					return false;
+				} else {
+
+					NotifCustom.show("Response", response);
+
+					isReset = false;
+					return false;
+				}
 
 			}
 		} catch (Exception e) {
+			if (response != null) {
+
+				NotifCustom.show("Message", response);
+				return false;
+			}
 			Notification.show(
 					"Oops... Fees Configuration did not save successfully.",
 					Notification.Type.ERROR_MESSAGE);
 			e.printStackTrace();
 			isReset = false;
+			return false;
 		}
-		return false;
 
 	}
 
@@ -4527,45 +4565,92 @@ public class FeesAndCommissionModuleClone {
 
 		try {
 
-			if (!isOptTiered) {
-				hmExistingFees = rs.getAvailableFees(UI.getCurrent()
-						.getSession().getAttribute("user").toString());
+			if (isCommission)
 
-				Set<Entry<String, String>> set = hmExistingFees.entrySet();
+				if (!isOptTiered) {
+					hmExistingFees = rs.getAvailableFees(UI.getCurrent()
+							.getSession().getAttribute("user").toString());
 
-				System.out.println(set.size() + " :..........");
-				for (Entry<String, String> e : set) {
-					Object key = e.getKey();
+					Set<Entry<String, String>> set = hmExistingFees.entrySet();
 
-					String operator = combo.getValue().toString();
-					String opTT = key.toString();
+					System.out.println(set.size() + " :..........");
+					for (Entry<String, String> e : set) {
+						Object key = e.getKey();
 
-					if (opTT.contains(operator)) {
-						combo.addItem(key);
+						String operator = comboAllCommissionOperators
+								.getValue().toString();
+						String opTT = key.toString();
+
+						if (opTT.contains(operator)) {
+
+							if (isFromDisplayCommissions) {
+								System.out.println("FROM DISPLAY:  " + key
+										+ " : Size of set: "
+										+ setExistingFeesTT.size());
+								if (!setExistingCommTT.contains(opTT.substring(
+										opTT.indexOf("-") + 1, opTT.length())
+										.trim())) {
+									combo.addItem(opTT);
+									System.out
+											.println("FROM DISPLAY: POPULATED "
+													+ key);
+									continue;
+								}
+							} else {
+								combo.addItem(opTT);
+							}
+
+						}
 
 					}
 
+					combo.setCaption("Select Operator Transaction");
+
+					// isOptTiered = true;
+
+					return;
+
 				}
 
-				combo.setCaption("Select Operator Transaction");
-
-				// isOptTiered = true;
-
-				return;
-
-			}
-
-			// System.out.println("---c---c---c---------------------cc-");
-
-			hmTransactionTypes = rs.getTransactionTypes();
+			// initTransactionTypes();
 			combo.setCaption("Transaction Type");
+
+			if (hmTransactionTypes == null || hmTransactionTypes.size() == 0)
+				initTransactionTypes();
+
 			Set<Entry<String, String>> set = hmTransactionTypes.entrySet();
 			for (Entry<String, String> e : set) {
 
 				Object key = e.getKey();
-				combo.addItem(key);
-				// combo.setItemCaption(key, e.getValue());
-				// System.out.println();
+				if (!isCommission)
+					if (isFromDisplayFees) {
+						System.out
+								.println("FROM DISPLAY:  " + key
+										+ " : Size of set: "
+										+ setExistingFeesTT.size());
+						if (!setExistingFeesTT.contains(key)) {
+							combo.addItem(key);
+							System.out
+									.println("FROM DISPLAY: POPULATED " + key);
+							continue;
+						}
+					} else {
+
+						combo.addItem(key);
+					}
+
+				else if (isFromDisplayCommissions) {
+					System.out.println("FROM DISPLAY:  " + key
+							+ " : Size of set: " + setExistingFeesTT.size());
+					if (!setExistingCommTT.contains(key)) {
+						combo.addItem(key);
+						System.out.println("FROM DISPLAY: POPULATED " + key);
+						continue;
+					}
+				} else {
+
+					combo.addItem(key);
+				}
 
 			}
 
@@ -4614,6 +4699,17 @@ public class FeesAndCommissionModuleClone {
 			e.printStackTrace();
 			return Collections.emptyMap();
 
+		}
+
+	}
+
+	private void initTransactionTypes() {
+
+		try {
+			hmTransactionTypes = rs.getTransactionTypes();
+		} catch (RemoteException | DataServiceFault e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 	}

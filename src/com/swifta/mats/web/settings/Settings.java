@@ -75,10 +75,8 @@ public class Settings extends VerticalLayout {
 
 		hmFeesCommPermissions = new HashMap<>();
 
-		hmFeesCommPermissions.put("man_set_fees_commission",
-				"/setupservicefeesandcommission");
-		hmFeesCommPermissions.put("man_existing_fees_commission",
-				"/viewsetfeesandcommission");
+		hmFeesCommPermissions.put("man_setup_fees", "/setupservicefees");
+		hmFeesCommPermissions.put("man_setup_commission", "/setupcommission");
 
 	}
 
@@ -200,18 +198,17 @@ public class Settings extends VerticalLayout {
 		cIcon.addComponent(het3);
 
 		if (Initializer.setUserPermissions.contains(hmFeesCommPermissions
-				.get("man_set_fees_commission"))
+				.get("man_setup_commission"))
 				|| Initializer.setUserPermissions
-						.contains(hmFeesCommPermissions
-								.get("man_existing_fees_commission")))
+						.contains(hmFeesCommPermissions.get("man_setup_fees")))
 			cIcon.addComponent(het4);
 
-		/*
-		 * if (Initializer.setUserPermissions.contains(hmFeesCommPermissions
-		 * .get("man_set_fees_commission")) || Initializer.setUserPermissions
-		 * .contains(hmFeesCommPermissions
-		 * .get("man_existing_fees_commission")))
-		 */
+		// if (Initializer.setUserPermissions.contains(hmFeesCommPermissions
+		// .get("man_set_fees_commission"))
+		// || Initializer.setUserPermissions
+		// .contains(hmFeesCommPermissions
+		// .get("man_existing_fees_commission")))
+
 		cIcon.addComponent(het5);
 		cIcon.addComponent(het6);
 
@@ -245,28 +242,16 @@ public class Settings extends VerticalLayout {
 
 			@Override
 			public void layoutClick(LayoutClickEvent event) {
-				if (wmfac == null)
-					wmfac = new WorkSpaceManageFeesAndComm(
-							hmFeesCommPermissions);
-
-				VerticalLayout cmfac = wmfac.getWorkSpaceAccountProfile(back);
-				laying.removeAllComponents();
-				laying.addComponent(cmfac);
-				laying.setComponentAlignment(cmfac, Alignment.TOP_LEFT);
-				laying.setSizeFull();
-
-			}
-
-		});
-
-		het5.addLayoutClickListener(new LayoutClickListener() {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1706822656417754591L;
-
-			@Override
-			public void layoutClick(LayoutClickEvent event) {
+				// if (wmfac == null)
+				// wmfac = new WorkSpaceManageFeesAndComm(
+				// hmFeesCommPermissions);
+				//
+				// VerticalLayout cmfac =
+				// wmfac.getWorkSpaceAccountProfile(back);
+				// laying.removeAllComponents();
+				// laying.addComponent(cmfac);
+				// laying.setComponentAlignment(cmfac, Alignment.TOP_LEFT);
+				// laying.setSizeFull();
 
 				if (fcm == null)
 					fcm = new FeesAndCommissionModuleClone(back,

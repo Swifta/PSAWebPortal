@@ -4,6 +4,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Map;
 
 import org.apache.axis2.AxisFault;
@@ -282,7 +283,7 @@ public class ReportingService {
 		return arrServicefee;
 	}
 
-	public Map<String, String> getAvailableFees(String user)
+	public Hashtable<String, String> getAvailableFees(String user)
 			throws RemoteException, DataServiceFault {
 		Getavailableservicefee getavailableservicefee = new Getavailableservicefee();
 		getavailableservicefee.setLoggedInUser(user);
@@ -293,8 +294,8 @@ public class ReportingService {
 		// arrEf[0].get
 
 		if (arrEf == null)
-			return Collections.emptyMap();
-		Map<String, String> hm = new HashMap<>();
+			return new Hashtable<>();
+		Hashtable<String, String> hm = new Hashtable<>();
 		for (Existingservicefee esf : arrEf)
 			hm.put(esf.getTransactionfee(),
 					String.valueOf(esf.getServicefeepropertiesid()));
