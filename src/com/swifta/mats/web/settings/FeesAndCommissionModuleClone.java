@@ -530,6 +530,7 @@ public class FeesAndCommissionModuleClone {
 					public void valueChange(ValueChangeEvent event) {
 						hmServiceFees.clear();
 						comboFeesTT.setEnabled(true);
+
 						isFromDisplayFees = false;
 						isEditFees = false;
 
@@ -1402,11 +1403,11 @@ public class FeesAndCommissionModuleClone {
 			@Override
 			public void buttonClick(ClickEvent event) {
 
-				String sx = comboCommissionsTT.getValue().toString();
-
-				if (sx.indexOf("-") != -1) {
-					sx = sx.substring(sx.indexOf("-") + 1, sx.length()).trim();
-				}
+				// String sx = comboCommissionsTT.getValue().toString();
+				//
+				// if (sx.indexOf("-") != -1) {
+				// sx = sx.substring(sx.indexOf("-") + 1, sx.length()).trim();
+				// }
 
 				// comboAllCommissionOperators.select(null);
 
@@ -3023,15 +3024,15 @@ public class FeesAndCommissionModuleClone {
 					comboTT = comboFeesTT;
 				}
 
-				String sx = comboCommissionsTT.getValue().toString();
-
-				if (sx.indexOf("-") != -1) {
-					sx = sx.substring(sx.indexOf("-") + 1, sx.length()).trim();
-				}
-
-				comboTT.select(null);
-				comboTT.setEnabled(true);
-				cPlaceholder.setVisible(false);
+				// String sx = comboCommissionsTT.getValue().toString();
+				//
+				// if (sx.indexOf("-") != -1) {
+				// sx = sx.substring(sx.indexOf("-") + 1, sx.length()).trim();
+				// }
+				//
+				// comboTT.select(null);
+				// comboTT.setEnabled(true);
+				// cPlaceholder.setVisible(false);
 
 				if (isCommission) {
 
@@ -3246,12 +3247,15 @@ public class FeesAndCommissionModuleClone {
 							comboTT = comboFeesTT;
 						}
 
-						String sx = comboCommissionsTT.getValue().toString();
+						comboAllFCOperators.select(null);
+						comboTT.setVisible(false);
 
-						if (sx.indexOf("-") != -1) {
-							sx = sx.substring(sx.indexOf("-") + 1, sx.length())
-									.trim();
-						}
+						// String sx = comboTT.getValue().toString();
+						//
+						// if (sx.indexOf("-") != -1) {
+						// sx = sx.substring(sx.indexOf("-") + 1, sx.length())
+						// .trim();
+						// }
 
 						if (isCommission) {
 
@@ -3275,25 +3279,23 @@ public class FeesAndCommissionModuleClone {
 							//
 							// btnEditCommissions.setIcon(FontAwesome.EDIT);
 
-							comboAllFCOperators.select(null);
-
 							return;
 
 						}
 
-						String pname = comboAllFCOperators.getValue()
-								.toString().trim();
-						hmServiceFees = getServiceFees(Integer
-								.parseInt(hmAllOperators.get(pname)));
-						comboTT.removeAllItems();
-						for (String s : setExistingFeesTT)
-							comboTT.addItem(s);
-						comboTT.setVisible(true);
-						comboTT.select(setExistingFeesTT.iterator().next());
-
-						isEdit = false;
-						btnEditFees.setIcon(FontAwesome.EDIT);
-						btnEditFees.setDescription("Edit Configurations Fees");
+						// String pname = comboAllFCOperators.getValue()
+						// .toString().trim();
+						// hmServiceFees = getServiceFees(Integer
+						// .parseInt(hmAllOperators.get(pname)));
+						// comboTT.removeAllItems();
+						// for (String s : setExistingFeesTT)
+						// comboTT.addItem(s);
+						// comboTT.setVisible(true);
+						// comboTT.select(setExistingFeesTT.iterator().next());
+						//
+						// isEdit = false;
+						// btnEditFees.setIcon(FontAwesome.EDIT);
+						// btnEditFees.setDescription("Edit Configurations Fees");
 
 					}
 					return;
