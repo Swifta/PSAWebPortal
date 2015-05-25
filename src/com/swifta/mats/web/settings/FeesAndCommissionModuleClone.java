@@ -775,6 +775,7 @@ public class FeesAndCommissionModuleClone {
 
 				isExistingFeeConfig = false;
 				isNewFeeConfig = true;
+				comboFeesTT.setEnabled(true);
 
 			}
 
@@ -3101,6 +3102,10 @@ public class FeesAndCommissionModuleClone {
 
 				}
 
+				// comboAllFeesOperators.select(null);
+
+				comboFeesTT.select(null);
+
 				// if (isEdit) {
 				//
 				// displayFeesConfigurations(tb,
@@ -3249,6 +3254,7 @@ public class FeesAndCommissionModuleClone {
 
 						comboAllFCOperators.select(null);
 						comboTT.setVisible(false);
+						comboTT.setEnabled(true);
 
 						// String sx = comboTT.getValue().toString();
 						//
