@@ -121,6 +121,10 @@ import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getnonactivepermis
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getpermission;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getpermissions;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.GetpermissionsE;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Viewstatementbyagentid;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Viewstatementbyagentresponse;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Viewstatementbyagentresponses;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.ViewstatementbyagentresponsesE;
 import com.vaadin.ui.UI;
 
 public class UserManagementService {
@@ -1062,45 +1066,51 @@ public class UserManagementService {
 			int profiletypeid, String value) throws Exception {
 
 		String statusMessage = "";
-		matsStub = new ProvisioningStub(esbendpoint);
+		try {
 
-		AddProfileThresholdE addProfileThresholdE = new AddProfileThresholdE();
-		AddProfileThreshold addProfileThreshold = new AddProfileThreshold();
+			matsStub = new ProvisioningStub(esbendpoint);
 
-		addProfileThreshold.setLoggedinUser(UI.getCurrent().getSession()
-				.getAttribute("user").toString());
-		addProfileThreshold.setProfilename(profilename);
-		addProfileThreshold.setProfileid(profileid);
-		addProfileThreshold.setAction(transactiontypeids);
-		addProfileThreshold.setThresholdtypeid(thresholdtypeid);
-		addProfileThreshold.setProfiletypeid(profiletypeid);
-		addProfileThreshold.setValue(value);
+			AddProfileThresholdE addProfileThresholdE = new AddProfileThresholdE();
+			AddProfileThreshold addProfileThreshold = new AddProfileThreshold();
 
-		addProfileThresholdE.setAddProfileThreshold(addProfileThreshold);
+			addProfileThreshold.setLoggedinUser(UI.getCurrent().getSession()
+					.getAttribute("user").toString());
+			addProfileThreshold.setProfilename(profilename);
+			addProfileThreshold.setProfileid(profileid);
+			addProfileThreshold.setAction(transactiontypeids);
+			addProfileThreshold.setThresholdtypeid(thresholdtypeid);
+			addProfileThreshold.setProfiletypeid(profiletypeid);
+			addProfileThreshold.setValue(value);
 
-		AddProfileThresholdResponseE response = matsStub
-				.addProfileThreshold(addProfileThresholdE);
+			addProfileThresholdE.setAddProfileThreshold(addProfileThreshold);
 
-		if (response != null) {
-			AddProfileThresholdResponse response2 = response
-					.getAddProfileThresholdResponse();
-			if (response2 != null) {
-				AddProfileThresholdrequestresponse response3 = response2
-						.get_return();
-				if (response3 != null) {
-					statusMessage = response3.getResponsemessage();
-				}
+			AddProfileThresholdResponseE response = matsStub
+					.addProfileThreshold(addProfileThresholdE);
 
-				else {
-					statusMessage = "Response3 is empty";
+			if (response != null) {
+				AddProfileThresholdResponse response2 = response
+						.getAddProfileThresholdResponse();
+				if (response2 != null) {
+					AddProfileThresholdrequestresponse response3 = response2
+							.get_return();
+					if (response3 != null) {
+						statusMessage = response3.getResponsemessage();
+					}
+
+					else {
+						statusMessage = "Response3 is empty";
+					}
+
+				} else {
+					statusMessage = "addprofilethreshold request Response is empty";
 				}
 
 			} else {
 				statusMessage = "addprofilethreshold request Response is empty";
 			}
 
-		} else {
-			statusMessage = "addprofilethreshold request Response is empty";
+		} catch (Exception e) {
+
 		}
 
 		return statusMessage;
@@ -1359,6 +1369,40 @@ public class UserManagementService {
 		SetupservicefeesE ssfe = new SetupservicefeesE();
 		ssfe.setSetupservicefees(setupservicefees);
 		matsStub.setupservicefees(ssfe);
+	}
+
+	public static void viewstatement(String loggedInUser, String agentid1,
+			String agentid2, String filteron, String fromdate, String todate)
+			throws Exception {
+
+		matsReportstub = new MatsreportingserviceStub(esbendpoint);
+
+		Viewstatementbyagentid viewstatementbyagentid = new Viewstatementbyagentid();
+		viewstatementbyagentid.setLoggedInUser(loggedInUser);
+		viewstatementbyagentid.setAgentid1(agentid1);
+		viewstatementbyagentid.setAgentid2(agentid1);
+		viewstatementbyagentid.setFilteron(filteron);
+		viewstatementbyagentid.setFromdate(fromdate);
+		viewstatementbyagentid.setTodate(todate);
+
+		ViewstatementbyagentresponsesE response = matsReportstub
+				.viewstatementbyagentid(viewstatementbyagentid);
+
+		if (response != null) {
+			Viewstatementbyagentresponses viewstatementbyagentresponses = response
+					.getViewstatementbyagentresponses();
+
+			for (Viewstatementbyagentresponse viewstatementbyagentresponse : viewstatementbyagentresponses
+					.getViewstatementbyagentresponse()) {
+				System.out.println(viewstatementbyagentresponse
+						.getTransactiontype());
+				System.out.println(viewstatementbyagentresponse.getAmount());
+				System.out.println(viewstatementbyagentresponse.getReceiver());
+				System.out.println(viewstatementbyagentresponse.getStatus());
+			}
+
+		}
+
 	}
 
 }
