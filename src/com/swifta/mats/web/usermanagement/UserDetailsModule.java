@@ -26,6 +26,7 @@ import com.swifta.mats.web.utils.UserManagementService;
 import com.swifta.sub.mats.operation.provisioning.v1_0.ProvisioningStub;
 import com.swifta.sub.mats.reporting.DataServiceFault;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Profile;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Viewstatementbyagentresponse;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -153,6 +154,11 @@ public class UserDetailsModule {
 	private Window pop = new Window("Comfirm profile removal");
 
 	private Map<String, String> hmProfiles;
+
+	private ReportingService rs;
+
+	private PopupDateField dFromDate;
+	private PopupDateField dToDate;
 
 	public UserDetailsModule() {
 
@@ -349,7 +355,9 @@ public class UserDetailsModule {
 				cManageAndAddTab.addComponent(btnLinks);
 		}
 
-		cManageAndAddTab.addComponent(btnProfile);
+		if (xcontainer.getItem(xrid).getItemProperty("Profile Type").getValue()
+				.toString().equals(hmProfiles.get("7")))
+			cManageAndAddTab.addComponent(btnProfile);
 
 		// cManageAndAddTab.addComponent(btnAuth);
 		cManageAndAddTab.addComponent(btnLog);
@@ -2307,7 +2315,8 @@ public class UserDetailsModule {
 
 	}
 
-	private Table getStatementsTable() {
+	@SuppressWarnings("unchecked")
+	private void addStatementsTable(Table tb, boolean isFilterOn) {
 
 		IndexedContainer container = new IndexedContainer();
 
@@ -2320,9 +2329,22 @@ public class UserDetailsModule {
 		container.addContainerProperty("Amount", Button.class, null);
 		container.addContainerProperty("Partner", Button.class, null);
 
-		Table tb = new Table();
 		tb.setContainerDataSource(container);
 		tb.setPageLength(1);
+
+		for (Viewstatementbyagentresponse s : getUserStatement(isFilterOn)) {
+
+			container.getItem(container.addItem()).getItemProperty("Date")
+					.setValue(s.getDate().toString());
+
+		}
+
+		int x = container.size();
+		if (x > 30)
+			x = 30;
+
+		tb.setContainerDataSource(container);
+		tb.setPageLength(x);
 
 		/*
 		 * StringBuilder sb = new StringBuilder();
@@ -2391,8 +2413,6 @@ public class UserDetailsModule {
 		 * 
 		 * errorHandler(e); }
 		 */
-
-		return tb;
 
 	}
 
@@ -2807,26 +2827,31 @@ public class UserDetailsModule {
 		cDF.setSizeUndefined();
 		cDF.setSpacing(true);
 		cDF.setMargin(new MarginInfo(false, true, true, false));
-		final PopupDateField dSDate = new PopupDateField("From Date");
-		final PopupDateField dToDate = new PopupDateField("To Date");
+		dFromDate = new PopupDateField("From Date");
+		dToDate = new PopupDateField("To Date");
+
+		final CheckBox chkFilterOn = new CheckBox("Filter on Date");
 
 		Button btnLoad = new Button("Load");
 		btnLoad.setDescription("Load statement");
 		btnLoad.setStyleName("btn_link");
+		// btnLoad.setVisible(false);
 
-		cDF.addComponent(dSDate);
+		cDF.addComponent(dFromDate);
 		cDF.addComponent(dToDate);
-		HorizontalLayout cBtn = new HorizontalLayout();
+		VerticalLayout cBtn = new VerticalLayout();
 		cBtn.setHeight("100%");
 		cBtn.setWidthUndefined();
+		cBtn.addComponent(chkFilterOn);
 		cBtn.addComponent(btnLoad);
 		cBtn.setComponentAlignment(btnLoad, Alignment.BOTTOM_LEFT);
 		cDF.addComponent(cBtn);
+		// //cDF.addComponent(chkFilterOn);
 		cLBody.addComponent(cDF);
 
 		cal = Calendar.getInstance();
 		Date dToday = cal.getTime();
-		dSDate.setValue(dToday);
+		dFromDate.setValue(dToday);
 		dToDate.setValue(dToday);
 
 		cal.set(1970, 0, 1);
@@ -2841,14 +2866,16 @@ public class UserDetailsModule {
 		DateRangeValidator drv = new DateRangeValidator(
 				"Invalid date. Please select a date Earlier/Today.", dMin,
 				dToday, null);
-		dSDate.addValidator(drv);
+		dFromDate.addValidator(drv);
 		dToDate.addValidator(drv);
 
-		dSDate.setRequired(true);
-		dSDate.setImmediate(true);
+		dFromDate.setRequired(true);
+		dFromDate.setImmediate(true);
 
 		dToDate.setRequired(true);
 		dToDate.setImmediate(true);
+
+		final Table tb = new Table("Statement");
 
 		btnLoad.addClickListener(new Button.ClickListener() {
 			private static final long serialVersionUID = -8427226211153164650L;
@@ -2856,32 +2883,37 @@ public class UserDetailsModule {
 			@Override
 			public void buttonClick(ClickEvent event) {
 
-				if (dSDate.getValue() == null) {
-					Notification.show("Please specify \"From date.\"",
-							Notification.Type.ERROR_MESSAGE);
-					dSDate.focus();
-					return;
+				if (chkFilterOn.getValue()) {
+
+					if (dFromDate.getValue() == null) {
+						Notification.show("Please specify \"From date.\"",
+								Notification.Type.ERROR_MESSAGE);
+						dFromDate.focus();
+						return;
+					}
+
+					if (dToDate.getValue() == null) {
+						Notification.show("Please specify \"To date.\"",
+								Notification.Type.ERROR_MESSAGE);
+						dToDate.focus();
+						return;
+					}
+
+					if (dFromDate.getValue().compareTo(dToDate.getValue()) == 1) {
+						Notification
+								.show("\"Start date can not be bigger than \"To date\"\"",
+										Notification.Type.ERROR_MESSAGE);
+						dFromDate.focus();
+						return;
+					}
+
 				}
 
-				if (dToDate.getValue() == null) {
-					Notification.show("Please specify \"To date.\"",
-							Notification.Type.ERROR_MESSAGE);
-					dToDate.focus();
-					return;
-				}
-
-				if (dSDate.getValue().compareTo(dToDate.getValue()) == 1) {
-					Notification
-							.show("\"Start date can not be bigger than \"To date\"\"",
-									Notification.Type.ERROR_MESSAGE);
-					dSDate.focus();
-					return;
-				}
+				addStatementsTable(tb, chkFilterOn.getValue());
 
 			}
 		});
 
-		Table tb = getStatementsTable();
 		cLBody.addComponent(tb);
 
 		tb.setSelectable(true);
@@ -2891,6 +2923,8 @@ public class UserDetailsModule {
 		btnLink = new Button("Add New Link");
 		btnLink.setIcon(FontAwesome.LINK);
 		btnLink.setDescription("Link new account.");
+
+		btnLink.setVisible(false);
 
 		if (Initializer.setUserPermissions.contains(hmPerms.get("link"))) {
 			cLBody.addComponent(btnLink);
@@ -2939,4 +2973,36 @@ public class UserDetailsModule {
 		}
 	}
 
+	private Viewstatementbyagentresponse[] getUserStatement(boolean isFilterOn) {
+
+		if (rs == null)
+			try {
+				rs = new ReportingService();
+			} catch (AxisFault e) {
+
+				e.printStackTrace();
+			}
+		String user = UI.getCurrent().getSession().getAttribute("user")
+				.toString();
+
+		String agentid1 = xcontainer.getItem(xrid).getItemProperty("Username")
+				.getValue().toString();
+		String agentid2 = xcontainer.getItem(xrid).getItemProperty("MSISDN")
+				.getValue().toString();
+
+		String fromd = dFromDate.getValue().toString();
+		String tod = dToDate.getValue().toString();
+
+		String filterOn = (isFilterOn) ? "1" : "0";
+
+		try {
+			return rs.getStatementByAgentID(user, agentid1, agentid2, fromd,
+					tod, filterOn);
+		} catch (RemoteException | DataServiceFault e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return new Viewstatementbyagentresponse[] {};
+		}
+
+	}
 }

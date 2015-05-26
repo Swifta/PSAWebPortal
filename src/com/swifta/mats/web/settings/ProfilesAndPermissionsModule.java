@@ -115,6 +115,7 @@ public class ProfilesAndPermissionsModule {
 	private HashMap<String, HashMap<String, String>> hmThresholdProperties;
 
 	private boolean isEditThresholdPossible = false;
+	private boolean isNewThresholdConfig = false;
 
 	// private HorizontalLayout cjust;
 
@@ -161,22 +162,20 @@ public class ProfilesAndPermissionsModule {
 				|| Initializer.setUserPermissions
 						.contains(hmProfPermPermissions.get("add_profile"))
 				|| Initializer.setUserPermissions
-						.contains(hmProfPermPermissions.get("remove_profile"))
-				|| Initializer.setUserPermissions
-						.contains(hmProfPermPermissions.get("add_threshold"))) {
+						.contains(hmProfPermPermissions.get("remove_profile"))) {
 			cMainMenu.addComponent(btnProfiles);
 			btnTemp = btnProfiles;
 		}
 
 		if (Initializer.setUserPermissions.contains(hmProfPermPermissions
-				.get("edit_profile"))
+				.get("man_add_threshold"))
 
 				|| Initializer.setUserPermissions
-						.contains(hmProfPermPermissions.get("add_profile"))
+						.contains(hmProfPermPermissions
+								.get("man_edit_threshold"))
 				|| Initializer.setUserPermissions
-						.contains(hmProfPermPermissions.get("remove_profile"))
-				|| Initializer.setUserPermissions
-						.contains(hmProfPermPermissions.get("add_threshold"))) {
+						.contains(hmProfPermPermissions
+								.get("man_delete_threshold"))) {
 			cMainMenu.addComponent(btnThresholds);
 			if (btnTemp == null)
 				btnTemp = btnThresholds;
@@ -830,10 +829,10 @@ public class ProfilesAndPermissionsModule {
 		btnEdit.setStyleName("btn_link");
 		btnEdit.setDescription("Edit profile name");
 
-		final Button btnThreshold = new Button("T");
+		// final Button btnThreshold = new Button("T");
 		// btnThreshold.setIcon(FontAwesome.T);
-		btnThreshold.setStyleName("btn_link");
-		btnThreshold.setDescription("Set profile threshold");
+		// btnThreshold.setStyleName("btn_link");
+		// btnThreshold.setDescription("Set profile threshold");
 
 		final Button btnCancel = new Button();
 		btnCancel.setIcon(FontAwesome.UNDO);
@@ -853,21 +852,29 @@ public class ProfilesAndPermissionsModule {
 		cProfNameAndAddBtn.addComponent(cProfName);
 		// cProf.addComponent(cProfName);
 		if (Initializer.setUserPermissions.contains(hmProfPermPermissions
-				.get("add_profile")))
+				.get("add_profile"))) {
 			cProfNameAndAddBtn.addComponent(btnAdd);
+			// cProfNameAndAddBtn
+			// .setComponentAlignment(btnAdd, Alignment.TOP_LEFT);
+
+			btnAdd.setStyleName("prof_add_btn_displacement");
+
+		}
 
 		// cProf.addComponent(cProfName);
 		if (Initializer.setUserPermissions.contains(hmProfPermPermissions
 				.get("edit_profile")))
 			cProfActions.addComponent(btnEdit);
-		cProfActions.addComponent(btnCancel);
+
 		// cProfActions.addComponent(btnAdd);
 		if (Initializer.setUserPermissions.contains(hmProfPermPermissions
 				.get("add_threshold")))
-			cProfActions.addComponent(btnThreshold);
-		if (Initializer.setUserPermissions.contains(hmProfPermPermissions
-				.get("remove_profile")))
-			cProfActions.addComponent(btnRemove);
+			// cProfActions.addComponent(btnThreshold);
+			if (Initializer.setUserPermissions.contains(hmProfPermPermissions
+					.get("remove_profile")))
+				cProfActions.addComponent(btnRemove);
+
+		cProfActions.addComponent(btnCancel);
 
 		btnCancel.setVisible(false);
 
@@ -909,6 +916,8 @@ public class ProfilesAndPermissionsModule {
 							cProfActions.setVisible(true);
 							lbProf.setValue(comboProfiles.getItemCaption(event
 									.getProperty().getValue()));
+							btnEdit.setIcon(FontAwesome.EDIT);
+							btnEdit.setDescription("Edit Profile Name.");
 						} else {
 							cProfActions.setVisible(false);
 							lbProf.setValue("None.");
@@ -988,15 +997,9 @@ public class ProfilesAndPermissionsModule {
 						return;
 					}
 
-					lbProf.setValue(tFProf.getValue());
-					cProfName.replaceComponent(tFProf, lbProf);
-					btnEdit.setIcon(FontAwesome.EDIT);
-					btnEdit.setDescription("Edit profile name");
-					btnCancel.setVisible(false);
-
 					isProfileNameChanged = false;
 
-					Object profileName = comboThresholdProfiles.getValue();
+					Object profileName = comboProfiles.getValue();
 					Integer pid = Integer.parseInt(hmAllProfiles
 							.get(profileName.toString().trim()));
 					String pnOld = profileName.toString();
@@ -1010,8 +1013,8 @@ public class ProfilesAndPermissionsModule {
 						response = UserManagementService.editProfile(pnNew,
 								pnOld, pid);
 
-						comboThresholdProfiles.addItem(pnNew);
-						comboThresholdProfiles.select(pnNew);
+						comboProfiles.addItem(pnNew);
+						comboProfiles.select(pnNew);
 						// hmAllProfiles.remove(pnOld);
 
 						if (response == null || response.trim().isEmpty()) {
@@ -1030,9 +1033,14 @@ public class ProfilesAndPermissionsModule {
 
 							NotifCustom.show("Response", response);
 							hmAllProfiles.put(pnNew, pid.toString());
-							comboPermProfiles.removeAllItems();
-							comboPermProfiles.select(null);
+							comboProfiles.removeAllItems();
+							comboProfiles.select(null);
 
+							lbProf.setValue(tFProf.getValue());
+							cProfName.replaceComponent(tFProf, lbProf);
+							btnEdit.setIcon(FontAwesome.EDIT);
+							btnEdit.setDescription("Edit profile name");
+							btnCancel.setVisible(false);
 							return;
 						}
 
@@ -1212,6 +1220,11 @@ public class ProfilesAndPermissionsModule {
 						btnCancel.setVisible(false);
 
 		btnAddThreshold = btnAdd;
+
+		if (!Initializer.setUserPermissions.contains(hmProfPermPermissions
+				.get("man_add_threshold")))
+			btnAdd.setEnabled(false);
+
 		btnAdd.setVisible(false);
 		cBeforePlaceHolder.addComponent(btnAdd);
 		cBeforePlaceHolder.setComponentAlignment(btnAdd, Alignment.TOP_CENTER);
@@ -1275,46 +1288,43 @@ public class ProfilesAndPermissionsModule {
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 
-				if (isEditThresholdPossible) {
+				comboExistingThresholds.removeAllItems();
+				Collection<?> ttids = (Collection<?>) optMultT.getValue();
 
-					Collection<?> vals = null;
+				if (ttids.size() == 1 && isNewThresholdConfig) {
+					String ttid = ttids.iterator().next().toString();
 
-					comboExistingThresholds.removeAllItems();
+					if (hmNONETH.containsKey(ttid)) {
 
-					vals = (Collection<?>) optMultT.getValue();
+						for (String e : hmNONETH.get(ttid)) {
+							System.out.println("THTID " + e);
+							comboExistingThresholds.addItem(e);
 
-					if (vals.size() == 1) {
-
-						Iterator<?> itr = vals.iterator();
-						while (itr.hasNext()) {
-							String ttid = itr.next().toString();
-
-							System.out.println("Transaction Type: " + ttid);
-
-							Set<String> set = hmNONETH.get(ttid);
-							if (set == null) {
-
-								return;
-
-							}
-
-							for (String e : set) {
-								System.out.println("THTID " + e);
-								comboExistingThresholds.addItem(e);
-
-								System.out.println("THT CAPTION "
-										+ hmThresholdTypesByID.get(e));
-								comboExistingThresholds.setItemCaption(e,
-										hmThresholdTypesByID.get(e));
-							}
+							System.out.println("THT CAPTION "
+									+ hmThresholdTypesByID.get(e));
+							comboExistingThresholds.setItemCaption(e,
+									hmThresholdTypesByID.get(e));
 						}
+
+						return;
+
 					}
 
 				}
 
-			}
+				for (Entry<String, String> e : hmThresholdTypes.entrySet()) {
 
-		});
+					String tthid = e.getValue();
+					comboExistingThresholds.addItem(tthid);
+					comboExistingThresholds.setItemCaption(tthid,
+							hmThresholdTypesByID.get(tthid));
+
+				}
+
+			}
+		}
+
+		);
 
 		btnAdd.addClickListener(new Button.ClickListener() {
 
@@ -1333,6 +1343,8 @@ public class ProfilesAndPermissionsModule {
 				cPlaceholder.setVisible(false);
 				cPlaceholder.removeAllComponents();
 				btnAddThreshold.setVisible(false);
+
+				isNewThresholdConfig = true;
 
 			}
 		});
@@ -1818,8 +1830,8 @@ public class ProfilesAndPermissionsModule {
 
 							NotifCustom.show("Response", response);
 							hmAllProfiles.put(pnNew, pid.toString());
-							comboPermProfiles.removeAllItems();
-							comboPermProfiles.select(null);
+							comboThresholdProfiles.removeAllItems();
+							comboThresholdProfiles.select(null);
 
 							return;
 						}
@@ -1931,9 +1943,9 @@ public class ProfilesAndPermissionsModule {
 
 					if (response.toUpperCase().contains("SUCCESSFUL")) {
 						comboProfiles.removeAllItems();
-						comboPermProfiles.removeAllItems();
+						comboProfiles.removeAllItems();
 						comboProfiles.select(null);
-						comboPermProfiles.select(null);
+						comboProfiles.select(null);
 
 						NotifCustom.show("Remove response", pn
 								+ " removed successfully.");
@@ -1965,7 +1977,7 @@ public class ProfilesAndPermissionsModule {
 
 		@Override
 		public void buttonClick(ClickEvent event) {
-			lbComfirm.setValue("Please comfirm removal  Profile \""
+			lbComfirm.setValue("Please comfirm removal of  Profile \""
 					+ comboProfiles.getValue().toString() + "\"");
 			UI.getCurrent().addWindow(pop);
 
@@ -2644,7 +2656,11 @@ public class ProfilesAndPermissionsModule {
 			btnCancel.setIcon(FontAwesome.UNDO);
 
 			HorizontalLayout cBtns = new HorizontalLayout();
-			cBtns.addComponent(btnEdit);
+
+			if (Initializer.setUserPermissions.contains(hmProfPermPermissions
+					.get("man_edit_threshold")))
+				cBtns.addComponent(btnEdit);
+
 			if (hmNONETH.size() == 0) {
 				btnAddThreshold.setVisible(false);
 			} else {
@@ -2652,7 +2668,10 @@ public class ProfilesAndPermissionsModule {
 				btnAddThreshold.setVisible(true);
 
 			}
-			cBtns.addComponent(btnDelete);
+
+			if (Initializer.setUserPermissions.contains(hmProfPermPermissions
+					.get("man_delete_threshold")))
+				cBtns.addComponent(btnDelete);
 			cBtns.addComponent(btnCancel);
 
 			cT.addComponent(tb);
@@ -2978,6 +2997,8 @@ public class ProfilesAndPermissionsModule {
 
 			return;
 		}
+
+		isNewThresholdConfig = false;
 
 		initTransactionTypes();
 		Iterator<Entry<String, ArrayList<HashMap<String, String>>>> itr = hmExistingThresholdTypes

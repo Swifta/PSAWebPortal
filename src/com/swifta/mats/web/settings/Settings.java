@@ -69,6 +69,11 @@ public class Settings extends VerticalLayout {
 				"/removeprofilepermission");
 		hmProfPermPermissions.put("set_permissions", "/setprofilepermission");
 
+		hmProfPermPermissions.put("add_threshold", "/addprofilethreshold");
+		hmProfPermPermissions.put("edit_threshold", "/editprofilethreshold");
+		hmProfPermPermissions
+				.put("delete_threshold", "/deleteprofilethreshold");
+
 	}
 
 	private void setFeesAndCommPermissions() {
@@ -77,6 +82,12 @@ public class Settings extends VerticalLayout {
 
 		hmFeesCommPermissions.put("man_setup_fees", "/setupservicefees");
 		hmFeesCommPermissions.put("man_setup_commission", "/setupcommission");
+
+		hmFeesCommPermissions.put("man_edit_fees", "/editservicefees");
+		hmFeesCommPermissions.put("man_delete_fees", "/deleteservicefees");
+
+		hmFeesCommPermissions.put("man_edit_commission", "/editcommission");
+		hmFeesCommPermissions.put("man_delete_commission", "/deletecommission");
 
 	}
 

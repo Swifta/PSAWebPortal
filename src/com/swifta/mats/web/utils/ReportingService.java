@@ -58,6 +58,8 @@ import com.swifta.sub.mats.reporting.MatsreportingserviceStub.TransactionRespons
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Transactiontype;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Transactiontypes;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.TransactiontypesE;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Viewstatementbyagentid;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Viewstatementbyagentresponse;
 
 public class ReportingService {
 	private final MatsreportingserviceStub rservice;
@@ -361,5 +363,28 @@ public class ReportingService {
 
 		return hmTT;
 
+	}
+
+	public Viewstatementbyagentresponse[] getStatementByAgentID(String user,
+			String agentid1, String agentid2, String fromDate, String toDate,
+			String filterOn) throws RemoteException, DataServiceFault {
+
+		Viewstatementbyagentid viewstatementbyagentid = new Viewstatementbyagentid();
+		viewstatementbyagentid.setLoggedInUser(user);
+		viewstatementbyagentid.setAgentid1(agentid1);
+		viewstatementbyagentid.setAgentid2(agentid1);
+		viewstatementbyagentid.setFromdate(fromDate);
+		viewstatementbyagentid.setTodate(toDate);
+		viewstatementbyagentid.setFilteron(filterOn);
+
+		Viewstatementbyagentresponse[] s = rservice
+				.viewstatementbyagentid(viewstatementbyagentid)
+				.getViewstatementbyagentresponses()
+				.getViewstatementbyagentresponse();
+
+		if (s == null)
+			return new Viewstatementbyagentresponse[] {};
+
+		return s;
 	}
 }
