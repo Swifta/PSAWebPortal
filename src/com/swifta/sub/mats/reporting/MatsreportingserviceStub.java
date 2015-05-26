@@ -20751,14 +20751,14 @@
                         */
 
                         
-                                    protected java.util.Date localDate ;
+                                    protected java.lang.String localDate ;
                                 
 
                            /**
                            * Auto generated getter method
-                           * @return java.util.Date
+                           * @return java.lang.String
                            */
-                           public  java.util.Date getDate(){
+                           public  java.lang.String getDate(){
                                return localDate;
                            }
 
@@ -20768,7 +20768,7 @@
                                * Auto generated setter method
                                * @param param Date
                                */
-                               public void setDate(java.util.Date param){
+                               public void setDate(java.lang.String param){
                             
                                             this.localDate=param;
                                     
@@ -20967,7 +20967,7 @@
                                           }else{
 
                                         
-                                                   xmlWriter.writeCharacters(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localDate));
+                                                   xmlWriter.writeCharacters(localDate);
                                             
                                           }
                                     
@@ -21342,7 +21342,7 @@
                                     java.lang.String content = reader.getElementText();
                                     
                                               object.setDate(
-                                                    org.apache.axis2.databinding.utils.ConverterUtil.convertToDate(content));
+                                                    org.apache.axis2.databinding.utils.ConverterUtil.convertToString(content));
                                             
                                        } else {
                                            

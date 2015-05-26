@@ -49,7 +49,7 @@ public class Client {
 
 			// Client.getThresholdTypes();
 
-			Client.getTransactionTypes();
+			// Client.getTransactionTypes();
 
 			// Client.getUserPermissions();
 
@@ -80,7 +80,8 @@ public class Client {
 
 			// Client.sql();
 
-			getExistingThresholds();
+			viewreport();
+			// getExistingThresholds();
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -579,6 +580,11 @@ public class Client {
 			System.out.println(r.getDate());
 
 		}
+	}
+
+	public static void viewreport() throws Exception {
+		UserManagementService.viewstatement("admin", "olumide", "olumide", "0",
+				"", "");
 	}
 
 	public static void getFMR() throws RemoteException, DataServiceFault {
