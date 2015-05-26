@@ -7,6 +7,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -2323,28 +2324,37 @@ public class UserDetailsModule {
 		container.addContainerProperty("S/N", Integer.class, 0);
 		container.addContainerProperty("Date", String.class, null);
 		container.addContainerProperty("Txn. Type", String.class, null);
+		// container.addContainerProperty("Amount", String.class, null);
+		// container.addContainerProperty("Sender", String.class, null);
+		container.addContainerProperty("Receiver", String.class, null);
 		container.addContainerProperty("Amount", String.class, null);
-		container.addContainerProperty("Sender", Button.class, null);
-		container.addContainerProperty("Receiver", Button.class, null);
-		container.addContainerProperty("Amount", Button.class, null);
-		container.addContainerProperty("Partner", Button.class, null);
+
+		container.addContainerProperty("Status", String.class, null);
 
 		tb.setContainerDataSource(container);
-		tb.setPageLength(1);
-
+		int x = 1;
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		for (Viewstatementbyagentresponse s : getUserStatement(isFilterOn)) {
 
-			container.getItem(container.addItem()).getItemProperty("Date")
-					.setValue(s.getDate().toString());
+			Object rid = container.addItem();
+
+			Item r = container.getItem(rid);
+			r.getItemProperty("S/N").setValue(x);
+			r.getItemProperty("Date").setValue(s.getDate());
+			r.getItemProperty("Txn. Type").setValue(s.getTransactiontype());
+			r.getItemProperty("Receiver").setValue(s.getReceiver());
+			r.getItemProperty("Amount").setValue(s.getAmount());
+			r.getItemProperty("Status").setValue(s.getStatus());
+
+			x++;
 
 		}
 
-		int x = container.size();
 		if (x > 30)
 			x = 30;
 
 		tb.setContainerDataSource(container);
-		tb.setPageLength(x);
+		tb.setPageLength(x - 1);
 
 		/*
 		 * StringBuilder sb = new StringBuilder();
@@ -2907,6 +2917,26 @@ public class UserDetailsModule {
 						return;
 					}
 
+					if (!dFromDate.isValid()) {
+
+						Notification.show("Invalid date",
+								Notification.Type.ERROR_MESSAGE);
+
+						dFromDate.focus();
+
+						return;
+					}
+
+					if (!dToDate.isValid()) {
+
+						Notification.show("Invalid date",
+								Notification.Type.ERROR_MESSAGE);
+
+						dToDate.focus();
+
+						return;
+					}
+
 				}
 
 				addStatementsTable(tb, chkFilterOn.getValue());
@@ -2915,6 +2945,8 @@ public class UserDetailsModule {
 		});
 
 		cLBody.addComponent(tb);
+
+		tb.setPageLength(1);
 
 		tb.setSelectable(true);
 
@@ -2941,6 +2973,8 @@ public class UserDetailsModule {
 
 		HorizontalLayout c = new HorizontalLayout();
 		c.addComponent(cAgentInfo);
+
+		addStatementsTable(tb, false);
 
 		return c;
 
@@ -2982,6 +3016,8 @@ public class UserDetailsModule {
 
 				e.printStackTrace();
 			}
+
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		String user = UI.getCurrent().getSession().getAttribute("user")
 				.toString();
 
@@ -2990,10 +3026,24 @@ public class UserDetailsModule {
 		String agentid2 = xcontainer.getItem(xrid).getItemProperty("MSISDN")
 				.getValue().toString();
 
-		String fromd = dFromDate.getValue().toString();
-		String tod = dToDate.getValue().toString();
+		String fromd = "";
+		String tod = "";
+
+		if (isFilterOn) {
+			fromd = sdf.format(dFromDate.getValue());
+			tod = sdf.format(dToDate.getValue());
+		}
 
 		String filterOn = (isFilterOn) ? "1" : "0";
+
+		System.out.println("VALUES TO SERVER: ");
+
+		System.out.println(user);
+		System.out.println(agentid1);
+		System.out.println(agentid2);
+		System.out.println(fromd);
+		System.out.println(tod);
+		System.out.println(filterOn);
 
 		try {
 			return rs.getStatementByAgentID(user, agentid1, agentid2, fromd,

@@ -21,6 +21,7 @@ import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Gettransactionrepo
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Gettransactionsummaryreportresponse;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Profile;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Servicefee;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Viewstatementbyagentresponse;
 
 public class Client {
 
@@ -49,7 +50,7 @@ public class Client {
 
 			// Client.getThresholdTypes();
 
-			// Client.getTransactionTypes();
+			Client.getTransactionTypes();
 
 			// Client.getUserPermissions();
 
@@ -80,8 +81,9 @@ public class Client {
 
 			// Client.sql();
 
-			viewreport();
 			// getExistingThresholds();
+
+			getStatement();
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -582,11 +584,6 @@ public class Client {
 		}
 	}
 
-	public static void viewreport() throws Exception {
-		UserManagementService.viewstatement("admin", "olumide", "olumide", "0",
-				"", "");
-	}
-
 	public static void getFMR() throws RemoteException, DataServiceFault {
 		ReportingService rs = new ReportingService();
 		System.out.println("Float Management Report xxxxx     report");
@@ -657,5 +654,23 @@ public class Client {
 			Iterator<HashMap<String, String>> itrTT = e.getValue().iterator();
 
 		}
+	}
+
+	public static void getStatement() throws RemoteException, DataServiceFault {
+
+		ReportingService rs = new ReportingService();
+		String user = "admin";
+		String agentid1 = "olumide";
+		String agentid2 = agentid1;
+		String fromDate = "2014-04-05";
+		String toDate = "2015-05-05";
+		String filterOn = "0";
+		for (Viewstatementbyagentresponse s : rs.getStatementByAgentID(user,
+				agentid1, agentid2, fromDate, toDate, filterOn)) {
+
+			System.out.println("Date: " + s.getDate());
+
+		}
+
 	}
 }

@@ -241,23 +241,26 @@ public class FeesAndCommissionModuleClone {
 
 		btnProfiles = new BtnTabLike("Fees", null);
 		btnPermissions = new BtnTabLike("Commission", null);
-		if (Initializer.setUserPermissions.contains(hmProfPermPermissions
-				.get("edit_profile"))
+		if (
 
+		Initializer.setUserPermissions.contains(hmProfPermPermissions
+				.get("man_setup_fees"))
 				|| Initializer.setUserPermissions
-						.contains(hmProfPermPermissions.get("add_profile"))
+						.contains(hmProfPermPermissions.get("man_edit_fees"))
 				|| Initializer.setUserPermissions
-						.contains(hmProfPermPermissions.get("remove_profile"))
-				|| Initializer.setUserPermissions
-						.contains(hmProfPermPermissions.get("add_threshold"))) {
+						.contains(hmProfPermPermissions.get("man_delete_fees"))) {
 			cMainMenu.addComponent(btnProfiles);
 			btnTemp = btnProfiles;
 		}
 
 		if (Initializer.setUserPermissions.contains(hmProfPermPermissions
-				.get("remove_permissions"))
+				.get("man_setup_commission"))
 				|| Initializer.setUserPermissions
-						.contains(hmProfPermPermissions.get("set_permissions")))
+						.contains(hmProfPermPermissions
+								.get("man_edit_commission"))
+				|| Initializer.setUserPermissions
+						.contains(hmProfPermPermissions
+								.get("man_delete_commission")))
 			cMainMenu.addComponent(btnPermissions);
 
 		if (btnTemp == null)
@@ -437,6 +440,10 @@ public class FeesAndCommissionModuleClone {
 		btnAdd.setDescription("Add New Fees Comfigurations");
 		btnAdd.setVisible(false);
 
+		if (!Initializer.setUserPermissions.contains(hmProfPermPermissions
+				.get("man_setup_fees")))
+			btnAdd.setEnabled(false);
+
 		btnAddFees = btnAdd;
 
 		// VerticalLayout cAddBtn = new VerticalLayout();
@@ -450,12 +457,14 @@ public class FeesAndCommissionModuleClone {
 
 		// cProf.addComponent(cProfName);
 		if (Initializer.setUserPermissions.contains(hmProfPermPermissions
-				.get("set_permissions")))
+				.get("man_edit_fees")))
 			cPermsActions.addComponent(btnEdit);
 
 		// cPermsActions.addComponent(btnAdd);
 
-		cPermsActions.addComponent(btnDelete);
+		if (Initializer.setUserPermissions.contains(hmProfPermPermissions
+				.get("man_delete_fees")))
+			cPermsActions.addComponent(btnDelete);
 
 		cAllProf.addComponent(cProfNameAndAddBtn);
 		cAllProf.setComponentAlignment(cProfNameAndAddBtn, Alignment.TOP_CENTER);
@@ -1281,6 +1290,11 @@ public class FeesAndCommissionModuleClone {
 		cCommissionBeforePlaceholder.addComponent(btnAdd);
 		cCommissionBeforePlaceholder.setComponentAlignment(btnAdd,
 				Alignment.TOP_CENTER);
+
+		if (!Initializer.setUserPermissions.contains(hmProfPermPermissions
+				.get("man_setup_commission")))
+			btnAdd.setEnabled(false);
+
 		btnAddCommissions = btnAdd;
 		btnAdd.setVisible(false);
 
@@ -1295,10 +1309,12 @@ public class FeesAndCommissionModuleClone {
 
 		// cProf.addComponent(cProfName);
 		if (Initializer.setUserPermissions.contains(hmProfPermPermissions
-				.get("set_permissions")))
+				.get("man_edit_commission")))
 			cPermsActions.addComponent(btnEdit);
 
-		cPermsActions.addComponent(btnDelete);
+		if (Initializer.setUserPermissions.contains(hmProfPermPermissions
+				.get("man_delete_commission")))
+			cPermsActions.addComponent(btnDelete);
 
 		// cPermsActions.addComponent(btnCancel);
 

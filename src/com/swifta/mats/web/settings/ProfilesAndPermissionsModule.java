@@ -168,14 +168,12 @@ public class ProfilesAndPermissionsModule {
 		}
 
 		if (Initializer.setUserPermissions.contains(hmProfPermPermissions
-				.get("man_add_threshold"))
+				.get("add_threshold"))
 
 				|| Initializer.setUserPermissions
-						.contains(hmProfPermPermissions
-								.get("man_edit_threshold"))
+						.contains(hmProfPermPermissions.get("edit_threshold"))
 				|| Initializer.setUserPermissions
-						.contains(hmProfPermPermissions
-								.get("man_delete_threshold"))) {
+						.contains(hmProfPermPermissions.get("delete_threshold"))) {
 			cMainMenu.addComponent(btnThresholds);
 			if (btnTemp == null)
 				btnTemp = btnThresholds;
@@ -1222,7 +1220,7 @@ public class ProfilesAndPermissionsModule {
 		btnAddThreshold = btnAdd;
 
 		if (!Initializer.setUserPermissions.contains(hmProfPermPermissions
-				.get("man_add_threshold")))
+				.get("add_threshold")))
 			btnAdd.setEnabled(false);
 
 		btnAdd.setVisible(false);
@@ -2658,7 +2656,7 @@ public class ProfilesAndPermissionsModule {
 			HorizontalLayout cBtns = new HorizontalLayout();
 
 			if (Initializer.setUserPermissions.contains(hmProfPermPermissions
-					.get("man_edit_threshold")))
+					.get("edit_threshold")))
 				cBtns.addComponent(btnEdit);
 
 			if (hmNONETH.size() == 0) {
@@ -2670,7 +2668,7 @@ public class ProfilesAndPermissionsModule {
 			}
 
 			if (Initializer.setUserPermissions.contains(hmProfPermPermissions
-					.get("man_delete_threshold")))
+					.get("delete_threshold")))
 				cBtns.addComponent(btnDelete);
 			cBtns.addComponent(btnCancel);
 

@@ -81,11 +81,10 @@ public class Settings extends VerticalLayout {
 		hmFeesCommPermissions = new HashMap<>();
 
 		hmFeesCommPermissions.put("man_setup_fees", "/setupservicefees");
-		hmFeesCommPermissions.put("man_setup_commission", "/setupcommission");
-
 		hmFeesCommPermissions.put("man_edit_fees", "/editservicefees");
 		hmFeesCommPermissions.put("man_delete_fees", "/deleteservicefees");
 
+		hmFeesCommPermissions.put("man_setup_commission", "/setupcommission");
 		hmFeesCommPermissions.put("man_edit_commission", "/editcommission");
 		hmFeesCommPermissions.put("man_delete_commission", "/deletecommission");
 
@@ -198,20 +197,36 @@ public class Settings extends VerticalLayout {
 						.contains(hmProfPermPermissions.get("add_profile"))
 				|| Initializer.setUserPermissions
 						.contains(hmProfPermPermissions.get("remove_profile"))
-				|| Initializer.setUserPermissions
-						.contains(hmProfPermPermissions.get("add_threshold"))
+
 				|| Initializer.setUserPermissions
 						.contains(hmProfPermPermissions.get("set_permissions"))
 				|| Initializer.setUserPermissions
 						.contains(hmProfPermPermissions
-								.get("remove_permissions")))
+								.get("remove_permissions"))
+				|| Initializer.setUserPermissions
+						.contains(hmProfPermPermissions.get("add_threshold"))
+				|| Initializer.setUserPermissions
+						.contains(hmProfPermPermissions.get("edit_threshold"))
+				|| Initializer.setUserPermissions
+						.contains(hmProfPermPermissions.get("delete_threshold")))
 			cIcon.addComponent(het2);
 		cIcon.addComponent(het3);
 
 		if (Initializer.setUserPermissions.contains(hmFeesCommPermissions
-				.get("man_setup_commission"))
+				.get("man_setup_fees"))
 				|| Initializer.setUserPermissions
-						.contains(hmFeesCommPermissions.get("man_setup_fees")))
+						.contains(hmFeesCommPermissions.get("man_edit_fees"))
+				|| Initializer.setUserPermissions
+						.contains(hmFeesCommPermissions.get("man_delete_fees"))
+				|| Initializer.setUserPermissions
+						.contains(hmFeesCommPermissions
+								.get("man_setup_commission"))
+				|| Initializer.setUserPermissions
+						.contains(hmFeesCommPermissions
+								.get("man_edit_commission"))
+				|| Initializer.setUserPermissions
+						.contains(hmFeesCommPermissions
+								.get("man_delete_commission")))
 			cIcon.addComponent(het4);
 
 		// if (Initializer.setUserPermissions.contains(hmFeesCommPermissions
@@ -233,6 +248,12 @@ public class Settings extends VerticalLayout {
 			@Override
 			public void layoutClick(LayoutClickEvent event) {
 
+				Button back = new Button();
+				back.setStyleName("btn_link btn_back");
+				back.setCaption("Back");
+				back.setDescription("Back to all settings");
+				back.setIcon(FontAwesome.UNDO);
+
 				if (ppm == null)
 					ppm = new ProfilesAndPermissionsModule(back,
 							hmProfPermPermissions);
@@ -242,6 +263,25 @@ public class Settings extends VerticalLayout {
 				laying.addComponent(cppm);
 				laying.setComponentAlignment(cppm, Alignment.TOP_CENTER);
 				laying.setSizeFull();
+
+				back.addClickListener(new Button.ClickListener() {
+
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
+					@Override
+					public void buttonClick(ClickEvent event) {
+
+						laying.removeAllComponents();
+						laying.addComponent(cIcon);
+						// TODO Auto-generated method stub
+						BulkImport.setEnabled(true);
+						adduser.setEnabled(true);
+					}
+
+				});
 
 			}
 
@@ -264,15 +304,40 @@ public class Settings extends VerticalLayout {
 				// laying.setComponentAlignment(cmfac, Alignment.TOP_LEFT);
 				// laying.setSizeFull();
 
+				Button back = new Button();
+				back.setStyleName("btn_link btn_back");
+				back.setCaption("Back");
+				back.setDescription("Back to all settings");
+				back.setIcon(FontAwesome.UNDO);
+
 				if (fcm == null)
 					fcm = new FeesAndCommissionModuleClone(back,
-							hmProfPermPermissions);
+							hmFeesCommPermissions);
 				VerticalLayout cfcm = fcm.getMainContainer();
 
 				laying.removeAllComponents();
 				laying.addComponent(cfcm);
 				laying.setComponentAlignment(cfcm, Alignment.TOP_CENTER);
 				laying.setSizeFull();
+
+				back.addClickListener(new Button.ClickListener() {
+
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
+					@Override
+					public void buttonClick(ClickEvent event) {
+
+						laying.removeAllComponents();
+						laying.addComponent(cIcon);
+						// TODO Auto-generated method stub
+						BulkImport.setEnabled(true);
+						adduser.setEnabled(true);
+					}
+
+				});
 
 			}
 
