@@ -15,7 +15,7 @@ public class Conf {
 			this.UN = "psatestuser";
 			this.PW = "psatest_2015";
 			this.DB = "jdbc:mysql://gomintdb.caabwbnfnavv.us-east-1.rds.amazonaws.com:3306/psadatasourcetest";
-			this.ESB = "http://localhost:8282/services/Provisionservice";
+			this.ESB = "http://54.173.157.210:8283/services/Provisionservice";
 			this.dbin = "psadatasourcetest";
 			this.env = env;
 		} else {
