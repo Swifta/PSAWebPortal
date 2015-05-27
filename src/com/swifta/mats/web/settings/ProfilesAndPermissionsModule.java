@@ -2,7 +2,6 @@ package com.swifta.mats.web.settings;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -1114,7 +1113,7 @@ public class ProfilesAndPermissionsModule {
 
 		optMultT = new OptionGroup();
 		optMultT.setCaption("Transaction Type");
-		optMultT.setMultiSelect(true);
+		optMultT.setMultiSelect(false);
 
 		comboX = new ComboBox();
 		comboX.setCaption("Select Transaction Type: ");
@@ -1286,11 +1285,11 @@ public class ProfilesAndPermissionsModule {
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 
+				Object ttid = optMultT.getValue();
 				comboExistingThresholds.removeAllItems();
-				Collection<?> ttids = (Collection<?>) optMultT.getValue();
 
-				if (ttids.size() == 1 && isNewThresholdConfig) {
-					String ttid = ttids.iterator().next().toString();
+				if (ttid != null && isNewThresholdConfig) {
+					// String ttid = ttids.iterator().next().toString();
 
 					if (hmNONETH.containsKey(ttid)) {
 
@@ -1368,8 +1367,7 @@ public class ProfilesAndPermissionsModule {
 				}
 
 				// if (!profileTID.equals("3"))
-				if (optMultT.getValue() == null
-						|| ((Collection<?>) optMultT.getValue()).size() == 0) {
+				if (optMultT.getValue() == null) {
 					Notification.show(
 							"Please select at least a Transaction Type",
 							Notification.Type.ERROR_MESSAGE);
@@ -1411,16 +1409,16 @@ public class ProfilesAndPermissionsModule {
 
 				String pn = spn.toString();
 				Integer pid = Integer.parseInt(hmAllProfiles.get(pn));
-				Collection<?> ctids = (Collection<?>) optMultT.getValue();
+				Object ctid = optMultT.getValue();
 
-				int[] ttids = new int[ctids.size()];
-				int ix = 0;
-				for (Object tid : ctids) {
-					ttids[ix] = Integer.valueOf(tid.toString()).intValue();
-					ix++;
-				}
+				int[] ttids = null;
 
-				if (ix == 0) {
+				if (ctid != null) {
+
+					ttids = new int[] { Integer.valueOf(ctid.toString())
+							.intValue() };
+
+				} else {
 					ttids = new int[0];
 				}
 
@@ -1430,6 +1428,8 @@ public class ProfilesAndPermissionsModule {
 						.toString();
 
 				String amount = tfThresholdAmount.getValue();
+
+				comboExistingThresholds.removeAllItems();
 
 				String response = null;
 

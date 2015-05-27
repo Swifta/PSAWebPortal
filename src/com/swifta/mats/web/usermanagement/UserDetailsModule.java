@@ -7,6 +7,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -2334,13 +2335,32 @@ public class UserDetailsModule {
 		tb.setContainerDataSource(container);
 		int x = 1;
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		Calendar cal = Calendar.getInstance();
 		for (Viewstatementbyagentresponse s : getUserStatement(isFilterOn)) {
 
 			Object rid = container.addItem();
 
+			String d = s.getDate();
+			if (d != null) {
+				Date dt;
+				try {
+					dt = sdf.parse(d);
+					cal.setTime(dt);
+
+					int m = cal.get(Calendar.MONTH) + 1;
+
+					d = cal.get(Calendar.YEAR) + "-" + ((m < 10) ? "0" + m : m)
+							+ "-" + cal.get(Calendar.DATE);
+				} catch (ParseException e) {
+
+					e.printStackTrace();
+				}
+
+			}
+
 			Item r = container.getItem(rid);
 			r.getItemProperty("S/N").setValue(x);
-			r.getItemProperty("Date").setValue(s.getDate());
+			r.getItemProperty("Date").setValue(d);
 			r.getItemProperty("Txn. Type").setValue(s.getTransactiontype());
 			r.getItemProperty("Receiver").setValue(s.getReceiver());
 			r.getItemProperty("Amount").setValue(s.getAmount());
@@ -2885,7 +2905,10 @@ public class UserDetailsModule {
 		dToDate.setRequired(true);
 		dToDate.setImmediate(true);
 
-		final Table tb = new Table("Statement");
+		final PagedTableCustom tb = new PagedTableCustom("Statement");
+
+		HorizontalLayout tbControlsTop = tb.createControls();
+		HorizontalLayout tbControlsBottom = tb.createControls();
 
 		btnLoad.addClickListener(new Button.ClickListener() {
 			private static final long serialVersionUID = -8427226211153164650L;
@@ -2944,12 +2967,20 @@ public class UserDetailsModule {
 			}
 		});
 
-		cLBody.addComponent(tb);
+		VerticalLayout cTb = new VerticalLayout();
+		cTb.setSizeUndefined();
+		tbControlsTop.setSizeUndefined();
+		tbControlsBottom.setSizeUndefined();
+		cTb.addComponent(tbControlsTop);
+		cTb.addComponent(tb);
+		cTb.addComponent(new Label());
+		cTb.addComponent(tbControlsBottom);
 
 		tb.setPageLength(1);
 
 		tb.setSelectable(true);
 
+		cLBody.addComponent(cTb);
 		cAgentInfo.addComponent(cLBody);
 
 		btnLink = new Button("Add New Link");

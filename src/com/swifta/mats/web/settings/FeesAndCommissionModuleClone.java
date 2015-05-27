@@ -1578,6 +1578,8 @@ public class FeesAndCommissionModuleClone {
 
 				}
 
+				comboCommissionsTT.setEnabled(true);
+
 				if (isOptTiered) {
 
 					if (isEditCommissions) {
@@ -1599,6 +1601,7 @@ public class FeesAndCommissionModuleClone {
 						cPlaceholderx.setVisible(false);
 						comboCommissionsTT.setVisible(false);
 						tFCommValue.setValue("");
+						// comboCommissionsTT.setEnabled(true);
 
 					}
 
@@ -1617,6 +1620,13 @@ public class FeesAndCommissionModuleClone {
 						cPermsList.removeAllComponents();
 						cPermsList.addComponent(cCommValue);
 						cPlaceholderx.setVisible(false);
+
+						if (comboCommissionsTT.getItemIds().size() == 0) {
+							NotifCustom
+									.show("Message",
+											"No Fees with pending Commissions Configurations");
+							comboCommissionsTT.setEnabled(false);
+						}
 
 					}
 				}
