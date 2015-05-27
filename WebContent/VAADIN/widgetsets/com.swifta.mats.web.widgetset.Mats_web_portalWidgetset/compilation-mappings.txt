@@ -1,4 +1,4 @@
-73D02154D06E76A6C1E6B00B71603547.cache.js
+B164410E83B805DEDF6CF1B10A1E06EE.cache.js
 ClientBundle.enableInlining true
 audioElementSupport maybe
 canvasElementSupport maybe
@@ -8,19 +8,22 @@ compiler.stackMode native
 compiler.useSourceMaps false
 compiler.useSymbolMaps false
 dragEventSupport maybe
+geolocationSupport maybe
 gwt.enableDebugId false
 gwt.forceBidi false
 gwt.logging.consoleHandler ENABLED
 gwt.logging.developmentModeHandler ENABLED
 gwt.logging.enabled TRUE
-gwt.logging.hasWidgetsHandler DISABLED
+gwt.logging.firebugHandler DISABLED
+gwt.logging.hasWidgetsHandler ENABLED
 gwt.logging.logLevel INFO
+gwt.logging.popupHandler DISABLED
 gwt.logging.simpleRemoteHandler DISABLED
-gwt.logging.systemHandler DISABLED
+gwt.logging.systemHandler ENABLED
 gwt.suppressNonStaticFinalFieldWarnings false
+gwt.unloadEnabled false
 locale default
 modernie none
-rpc.XserializeFinalFields false
 superdevmode off
 touchEventSupport maybe
 user.agent gecko1_8
@@ -28,7 +31,7 @@ vaadin.profiler false
 videoElementSupport maybe
 webApiUsage modern
 
-73D02154D06E76A6C1E6B00B71603547.cache.js
+B164410E83B805DEDF6CF1B10A1E06EE.cache.js
 ClientBundle.enableInlining true
 audioElementSupport maybe
 canvasElementSupport maybe
@@ -38,19 +41,22 @@ compiler.stackMode native
 compiler.useSourceMaps false
 compiler.useSymbolMaps false
 dragEventSupport maybe
+geolocationSupport maybe
 gwt.enableDebugId false
 gwt.forceBidi false
 gwt.logging.consoleHandler ENABLED
 gwt.logging.developmentModeHandler ENABLED
 gwt.logging.enabled TRUE
-gwt.logging.hasWidgetsHandler DISABLED
+gwt.logging.firebugHandler DISABLED
+gwt.logging.hasWidgetsHandler ENABLED
 gwt.logging.logLevel INFO
+gwt.logging.popupHandler DISABLED
 gwt.logging.simpleRemoteHandler DISABLED
-gwt.logging.systemHandler DISABLED
+gwt.logging.systemHandler ENABLED
 gwt.suppressNonStaticFinalFieldWarnings false
+gwt.unloadEnabled false
 locale default
 modernie yes
-rpc.XserializeFinalFields false
 superdevmode off
 touchEventSupport maybe
 user.agent gecko1_8
@@ -58,7 +64,7 @@ vaadin.profiler false
 videoElementSupport maybe
 webApiUsage modern
 
-73D02154D06E76A6C1E6B00B71603547.cache.js
+B164410E83B805DEDF6CF1B10A1E06EE.cache.js
 ClientBundle.enableInlining true
 audioElementSupport maybe
 canvasElementSupport maybe
@@ -68,27 +74,30 @@ compiler.stackMode native
 compiler.useSourceMaps false
 compiler.useSymbolMaps false
 dragEventSupport maybe
+geolocationSupport maybe
 gwt.enableDebugId false
 gwt.forceBidi false
 gwt.logging.consoleHandler ENABLED
 gwt.logging.developmentModeHandler ENABLED
 gwt.logging.enabled TRUE
-gwt.logging.hasWidgetsHandler DISABLED
+gwt.logging.firebugHandler DISABLED
+gwt.logging.hasWidgetsHandler ENABLED
 gwt.logging.logLevel INFO
+gwt.logging.popupHandler DISABLED
 gwt.logging.simpleRemoteHandler DISABLED
-gwt.logging.systemHandler DISABLED
+gwt.logging.systemHandler ENABLED
 gwt.suppressNonStaticFinalFieldWarnings false
+gwt.unloadEnabled false
 locale default
 modernie none
-rpc.XserializeFinalFields false
 superdevmode off
-touchEventSupport no
+touchEventSupport maybe
 user.agent ie10
 vaadin.profiler false
 videoElementSupport maybe
 webApiUsage modern
 
-73D02154D06E76A6C1E6B00B71603547.cache.js
+B164410E83B805DEDF6CF1B10A1E06EE.cache.js
 ClientBundle.enableInlining true
 audioElementSupport no
 canvasElementSupport no
@@ -98,27 +107,30 @@ compiler.stackMode native
 compiler.useSourceMaps false
 compiler.useSymbolMaps false
 dragEventSupport no
+geolocationSupport maybe
 gwt.enableDebugId false
 gwt.forceBidi false
 gwt.logging.consoleHandler ENABLED
 gwt.logging.developmentModeHandler ENABLED
 gwt.logging.enabled TRUE
-gwt.logging.hasWidgetsHandler DISABLED
+gwt.logging.firebugHandler DISABLED
+gwt.logging.hasWidgetsHandler ENABLED
 gwt.logging.logLevel INFO
+gwt.logging.popupHandler DISABLED
 gwt.logging.simpleRemoteHandler DISABLED
-gwt.logging.systemHandler DISABLED
+gwt.logging.systemHandler ENABLED
 gwt.suppressNonStaticFinalFieldWarnings false
+gwt.unloadEnabled false
 locale default
 modernie none
-rpc.XserializeFinalFields false
 superdevmode off
-touchEventSupport no
+touchEventSupport maybe
 user.agent ie8
 vaadin.profiler false
 videoElementSupport no
 webApiUsage modern
 
-73D02154D06E76A6C1E6B00B71603547.cache.js
+B164410E83B805DEDF6CF1B10A1E06EE.cache.js
 ClientBundle.enableInlining true
 audioElementSupport maybe
 canvasElementSupport maybe
@@ -128,27 +140,30 @@ compiler.stackMode native
 compiler.useSourceMaps false
 compiler.useSymbolMaps false
 dragEventSupport maybe
+geolocationSupport maybe
 gwt.enableDebugId false
 gwt.forceBidi false
 gwt.logging.consoleHandler ENABLED
 gwt.logging.developmentModeHandler ENABLED
 gwt.logging.enabled TRUE
-gwt.logging.hasWidgetsHandler DISABLED
+gwt.logging.firebugHandler DISABLED
+gwt.logging.hasWidgetsHandler ENABLED
 gwt.logging.logLevel INFO
+gwt.logging.popupHandler DISABLED
 gwt.logging.simpleRemoteHandler DISABLED
-gwt.logging.systemHandler DISABLED
+gwt.logging.systemHandler ENABLED
 gwt.suppressNonStaticFinalFieldWarnings false
+gwt.unloadEnabled false
 locale default
 modernie none
-rpc.XserializeFinalFields false
 superdevmode off
-touchEventSupport no
+touchEventSupport maybe
 user.agent ie9
 vaadin.profiler false
 videoElementSupport maybe
 webApiUsage modern
 
-73D02154D06E76A6C1E6B00B71603547.cache.js
+B164410E83B805DEDF6CF1B10A1E06EE.cache.js
 ClientBundle.enableInlining true
 audioElementSupport maybe
 canvasElementSupport maybe
@@ -158,19 +173,55 @@ compiler.stackMode native
 compiler.useSourceMaps false
 compiler.useSymbolMaps false
 dragEventSupport maybe
+geolocationSupport maybe
 gwt.enableDebugId false
 gwt.forceBidi false
 gwt.logging.consoleHandler ENABLED
 gwt.logging.developmentModeHandler ENABLED
 gwt.logging.enabled TRUE
-gwt.logging.hasWidgetsHandler DISABLED
+gwt.logging.firebugHandler DISABLED
+gwt.logging.hasWidgetsHandler ENABLED
 gwt.logging.logLevel INFO
+gwt.logging.popupHandler DISABLED
 gwt.logging.simpleRemoteHandler DISABLED
-gwt.logging.systemHandler DISABLED
+gwt.logging.systemHandler ENABLED
 gwt.suppressNonStaticFinalFieldWarnings false
+gwt.unloadEnabled false
 locale default
 modernie none
-rpc.XserializeFinalFields false
+superdevmode off
+touchEventSupport maybe
+user.agent opera
+vaadin.profiler false
+videoElementSupport maybe
+webApiUsage modern
+
+B164410E83B805DEDF6CF1B10A1E06EE.cache.js
+ClientBundle.enableInlining true
+audioElementSupport maybe
+canvasElementSupport maybe
+compiler.emulatedStack false
+compiler.predeclare.cross.fragment.references false
+compiler.stackMode native
+compiler.useSourceMaps false
+compiler.useSymbolMaps false
+dragEventSupport maybe
+geolocationSupport maybe
+gwt.enableDebugId false
+gwt.forceBidi false
+gwt.logging.consoleHandler ENABLED
+gwt.logging.developmentModeHandler ENABLED
+gwt.logging.enabled TRUE
+gwt.logging.firebugHandler DISABLED
+gwt.logging.hasWidgetsHandler ENABLED
+gwt.logging.logLevel INFO
+gwt.logging.popupHandler DISABLED
+gwt.logging.simpleRemoteHandler DISABLED
+gwt.logging.systemHandler ENABLED
+gwt.suppressNonStaticFinalFieldWarnings false
+gwt.unloadEnabled false
+locale default
+modernie none
 superdevmode off
 touchEventSupport maybe
 user.agent safari
