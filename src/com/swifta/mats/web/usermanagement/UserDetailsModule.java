@@ -2905,10 +2905,34 @@ public class UserDetailsModule {
 		dToDate.setRequired(true);
 		dToDate.setImmediate(true);
 
+		dFromDate.setEnabled(false);
+		dToDate.setEnabled(false);
+
 		final PagedTableCustom tb = new PagedTableCustom("Statement");
 
 		HorizontalLayout tbControlsTop = tb.createControls();
 		HorizontalLayout tbControlsBottom = tb.createControls();
+
+		chkFilterOn.addValueChangeListener(new ValueChangeListener() {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = -2335301785839943475L;
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+
+				if (chkFilterOn.getValue()) {
+					dFromDate.setEnabled(true);
+					dToDate.setEnabled(true);
+				} else {
+					dFromDate.setEnabled(false);
+					dToDate.setEnabled(false);
+				}
+			}
+
+		});
 
 		btnLoad.addClickListener(new Button.ClickListener() {
 			private static final long serialVersionUID = -8427226211153164650L;
