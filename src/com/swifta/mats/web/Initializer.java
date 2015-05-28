@@ -108,11 +108,11 @@ public class Initializer {
 						.get("register_users")))
 			um.setData(m.getTabPosition(m.addTab(um, "User Management")));
 
-		VerticalLayout tx = new VerticalLayout();
+		// VerticalLayout tx = new VerticalLayout();
 		// tf = new TextField();
 		// v.addComponent(tf);
-		tx.setId("tx_init");
-		tx.setData(m.getTabPosition(m.addTab(tx, "Transactions")));
+		// tx.setId("tx_init");
+		// tx.setData(m.getTabPosition(m.addTab(tx, "Transactions")));
 
 		VerticalLayout st = new VerticalLayout();
 		st.setId("st_init");
