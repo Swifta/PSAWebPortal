@@ -1662,36 +1662,77 @@ public class Reportform extends VerticalLayout {
 					String receiver = rs.getString("Reciever");
 					String partner = rs.getString("Partner");
 
-					if (!ht.containsKey("Agent/Sender")) {
-						TreeSet<String> arrL = new TreeSet<>();
-						arrL.add(sender);
-						ht.put("Agent/Sender", arrL);
-					} else {
-						ht.get("Agent/Sender").add(sender);
+					try {
+
+						if (!ht.containsKey("Agent/Sender")) {
+							TreeSet<String> arrL = new TreeSet<>();
+							arrL.add(sender);
+							ht.put("Agent/Sender", arrL);
+						} else {
+							ht.get("Agent/Sender").add(sender);
+						}
+					} catch (Exception e) {
+
+						System.out.println("VALUE: " + sender);
+
+						// e.printStackTrace();
+						System.out.println(e.getMessage());
+
 					}
 
-					if (!ht.containsKey("Partner")) {
-						TreeSet<String> arrL = new TreeSet<>();
-						arrL.add(partner);
-						ht.put("Partner", arrL);
-					} else {
-						ht.get("Partner").add(partner);
+					try {
+
+						if (!ht.containsKey("Partner")) {
+							TreeSet<String> arrL = new TreeSet<>();
+							arrL.add(partner);
+							ht.put("Partner", arrL);
+						} else {
+							ht.get("Partner").add(partner);
+						}
+
+					} catch (Exception e) {
+
+						System.out.println("VALUE: " + partner);
+
+						// e.printStackTrace();
+						System.out.println(e.getMessage());
+
 					}
 
-					if (!ht.containsKey("Transaction Type")) {
-						TreeSet<String> arrL = new TreeSet<>();
-						arrL.add(transactiontype);
-						ht.put("Transaction Type", arrL);
-					} else {
-						ht.get("Transaction Type").add(transactiontype);
+					try {
+
+						if (!ht.containsKey("Transaction Type")) {
+							TreeSet<String> arrL = new TreeSet<>();
+							arrL.add(transactiontype);
+							ht.put("Transaction Type", arrL);
+						} else {
+							ht.get("Transaction Type").add(transactiontype);
+						}
+
+					} catch (Exception e) {
+
+						// e.printStackTrace();
+						System.out.println("VALUE: " + transactiontype);
+						System.out.println(e.getMessage());
+
 					}
 
-					if (!ht.containsKey("Status")) {
-						TreeSet<String> arrL = new TreeSet<>();
-						arrL.add(status);
-						ht.put("Status", arrL);
-					} else {
-						ht.get("Status").add(status);
+					try {
+
+						if (!ht.containsKey("Status")) {
+							TreeSet<String> arrL = new TreeSet<>();
+							arrL.add(status);
+							ht.put("Status", arrL);
+						} else {
+							ht.get("Status").add(status);
+						}
+
+					} catch (Exception e) {
+
+						System.out.println("VALUE: " + status);
+						// e.printStackTrace();
+						System.out.println(e.getMessage());
+
 					}
 
 					itemId = container2.addItem();

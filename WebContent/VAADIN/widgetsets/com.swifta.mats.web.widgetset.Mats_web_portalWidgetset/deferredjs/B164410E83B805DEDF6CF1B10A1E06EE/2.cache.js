@@ -1,1 +1,0 @@
-$wnd.com_swifta_mats_web_widgetset_Mats_web_portalWidgetset.runAsyncCallback2('zcb(1819,1,uAd);_.vc=function wec(){f3b((!$2b&&($2b=new k3b),$2b),this.b.e)};Psd(ai)(2);\n//# sourceURL=com.swifta.mats.web.widgetset.Mats_web_portalWidgetset-2.js\n')
