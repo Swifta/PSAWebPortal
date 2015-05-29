@@ -1,17 +1,11 @@
 =\=\=\=\=\=\=
 <<<<<<<=HEAD
->>>>>>>=branch 'master' of https\://github.com/Swifta/PSAWebPortal.git
+>>>>>>>=branch 'test' of https\://github.com/Swifta/PSAWebPortal.git
 com.vaadin.integration.eclipse.previousCompileAction=widgetset
 com.vaadin.integration.eclipse.useLatestNightly=false
 com.vaadin.integration.eclipse.widgetsetBuildsSuspended=true
-<<<<<<< HEAD
-com.vaadin.integration.eclipse.widgetsetCompilationEta=54056
-com.vaadin.integration.eclipse.widgetsetDirty=false
-=======
-com.vaadin.integration.eclipse.widgetsetCompilationEta=143057
-com.vaadin.integration.eclipse.widgetsetCompilationEta=143057
+com.vaadin.integration.eclipse.widgetsetCompilationEta=50464
 com.vaadin.integration.eclipse.widgetsetDirty=true
->>>>>>> branch 'test' of https://github.com/Swifta/PSAWebPortal.git
 com.vaadin.integration.eclipse.widgetsetStyle=OBF
 com.vaadin.integration.eclipse.widgetsetVerbose=true
 eclipse.preferences.version=1
