@@ -136,8 +136,8 @@ public class UserManagementService {
 	// "http://127.0.0.1:8280/services/Provisionservice";
 
 	final static String esbendpoint = MatsWebPortalUI.conf.ESB;
-	final static String loggedInUser = "admin";// UI.getCurrent().getSession()
-	// .getAttribute("user").toString();
+	final static String loggedInUser = UI.getCurrent().getSession()
+			.getAttribute("user").toString();
 
 	static ProvisioningStub matsStub;
 	static MatsreportingserviceStub matsReportstub;
