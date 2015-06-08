@@ -139,6 +139,9 @@ public class Reportform extends VerticalLayout {
 	private ReportingService reportService;
 
 	Reportform() {
+		table.previousPage();
+		table.nextPage();
+		// table.fi
 		setPerms();
 		if (reportService == null)
 			try {

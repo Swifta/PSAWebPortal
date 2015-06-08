@@ -73,7 +73,7 @@ public class FeesAndCommissionModuleClone {
 	private Button btnAddCommissions;
 	private HorizontalLayout cCommissionBeforePlaceholder;
 
-	private ArrayList<VerticalLayout> cArrLItemContent;
+	private ArrayList<VerticalLayout> cArrLItemContentFees;
 	private ArrayList<FieldGroup> arrLRangeFG;
 	private ArrayList<FieldGroup> arrLMatFG;
 	private boolean isTieredx;
@@ -128,7 +128,7 @@ public class FeesAndCommissionModuleClone {
 	private boolean isEditCommissions = false;
 	private boolean isEditFees = false;
 
-	private boolean isEdit = false;
+	private boolean isEditm = false;
 
 	private Table tbFees;
 	HashMap<String, FieldGroup> hmDFG;
@@ -278,6 +278,8 @@ public class FeesAndCommissionModuleClone {
 			public void buttonClick(ClickEvent event) {
 
 				isCommission = false;
+				if (comboAllFeesOperators != null)
+					comboAllFeesOperators.select(null);
 
 				btnProfiles.setEnabled(false);
 				btnProfiles.setStyleName("btn_tab_like btn_tab_like_active");
@@ -322,6 +324,9 @@ public class FeesAndCommissionModuleClone {
 				btnPermissions.setStyleName("btn_tab_like btn_tab_like_active");
 
 				isCommission = true;
+
+				if (comboAllCommissionOperators != null)
+					comboAllCommissionOperators.select(null);
 
 				if (!btnProfiles.isEnabled())
 					p = cProfile;
@@ -539,6 +544,7 @@ public class FeesAndCommissionModuleClone {
 					public void valueChange(ValueChangeEvent event) {
 						hmServiceFees.clear();
 						comboFeesTT.setEnabled(true);
+						comboFeesTT.setVisible(false);
 
 						isFromDisplayFees = false;
 						isEditFees = false;
@@ -551,6 +557,7 @@ public class FeesAndCommissionModuleClone {
 							lbProf.setCaption("Selected Operator: ");
 							btnAdd.setVisible(false);
 							cPlaceholder.setVisible(false);
+
 							return;
 						}
 
@@ -1509,7 +1516,7 @@ public class FeesAndCommissionModuleClone {
 
 				}
 
-				if (commit(cPlaceholderx)) {
+				if (commit(cPlaceholderx, isEditCommissions)) {
 
 					comboAllCommissionOperators.select(null);
 
@@ -1693,15 +1700,12 @@ public class FeesAndCommissionModuleClone {
 						optSetupType.setVisible(false);
 						isEditCommissions = false;
 						isExistingCommissionsConfig = false;
-						// isExistingCommissionsConfig = false;
 						tFCommValue.setValue("");
 						tFCommValue.setReadOnly(false);
 						comboCommissionsTT.setEnabled(true);
 						cPermsList.removeAllComponents();
 
 						comboCommissionsTT.setVisible(false);
-
-						isEditCommissions = false;
 
 						setExistingCommTT.clear();
 
@@ -1727,13 +1731,9 @@ public class FeesAndCommissionModuleClone {
 						lbProf.setCaption("Selected Operator: ");
 						lbProf.setValue(pname);
 
-						// System.outhmAllOperators.get(pname)
-
 						hmServiceCommission = getServiceCommissions(Integer
 								.parseInt(hmAllOperators.get(pname)));
 						Integer pCount = hmServiceCommission.size();
-
-						// list.setCaption(pCount + " Active Permissions.");
 						if (pCount == 0) {
 							cPlaceholderx.setVisible(false);
 							NotifCustom.show("Commissions response",
@@ -1873,8 +1873,6 @@ public class FeesAndCommissionModuleClone {
 						.getItemCaption(comboAllCommissionOperators.getValue());
 				Integer pid = Integer.parseInt(hmAllOperators.get(pname));
 
-				isEditCommissions = true;
-
 				if (isOptTiered) {
 					isOptTieredTemp = true;
 				} else {
@@ -1986,11 +1984,9 @@ public class FeesAndCommissionModuleClone {
 				btnAdd.setVisible(false);
 
 				hmServiceCommission.clear();
-				hmInActivePerms.clear();
-				hmServiceCommission = getServiceCommissions(pid);
-				hmInActivePerms = getInActivePermissions(pid);
 
-				tcsInactiveAndActive.removeAllItems();
+				hmServiceCommission = getServiceCommissions(pid);
+
 				comboCommissionsTT.removeAllItems();
 
 				optSetupType.setVisible(true);
@@ -2745,14 +2741,14 @@ public class FeesAndCommissionModuleClone {
 			final VerticalLayout cPermsList, final Table tb,
 			final HorizontalLayout cPermsActions) {
 
-		cArrLItemContent = new ArrayList<>(4);
+		cArrLItemContentFees = new ArrayList<>(4);
 		arrLRangeFG = new ArrayList<>();
 		arrLMatFG = new ArrayList<>();
 		arrLAllFG = new ArrayList<>();
 
 		tabType = type;
 
-		isEdit = isEditx;
+		final boolean isEdit = isEditx;
 
 		HorizontalLayout cManage = new HorizontalLayout();
 
@@ -2937,7 +2933,7 @@ public class FeesAndCommissionModuleClone {
 		// MIN
 
 		VerticalLayout cItemContentMin = new VerticalLayout();
-		cArrLItemContent.add(cItemContentMin);
+		cArrLItemContentFees.add(cItemContentMin);
 		lbAttr = new Label("Min.");
 		lbAttr.setSizeFull();
 		lbAttr.setStyleName("label_add_user attr");
@@ -2947,7 +2943,7 @@ public class FeesAndCommissionModuleClone {
 		// MAX
 
 		VerticalLayout cItemContentMax = new VerticalLayout();
-		cArrLItemContent.add(cItemContentMax);
+		cArrLItemContentFees.add(cItemContentMax);
 		lbAttr = new Label("Max.");
 		lbAttr.setSizeFull();
 		lbAttr.setStyleName("label_add_user attr");
@@ -2956,7 +2952,7 @@ public class FeesAndCommissionModuleClone {
 
 		// MATRIX
 		VerticalLayout cItemContentMat = new VerticalLayout();
-		cArrLItemContent.add(cItemContentMat);
+		cArrLItemContentFees.add(cItemContentMat);
 		lbAttr = new Label("Matrix");
 		lbAttr.setSizeFull();
 		lbAttr.setStyleName("label_add_user attr");
@@ -2966,7 +2962,7 @@ public class FeesAndCommissionModuleClone {
 		// AMOUNT
 
 		VerticalLayout cItemContentAmt = new VerticalLayout();
-		cArrLItemContent.add(cItemContentAmt);
+		cArrLItemContentFees.add(cItemContentAmt);
 		lbAttr = new Label("Amount (%/N)");
 		lbAttr.setSizeFull();
 		lbAttr.setStyleName("label_add_user attr");
@@ -3116,7 +3112,7 @@ public class FeesAndCommissionModuleClone {
 
 							comboTT.select(setExistingFeesTT.iterator().next());
 
-							isEdit = false;
+							// isEdit = false;
 
 							System.out.println("RIGHT HERE ");
 
@@ -3266,7 +3262,7 @@ public class FeesAndCommissionModuleClone {
 				 */
 
 				if (isReadyToCommit(tabType, otherfg)) {
-					if (commit(cPlaceholder)) {
+					if (commit(cPlaceholder, isEdit)) {
 
 						ComboBox comboAllFCOperators = null;
 						ComboBox comboTT = null;
@@ -3401,8 +3397,8 @@ public class FeesAndCommissionModuleClone {
 			return -1;
 
 		arrLRangeFG.remove(arrLRangeFG.size() - 1);
-		VerticalLayout cMin = cArrLItemContent.get(0);
-		VerticalLayout cMax = cArrLItemContent.get(1);
+		VerticalLayout cMin = cArrLItemContentFees.get(0);
+		VerticalLayout cMax = cArrLItemContentFees.get(1);
 		cMin.removeComponent(cMin.getComponent(cMin.getComponentCount() - 1));
 		cMax.removeComponent(cMax.getComponent(cMax.getComponentCount() - 1));
 		return 1;
@@ -3414,8 +3410,8 @@ public class FeesAndCommissionModuleClone {
 			return -1;
 
 		arrLMatFG.remove(arrLMatFG.size() - 1);
-		VerticalLayout cMat = cArrLItemContent.get(2);
-		VerticalLayout cAmt = cArrLItemContent.get(3);
+		VerticalLayout cMat = cArrLItemContentFees.get(2);
+		VerticalLayout cAmt = cArrLItemContentFees.get(3);
 		cMat.removeComponent(cMat.getComponent(cMat.getComponentCount() - 1));
 		cAmt.removeComponent(cAmt.getComponent(cAmt.getComponentCount() - 1));
 		return 1;
@@ -3428,8 +3424,8 @@ public class FeesAndCommissionModuleClone {
 	}
 
 	private void addMatrix() {
-		VerticalLayout cMat = cArrLItemContent.get(2);
-		VerticalLayout cAmt = cArrLItemContent.get(3);
+		VerticalLayout cMat = cArrLItemContentFees.get(2);
+		VerticalLayout cAmt = cArrLItemContentFees.get(3);
 		final ComboBox comboMat = new ComboBox();
 		comboMat.addItem(arrMatValues[0]);
 		comboMat.setItemCaption(arrMatValues[0], "%");
@@ -3531,8 +3527,8 @@ public class FeesAndCommissionModuleClone {
 	}
 
 	private void addRange() {
-		VerticalLayout cMin = cArrLItemContent.get(0);
-		VerticalLayout cMax = cArrLItemContent.get(1);
+		VerticalLayout cMin = cArrLItemContentFees.get(0);
+		VerticalLayout cMax = cArrLItemContentFees.get(1);
 		final TextField tfMin = new TextField();
 		final TextField tfMax = new TextField();
 		cMin.addComponent(tfMin);
@@ -3762,8 +3758,8 @@ public class FeesAndCommissionModuleClone {
 	}
 
 	private void addMatrix(ArrayList<FieldGroup> arrLFG) {
-		VerticalLayout cMat = cArrLItemContent.get(2);
-		VerticalLayout cAmt = cArrLItemContent.get(3);
+		VerticalLayout cMat = cArrLItemContentFees.get(2);
+		VerticalLayout cAmt = cArrLItemContentFees.get(3);
 
 		for (int i = 0; i < arrLFG.size(); i++) {
 			FieldGroup mfg = arrLFG.get(i);
@@ -3776,8 +3772,8 @@ public class FeesAndCommissionModuleClone {
 	}
 
 	private void addRange(ArrayList<FieldGroup> arrLRFG) {
-		VerticalLayout cMin = cArrLItemContent.get(0);
-		VerticalLayout cMax = cArrLItemContent.get(1);
+		VerticalLayout cMin = cArrLItemContentFees.get(0);
+		VerticalLayout cMax = cArrLItemContentFees.get(1);
 
 		for (int i = 0; i < arrLRFG.size(); i++) {
 			FieldGroup rfg = arrLRFG.get(i);
@@ -3790,8 +3786,8 @@ public class FeesAndCommissionModuleClone {
 
 	private void addRange(Table tb) {
 
-		VerticalLayout cMin = cArrLItemContent.get(0);
-		VerticalLayout cMax = cArrLItemContent.get(1);
+		VerticalLayout cMin = cArrLItemContentFees.get(0);
+		VerticalLayout cMax = cArrLItemContentFees.get(1);
 
 		// Collection<?> rids = null;
 		Collection<?> rids = tb.getContainerDataSource().getItemIds();
@@ -3927,8 +3923,8 @@ public class FeesAndCommissionModuleClone {
 	}
 
 	private void addMatrix(Table tb) {
-		VerticalLayout cMat = cArrLItemContent.get(2);
-		VerticalLayout cAmt = cArrLItemContent.get(3);
+		VerticalLayout cMat = cArrLItemContentFees.get(2);
+		VerticalLayout cAmt = cArrLItemContentFees.get(3);
 
 		// Collection<?> rids = null;
 		Collection<?> rids = tb.getContainerDataSource().getItemIds();
@@ -4175,11 +4171,7 @@ public class FeesAndCommissionModuleClone {
 		return true;
 	}
 
-	private void updateFees() {
-
-	}
-
-	private boolean commit(HorizontalLayout cPlaceholder) {
+	private boolean commit(HorizontalLayout cPlaceholder, boolean isEdit) {
 
 		ComboBox comboAllFCOperators = null;
 		ComboBox comboTT = null;
@@ -4254,28 +4246,28 @@ public class FeesAndCommissionModuleClone {
 
 					String amt = mfg.getField("Amt").getValue().toString()
 							.trim();
-					if (isEdit && !isDup) {
+					// if (isEdit && !isDup) {
 
-						// if (Double.valueOf(hmTiers.get("min")[i]).equals(
-						// Double.valueOf(min))) {
-						// isDup = true;
-						// }
+					// if (Double.valueOf(hmTiers.get("min")[i]).equals(
+					// Double.valueOf(min))) {
+					// isDup = true;
+					// }
 
-						if (Double.valueOf(hmTiers.get("max")[i]).equals(
-								Double.valueOf(max))) {
-							isDup = true;
-						}
-
-						//
-						// if (hmTiers.get("amt")[i].equals(amt) && !isDup) {
-						// isDup = true;
-						// }
-						//
-						// if (hmTiers.get("con")[i].equals(con) && !isDup) {
-						// isDup = true;
-						// }
-
+					if (Double.valueOf(hmTiers.get("max")[i]).equals(
+							Double.valueOf(max))) {
+						isDup = true;
 					}
+
+					//
+					// if (hmTiers.get("amt")[i].equals(amt) && !isDup) {
+					// isDup = true;
+					// }
+					//
+					// if (hmTiers.get("con")[i].equals(con) && !isDup) {
+					// isDup = true;
+					// }
+
+					// }
 
 					cf[i] = new ServiceCommission();
 					cf[i].setMinimumamount(BigDecimal.valueOf(Float
@@ -4318,6 +4310,7 @@ public class FeesAndCommissionModuleClone {
 
 						isExistingCommissionsConfig = true;
 						isNewCommissionsConfig = false;
+						isEditCommissions = false;
 
 						NotifCustom.show("Response", response);
 
