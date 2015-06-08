@@ -76,7 +76,6 @@ public class FeesAndCommissionModuleClone {
 	private ArrayList<VerticalLayout> cArrLItemContentFees;
 	private ArrayList<FieldGroup> arrLRangeFG;
 	private ArrayList<FieldGroup> arrLMatFG;
-	private boolean isTieredx;
 	private ArrayList<ArrayList<FieldGroup>> arrLAllFG;
 	private HashMap<String, ArrayList<ArrayList<FieldGroup>>> hmAllFG;
 	private String tabType = null;
@@ -92,7 +91,7 @@ public class FeesAndCommissionModuleClone {
 	private HorizontalLayout cProfile;
 	private HorizontalLayout cPerm;
 	private HorizontalLayout prevL;
-	private Window pop = new Window("Comfirm Fees Deletion");
+
 	private boolean isfromsub;
 	private ReportingService rs;
 
@@ -128,10 +127,8 @@ public class FeesAndCommissionModuleClone {
 	private boolean isEditCommissions = false;
 	private boolean isEditFees = false;
 
-	private boolean isEditm = false;
-
 	private Table tbFees;
-	HashMap<String, FieldGroup> hmDFG;
+	private HashMap<String, FieldGroup> hmDFG;
 
 	public final static String COMMISSION = "Commission";
 	public final static String FEES = "Fees";
@@ -167,11 +164,6 @@ public class FeesAndCommissionModuleClone {
 	private boolean isFromDisplayFees = false;
 	private boolean isFromDisplayCommissions = false;
 
-	// None Tiers setupType, setupProperyid, commValue,
-	// Tiers range, fcount, amount
-
-	// private HorizontalLayout cjust;
-
 	private boolean isOptTiered = true;
 	private OptionGroup optSetupType;
 
@@ -180,8 +172,6 @@ public class FeesAndCommissionModuleClone {
 	private TextField tFCommValue;
 
 	private HorizontalLayout cFeesBeforePlaceholder;
-
-	private boolean isOptTieredTemp = false;
 
 	FeesAndCommissionModuleClone(Button back,
 			HashMap<String, String> hmProfPermPermissions) {
@@ -1873,12 +1863,6 @@ public class FeesAndCommissionModuleClone {
 						.getItemCaption(comboAllCommissionOperators.getValue());
 				Integer pid = Integer.parseInt(hmAllOperators.get(pname));
 
-				if (isOptTiered) {
-					isOptTieredTemp = true;
-				} else {
-					isOptTieredTemp = false;
-				}
-
 				if (btnEdit.getIcon().equals(FontAwesome.EDIT)) {
 					cPermsActions.setVisible(false);
 					isEditCommissions = true;
@@ -2014,8 +1998,8 @@ public class FeesAndCommissionModuleClone {
 
 		});
 
-		btnDelete.addClickListener(new RemoveCommissionsHandler(pop,
-				cPlaceholderx));
+		btnDelete.addClickListener(new RemoveCommissionsHandler(new Window(
+				"Confirm Deletion"), cPlaceholderx));
 
 		return c;
 
@@ -4202,19 +4186,34 @@ public class FeesAndCommissionModuleClone {
 
 		if (isCommission) {
 
+			boolean isDiff = false;
 			Integer setupPropertyID = 0;
 			BigDecimal commValue = BigDecimal.valueOf(0);
 			Integer setupType = Integer.valueOf(optSetupType.getValue()
 					.toString());
 
 			ServiceCommission[] cf = null;
-			if (isCommission && !isOptTiered) {
+			if (!isOptTiered) {
 				cf = new ServiceCommission[] {};
 				setupPropertyID = Integer.valueOf(hmExistingFees.get(comboTT
 						.getValue().toString()));
 
 				commValue = BigDecimal.valueOf(Double.valueOf(tFCommValue
 						.getValue()));
+
+				if (Double.parseDouble(tbFees
+						.getItem(tbFees.getItemIds().iterator().next())
+						.getItemProperty("Amount").getValue().toString()) == Double
+						.parseDouble(commValue.toString())) {
+
+					NotifCustom
+							.show("",
+									"No changes to save. Please make changes before clicking save.");
+					return false;
+
+				}
+
+				isDiff = true;
 
 			} else {
 
@@ -4228,8 +4227,6 @@ public class FeesAndCommissionModuleClone {
 				cf = new ServiceCommission[allRange.size()];
 
 				int i = 0;
-
-				boolean isDup = false;
 
 				for (FieldGroup rfg : allRange) {
 					// FieldGroup rfg = allRange.get(i);
@@ -4252,20 +4249,37 @@ public class FeesAndCommissionModuleClone {
 					// Double.valueOf(min))) {
 					// isDup = true;
 					// }
+					//
+					// if (Double.valueOf(hmTiers.get("max")[i]).equals(
+					// Double.valueOf(max))) {
+					// isDup = true;
+					// }
 
-					if (Double.valueOf(hmTiers.get("max")[i]).equals(
-							Double.valueOf(max))) {
-						isDup = true;
+					if (isEdit && !isDiff) {
+
+						if (Double.parseDouble(hmTiers.get("min")[i]) != Double
+								.parseDouble(min)) {
+							isDiff = true;
+							// System.out.println("Diff. MIN: " + isDiff);
+						}
+
+						if (Double.parseDouble(hmTiers.get("max")[i]) != Double
+								.parseDouble(max)) {
+							isDiff = true;
+							// System.out.println("Diff. MIN: " + isDiff);
+						}
+
+						if (!hmTiers.get("con")[i].equals(con)) {
+							isDiff = true;
+							// System.out.println("Diff. Amount: " + isDiff);
+						}
+
+						if (Double.parseDouble(hmTiers.get("amt")[i]) != Double
+								.parseDouble(amt)) {
+							isDiff = true;
+							// System.out.println("Diff. MIN: " + isDiff);
+						}
 					}
-
-					//
-					// if (hmTiers.get("amt")[i].equals(amt) && !isDup) {
-					// isDup = true;
-					// }
-					//
-					// if (hmTiers.get("con")[i].equals(con) && !isDup) {
-					// isDup = true;
-					// }
 
 					// }
 
@@ -4287,6 +4301,15 @@ public class FeesAndCommissionModuleClone {
 			String response;
 
 			if (isEdit) {
+
+				if (!isDiff) {
+
+					NotifCustom
+							.show("",
+									"No changes to save. Please make changes before clicking save.");
+					return false;
+
+				}
 
 				try {
 
@@ -4402,62 +4425,71 @@ public class FeesAndCommissionModuleClone {
 		// System.out.println("----: " + opID + " :-----");
 		// System.out.println("----: " + txID + " :-----");
 
+		boolean isDiff = false;
+
 		ServiceFees[] sf = new ServiceFees[allRange.size()];
 		for (int i = 0; i < allRange.size(); i++) {
 			FieldGroup rfg = allRange.get(i);
 			FieldGroup mfg = allMat.get(i);
 			sf[i] = new ServiceFees();
-			sf[i].setMinimumamount(BigDecimal.valueOf(Float.valueOf(rfg
-					.getField("Min").getValue().toString().trim())));
-			sf[i].setMaximumamount(BigDecimal.valueOf(Float.valueOf(rfg
-					.getField("Max").getValue().toString().trim())));
-			sf[i].setServicefeetype(mfg.getField("Mat").getValue().toString()
-					.trim());
-			sf[i].setServicefee(BigDecimal.valueOf(Float.valueOf(mfg
-					.getField("Amt").getValue().toString().trim())));
 
-			// sf[i].setServicefeetype(ProvisioningStub.ServiceFeematrix.Factory
-			// .fromValue(mfg.getField("Mat").getValue().toString().trim()));
+			BigDecimal min = BigDecimal.valueOf(Float.valueOf(rfg
+					.getField("Min").getValue().toString().trim()));
 
-			// sf[i].setServicefee(BigDecimal.valueOf(Float.valueOf(mfg
-			// .getField("Amt").getValue().toString().trim())));
-			// sf[i].setTransactiontypeid(txID);
+			BigDecimal max = BigDecimal.valueOf(Float.valueOf(rfg
+					.getField("Max").getValue().toString().trim()));
+
+			String con = mfg.getField("Mat").getValue().toString().trim();
+
+			BigDecimal amt = BigDecimal.valueOf(Float.valueOf(mfg
+					.getField("Amt").getValue().toString().trim()));
+
+			sf[i].setMinimumamount(min);
+
+			sf[i].setMaximumamount(max);
+			sf[i].setServicefeetype(con);
+
+			sf[i].setServicefee(amt);
+
+			if (isEdit && !isDiff) {
+
+				if (Double.parseDouble(hmTiers.get("min")[i]) != Double
+						.parseDouble(min.toString())) {
+					isDiff = true;
+					// System.out.println("Diff. MIN: " + isDiff);
+				}
+
+				if (Double.parseDouble(hmTiers.get("max")[i]) != Double
+						.parseDouble(max.toString())) {
+					isDiff = true;
+					// System.out.println("Diff. MIN: " + isDiff);
+				}
+
+				if (!hmTiers.get("con")[i].equals(con)) {
+					isDiff = true;
+					// System.out.println("Diff. Amount: " + isDiff);
+				}
+
+				if (Double.parseDouble(hmTiers.get("amt")[i]) != Double
+						.parseDouble(amt.toString())) {
+					isDiff = true;
+					// System.out.println("Diff. MIN: " + isDiff);
+				}
+			}
 
 		}
 
-		// ArrayList<ArrayList<FieldGroup>> allCommFG = hmAllFG.get(COMMISSION);
-		// allRange = allCommFG.get(0);
-		// allMat = allCommFG.get(1);
-		// FieldGroup dfg = hmDFG.get(COMMISSION);
-		// // FieldGroup dfg = arrLDFG.get(0);
-		// String conType = dfg.getField("CONID").getValue().toString().trim();
-		// String modType = dfg.getField("MODID").getValue().toString().trim();
-		//
-		// ServiceCommission[] sc = new ServiceCommission[allRange.size()];
-		// for (int i = 0; i < allRange.size(); i++) {
-		// FieldGroup rfg = allRange.get(i);
-		// FieldGroup mfg = allMat.get(i);
-		// sc[i] = new ServiceCommission();
-		// sc[i].setMinimumamount(BigDecimal.valueOf(Float.valueOf(rfg
-		// .getField("Min").getValue().toString().trim())));
-		// sc[i].setMaximumamount(BigDecimal.valueOf(Float.valueOf(rfg
-		// .getField("Max").getValue().toString().trim())));
-		// sc[i].setServicecommissioncondition(ProvisioningStub.ServiceCommissionConditionTypes.Factory
-		// .fromValue(conType));
-		// sc[i].setServicecommissionmodeltype(ProvisioningStub.ServiceCommissionModelTypes.Factory
-		// .fromValue(modType));
-		// sc[i].setCommissionfeetype(ProvisioningStub.ServiceCommissionmatrix.Factory
-		// .fromValue(mfg.getField("Mat").getValue().toString().trim()));
-		// sc[i].setCommissionfee(BigDecimal.valueOf(Float.valueOf(mfg
-		// .getField("Amt").getValue().toString().trim())));
-		// sc[i].setTransactiontypeid(txID);
-
-		// }
-
 		if (isEdit) {
-			// isEditFees = false;
-			// loggedInUser, Serviceconfigtype, servicefess, transactiontypeid,
-			// accountholderid)
+
+			if (!isDiff) {
+
+				NotifCustom
+						.show("",
+								"No changes to save. Please make changes before clicking save.");
+				return false;
+
+			}
+
 			try {
 
 				String response = FeeService.editServicefee(UI.getCurrent()
