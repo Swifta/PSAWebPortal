@@ -690,7 +690,7 @@ public class FeesAndCommissionModuleClone {
 
 				String pname = comboAllFeesOperators
 						.getItemCaption(comboAllFeesOperators.getValue());
-				Integer pid = Integer.parseInt(hmAllOperators.get(pname));
+				// Integer pid = Integer.parseInt(hmAllOperators.get(pname));
 
 				if (btnEdit.getIcon().equals(FontAwesome.EDIT)) {
 					btnCancel.setVisible(true);
@@ -3261,58 +3261,10 @@ public class FeesAndCommissionModuleClone {
 						comboAllFCOperators.select(null);
 						comboTT.setVisible(false);
 						comboTT.setEnabled(true);
-
-						// String sx = comboTT.getValue().toString();
-						//
-						// if (sx.indexOf("-") != -1) {
-						// sx = sx.substring(sx.indexOf("-") + 1, sx.length())
-						// .trim();
-						// }
-
-						if (isCommission) {
-
-							// String pname = comboAllFCOperators.getValue()
-							// .toString().trim();
-							//
-							// hmServiceCommission =
-							// getServiceCommissions(Integer
-							// .parseInt(hmAllOperators.get(pname)));
-							//
-							// optSetupType.setVisible(true);
-							// optSetupType.setEnabled(false);
-							// comboTT.setEnabled(true);
-							// isEdit = false;
-							//
-							// comboTT.removeAllItems();
-							// for (String s : setExistingCommTT)
-							// comboTT.addItem(s);
-							// comboTT.setVisible(true);
-							// comboTT.select(sx);
-							//
-							// btnEditCommissions.setIcon(FontAwesome.EDIT);
-
-							return;
-
-						}
-
-						// String pname = comboAllFCOperators.getValue()
-						// .toString().trim();
-						// hmServiceFees = getServiceFees(Integer
-						// .parseInt(hmAllOperators.get(pname)));
-						// comboTT.removeAllItems();
-						// for (String s : setExistingFeesTT)
-						// comboTT.addItem(s);
-						// comboTT.setVisible(true);
-						// comboTT.select(setExistingFeesTT.iterator().next());
-						//
-						// isEdit = false;
-						// btnEditFees.setIcon(FontAwesome.EDIT);
-						// btnEditFees.setDescription("Edit Configurations Fees");
+						return;
 
 					}
-					return;
-				} else {
-					return;
+
 				}
 
 			}
