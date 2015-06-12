@@ -200,6 +200,13 @@ public class ProfilesAndPermissionsModule {
 			@Override
 			public void buttonClick(ClickEvent event) {
 
+				if (comboProfiles != null)
+					comboProfiles.removeAllItems();
+				if (comboThresholdProfiles != null)
+					comboThresholdProfiles.removeAllItems();
+				if (comboPermProfiles != null)
+					comboPermProfiles.removeAllItems();
+
 				btnProfiles.setEnabled(false);
 				btnProfiles.setStyleName("btn_tab_like btn_tab_like_active");
 
@@ -234,6 +241,13 @@ public class ProfilesAndPermissionsModule {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
+
+				if (comboProfiles != null)
+					comboProfiles.removeAllItems();
+				if (comboThresholdProfiles != null)
+					comboThresholdProfiles.removeAllItems();
+				if (comboPermProfiles != null)
+					comboPermProfiles.removeAllItems();
 
 				btnThresholds.setEnabled(false);
 				btnThresholds.setStyleName("btn_tab_like btn_tab_like_active");
@@ -273,6 +287,13 @@ public class ProfilesAndPermissionsModule {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
+
+				if (comboProfiles != null)
+					comboProfiles.removeAllItems();
+				if (comboThresholdProfiles != null)
+					comboThresholdProfiles.removeAllItems();
+				if (comboPermProfiles != null)
+					comboPermProfiles.removeAllItems();
 
 				btnPermissions.setEnabled(false);
 				btnPermissions.setStyleName("btn_tab_like btn_tab_like_active");
@@ -501,8 +522,8 @@ public class ProfilesAndPermissionsModule {
 			@Override
 			public void focus(FocusEvent event) {
 
-				comboPermProfiles.removeAllItems();
-				addProfiles(comboPermProfiles);
+				if (comboPermProfiles.getItemIds().size() == 0)
+					addProfiles(comboPermProfiles);
 
 			}
 
@@ -935,8 +956,9 @@ public class ProfilesAndPermissionsModule {
 			@Override
 			public void focus(FocusEvent event) {
 
-				comboProfiles.removeAllItems();
-				addProfiles(comboProfiles);
+				if (comboProfiles.getItemIds().size() == 0) {
+					addProfiles(comboProfiles);
+				}
 				// comboProfiles.select(null);
 
 			}
@@ -1728,12 +1750,12 @@ public class ProfilesAndPermissionsModule {
 			@Override
 			public void focus(FocusEvent event) {
 
-				// if (comboThresholdProfiles.getItemIds().size() == 0)
-				// addProfiles(comboThresholdProfiles);
-				// comboThresholdProfiles.select(null);
-
-				comboThresholdProfiles.removeAllItems();
-				addProfiles(comboThresholdProfiles);
+				if (comboThresholdProfiles.getItemIds().size() == 0) {
+					// addProfiles(comboThresholdProfiles);
+					// comboThresholdProfiles.select(null);
+					// comboThresholdProfiles.removeAllItems();
+					addProfiles(comboThresholdProfiles);
+				}
 
 			}
 
@@ -2039,9 +2061,8 @@ public class ProfilesAndPermissionsModule {
 				@Override
 				public void focus(FocusEvent event) {
 
-					if (hmProfileTypes != null)
-						return;
-					addProfileTypes(combo);
+					if (combo.getItemIds().size() == 0)
+						addProfileTypes(combo);
 
 				}
 
@@ -2133,6 +2154,12 @@ public class ProfilesAndPermissionsModule {
 						cAllProf.setVisible(true);
 						cPlaceholder.setVisible(false);
 						combo.select(null);
+						if (comboProfiles != null)
+							comboProfiles.removeAllItems();
+						if (comboThresholdProfiles != null)
+							comboThresholdProfiles.removeAllItems();
+						if (comboPermProfiles != null)
+							comboPermProfiles.removeAllItems();
 
 						return;
 					} else {
