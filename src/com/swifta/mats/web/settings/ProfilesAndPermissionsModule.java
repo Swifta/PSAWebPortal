@@ -2536,7 +2536,8 @@ public class ProfilesAndPermissionsModule {
 						System.out.println("THTIDx: " + thtid);
 
 						response = UserManagementService
-								.deleteProfileThreshold(ttids, pid);
+								.deleteProfileThreshold(ttids, pid,
+										Integer.valueOf(thtid));
 					} catch (Exception e) {
 						Notification.show(e.getMessage(),
 								Notification.Type.ERROR_MESSAGE);
@@ -2599,6 +2600,39 @@ public class ProfilesAndPermissionsModule {
 	private void displayExistingThresholds(HorizontalLayout cPlaceholder,
 			String ttid) {
 
+		ArrayList<HashMap<String, String>> arr = hmExistingThresholdTypes
+				.get(ttid);
+
+		if (arr == null) {
+
+			// comboXTH.removeAllItems();
+			// comboX.removeAllItems();
+			// comboXTH.setVisible(false);
+			// comboX.setVisible(false);
+			tfThresholdAmount.setValue("");
+			tfThresholdAmount.setVisible(false);
+			optMultT.removeAllItems();
+			optMultT.setVisible(false);
+			lbThreshold.setVisible(false);
+			comboExistingThresholds.setVisible(false);
+			comboExistingThresholds.removeAllItems();
+			cNewThresholdBtns.setVisible(false);
+
+			cBeforePlaceHolder.addComponent(btnAddThreshold);
+			cBeforePlaceHolder.setComponentAlignment(btnAddThreshold,
+					Alignment.TOP_CENTER);
+			btnAddThreshold.setVisible(true);
+
+			cPlaceholder.setVisible(false);
+			isEditThresholdPossible = true;
+			NotifCustom
+					.show("Message",
+							"No Existing Threshold Configurations for selected Transaction Type");
+
+			return;
+
+		}
+
 		isEditThresholdPossible = true;
 
 		initTransactionTypes();
@@ -2612,10 +2646,7 @@ public class ProfilesAndPermissionsModule {
 
 		cPlaceholder.setVisible(true);
 
-		int x = 0;
-
-		ArrayList<HashMap<String, String>> arr = hmExistingThresholdTypes
-				.get(ttid);
+		int x = 1;
 
 		System.out.println(arr.size());
 
@@ -2637,7 +2668,8 @@ public class ProfilesAndPermissionsModule {
 			VerticalLayout cT = new VerticalLayout();
 			cAllTables.addComponent(cT);
 
-			final Table tb = new Table(tt + " " + thtidx + " Configuration");
+			final Table tb = new Table(tt + " "
+					+ hmThresholdTypesByID.get(thtidx) + " Configuration");
 			final IndexedContainer ctnr = new IndexedContainer();
 			ctnr.addContainerProperty("S/N", String.class, "");
 			ctnr.addContainerProperty("Transaction Type", String.class, "");
@@ -2934,10 +2966,11 @@ public class ProfilesAndPermissionsModule {
 
 		}
 
-		if (!btnAddThreshold.isVisible() && x < hmTransactionTypes.size()) {
-			cBtns.addComponent(btnAddThreshold);
-			btnAddThreshold.setVisible(true);
-		}
+		// if (!btnAddThreshold.isVisible() && x < hmTransactionTypes.size() +
+		// 1) {
+		// cBtns.addComponent(btnAddThreshold);
+		// btnAddThreshold.setVisible(true);
+		// }
 
 	}
 
@@ -3096,10 +3129,16 @@ public class ProfilesAndPermissionsModule {
 			// System.out.println("Caption: " + hmTransactionTypesByID.get(e));
 			// System.out.println("Value: " + e);
 
-			comboX.addItem(e);
-			comboX.setItemCaption(e, hmTransactionTypesByID.get(e));
+			// comboX.addItem(e);
+			// comboX.setItemCaption(e, hmTransactionTypesByID.get(e));
 			setExistingTT.add(e);
 
+		}
+
+		for (Entry<String, String> e : hmTransactionTypes.entrySet()) {
+			String iid = e.getValue();
+			comboX.addItem(iid);
+			comboX.setItemCaption(iid, e.getKey());
 		}
 		comboXTH.setVisible(true);
 		comboX.setVisible(true);

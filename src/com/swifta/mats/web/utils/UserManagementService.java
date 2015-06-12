@@ -1168,7 +1168,7 @@ public class UserManagementService {
 	}
 
 	public static String deleteProfileThreshold(int[] transactiontypeids,
-			int profileid) throws Exception {
+			int profileid, int thresholdtypeid) throws Exception {
 
 		String statusMessage = "";
 		matsStub = new ProvisioningStub(esbendpoint);
@@ -1180,6 +1180,7 @@ public class UserManagementService {
 				.getAttribute("user").toString());
 		deleteProfileThreshold.setProfileid(profileid);
 		deleteProfileThreshold.setAction(transactiontypeids);
+		deleteProfileThreshold.setThresholdtypeid(thresholdtypeid);
 
 		deleteProfileThresholdE
 				.setDeleteProfileThreshold(deleteProfileThreshold);
