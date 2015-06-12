@@ -2504,14 +2504,22 @@ public class ProfilesAndPermissionsModule {
 
 						ArrayList<String> ctids = new ArrayList<String>();
 
+						String thtid = null;
+
 						for (Object rid : containerxyz.getItemIds()) {
 
 							String tt = tb.getItem(rid)
 									.getItemProperty("Transaction Type")
 									.getValue().toString();
 
+							String th = tb.getItem(rid)
+									.getItemProperty("Threshold Type")
+									.getValue().toString();
+
 							ctids.add(hmTransactionTypes.get(tt));
 							System.out.println(tt);
+
+							thtid = hmThresholdTypes.get(th);
 
 						}
 
@@ -2525,6 +2533,8 @@ public class ProfilesAndPermissionsModule {
 
 						System.out.println("TTIDxsd: " + ttids[0]);
 						System.out.println("PIDx: " + pid);
+						System.out.println("THTIDx: " + thtid);
+
 						response = UserManagementService
 								.deleteProfileThreshold(ttids, pid);
 					} catch (Exception e) {
