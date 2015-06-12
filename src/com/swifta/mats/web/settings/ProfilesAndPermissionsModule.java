@@ -2612,7 +2612,7 @@ public class ProfilesAndPermissionsModule {
 
 		cPlaceholder.setVisible(true);
 
-		int x = 1;
+		int x = 0;
 
 		ArrayList<HashMap<String, String>> arr = hmExistingThresholdTypes
 				.get(ttid);
@@ -2625,6 +2625,7 @@ public class ProfilesAndPermissionsModule {
 
 		String tt = hmTransactionTypesByID.get(ttid);
 
+		HorizontalLayout cBtns = null;
 		for (HashMap<String, String> hm : arr) {
 
 			String thtidx = hm.get("threshold_type_id");
@@ -2654,8 +2655,7 @@ public class ProfilesAndPermissionsModule {
 			r.getItemProperty("Threshold Value").setValue(hm.get("limit"));
 
 			tb.setContainerDataSource(ctnr);
-			if (x > 30)
-				x = 30;
+
 			tb.setPageLength(1);
 			tb.setSelectable(true);
 
@@ -2678,7 +2678,7 @@ public class ProfilesAndPermissionsModule {
 			btnCancel.setStyleName("btn_link");
 			btnCancel.setIcon(FontAwesome.UNDO);
 
-			HorizontalLayout cBtns = new HorizontalLayout();
+			cBtns = new HorizontalLayout();
 
 			if (Initializer.setUserPermissions.contains(hmProfPermPermissions
 					.get("edit_threshold")))
@@ -2930,6 +2930,13 @@ public class ProfilesAndPermissionsModule {
 				}
 			});
 
+			x++;
+
+		}
+
+		if (!btnAddThreshold.isVisible() && x < hmTransactionTypes.size()) {
+			cBtns.addComponent(btnAddThreshold);
+			btnAddThreshold.setVisible(true);
 		}
 
 	}
