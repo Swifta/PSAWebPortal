@@ -72,6 +72,9 @@ public class UMView extends VerticalLayout implements View {
 
 		hmPerms.put("man", "/manageusers");
 		hmPerms.put("register", "/registration");
+
+		hmPerms.put("statement", "/urn:getministatementreport");
+
 	}
 
 	@Override
