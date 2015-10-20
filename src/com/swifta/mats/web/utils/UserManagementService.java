@@ -143,6 +143,8 @@ public class UserManagementService {
 	final static String loggedInUser = UI.getCurrent().getSession()
 			.getAttribute("user").toString();
 
+	// final static String loggedInUser = "matsadminone";
+
 	static ProvisioningStub matsStub;
 	static MatsreportingserviceStub matsReportstub;
 
