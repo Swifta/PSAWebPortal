@@ -50,7 +50,7 @@ public class Client {
 
 			// Client.getThresholdTypes();
 
-			Client.getTransactionTypes();
+			// Client.getTransactionTypes();
 
 			// Client.getUserPermissions();
 
@@ -82,8 +82,9 @@ public class Client {
 			// Client.sql();
 
 			// getExistingThresholds();
+			register();
 
-			getStatement();
+			// getStatement();
 
 		} catch (Exception e) {
 			e.printStackTrace();

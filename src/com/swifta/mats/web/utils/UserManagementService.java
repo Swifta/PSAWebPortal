@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
@@ -129,6 +130,9 @@ import com.vaadin.ui.UI;
 
 public class UserManagementService {
 
+	private static final Logger LOG = Logger
+			.getLogger(UserManagementService.class.getName());
+
 	// String endpoint =
 	// "http://127.0.0.1:9760/Provisioning-1.0.0/services/provisioning";
 
@@ -246,6 +250,8 @@ public class UserManagementService {
 		registration.setUsername(username);
 
 		RegistrationE registrationE = new RegistrationE();
+		LOG.info("registration-loggedinUser>>>>>>>>>>>");
+		LOG.info(registration.getLoggedinUser());
 		registrationE.setRegistration(registration);
 		RegistrationResponseE response = matsStub.registration(registrationE);
 		if (response != null) {

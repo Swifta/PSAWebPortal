@@ -11,7 +11,7 @@ public class Conf {
 
 	public Conf(String env) {
 
-		if (env.equals("production")) {
+		if (env.equals("testing")) {
 			this.UN = "psatestuser";
 			this.PW = "psatest_2015";
 			this.DB = "jdbc:mysql://gomintdb.caabwbnfnavv.us-east-1.rds.amazonaws.com:3306/psadatasourcetest";
