@@ -879,6 +879,7 @@ public class Reportform extends VerticalLayout {
 			trxnsqld.append(" externalpaymentreference extpay group by extpay.transactionid) group by txn.transactionid) ");
 			trxnsqld.append("  ORDER BY TransactionID,Timestamps;");
 
+			System.out.println(trxnsqld.toString());
 			rs = stmt.executeQuery(trxnsqld.toString());
 
 			while (rs.next()) {
@@ -1647,6 +1648,7 @@ public class Reportform extends VerticalLayout {
 				trxnsqld.append(" externalpaymentreference extpay group by extpay.transactionid) group by txn.transactionid) ");
 				trxnsqld.append("  ORDER BY Timestamps desc; ");
 
+				System.out.println(trxnsqld.toString());
 				rs = stmt.executeQuery(trxnsqld.toString());
 				cDate.setVisible(true);
 				bdAmt = new BigDecimal(0.00);
