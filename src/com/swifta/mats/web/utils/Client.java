@@ -28,6 +28,8 @@ public class Client {
 	public static void main(String args[]) throws Exception {
 		try {
 
+			System.out.println(111111);
+
 			// String result = Client.passreset();
 
 			// Client.passreset();
@@ -40,7 +42,7 @@ public class Client {
 
 			// Client.getactive();
 
-			Client.webauthenticate();
+			// Client.webauthenticate();
 
 			// Client.getProfiles();
 
@@ -86,10 +88,26 @@ public class Client {
 
 			// getStatement();
 
+			getTransactionReport();
+
 		} catch (Exception e) {
 			e.printStackTrace();
 
 		}
+
+	}
+
+	public static void getTransactionReport() throws RemoteException,
+			DataServiceFault {
+		ReportingService rs = new ReportingService();
+		Gettransactionreportresponse[] trr = rs.getTransactionReport(
+				"2013-01-01", "2015-12-31");
+
+		Gettransactionreportresponse t = trr[0];
+
+		System.out.println(t.getSenderE());
+		System.out.println(t.getSender());
+		// t.get
 
 	}
 
