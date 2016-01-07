@@ -7355,30 +7355,30 @@
                             
 
                         /**
-                        * field for SenderE
+                        * field for Mmo
                         */
 
                         
-                                    protected java.lang.String localSenderE ;
+                                    protected java.lang.String localMmo ;
                                 
 
                            /**
                            * Auto generated getter method
                            * @return java.lang.String
                            */
-                           public  java.lang.String getSenderE(){
-                               return localSenderE;
+                           public  java.lang.String getMmo(){
+                               return localMmo;
                            }
 
                            
                         
                             /**
                                * Auto generated setter method
-                               * @param param SenderE
+                               * @param param Mmo
                                */
-                               public void setSenderE(java.lang.String param){
+                               public void setMmo(java.lang.String param){
                             
-                                            this.localSenderE=param;
+                                            this.localMmo=param;
                                     
 
                                }
@@ -7582,10 +7582,10 @@
                                    xmlWriter.writeEndElement();
                              
                                     namespace = "http://swifta.com/sub/mats/reporting";
-                                    writeStartElement(null, namespace, "Sender", xmlWriter);
+                                    writeStartElement(null, namespace, "mmo", xmlWriter);
                              
 
-                                          if (localSenderE==null){
+                                          if (localMmo==null){
                                               // write the nil attribute
                                               
                                                      writeAttribute("xsi","http://www.w3.org/2001/XMLSchema-instance","nil","1",xmlWriter);
@@ -7593,7 +7593,7 @@
                                           }else{
 
                                         
-                                                   xmlWriter.writeCharacters(localSenderE);
+                                                   xmlWriter.writeCharacters(localMmo);
                                             
                                           }
                                     
@@ -7834,10 +7834,10 @@
                                          org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localStatus));
                                     
                                       elementList.add(new javax.xml.namespace.QName("http://swifta.com/sub/mats/reporting",
-                                                                      "Sender"));
+                                                                      "mmo"));
                                  
-                                         elementList.add(localSenderE==null?null:
-                                         org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localSenderE));
+                                         elementList.add(localMmo==null?null:
+                                         org.apache.axis2.databinding.utils.ConverterUtil.convertToString(localMmo));
                                     
                                       elementList.add(new javax.xml.namespace.QName("http://swifta.com/sub/mats/reporting",
                                                                       "date"));
@@ -8097,7 +8097,7 @@
                                     
                                     while (!reader.isStartElement() && !reader.isEndElement()) reader.next();
                                 
-                                    if (reader.isStartElement() && new javax.xml.namespace.QName("http://swifta.com/sub/mats/reporting","Sender").equals(reader.getName())){
+                                    if (reader.isStartElement() && new javax.xml.namespace.QName("http://swifta.com/sub/mats/reporting","mmo").equals(reader.getName())){
                                 
                                        nillableValue = reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance","nil");
                                        if (!"true".equals(nillableValue) && !"1".equals(nillableValue)){
@@ -8105,7 +8105,7 @@
 
                                     java.lang.String content = reader.getElementText();
                                     
-                                              object.setSenderE(
+                                              object.setMmo(
                                                     org.apache.axis2.databinding.utils.ConverterUtil.convertToString(content));
                                             
                                        } else {
