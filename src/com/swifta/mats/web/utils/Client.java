@@ -575,6 +575,8 @@ public class Client {
 
 			System.out.println(r.getTransactionid());
 			System.out.println(r.getDate());
+			System.out.println(r.getSender());
+			System.out.println(r.getMmo());
 
 		}
 	}
