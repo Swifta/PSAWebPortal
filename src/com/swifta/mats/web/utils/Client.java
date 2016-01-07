@@ -40,7 +40,7 @@ public class Client {
 
 			// Client.getactive();
 
-			// Client.webauthenticate();
+			Client.webauthenticate();
 
 			// Client.getProfiles();
 
@@ -50,7 +50,7 @@ public class Client {
 
 			// Client.getThresholdTypes();
 
-			Client.getTransactionTypes();
+			// Client.getTransactionTypes();
 
 			// Client.getUserPermissions();
 
@@ -82,8 +82,9 @@ public class Client {
 			// Client.sql();
 
 			// getExistingThresholds();
+			// register();
 
-			getStatement();
+			// getStatement();
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -259,7 +260,7 @@ public class Client {
 		//
 		// System.out.println(ret);
 		//
-		String response = LoginService.webauthenticate("matsadminone", "12345");
+		String response = LoginService.webauthenticate("matsadminone", "livep");
 		System.out.println(response);
 
 		// }
@@ -555,7 +556,7 @@ public class Client {
 				"2015-05-05", "2015-05-05")) {
 
 			System.out.println(r.getTransactionid());
-			System.out.println(r.getCreatedon());
+			System.out.println(r.getDate());
 
 		}
 	}
