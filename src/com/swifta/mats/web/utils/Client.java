@@ -105,8 +105,9 @@ public class Client {
 
 		Gettransactionreportresponse t = trr[0];
 
-		System.out.println(t.getSenderE());
+		System.out.println(t.getMmo());
 		System.out.println(t.getSender());
+		System.out.println(t.getDate());
 		// t.get
 
 	}

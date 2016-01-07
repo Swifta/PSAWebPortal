@@ -67,6 +67,7 @@ public class ReportingService {
 
 	public ReportingService() throws AxisFault {
 		rservice = new MatsreportingserviceStub(esbendpoint);
+
 	}
 
 	public Profile[] getProfiles() throws RemoteException, DataServiceFault {
