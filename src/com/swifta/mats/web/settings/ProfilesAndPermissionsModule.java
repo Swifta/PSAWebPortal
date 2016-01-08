@@ -93,7 +93,7 @@ public class ProfilesAndPermissionsModule {
 	private TwinColSelect tcsInactiveAndActive;
 	private Profile[] profiles;
 
-	private OptionGroup optMultTrans;
+	// private OptionGroup optMultTrans;
 	private OptionGroup optMultT;
 	// private ComboBox comboThresholds;
 	private Button back;
@@ -111,7 +111,7 @@ public class ProfilesAndPermissionsModule {
 	private HashMap<String, HashSet<String>> hmETH = new HashMap<>();
 	private HashMap<String, HashSet<String>> hmNONETH = new HashMap<>();
 
-	private HashMap<String, HashMap<String, String>> hmThresholdProperties;
+	// private HashMap<String, HashMap<String, String>> hmThresholdProperties;
 
 	private boolean isEditThresholdPossible = false;
 	private boolean isNewThresholdConfig = false;
@@ -120,12 +120,29 @@ public class ProfilesAndPermissionsModule {
 
 	// private HorizontalLayout cjust;
 
+	/*
+	 * cStage container is shared by all other containers. i.e. cPerm, and
+	 * cProfiles, and cThrehold. Initiates the me
+	 */
+
 	ProfilesAndPermissionsModule(Button back,
 			HashMap<String, String> hmProfPermPermissions) {
 
 		this.hmProfPermPermissions = hmProfPermPermissions;
 		this.back = back;
+
+		// Create and add the menu to the UI.
 		addMenu();
+
+		// Choose default UI to be added to cStage container.
+		/*
+		 * This depends on the permissions, which means it can be any of the
+		 * candidate components. We check for the enabled property of the menu
+		 * buttons. According to our menu, the disabled button has the right
+		 * permissions and is active. Therefore it's that button's content we
+		 * load into cStage.
+		 */
+
 		HorizontalLayout cTemp = null;
 		if (!btnProfiles.isEnabled()) {
 			cTemp = getProfileC();
@@ -152,11 +169,18 @@ public class ProfilesAndPermissionsModule {
 
 		HorizontalLayout cMainMenu = new HorizontalLayout();
 
-		BtnTabLike btnTemp = null;
+		BtnTabLike btnDefault = null;
 
 		btnProfiles = new BtnTabLike("Profiles", null);
 		btnThresholds = new BtnTabLike("Thresholds", null);
 		btnPermissions = new BtnTabLike("Permissions", null);
+
+		/*
+		 * Depending on the permissions, we add/ not add a specific button the
+		 * menu. btnDefault is the default and active button on the menu. Any
+		 * Menu button can take up the place of btnTemp
+		 */
+
 		if (Initializer.setUserPermissions.contains(hmProfPermPermissions
 				.get("edit_profile"))
 
@@ -165,7 +189,8 @@ public class ProfilesAndPermissionsModule {
 				|| Initializer.setUserPermissions
 						.contains(hmProfPermPermissions.get("remove_profile"))) {
 			cMainMenu.addComponent(btnProfiles);
-			btnTemp = btnProfiles;
+			// Initialize btnTemp
+			btnDefault = btnProfiles;
 		}
 
 		if (Initializer.setUserPermissions.contains(hmProfPermPermissions
@@ -176,23 +201,28 @@ public class ProfilesAndPermissionsModule {
 				|| Initializer.setUserPermissions
 						.contains(hmProfPermPermissions.get("delete_threshold"))) {
 			cMainMenu.addComponent(btnThresholds);
-			if (btnTemp == null)
-				btnTemp = btnThresholds;
+			if (btnDefault == null)
+				btnDefault = btnThresholds;
 		}
 
 		if (Initializer.setUserPermissions.contains(hmProfPermPermissions
 				.get("remove_permissions"))
 				|| Initializer.setUserPermissions
-						.contains(hmProfPermPermissions.get("set_permissions")))
+						.contains(hmProfPermPermissions.get("set_permissions"))) {
 			cMainMenu.addComponent(btnPermissions);
+			btnDefault = btnPermissions;
+		}
 
-		if (btnTemp == null)
-			btnTemp = btnPermissions;
-
-		btnTemp.setStyleName("btn_tab_like btn_tab_like_active");
-		btnTemp.setEnabled(false);
+		btnDefault.setStyleName("btn_tab_like btn_tab_like_active");
+		btnDefault.setEnabled(false);
 
 		cMenu.addComponent(cMainMenu);
+
+		/*
+		 * Creating click event handlers for the Menu buttons.
+		 */
+
+		// Handle Profile Click Events
 
 		btnProfiles.addClickListener(new Button.ClickListener() {
 			private static final long serialVersionUID = 8237565312571186332L;
@@ -236,6 +266,8 @@ public class ProfilesAndPermissionsModule {
 			}
 		});
 
+		// Handle Threshold Click Events
+
 		btnThresholds.addClickListener(new Button.ClickListener() {
 			private static final long serialVersionUID = 8237565312571186332L;
 
@@ -264,6 +296,11 @@ public class ProfilesAndPermissionsModule {
 				btnProfiles.setEnabled(true);
 				btnProfiles.setStyleName("btn_tab_like");
 
+				// Unique behavior in case the Menu button has a sub menu.
+				/*
+				 * isfromsub signal is used to controls this.
+				 */
+
 				if (!isfromsub) {
 					if (cThreshold == null)
 						cThreshold = getThresholdC();
@@ -278,11 +315,10 @@ public class ProfilesAndPermissionsModule {
 			}
 		});
 
+		// Handle Permissions Click Events
+
 		btnPermissions.addClickListener(new Button.ClickListener() {
 
-			/**
-			 * 
-			 */
 			private static final long serialVersionUID = 994811690918792413L;
 
 			@Override
@@ -337,9 +373,18 @@ public class ProfilesAndPermissionsModule {
 
 	}
 
+	/*
+	 * This returns the main container after it has been loaded with all the
+	 * necessary UI components.
+	 */
+
 	public VerticalLayout getMainContainer() {
 		return cMain;
 	}
+
+	/*
+	 * Create the permissions UI
+	 */
 
 	private HorizontalLayout getPermissionsC() {
 		VerticalLayout cAgentInfo = new VerticalLayout();
@@ -2257,98 +2302,6 @@ public class ProfilesAndPermissionsModule {
 
 	}
 
-	private class SetThresholdHandler implements Button.ClickListener {
-
-		private static final long serialVersionUID = -9065514577173650677L;
-		private VerticalLayout cAddProf;
-		private HorizontalLayout cBtns;
-		private TextField tFProf;
-		private TextField tFProfx;
-		private ComboBox combo;
-		private Button btnCancel;
-		private Button btnSave;
-		private VerticalLayout cAllProf;
-		private HorizontalLayout cPlaceholder;
-		private String ptid;
-		private HorizontalLayout cTransactionTypes;
-
-		@Override
-		public void buttonClick(ClickEvent event) {
-
-			Object obj = comboThresholdProfiles.getValue();
-			if (obj == null || obj.toString().trim().isEmpty()) {
-				NotifCustom.show("Prompt", "Please select a profile Type.");
-				return;
-			}
-
-			if (hmProfIDs == null || hmProfIDs.size() == 0)
-				initProfiles();
-
-			ptid = hmProfIDs.get(
-					comboThresholdProfiles.getValue().toString().trim())
-					.getProfiletypeid();
-
-			if (ptid.equals("3")) {
-				optMultTrans.setVisible(false);
-
-			} else {
-				optMultTrans.setVisible(true);
-			}
-
-			tFProfx.setEnabled(true);
-			tFProfx.setReadOnly(false);
-
-			tFProfx.setValue(comboThresholdProfiles.getValue().toString());
-
-			tFProfx.setEnabled(false);
-			tFProfx.setReadOnly(true);
-
-			cPlaceholder.setVisible(true);
-			cAllProf.setVisible(false);
-			tFProf.setValue("");
-			combo.select(null);
-			addThresholds(combo, ptid);
-			addTransactionTypes(optMultTrans);
-
-		}
-
-		private void addThresholds(ComboBox optMult, String pid) {
-			optMult.removeAllItems();
-
-			if (rs == null) {
-				try {
-					rs = new ReportingService();
-				} catch (AxisFault e) {
-
-					e.printStackTrace();
-				}
-			}
-
-			try {
-
-				// System.out.println(pid);
-
-				hmThresholdTypesByID = rs.getThresholdTypes(pid);
-
-				Set<Entry<String, String>> set = hmThresholdTypesByID
-						.entrySet();
-				for (Entry<String, String> e : set) {
-
-					Object key = e.getKey();
-					optMult.addItem(key);
-					optMult.setItemCaption(key, e.getValue());
-
-				}
-
-			} catch (RemoteException | DataServiceFault e) {
-
-				e.printStackTrace();
-			}
-
-		}
-
-	}
-
 	private void initTransactionTypes() {
 
 		try {
@@ -2518,7 +2471,6 @@ public class ProfilesAndPermissionsModule {
 				 */
 				private static final long serialVersionUID = 1L;
 
-				@SuppressWarnings("unchecked")
 				@Override
 				public void buttonClick(ClickEvent event) {
 
@@ -3120,8 +3072,6 @@ public class ProfilesAndPermissionsModule {
 		isNewThresholdConfig = false;
 
 		initTransactionTypes();
-		Iterator<Entry<String, ArrayList<HashMap<String, String>>>> itr = hmExistingThresholdTypes
-				.entrySet().iterator();
 
 		Iterator<String> itrx = hmExistingThresholdTypes.keySet().iterator();
 
@@ -3204,64 +3154,6 @@ public class ProfilesAndPermissionsModule {
 
 	}
 
-	private void addTransactionTypes(OptionGroup optMult) {
-		optMult.removeAllItems();
-
-		System.out.println(optMult.getCaption() + ": -------");
-
-		if (rs == null) {
-			try {
-				rs = new ReportingService();
-			} catch (AxisFault e) {
-
-				e.printStackTrace();
-			}
-		}
-
-		try {
-
-			hmTransactionTypes = rs.getTransactionTypes();
-			Set<Entry<String, String>> set = hmTransactionTypes.entrySet();
-			for (Entry<String, String> e : set) {
-
-				Object key = e.getValue();
-				optMult.addItem(key);
-				optMult.setItemCaption(key, e.getKey());
-
-				System.out.println(key + " : " + e.getValue());
-
-			}
-
-		} catch (RemoteException | DataServiceFault e) {
-
-			e.printStackTrace();
-		}
-
-	}
-
-	private void addThresholdThresholdTypes(ComboBox optMult, String pid) {
-		optMult.removeAllItems();
-
-		if (rs == null) {
-			try {
-				rs = new ReportingService();
-			} catch (AxisFault e) {
-
-				e.printStackTrace();
-			}
-		}
-
-		Set<Entry<String, String>> set = hmThresholdTypesByID.entrySet();
-		for (Entry<String, String> e : set) {
-
-			Object key = e.getKey();
-			optMult.addItem(key);
-			optMult.setItemCaption(key, e.getValue());
-
-		}
-
-	}
-
 	private void reloadFields(IndexedContainer container) {
 		curThresholdValue = container
 				.getItem(container.getItemIds().iterator().next())
@@ -3274,10 +3166,6 @@ public class ProfilesAndPermissionsModule {
 		cNewThresholdBtns.setVisible(false);
 
 		return;
-	}
-
-	private void addExistingTransactionTypes(ComboBox comb) {
-
 	}
 
 }

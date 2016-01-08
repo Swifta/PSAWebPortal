@@ -482,9 +482,6 @@ public class BE2 {
 					return;
 				}
 
-				if (ums == null)
-					ums = new UserManagementService();
-
 				String strResponse = null;
 
 				if (tFIDD.getValue() == null) {
@@ -513,20 +510,24 @@ public class BE2 {
 					for (String id : arrLBulkIDs) {
 
 						try {
-							strResponse = ums.activateUser(bankdomainid,
-									currency, IDnumber, userresourceid,
-									SecurityAns, tFPIN.getValue(),
-									tFPINConf.getValue());
+							strResponse = UserManagementService.activateUser(
+									bankdomainid, currency, IDnumber,
+									userresourceid, SecurityAns,
+									tFPIN.getValue(), tFPINConf.getValue());
 
 						} catch (Exception e) {
-							// TODO Auto-generated catch block
+
 							e.printStackTrace();
-							NotifCustom.show("Activation", e.getMessage());
+							Notification.show(
+									"Error Occured while activating.",
+									Notification.Type.ERROR_MESSAGE);
 						}
 					}
 				isSent = true;
 
-				if (strResponse != null && strResponse.contains("SUCCESSFUL")) {
+				if (strResponse != null
+						&& strResponse.toUpperCase().contains(
+								new String("SUCCESSFUL"))) {
 					strResponse = "Activation successful!";
 					btn.setIcon(null);
 					btn.setCaption("R");
@@ -536,7 +537,14 @@ public class BE2 {
 					btnLock.setIcon(FontAwesome.LOCK);
 					btnLock.setDescription("Lock user.");
 
+					NotifCustom.show("Activation", strResponse);
+					popup.close();
+					return;
+
 				}
+
+				if (strResponse == null)
+					strResponse = "Sorry, No response from the server. Please contact administrator.";
 
 				NotifCustom.show("Activation", strResponse);
 				popup.close();
@@ -615,7 +623,7 @@ public class BE2 {
 
 		Button btnCancel = new Button("Cancel");
 		Button btnSet = new Button("Set");
-		// btnActivate.setIcon(FontAwesome.Y);
+		// btn.setIcon(FontAwesome.Y);
 		cPopupBtns.addComponent(btnSet);
 		cPopupBtns.addComponent(btnCancel);
 		frmDeleteReason.addComponent(cPopupBtns);
@@ -646,13 +654,12 @@ public class BE2 {
 			public void buttonClick(ClickEvent event) {
 				if (isSent)
 					return;
-				if (ums == null)
-					ums = new UserManagementService();
 
 				String strResponse = null;
 				try {
-					strResponse = ums.setParent(tFP.getValue(),
-							tFInitUser.getValue(), tFU.getValue());
+					strResponse = UserManagementService.setParent(
+							tFP.getValue(), tFInitUser.getValue(),
+							tFU.getValue());
 					isSent = true;
 				} catch (RemoteException e) {
 
@@ -788,8 +795,9 @@ public class BE2 {
 
 				String strResponse = null;
 				try {
-					strResponse = ums.setDefaultAccount(tFInitUser.getValue(),
-							tFC.getValue(), tFD.getValue());
+					strResponse = UserManagementService.setDefaultAccount(
+							tFInitUser.getValue(), tFC.getValue(),
+							tFD.getValue());
 					isSent = true;
 				} catch (RemoteException e) {
 
@@ -1206,7 +1214,7 @@ public class BE2 {
 
 		Property<CheckBox> tdPropertyCheck = trItem.getItemProperty(" ");
 		Property<String> tdPropertySN = trItem.getItemProperty("S/N");
-		// <String> tdPropertyUID = trItem.getItemProperty("UID");
+		// Property<String> tdPropertyUID = trItem.getItemProperty("UID");
 		Property<String> tdPropertyEmail = trItem.getItemProperty("Email");
 		Property<String> tdPropertyMSISDN = trItem.getItemProperty("MSISDN");
 		Property<String> tdPropertyUname = trItem.getItemProperty("Username");
@@ -1718,8 +1726,6 @@ public class BE2 {
 		btnActivate.addClickListener(new Button.ClickListener() {
 
 			private static final long serialVersionUID = -6318666715385643538L;
-			String strSxs = new String(
-					"ACCOUNT_HOLDER_ACCOUNT_ACTIVATION_SUCCESSFUL");
 
 			@Override
 			public void buttonClick(ClickEvent event) {
@@ -1783,7 +1789,11 @@ public class BE2 {
 					}
 				isSent = true;
 
-				if (strResponse != null && strResponse.equals(strSxs)) {
+				System.out.println(strResponse);
+
+				if (strResponse != null
+						&& strResponse.toUpperCase().equals(
+								new String("SUCCESSFUL"))) {
 					strResponse = "Activation successful!";
 					// btnActivate.setVisible(false);
 					// btnActivate.setEnabled(false);
@@ -2071,7 +2081,7 @@ public class BE2 {
 					}
 				}
 
-				String strSearchParams = strBuilder.toString();
+				// String strSearchParams = strBuilder.toString();
 				// String url = "!" + UMView.UM + "/?action=search_results&"
 				// + strSearchParams;
 
@@ -2255,7 +2265,7 @@ public class BE2 {
 		container = new IndexedContainer();
 		container.addContainerProperty(" ", CheckBox.class, null);
 		container.addContainerProperty("S/N", String.class, "000");
-
+		// container.addContainerProperty("UID", String.class, "000");
 		container.addContainerProperty("Username", String.class, "");
 
 		container.addContainerProperty("First Name", String.class, "");
@@ -2370,7 +2380,7 @@ public class BE2 {
 
 		// Notification.show(strParams, Notification.Type.ERROR_MESSAGE);
 
-		String[] arrAllParams = strParams.split("&");
+		// String[] arrAllParams = strParams.split("&");
 
 		/*
 		 * hmFilter.clear(); String[] arrP = null; for (String strParam :

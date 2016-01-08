@@ -358,8 +358,11 @@ public class UserDetailsModule {
 		}
 
 		if (xcontainer.getItem(xrid).getItemProperty("Profile Type").getValue()
-				.toString().equals(hmProfiles.get("7")))
-			cManageAndAddTab.addComponent(btnProfile);
+				.toString().equals(hmProfiles.get("7"))) {
+			if (Initializer.setUserPermissions.contains(hmPerms
+					.get("statement")))
+				cManageAndAddTab.addComponent(btnProfile);
+		}
 
 		// cManageAndAddTab.addComponent(btnAuth);
 		cManageAndAddTab.addComponent(btnLog);

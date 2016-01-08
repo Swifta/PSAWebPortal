@@ -28,6 +28,8 @@ public class Client {
 	public static void main(String args[]) throws Exception {
 		try {
 
+			System.out.println(111111);
+
 			// String result = Client.passreset();
 
 			// Client.passreset();
@@ -50,7 +52,7 @@ public class Client {
 
 			// Client.getThresholdTypes();
 
-			Client.getTransactionTypes();
+			// Client.getTransactionTypes();
 
 			// Client.getUserPermissions();
 
@@ -82,13 +84,31 @@ public class Client {
 			// Client.sql();
 
 			// getExistingThresholds();
+			// register();
 
-			getStatement();
+			// getStatement();
+
+			getTransactionReport();
 
 		} catch (Exception e) {
 			e.printStackTrace();
 
 		}
+
+	}
+
+	public static void getTransactionReport() throws RemoteException,
+			DataServiceFault {
+		ReportingService rs = new ReportingService();
+		Gettransactionreportresponse[] trr = rs.getTransactionReport(
+				"2013-01-01", "2015-12-31");
+
+		Gettransactionreportresponse t = trr[0];
+
+		System.out.println(t.getMmo());
+		System.out.println(t.getSender());
+		System.out.println(t.getDate());
+		// t.get
 
 	}
 
@@ -259,7 +279,7 @@ public class Client {
 		//
 		// System.out.println(ret);
 		//
-		String response = LoginService.webauthenticate("matsadminone", "12345");
+		String response = LoginService.webauthenticate("matsadminone", "livep");
 		System.out.println(response);
 
 		// }
@@ -555,7 +575,9 @@ public class Client {
 				"2015-05-05", "2015-05-05")) {
 
 			System.out.println(r.getTransactionid());
-			System.out.println(r.getCreatedon());
+			System.out.println(r.getDate());
+			System.out.println(r.getSender());
+			System.out.println(r.getMmo());
 
 		}
 	}

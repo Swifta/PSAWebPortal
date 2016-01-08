@@ -37,6 +37,8 @@ import com.swifta.sub.mats.reporting.DataServiceFault;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getfeesandcommissionreportresponse;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getfeesandcommissionsummaryreportresponse;
 import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Getfloatmanagementfloatresponse;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Gettransactionreportresponse;
+import com.swifta.sub.mats.reporting.MatsreportingserviceStub.Gettransactionsummaryreportresponse;
 import com.vaadin.addon.tableexport.ExcelExport;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
@@ -879,6 +881,7 @@ public class Reportform extends VerticalLayout {
 			trxnsqld.append(" externalpaymentreference extpay group by extpay.transactionid) group by txn.transactionid) ");
 			trxnsqld.append("  ORDER BY TransactionID,Timestamps;");
 
+			System.out.println(trxnsqld.toString());
 			rs = stmt.executeQuery(trxnsqld.toString());
 
 			while (rs.next()) {
@@ -1265,184 +1268,6 @@ public class Reportform extends VerticalLayout {
 				return;
 
 			}
-			x = 0;
-			if (x != 0) {
-
-				bdAmt = new BigDecimal(0.00);
-				bdAmt.setScale(2);
-
-				ds = container;
-				String drivers = "com.mysql.jdbc.Driver";
-				try {
-
-					Class<?> driver_class = Class.forName(drivers);
-					Driver driver = (Driver) driver_class.newInstance();
-					DriverManager.registerDriver(driver);
-
-					Connection conn = DriverManager.getConnection(
-							MatsWebPortalUI.conf.DB, MatsWebPortalUI.conf.UN,
-							MatsWebPortalUI.conf.PW);
-
-					Statement stmt = conn.createStatement();
-					ResultSet rs;
-					x = 0;
-					Object itemId;
-					Item trItem;
-
-					if (!container.removeAllItems()) {
-						return;
-					}
-
-					StringBuilder agentsql = new StringBuilder();
-
-					agentsql.append(" select cast(tbl1.datecreated as DATE) as datecreated, ctrs.operatorid as aid, ach.username as did, concat(achd.firstname,' ',achd.lastname) as fullname,  ");
-					agentsql.append(" tbl1.cashbalance as amount, addy.province as province, addy.postalCode as postalcode, addy.city as city from accountholders ach, accountholderdetails achd,address addy, ( select actxns.userresourceid as cashacctid, sum(actxns.closingbalance) - ");
-					agentsql.append(" sum(actxns.openingbalance) as cashbalance, actxns.datecreated as datecreated, acts.profileid as profileid, actxns.transactionid as transactionid from ");
-					agentsql.append(" accounttransactions actxns, transactions trx,accounts acts where actxns.transactionid = trx.transactionid and trx.transactionstatusid = 1 and ");
-					agentsql.append(" trx.transactiontypeid=1 and  actxns.accountresourceid = acts.accountid and acts.profileid = 12 group by CAST(actxns.datecreated as DATE),");
-					agentsql.append(" actxns.userresourceid) tbl1 join cashtransactions ctrs on ctrs.transactionid = tbl1.transactionid where ach.profileid = 11 and addy.addressid = achd.addressid and tbl1.cashacctid = ");
-					agentsql.append(" ach.accountholderid and achd.accountdetailsid = ach.accountholderdetailid and datecreated >= '"
-							+ d1
-							+ "' and datecreated <= DATE_ADD('"
-							+ d2
-							+ "', INTERVAL 1 DAY) ");
-					agentsql.append(" order by datecreated desc; ");
-					System.out.println(agentsql.toString());
-
-					/*
-					 * agentsql.append(
-					 * " select cast(tbl1.datecreated as DATE) as datecreated, ctrs.operatorid as aid, ach.username as did, concat(achd.firstname,' ',achd.lastname) as fullname, "
-					 * ); agentsql.append(
-					 * " tbl1.cashbalance as amount from accountholders ach, accountholderdetails achd, ( select actxns.userresourceid as cashacctid, sum(actxns.closingbalance) -  "
-					 * ); agentsql.append(
-					 * " sum(actxns.openingbalance) as cashbalance, actxns.datecreated as datecreated, acts.profileid as profileid, actxns.transactionid as transactionid from  "
-					 * ); agentsql.append(
-					 * " accounttransactions actxns, transactions trx,accounts acts where actxns.transactionid = trx.transactionid and trx.transactionstatusid = 1 and  "
-					 * ); agentsql.append(
-					 * " trx.transactiontypeid=1 and  actxns.accountresourceid = acts.accountid and acts.profileid = 12 group by CAST(actxns.datecreated as DATE),  "
-					 * ); agentsql.append(
-					 * " actxns.userresourceid) tbl1 join cashtransactions ctrs on ctrs.transactionid = tbl1.transactionid where ach.profileid = 11 and tbl1.cashacctid =  "
-					 * ); agentsql.append(
-					 * " ach.accountholderid and achd.accountdetailsid = ach.accountholderdetailid and datecreated >= '"
-					 * + d1 + "' and datecreated <= DATE_ADD('" + d2 +
-					 * "', INTERVAL 1 DAY)  ");
-					 * agentsql.append(" order by datecreated desc;  ");
-					 */
-
-					log.info(agentsql.toString());
-
-					rs = stmt.executeQuery(agentsql.toString());
-
-					cDate.setVisible(true);
-
-					while (rs.next()) {
-						x = x + 1;
-
-						itemId = container.addItem();
-
-						trItem = container.getItem(itemId);
-
-						Property<String> tdPropertyserial = trItem
-								.getItemProperty("S/N");
-						Property<String> tdPropertydealerid = trItem
-								.getItemProperty("Dealer ID");
-						Property<String> tdPropertyagentid = trItem
-								.getItemProperty("Agent ID");
-						Property<String> tdPropertyagentStreet = trItem
-								.getItemProperty("Zone");
-						Property<String> tdPropertyagentprovince = trItem
-								.getItemProperty("Sales Area");
-						Property<String> tdPropertycity = trItem
-								.getItemProperty("Territory");
-						Property<String> tdPropertyevalueamount = trItem
-								.getItemProperty("Amount (\u20A6)");
-
-						Property<String> tdPropertydate = trItem
-								.getItemProperty("Date");
-
-						Property<String> tdPropertyfullname = trItem
-								.getItemProperty("Full Name");
-						String aid = rs.getString("aid");
-						String did = rs.getString("did");
-						String amt = rs.getString("amount");
-						String fullname = rs.getString("fullname");
-						String street = rs.getString("postalcode");
-						String province = rs.getString("province");
-						String city = rs.getString("city");
-						Date date = rs.getDate("datecreated");
-						String d = sdf.format(date);
-
-						if (!ht.containsKey("Dealer")) {
-							TreeSet<String> arrL = new TreeSet<>();
-							arrL.add(did);
-							ht.put("Dealer", arrL);
-						} else {
-							ht.get("Dealer").add(did);
-						}
-
-						if (!ht.containsKey("Zone")) {
-							TreeSet<String> arrL = new TreeSet<>();
-							arrL.add(street);
-							ht.put("Zone", arrL);
-						} else {
-							ht.get("Zone").add(street);
-						}
-
-						if (!ht.containsKey("Sales Area")) {
-							TreeSet<String> arrL = new TreeSet<>();
-							arrL.add(province);
-							ht.put("Sales Area", arrL);
-						} else {
-							ht.get("Sales Area").add(province);
-						}
-
-						if (!ht.containsKey("Territory")) {
-							TreeSet<String> arrL = new TreeSet<>();
-							arrL.add(city);
-							ht.put("Territory", arrL);
-						} else {
-							ht.get("Territory").add(city);
-						}
-						try {
-							Double dn = Double.valueOf(amt);
-							bdAmt = BigDecimal
-									.valueOf(dn + bdAmt.doubleValue());
-						} catch (Exception e) {
-
-						}
-
-						tdPropertyserial.setValue(x + "");
-						tdPropertydealerid.setValue(did);
-						tdPropertyagentid.setValue(aid);
-						tdPropertyevalueamount.setValue(amt);
-						tdPropertydate.setValue(d);
-						tdPropertyfullname.setValue(fullname);
-						tdPropertyagentStreet.setValue(street);
-						tdPropertyagentprovince.setValue(province);
-						tdPropertycity.setValue(city);
-
-					}
-
-					conn.close();
-
-					if (x > 30) {
-						x = 30;
-					}
-
-					table.setPageLength(x);
-					// table.getd
-
-					table.setContainerDataSource(container);
-					table.setSelectable(true);
-
-				} catch (SQLException | InstantiationException
-						| IllegalAccessException | ClassNotFoundException
-						| NullPointerException e) {
-					errorHandler(e);
-
-				}
-
-			}
 
 		} else if (selectedId.equalsIgnoreCase("Transaction Report")) {
 
@@ -1465,347 +1290,435 @@ public class Reportform extends VerticalLayout {
 					"");
 			container2.addContainerProperty("Status", String.class, "");
 
-			// searchform.removeAllComponents();
-			// searchform.addComponent(Transactions());
 			ds = container2;
 			if (!container2.removeAllItems()) {
 				return;
 			}
 
-			/*
-			 * try { rs.getTransactionReport();
-			 * 
-			 * int x = x + 1;
-			 * 
-			 * for (Gettransactionreportresponse r :
-			 * reportService.getTransactionReport()) {
-			 * 
-			 * String transactiontype = r.getTransactiontype(); // String amount
-			 * = rs.getString("Amount"); //Date date = r.getCreatedon(); String
-			 * d = sdf.format(date); String transactionID =
-			 * r.getTransactionid(); String sender = r.getSender(); String
-			 * status = r.getStatus(); //String amount = r.; //String receiver =
-			 * rs.getString("Reciever"); //String partner = r.getSender();
-			 * 
-			 * if (!ht.containsKey("Agent/Sender")) { TreeSet<String> arrL = new
-			 * TreeSet<>(); arrL.add(sender); ht.put("Agent/Sender", arrL); }
-			 * else { ht.get("Agent/Sender").add(sender); }
-			 * 
-			 * if (!ht.containsKey("Partner")) { TreeSet<String> arrL = new
-			 * TreeSet<>(); arrL.add(partner); ht.put("Partner", arrL); } else {
-			 * ht.get("Partner").add(partner); }
-			 * 
-			 * if (!ht.containsKey("Transaction Type")) { TreeSet<String> arrL =
-			 * new TreeSet<>(); arrL.add(transactiontype);
-			 * ht.put("Transaction Type", arrL); } else {
-			 * ht.get("Transaction Type").add(transactiontype); }
-			 * 
-			 * if (!ht.containsKey("Status")) { TreeSet<String> arrL = new
-			 * TreeSet<>(); arrL.add(status); ht.put("Status", arrL); } else {
-			 * ht.get("Status").add(status); }
-			 * 
-			 * itemId = container2.addItem();
-			 * 
-			 * trItem = container2.getItem(itemId);
-			 * 
-			 * Property<String> tdPropertyserial = trItem
-			 * .getItemProperty("S/N");
-			 * 
-			 * Property<String> tdPropertytransactiondate = trItem
-			 * .getItemProperty("Date"); Property<String>
-			 * tdPropertytransactionid = trItem
-			 * .getItemProperty("Transaction ID"); Property<String>
-			 * tdPropertyamount = trItem .getItemProperty("Amount (\u20A6)");
-			 * 
-			 * Property<String> tdPropertyreceiver = trItem
-			 * .getItemProperty("Receiver"); Property<String>
-			 * tdPropertytransactiontype = trItem
-			 * .getItemProperty("Transaction Type"); // Property<String>
-			 * tdPropertyamount = trItem // .getItemProperty("Amount (\u20A6)");
-			 * Property<String> tdPropertysender = trItem
-			 * .getItemProperty("Agent/Sender"); // Property<String>
-			 * tdPropertysenderonbehalfof = trItem //
-			 * .getItemProperty("Sent_on_behalf_of");
-			 * 
-			 * // Property<String> tdPropertyreceiver = trItem //
-			 * .getItemProperty("Receiver"); // Property<String>
-			 * tdPropertyreceiveronbehalfof = trItem //
-			 * .getItemProperty("Received_on_behalf_of"); Property<String>
-			 * tdPropertystatus = trItem .getItemProperty("Status");
-			 * Property<String> tdPropertypartner = trItem
-			 * .getItemProperty("Partner");
-			 * 
-			 * try { Double dn = Double.valueOf(amount); bdAmt =
-			 * BigDecimal.valueOf(dn + bdAmt.doubleValue()); } catch (Exception
-			 * e) {
-			 * 
-			 * }
-			 * 
-			 * tdPropertyserial.setValue(String.valueOf(x));
-			 * tdPropertytransactionid.setValue(transactionID);
-			 * tdPropertytransactiondate.setValue(d);
-			 * tdPropertytransactiontype.setValue(transactiontype); //
-			 * tdPropertyamount.setValue(amount);
-			 * tdPropertysender.setValue(sender);
-			 * tdPropertyamount.setValue(amount);
-			 * tdPropertyreceiver.setValue(receiver);
-			 * 
-			 * tdPropertystatus.setValue(status);
-			 * tdPropertypartner.setValue(partner);
-			 * 
-			 * if (x > 30) { x = 30; }
-			 * 
-			 * table.setPageLength(x); table.setSelectable(true);
-			 * table.setContainerDataSource(container2);
-			 * 
-			 * }
-			 * 
-			 * } catch (RemoteException | DataServiceFault e) {
-			 * 
-			 * e.printStackTrace(); }
-			 */
+			// String drivers = "com.mysql.jdbc.Driver";
+			// try {
+			//
+			// Class<?> driver_class = Class.forName(drivers);
+			// Driver driver = (Driver) driver_class.newInstance();
+			// DriverManager.registerDriver(driver);
+			//
+			// Connection conn = DriverManager.getConnection(
+			// MatsWebPortalUI.conf.DB, MatsWebPortalUI.conf.UN,
+			// MatsWebPortalUI.conf.PW);
+			//
+			// Statement stmt = conn.createStatement();
+			//
+			// ResultSet rs;
+			// int x = 0;
+			// Object itemId;
+			// Item trItem;
+			// StringBuilder trxnsqld = new StringBuilder();
+			// trxnsqld.append(" SELECT txn.transactionid AS 'TransactionID', txn.lastupdate AS 'Timestamps','N/A' as 'Amount',txn.userresourceid as ");
+			// trxnsqld.append(" 'Sender','N/A' as 'Reciever','N/A' as 'Partner', txnt.name AS 'Transaction Type', txnst.transactionstatusname AS 'Status' ");
+			// trxnsqld.append(" FROM transactions txn, transactionstatus txnst, transactiontypes txnt WHERE txn.lastupdate >= '"
+			// + d1 + "' and txn.lastupdate <=  ");
+			// trxnsqld.append("  DATE_ADD('"
+			// + d2
+			// +
+			// "', INTERVAL 1 DAY) and txnst.transactionstatusid = txn.transactionstatusid ");
+			// trxnsqld.append(" AND txnt.transactiontypeid = txn.transactiontypeid and txn.transactionid not in (select txn1.transactionid from  ");
+			// trxnsqld.append(" accounttransactions txn1 group by txn1.transactionid) ");
+			//
+			// trxnsqld.append(" UNION ");
+			//
+			// trxnsqld.append("  SELECT txn.transactionid AS 'Transaction ID', txn.lastupdate AS 'Timestamps',(actxn.amount * -1) as 'Amount', ");
+			// trxnsqld.append(" txn.userresourceid as 'Sender',acth.username as 'Reciever', 'N/A' as 'Partner', txnt.name AS 'Transaction Type',  ");
+			// trxnsqld.append(" txnst.transactionstatusname AS 'Status' FROM transactions txn,  ");
+			// trxnsqld.append("  transactionstatus txnst, transactiontypes txnt,accounttransactions actxn join accountholders acth on acth.accountholderid = actxn.userresourceid  ");
+			// trxnsqld.append("  WHERE txn.lastupdate >= '" + d1
+			// + "' and txn.lastupdate <=  DATE_ADD('" + d2
+			// + "', INTERVAL 1 DAY) and txnst.transactionstatusid  ");
+			// trxnsqld.append("  = txn.transactionstatusid AND txnt.transactiontypeid = txn.transactiontypeid and  ");
+			// trxnsqld.append("  actxn.transactionid = txn.transactionid and txnt.name = 'DEPOSIT' AND txn.transactionid not in (SELECT txn.transactionid FROM transactions txn,  ");
+			// trxnsqld.append("  transactionstatus txnst, transactiontypes txnt,accounttransactions actxn join accountholders acth on acth.accountholderid = actxn.userresourceid  ");
+			// trxnsqld.append("  WHERE txnst.transactionstatusid = txn.transactionstatusid AND txnt.transactiontypeid = txn.transactiontypeid and  ");
+			// trxnsqld.append("   acth.profileid <> 14 and actxn.transactionid = txn.transactionid and txnt.name = 'DEPOSIT' group by actxn.transactionid) group by actxn.transactionid ");
+			//
+			// trxnsqld.append("  UNION ");
+			//
+			// trxnsqld.append("  SELECT txn.transactionid AS 'Transaction ID', txn.lastupdate AS 'Timestamps',actxn.amount as 'Amount', ");
+			// trxnsqld.append("  txn.userresourceid as 'Sender',acth.username as 'Reciever','N/A' as 'Partner', txnt.name AS 'Transaction Type',  ");
+			// trxnsqld.append(" txnst.transactionstatusname AS 'Status' FROM transactions txn,  ");
+			// trxnsqld.append("  transactionstatus txnst, transactiontypes txnt,accounttransactions actxn join accountholders acth on acth.accountholderid = actxn.userresourceid  ");
+			// trxnsqld.append("  WHERE txn.lastupdate >= '" + d1
+			// + "' and txn.lastupdate <= DATE_ADD('" + d2
+			// + "', INTERVAL 1 DAY) and txnst.transactionstatusid  ");
+			// trxnsqld.append("  = txn.transactionstatusid AND txnt.transactiontypeid = txn.transactiontypeid and  ");
+			// trxnsqld.append("   acth.profileid <> 14 and actxn.transactionid = txn.transactionid and txnt.name = 'DEPOSIT' group by actxn.transactionid  ");
+			//
+			// trxnsqld.append(" UNION  ");
+			//
+			// trxnsqld.append(" SELECT txn.transactionid AS 'TransactionID', txn.lastupdate AS 'Timestamps',(actxn.amount * -1) as 'Amount',  ");
+			// trxnsqld.append(" txnvo.toreceivinguserresource as 'Sender', extpay.refrence1 as 'Reciever',extpay.resourceid as 'Partner', txnt.name AS 'Transaction Type',  ");
+			// trxnsqld.append(" txnst.transactionstatusname AS 'Status' FROM transactions txn,transactionvalueoperations txnvo, ");
+			// trxnsqld.append("  transactionstatus txnst, transactiontypes txnt,accounttransactions actxn,externalpaymentreference extpay WHERE  ");
+			// trxnsqld.append("  txn.lastupdate >= '" + d1
+			// + "' and txn.lastupdate <= DATE_ADD('" + d2
+			// + "', INTERVAL 1 DAY) and txnst.transactionstatusid = ");
+			// trxnsqld.append("  txn.transactionstatusid AND txnt.transactiontypeid = txn.transactiontypeid and  ");
+			// trxnsqld.append("  actxn.amount < 0 and actxn.transactionid = txn.transactionid and extpay.transactionid = txn.transactionid and txnvo.transactionid = txn.transactionid group by  ");
+			// trxnsqld.append("  actxn.transactionid ");
+			//
+			// trxnsqld.append("  UNION ");
+			//
+			// trxnsqld.append(" 	(SELECT txn.transactionid AS 'TransactionID', txn.lastupdate AS 'Timestamps',(actxn.amount * -1) as 'Amount', ");
+			// trxnsqld.append(" 'N/A' as 'Sender','N/A' as 'Reciever',txn.userresourceid as 'Partner', txnt.name AS 'Transaction Type',  ");
+			// trxnsqld.append(" txnst.transactionstatusname AS 'Status' FROM transactions txn,  ");
+			// trxnsqld.append("  transactionstatus txnst, transactiontypes txnt,accounttransactions actxn WHERE txn.lastupdate >= '"
+			// + d1 + "' and txn.lastupdate <=  ");
+			// trxnsqld.append("  DATE_ADD('" + d2 + "', INTERVAL 1 DAY) and ");
+			// trxnsqld.append("  txnst.transactionstatusid = txn.transactionstatusid AND txnt.transactiontypeid = txn.transactiontypeid and  ");
+			// trxnsqld.append("  actxn.amount < 0 and actxn.transactionid = txn.transactionid and txnt.name <> 'DEPOSIT' and txn.transactionid  ");
+			// trxnsqld.append("  not in (select extpay.transactionid from  ");
+			// trxnsqld.append(" externalpaymentreference extpay group by extpay.transactionid) group by txn.transactionid) ");
+			// trxnsqld.append("  ORDER BY Timestamps desc; ");
+			//
+			// System.out.println(trxnsqld.toString());
+			// rs = stmt.executeQuery(trxnsqld.toString());
+			// cDate.setVisible(true);
+			// bdAmt = new BigDecimal(0.00);
+			//
+			// while (rs.next()) {
+			// x = x + 1;
+			//
+			// String transactiontype = rs.getString("Transaction Type");
+			// // String amount = rs.getString("Amount");
+			// Date date = rs.getDate("Timestamps");
+			// String d = sdf.format(date);
+			// String transactionID = rs.getString("TransactionID");
+			// String sender = rs.getString("Sender");
+			// String status = rs.getString("Status");
+			// String amount = rs.getString("Amount");
+			// String receiver = rs.getString("Reciever");
+			// String partner = rs.getString("Partner");
+			//
+			// try {
+			//
+			// if (!ht.containsKey("Agent/Sender")) {
+			// TreeSet<String> arrL = new TreeSet<>();
+			// arrL.add(sender);
+			// ht.put("Agent/Sender", arrL);
+			// } else {
+			// ht.get("Agent/Sender").add(sender);
+			// }
+			// } catch (Exception e) {
+			//
+			// System.out.println("VALUE: " + sender);
+			//
+			// // e.printStackTrace();
+			// System.out.println(e.getMessage());
+			//
+			// }
+			//
+			// try {
+			//
+			// if (!ht.containsKey("Partner")) {
+			// TreeSet<String> arrL = new TreeSet<>();
+			// arrL.add(partner);
+			// ht.put("Partner", arrL);
+			// } else {
+			// ht.get("Partner").add(partner);
+			// }
+			//
+			// } catch (Exception e) {
+			//
+			// System.out.println("VALUE: " + partner);
+			//
+			// // e.printStackTrace();
+			// System.out.println(e.getMessage());
+			//
+			// }
+			//
+			// try {
+			//
+			// if (!ht.containsKey("Transaction Type")) {
+			// TreeSet<String> arrL = new TreeSet<>();
+			// arrL.add(transactiontype);
+			// ht.put("Transaction Type", arrL);
+			// } else {
+			// ht.get("Transaction Type").add(transactiontype);
+			// }
+			//
+			// } catch (Exception e) {
+			//
+			// // e.printStackTrace();
+			// System.out.println("VALUE: " + transactiontype);
+			// System.out.println(e.getMessage());
+			//
+			// }
+			//
+			// try {
+			//
+			// if (!ht.containsKey("Status")) {
+			// TreeSet<String> arrL = new TreeSet<>();
+			// arrL.add(status);
+			// ht.put("Status", arrL);
+			// } else {
+			// ht.get("Status").add(status);
+			// }
+			//
+			// } catch (Exception e) {
+			//
+			// System.out.println("VALUE: " + status);
+			// // e.printStackTrace();
+			// System.out.println(e.getMessage());
+			//
+			// }
+			//
+			// itemId = container2.addItem();
+			//
+			// trItem = container2.getItem(itemId);
+			//
+			// Property<String> tdPropertyserial = trItem
+			// .getItemProperty("S/N");
+			//
+			// Property<String> tdPropertytransactiondate = trItem
+			// .getItemProperty("Date");
+			// Property<String> tdPropertytransactionid = trItem
+			// .getItemProperty("Transaction ID");
+			// Property<String> tdPropertyamount = trItem
+			// .getItemProperty("Amount (\u20A6)");
+			//
+			// Property<String> tdPropertyreceiver = trItem
+			// .getItemProperty("Receiver");
+			// Property<String> tdPropertytransactiontype = trItem
+			// .getItemProperty("Transaction Type");
+			// // Property<String> tdPropertyamount = trItem
+			// // .getItemProperty("Amount (\u20A6)");
+			// Property<String> tdPropertysender = trItem
+			// .getItemProperty("Agent/Sender");
+			// // Property<String> tdPropertysenderonbehalfof = trItem
+			// // .getItemProperty("Sent_on_behalf_of");
+			//
+			// // Property<String> tdPropertyreceiver = trItem
+			// // .getItemProperty("Receiver");
+			// // Property<String> tdPropertyreceiveronbehalfof = trItem
+			// // .getItemProperty("Received_on_behalf_of");
+			// Property<String> tdPropertystatus = trItem
+			// .getItemProperty("Status");
+			// Property<String> tdPropertypartner = trItem
+			// .getItemProperty("Partner");
+			//
+			// try {
+			// Double dn = Double.valueOf(amount);
+			// bdAmt = BigDecimal.valueOf(dn + bdAmt.doubleValue());
+			// } catch (Exception e) {
+			//
+			// }
+			//
+			// tdPropertyserial.setValue(String.valueOf(x));
+			// tdPropertytransactionid.setValue(transactionID);
+			// tdPropertytransactiondate.setValue(d);
+			// tdPropertytransactiontype.setValue(transactiontype);
+			// // tdPropertyamount.setValue(amount);
+			// tdPropertysender.setValue(sender);
+			// tdPropertyamount.setValue(amount);
+			// tdPropertyreceiver.setValue(receiver);
+			//
+			// tdPropertystatus.setValue(status);
+			// tdPropertypartner.setValue(partner);
+			//
+			// }
+			//
+			// conn.close();
+			//
+			// if (x > 30)
+			// x = 30;
+			//
+			// table.setPageLength(x);
+			// table.setSelectable(true);
+			// table.setContainerDataSource(container2);
+			//
+			// } catch (SQLException | ClassNotFoundException
+			// | InstantiationException | IllegalAccessException
+			// | NullPointerException e) {
+			// errorHandler(e);
+			// }
 
-			String drivers = "com.mysql.jdbc.Driver";
 			try {
 
-				Class<?> driver_class = Class.forName(drivers);
-				Driver driver = (Driver) driver_class.newInstance();
-				DriverManager.registerDriver(driver);
+				Gettransactionreportresponse[] trr = reportService
+						.getTransactionReport(d1, d2);
+				int x = trr.length;
+				if (trr.length > 0) {
 
-				Connection conn = DriverManager.getConnection(
-						MatsWebPortalUI.conf.DB, MatsWebPortalUI.conf.UN,
-						MatsWebPortalUI.conf.PW);
+					for (Gettransactionreportresponse trxn : trr) {
 
-				Statement stmt = conn.createStatement();
+						String transactiontype = trxn.getTransactiontype();
+						String transactionID = trxn.getTransactionid();
 
-				ResultSet rs;
-				int x = 0;
-				Object itemId;
-				Item trItem;
-				StringBuilder trxnsqld = new StringBuilder();
-				trxnsqld.append(" SELECT txn.transactionid AS 'TransactionID', txn.lastupdate AS 'Timestamps','N/A' as 'Amount',txn.userresourceid as ");
-				trxnsqld.append(" 'Sender','N/A' as 'Reciever','N/A' as 'Partner', txnt.name AS 'Transaction Type', txnst.transactionstatusname AS 'Status' ");
-				trxnsqld.append(" FROM transactions txn, transactionstatus txnst, transactiontypes txnt WHERE txn.lastupdate >= '"
-						+ d1 + "' and txn.lastupdate <=  ");
-				trxnsqld.append("  DATE_ADD('"
-						+ d2
-						+ "', INTERVAL 1 DAY) and txnst.transactionstatusid = txn.transactionstatusid ");
-				trxnsqld.append(" AND txnt.transactiontypeid = txn.transactiontypeid and txn.transactionid not in (select txn1.transactionid from  ");
-				trxnsqld.append(" accounttransactions txn1 group by txn1.transactionid) ");
+						String d = trxn.getDate();
 
-				trxnsqld.append(" UNION ");
+						if (d != null)
+							try {
+								Date dt = sdf.parse(d);
+								cal.setTime(dt);
+								int m = cal.get(Calendar.MONTH) + 1;
 
-				trxnsqld.append("  SELECT txn.transactionid AS 'Transaction ID', txn.lastupdate AS 'Timestamps',(actxn.amount * -1) as 'Amount', ");
-				trxnsqld.append(" txn.userresourceid as 'Sender',acth.username as 'Reciever', 'N/A' as 'Partner', txnt.name AS 'Transaction Type',  ");
-				trxnsqld.append(" txnst.transactionstatusname AS 'Status' FROM transactions txn,  ");
-				trxnsqld.append("  transactionstatus txnst, transactiontypes txnt,accounttransactions actxn join accountholders acth on acth.accountholderid = actxn.userresourceid  ");
-				trxnsqld.append("  WHERE txn.lastupdate >= '" + d1
-						+ "' and txn.lastupdate <=  DATE_ADD('" + d2
-						+ "', INTERVAL 1 DAY) and txnst.transactionstatusid  ");
-				trxnsqld.append("  = txn.transactionstatusid AND txnt.transactiontypeid = txn.transactiontypeid and  ");
-				trxnsqld.append("  actxn.transactionid = txn.transactionid and txnt.name = 'DEPOSIT' AND txn.transactionid not in (SELECT txn.transactionid FROM transactions txn,  ");
-				trxnsqld.append("  transactionstatus txnst, transactiontypes txnt,accounttransactions actxn join accountholders acth on acth.accountholderid = actxn.userresourceid  ");
-				trxnsqld.append("  WHERE txnst.transactionstatusid = txn.transactionstatusid AND txnt.transactiontypeid = txn.transactiontypeid and  ");
-				trxnsqld.append("   acth.profileid <> 14 and actxn.transactionid = txn.transactionid and txnt.name = 'DEPOSIT' group by actxn.transactionid) group by actxn.transactionid ");
+								d = cal.get(Calendar.YEAR) + "-"
+										+ ((m < 10) ? "0" + m : m) + "-"
+										+ cal.get(Calendar.DATE);
+							} catch (ParseException e) {
 
-				trxnsqld.append("  UNION ");
+								e.printStackTrace();
+							}
 
-				trxnsqld.append("  SELECT txn.transactionid AS 'Transaction ID', txn.lastupdate AS 'Timestamps',actxn.amount as 'Amount', ");
-				trxnsqld.append("  txn.userresourceid as 'Sender',acth.username as 'Reciever','N/A' as 'Partner', txnt.name AS 'Transaction Type',  ");
-				trxnsqld.append(" txnst.transactionstatusname AS 'Status' FROM transactions txn,  ");
-				trxnsqld.append("  transactionstatus txnst, transactiontypes txnt,accounttransactions actxn join accountholders acth on acth.accountholderid = actxn.userresourceid  ");
-				trxnsqld.append("  WHERE txn.lastupdate >= '" + d1
-						+ "' and txn.lastupdate <= DATE_ADD('" + d2
-						+ "', INTERVAL 1 DAY) and txnst.transactionstatusid  ");
-				trxnsqld.append("  = txn.transactionstatusid AND txnt.transactiontypeid = txn.transactiontypeid and  ");
-				trxnsqld.append("   acth.profileid <> 14 and actxn.transactionid = txn.transactionid and txnt.name = 'DEPOSIT' group by actxn.transactionid  ");
+						// d = trxn.getDate();
+						String sender = trxn.getSender();
+						String status = trxn.getStatus();
+						String amount = trxn.getAmount();
+						String receiver = trxn.getReceiver();
+						String partner = trxn.getMmo();
 
-				trxnsqld.append(" UNION  ");
+						try {
 
-				trxnsqld.append(" SELECT txn.transactionid AS 'TransactionID', txn.lastupdate AS 'Timestamps',(actxn.amount * -1) as 'Amount',  ");
-				trxnsqld.append(" txnvo.toreceivinguserresource as 'Sender', extpay.refrence1 as 'Reciever',extpay.resourceid as 'Partner', txnt.name AS 'Transaction Type',  ");
-				trxnsqld.append(" txnst.transactionstatusname AS 'Status' FROM transactions txn,transactionvalueoperations txnvo, ");
-				trxnsqld.append("  transactionstatus txnst, transactiontypes txnt,accounttransactions actxn,externalpaymentreference extpay WHERE  ");
-				trxnsqld.append("  txn.lastupdate >= '" + d1
-						+ "' and txn.lastupdate <= DATE_ADD('" + d2
-						+ "', INTERVAL 1 DAY) and txnst.transactionstatusid = ");
-				trxnsqld.append("  txn.transactionstatusid AND txnt.transactiontypeid = txn.transactiontypeid and  ");
-				trxnsqld.append("  actxn.amount < 0 and actxn.transactionid = txn.transactionid and extpay.transactionid = txn.transactionid and txnvo.transactionid = txn.transactionid group by  ");
-				trxnsqld.append("  actxn.transactionid ");
+							if (!ht.containsKey("Agent/Sender")) {
+								TreeSet<String> arrL = new TreeSet<>();
+								arrL.add(sender);
+								ht.put("Agent/Sender", arrL);
+							} else {
+								ht.get("Agent/Sender").add(sender);
+							}
+						} catch (Exception e) {
 
-				trxnsqld.append("  UNION ");
+							System.out.println("VALUE: " + sender);
 
-				trxnsqld.append(" 	(SELECT txn.transactionid AS 'TransactionID', txn.lastupdate AS 'Timestamps',(actxn.amount * -1) as 'Amount', ");
-				trxnsqld.append(" 'N/A' as 'Sender','N/A' as 'Reciever',txn.userresourceid as 'Partner', txnt.name AS 'Transaction Type',  ");
-				trxnsqld.append(" txnst.transactionstatusname AS 'Status' FROM transactions txn,  ");
-				trxnsqld.append("  transactionstatus txnst, transactiontypes txnt,accounttransactions actxn WHERE txn.lastupdate >= '"
-						+ d1 + "' and txn.lastupdate <=  ");
-				trxnsqld.append("  DATE_ADD('" + d2 + "', INTERVAL 1 DAY) and ");
-				trxnsqld.append("  txnst.transactionstatusid = txn.transactionstatusid AND txnt.transactiontypeid = txn.transactiontypeid and  ");
-				trxnsqld.append("  actxn.amount < 0 and actxn.transactionid = txn.transactionid and txnt.name <> 'DEPOSIT' and txn.transactionid  ");
-				trxnsqld.append("  not in (select extpay.transactionid from  ");
-				trxnsqld.append(" externalpaymentreference extpay group by extpay.transactionid) group by txn.transactionid) ");
-				trxnsqld.append("  ORDER BY Timestamps desc; ");
+							// e.printStackTrace();
+							System.out.println(e.getMessage());
 
-				rs = stmt.executeQuery(trxnsqld.toString());
-				cDate.setVisible(true);
-				bdAmt = new BigDecimal(0.00);
-
-				while (rs.next()) {
-					x = x + 1;
-
-					String transactiontype = rs.getString("Transaction Type");
-					// String amount = rs.getString("Amount");
-					Date date = rs.getDate("Timestamps");
-					String d = sdf.format(date);
-					String transactionID = rs.getString("TransactionID");
-					String sender = rs.getString("Sender");
-					String status = rs.getString("Status");
-					String amount = rs.getString("Amount");
-					String receiver = rs.getString("Reciever");
-					String partner = rs.getString("Partner");
-
-					try {
-
-						if (!ht.containsKey("Agent/Sender")) {
-							TreeSet<String> arrL = new TreeSet<>();
-							arrL.add(sender);
-							ht.put("Agent/Sender", arrL);
-						} else {
-							ht.get("Agent/Sender").add(sender);
-						}
-					} catch (Exception e) {
-
-						System.out.println("VALUE: " + sender);
-
-						// e.printStackTrace();
-						System.out.println(e.getMessage());
-
-					}
-
-					try {
-
-						if (!ht.containsKey("Partner")) {
-							TreeSet<String> arrL = new TreeSet<>();
-							arrL.add(partner);
-							ht.put("Partner", arrL);
-						} else {
-							ht.get("Partner").add(partner);
 						}
 
-					} catch (Exception e) {
+						try {
 
-						System.out.println("VALUE: " + partner);
+							if (!ht.containsKey("Partner")) {
+								TreeSet<String> arrL = new TreeSet<>();
+								arrL.add(partner);
+								ht.put("Partner", arrL);
+							} else {
+								ht.get("Partner").add(partner);
+							}
 
-						// e.printStackTrace();
-						System.out.println(e.getMessage());
+						} catch (Exception e) {
 
-					}
+							System.out.println("VALUE: " + partner);
 
-					try {
+							// e.printStackTrace();
+							System.out.println(e.getMessage());
 
-						if (!ht.containsKey("Transaction Type")) {
-							TreeSet<String> arrL = new TreeSet<>();
-							arrL.add(transactiontype);
-							ht.put("Transaction Type", arrL);
-						} else {
-							ht.get("Transaction Type").add(transactiontype);
 						}
 
-					} catch (Exception e) {
+						try {
 
-						// e.printStackTrace();
-						System.out.println("VALUE: " + transactiontype);
-						System.out.println(e.getMessage());
+							if (!ht.containsKey("Transaction Type")) {
+								TreeSet<String> arrL = new TreeSet<>();
+								arrL.add(transactiontype);
+								ht.put("Transaction Type", arrL);
+							} else {
+								ht.get("Transaction Type").add(transactiontype);
+							}
 
-					}
+						} catch (Exception e) {
 
-					try {
+							// e.printStackTrace();
+							System.out.println("VALUE: " + transactiontype);
+							System.out.println(e.getMessage());
 
-						if (!ht.containsKey("Status")) {
-							TreeSet<String> arrL = new TreeSet<>();
-							arrL.add(status);
-							ht.put("Status", arrL);
-						} else {
-							ht.get("Status").add(status);
 						}
 
-					} catch (Exception e) {
+						try {
 
-						System.out.println("VALUE: " + status);
-						// e.printStackTrace();
-						System.out.println(e.getMessage());
+							if (!ht.containsKey("Status")) {
+								TreeSet<String> arrL = new TreeSet<>();
+								arrL.add(status);
+								ht.put("Status", arrL);
+							} else {
+								ht.get("Status").add(status);
+							}
+
+						} catch (Exception e) {
+
+							System.out.println("VALUE: " + status);
+							// e.printStackTrace();
+							System.out.println(e.getMessage());
+
+						}
+
+						Object itemId;
+						Item trItem;
+
+						itemId = container2.addItem();
+
+						trItem = container2.getItem(itemId);
+
+						Property<String> tdPropertyserial = trItem
+								.getItemProperty("S/N");
+
+						Property<String> tdPropertytransactiondate = trItem
+								.getItemProperty("Date");
+						Property<String> tdPropertytransactionid = trItem
+								.getItemProperty("Transaction ID");
+						Property<String> tdPropertyamount = trItem
+								.getItemProperty("Amount (\u20A6)");
+
+						Property<String> tdPropertyreceiver = trItem
+								.getItemProperty("Receiver");
+						Property<String> tdPropertytransactiontype = trItem
+								.getItemProperty("Transaction Type");
+						// Property<String> tdPropertyamount = trItem
+						// .getItemProperty("Amount (\u20A6)");
+						Property<String> tdPropertysender = trItem
+								.getItemProperty("Agent/Sender");
+						// Property<String> tdPropertysenderonbehalfof = trItem
+						// .getItemProperty("Sent_on_behalf_of");
+
+						// Property<String> tdPropertyreceiver = trItem
+						// .getItemProperty("Receiver");
+						// Property<String> tdPropertyreceiveronbehalfof =
+						// trItem
+						// .getItemProperty("Received_on_behalf_of");
+						Property<String> tdPropertystatus = trItem
+								.getItemProperty("Status");
+						Property<String> tdPropertypartner = trItem
+								.getItemProperty("Partner");
+
+						try {
+							Double dn = Double.valueOf(amount);
+							bdAmt = BigDecimal
+									.valueOf(dn + bdAmt.doubleValue());
+						} catch (Exception e) {
+
+						}
+
+						tdPropertyserial.setValue(String.valueOf(x));
+						tdPropertytransactionid.setValue(transactionID);
+						tdPropertytransactiondate.setValue(d);
+						tdPropertytransactiontype.setValue(transactiontype);
+						// tdPropertyamount.setValue(amount);
+						tdPropertysender.setValue(sender);
+						tdPropertyamount.setValue(amount);
+						tdPropertyreceiver.setValue(receiver);
+
+						tdPropertystatus.setValue(status);
+						tdPropertypartner.setValue(partner);
 
 					}
-
-					itemId = container2.addItem();
-
-					trItem = container2.getItem(itemId);
-
-					Property<String> tdPropertyserial = trItem
-							.getItemProperty("S/N");
-
-					Property<String> tdPropertytransactiondate = trItem
-							.getItemProperty("Date");
-					Property<String> tdPropertytransactionid = trItem
-							.getItemProperty("Transaction ID");
-					Property<String> tdPropertyamount = trItem
-							.getItemProperty("Amount (\u20A6)");
-
-					Property<String> tdPropertyreceiver = trItem
-							.getItemProperty("Receiver");
-					Property<String> tdPropertytransactiontype = trItem
-							.getItemProperty("Transaction Type");
-					// Property<String> tdPropertyamount = trItem
-					// .getItemProperty("Amount (\u20A6)");
-					Property<String> tdPropertysender = trItem
-							.getItemProperty("Agent/Sender");
-					// Property<String> tdPropertysenderonbehalfof = trItem
-					// .getItemProperty("Sent_on_behalf_of");
-
-					// Property<String> tdPropertyreceiver = trItem
-					// .getItemProperty("Receiver");
-					// Property<String> tdPropertyreceiveronbehalfof = trItem
-					// .getItemProperty("Received_on_behalf_of");
-					Property<String> tdPropertystatus = trItem
-							.getItemProperty("Status");
-					Property<String> tdPropertypartner = trItem
-							.getItemProperty("Partner");
-
-					try {
-						Double dn = Double.valueOf(amount);
-						bdAmt = BigDecimal.valueOf(dn + bdAmt.doubleValue());
-					} catch (Exception e) {
-
-					}
-
-					tdPropertyserial.setValue(String.valueOf(x));
-					tdPropertytransactionid.setValue(transactionID);
-					tdPropertytransactiondate.setValue(d);
-					tdPropertytransactiontype.setValue(transactiontype);
-					// tdPropertyamount.setValue(amount);
-					tdPropertysender.setValue(sender);
-					tdPropertyamount.setValue(amount);
-					tdPropertyreceiver.setValue(receiver);
-
-					tdPropertystatus.setValue(status);
-					tdPropertypartner.setValue(partner);
 
 				}
 
-				conn.close();
-
-				if (x > 30) {
+				if (x > 30)
 					x = 30;
-				}
 
 				table.setPageLength(x);
 				table.setSelectable(true);
 				table.setContainerDataSource(container2);
 
-			} catch (SQLException | ClassNotFoundException
-					| InstantiationException | IllegalAccessException
-					| NullPointerException e) {
+			} catch (RemoteException | DataServiceFault e) {
+
 				errorHandler(e);
 			}
 
@@ -1829,127 +1742,85 @@ public class Reportform extends VerticalLayout {
 
 			bdAmt = new BigDecimal(0.00);
 
-			String drivers = "com.mysql.jdbc.Driver";
+			// String drivers = "com.mysql.jdbc.Driver";
 			try {
 
-				Class<?> driver_class = Class.forName(drivers);
-				Driver driver = (Driver) driver_class.newInstance();
-				DriverManager.registerDriver(driver);
+				cDate.setVisible(true);
 
-				Connection conn = DriverManager.getConnection(
-						MatsWebPortalUI.conf.DB, MatsWebPortalUI.conf.UN,
-						MatsWebPortalUI.conf.PW);
-
-				Statement stmt = conn.createStatement();
-				ResultSet rs;
-				int x = 0;
 				Object itemId;
 				Item trItem;
 
-				StringBuilder summarysql = new StringBuilder();
+				Gettransactionsummaryreportresponse[] trr;
 
-				/*
-				 * summarysql .append(
-				 * "SELECT CAST(txn.lastupdate as DATE) AS 'TransactionDate'" +
-				 * ",txnt.name AS 'Transaction Type'" +
-				 * ",sum(actxn.amount) as 'Amount'" +
-				 * " FROM transactions txn, transactionstatus txnst, transactiontypes txnt,accounttransactions"
-				 * +
-				 * " actxn,externalpaymentreference extpay, accountholders acth WHERE  txnst.transactionstatusid = txn.transactionstatusid"
-				 * + " AND txnt.transactiontypeid = txn.transactiontypeid and "
-				 * +
-				 * "actxn.amount > 0 and actxn.transactionid = txn.transactionid and acth.accountholderid = actxn.userresourceid "
-				 * +
-				 * "and acth.profileid <> 14 and extpay.transactionid = txn.transactionid group by txnt.name, CAST(txn.lastupdate as DATE) order by TransactionDate desc"
-				 * );
-				 */
-				summarysql
-						.append(" SELECT CAST(txn.lastupdate as DATE) AS 'TransactionDate',txnt.name AS 'Transaction Type',sum(actxn.amount) as 'Amount' ");
-				summarysql
-						.append("FROM transactions txn, transactionstatus txnst, transactiontypes txnt,accounttransactions actxn,externalpaymentreference extpay,  ");
-				summarysql
-						.append("accountholders acth WHERE  txnst.transactionstatusid = txn.transactionstatusid AND txnt.transactiontypeid = txn.transactiontypeid  ");
-				summarysql
-						.append("and actxn.amount > 0 and actxn.transactionid = txn.transactionid and acth.accountholderid = actxn.userresourceid  ");
-				summarysql
-						.append("and acth.profileid <> 14 and txn.lastupdate >= '"
-								+ d1 + "' and txn.lastupdate <=  ");
-				summarysql
-						.append(" DATE_ADD('"
-								+ d2
-								+ "', INTERVAL 1 DAY) and extpay.transactionid = txn.transactionid group by txnt.name, CAST(txn.lastupdate as DATE)  ");
-				summarysql.append("order by TransactionDate desc ");
+				trr = reportService.getTransactionSummaryReport(d1, d2);
 
-				rs = stmt.executeQuery(summarysql.toString());
+				int x = trr.length;
+				if (trr.length > 0) {
 
-				cDate.setVisible(true);
-				while (rs.next()) {
-					x = x + 1;
+					for (Gettransactionsummaryreportresponse trxn : trr) {
 
-					String transactiontype = rs.getString("Transaction Type");
-					String amount = rs.getString("Amount");
-					// String nooftransactions = rs
-					// .getString("No of transactions");
-					Date date = rs.getDate("TransactionDate");
-					String d = sdf.format(date);
+						String transactiontype = trxn.getTransactionType();
+						String amount = trxn.getAmount();
+						// String nooftransactions = rs
+						// .getString("No of transactions");
+						// Date date = rs.getDate("TransactionDate");
+						String d = trxn.getTransactionDate();
 
-					if (!ht.containsKey("Transaction Type")) {
-						TreeSet<String> arrL = new TreeSet<>();
-						arrL.add(transactiontype);
-						ht.put("Transaction Type", arrL);
-					} else {
-						ht.get("Transaction Type").add(transactiontype);
+						if (!ht.containsKey("Transaction Type")) {
+							TreeSet<String> arrL = new TreeSet<>();
+							arrL.add(transactiontype);
+							ht.put("Transaction Type", arrL);
+						} else {
+							ht.get("Transaction Type").add(transactiontype);
+						}
+
+						itemId = container3.addItem();
+
+						trItem = container3.getItem(itemId);
+
+						Property<String> tdPropertyserial = trItem
+								.getItemProperty("S/N");
+						// Property<String> tdPropertyname = trItem
+						// .getItemProperty("Name");
+						Property<String> tdPropertytransactiondate = trItem
+								.getItemProperty("Date");
+						Property<String> tdPropertytransactiontype = trItem
+								.getItemProperty("Transaction Type");
+						// Property<String> tdPropertytransactioncount = trItem
+						// .getItemProperty("Transaction Count");
+						Property<String> tdPropertyamount = trItem
+								.getItemProperty("Amount (\u20A6)");
+						// Property<String> tdPropertytransactionstatus = trItem
+						// .getItemProperty("Status");
+
+						// tdPropertyname.setValue(name);
+
+						try {
+							Double dn = Double.valueOf(amount);
+							bdAmt = BigDecimal
+									.valueOf(dn + bdAmt.doubleValue());
+						} catch (Exception e) {
+
+						}
+
+						tdPropertyserial.setValue(String.valueOf(x));
+						tdPropertytransactiondate.setValue(d);
+						tdPropertytransactiontype.setValue(transactiontype);
+						tdPropertyamount.setValue(amount);
+						// tdPropertytransactioncount.setValue(nooftransactions);
+						// tdPropertytransactionstatus.setValue(status);
 					}
-
-					itemId = container3.addItem();
-
-					trItem = container3.getItem(itemId);
-
-					Property<String> tdPropertyserial = trItem
-							.getItemProperty("S/N");
-					// Property<String> tdPropertyname = trItem
-					// .getItemProperty("Name");
-					Property<String> tdPropertytransactiondate = trItem
-							.getItemProperty("Date");
-					Property<String> tdPropertytransactiontype = trItem
-							.getItemProperty("Transaction Type");
-					// Property<String> tdPropertytransactioncount = trItem
-					// .getItemProperty("Transaction Count");
-					Property<String> tdPropertyamount = trItem
-							.getItemProperty("Amount (\u20A6)");
-					// Property<String> tdPropertytransactionstatus = trItem
-					// .getItemProperty("Status");
-
-					// tdPropertyname.setValue(name);
-
-					try {
-						Double dn = Double.valueOf(amount);
-						bdAmt = BigDecimal.valueOf(dn + bdAmt.doubleValue());
-					} catch (Exception e) {
-
-					}
-
-					tdPropertyserial.setValue(String.valueOf(x));
-					tdPropertytransactiondate.setValue(d);
-					tdPropertytransactiontype.setValue(transactiontype);
-					tdPropertyamount.setValue(amount);
-					// tdPropertytransactioncount.setValue(nooftransactions);
-					// tdPropertytransactionstatus.setValue(status);
 				}
 
-				conn.close();
-
-				if (x > 30) {
+				if (x > 30)
 					x = 30;
-				}
 
 				table.setPageLength(x);
 
 				table.setContainerDataSource(container3);
 				table.setSelectable(true);
 
-			} catch (SQLException | ClassNotFoundException
-					| InstantiationException | IllegalAccessException e) {
+			} catch (Exception e) {
 				errorHandler(e);
 			}
 
@@ -2138,177 +2009,6 @@ public class Reportform extends VerticalLayout {
 				errorHandler(e);
 			}
 
-			x = 0;
-
-			if (x != 0) {
-
-				String drivers = "com.mysql.jdbc.Driver";
-				try {
-
-					Class<?> driver_class = Class.forName(drivers);
-					Driver driver = (Driver) driver_class.newInstance();
-					DriverManager.registerDriver(driver);
-
-					Connection conn = DriverManager.getConnection(
-							MatsWebPortalUI.conf.DB, MatsWebPortalUI.conf.UN,
-							MatsWebPortalUI.conf.PW);
-
-					Statement stmt = conn.createStatement();
-					ResultSet rs;
-					x = 0;
-					Object itemId;
-					Item trItem;
-
-					StringBuilder sb = new StringBuilder();
-
-					sb.append(" select trx1.transactionid as txid,trxtyp.name as 'Transaction Type',acts1.datecreated as TransactionDate,  ");
-					sb.append(" acts3.amount as Amount,txnvo.toreceivinguserresource as 'Agent ID',acts2.amount as 'Adjusted Fees',acts2.amount+acts1.amount as  ");
-					sb.append(" 'Original Fees',acts1.amount as commission, (acts1.amount  * 0.25) as 'MATS Comm.', (acts1.amount  * 0.75) as 'Total Commission', acth.username as  ");
-					sb.append(" 'Partner' from accounttransactions acts1, transactionvalueoperations txnvo, transactions trx1, transactiontypes trxtyp, accounttransactions acts2,  ");
-					sb.append(" accounttransactions acts3, accountholders acth, accountholders acth2, accounts act1, accounts act2, profiles pf1,  ");
-					sb.append(" profiles pf2 WHERE acts1.datecreated >= '" + d1
-							+ "' and acts1.datecreated <=  DATE_ADD('" + d2
-							+ "', INTERVAL 1 DAY)  ");
-					sb.append(" and acts1.transactionid = trx1.transactionid and act1.profileid = pf1.profileid and acts2.transactionid =  ");
-					sb.append(" trx1.transactionid and acts2.userresourceid = acth.accountholderid and acts1.accountresourceid = act1.accountid and  ");
-					sb.append(" act2.profileid = pf2.profileid and acts2.accountresourceid = act2.accountid and acts3.userresourceid =  ");
-					sb.append(" acth2.accountholderid and acts3.transactionid = trx1.transactionid and txnvo.transactionid = trx1.transactionid and trx1.transactiontypeid =  ");
-					sb.append(" trxtyp.transactiontypeid and acts1.accountresourceid = 12 and acts2.accountresourceid in  ");
-					sb.append(" (select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from  ");
-					sb.append(" accountholders where profileid = 15 and accounttypeid = 2)) and acts3.accountresourceid in  ");
-					sb.append(" (select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from ");
-					sb.append(" accountholders where (profileid = 11 or profileid = 6) and accounttypeid = 1)) order by TransactionDate desc; ");
-
-					rs = stmt.executeQuery(sb.toString());
-
-					bdAmt = new BigDecimal(0.00);
-
-					while (rs.next()) {
-						x = x + 1;
-
-						String transactiontype = rs
-								.getString("Transaction Type");
-						String feesAccount = rs.getString("Partner");
-						String commissionAccount = rs.getString("Agent ID");
-
-						String transID = rs.getString("txid");
-
-						Date date = rs.getDate("TransactionDate");
-
-						String commission = rs.getString("commission");
-
-						String afees = rs.getString("Adjusted Fees");
-
-						String ofees = rs.getString("Original Fees");
-
-						String amount = rs.getString("amount");
-
-						String mcomm = rs.getString("MATS Comm.");
-
-						String tcomm = rs.getString("Total Commission");
-
-						if (!ht.containsKey("Transaction Type")) {
-							TreeSet<String> arrL = new TreeSet<>();
-							arrL.add(transactiontype);
-							ht.put("Transaction Type", arrL);
-						} else {
-							ht.get("Transaction Type").add(transactiontype);
-						}
-
-						if (!ht.containsKey("Partner")) {
-							TreeSet<String> arrL = new TreeSet<>();
-							arrL.add(feesAccount);
-							ht.put("Partner", arrL);
-						} else {
-							ht.get("Partner").add(feesAccount);
-						}
-
-						if (!ht.containsKey("Agent ID")) {
-							TreeSet<String> arrL = new TreeSet<>();
-							arrL.add(commissionAccount);
-							ht.put("Agent ID", arrL);
-						} else {
-							ht.get("Agent ID").add(commissionAccount);
-						}
-
-						String d = sdf.format(date);
-						itemId = feesCommissionContainer.addItem();
-
-						trItem = feesCommissionContainer.getItem(itemId);
-
-						Property<String> tdPropertyserial = trItem
-								.getItemProperty("S/N");
-						Property<String> tdPropertyCommAcc = trItem
-								.getItemProperty("Agent ID");
-
-						Property<String> tdPropertyFeesAcc = trItem
-								.getItemProperty("Partner");
-
-						Property<String> tdPropertytransactiontype = trItem
-								.getItemProperty("Transaction Type");
-
-						Property<String> tdPropertyAFees = trItem
-								.getItemProperty("Adjusted Fees (\u20A6)");
-						Property<String> tdPropertyOFees = trItem
-								.getItemProperty("Original Fees (\u20A6)");
-
-						Property<String> tdPropertyCommission = trItem
-								.getItemProperty("Commission (\u20A6)");
-
-						Property<String> tdPropertyamount = trItem
-								.getItemProperty("Amount (\u20A6)");
-
-						Property<String> tdPropertytxid = trItem
-								.getItemProperty("Trans. ID");
-
-						Property<String> tdPropertymcomm = trItem
-								.getItemProperty("MATS Commission (\u20A6)");
-
-						Property<String> tdPropertytcomm = trItem
-								.getItemProperty("Total Commission (\u20A6)");
-
-						Property<String> tdPropertydate = trItem
-								.getItemProperty("Date");
-
-						try {
-							Double dn = Double.valueOf(amount);
-							bdAmt = BigDecimal
-									.valueOf(dn + bdAmt.doubleValue());
-						} catch (Exception e) {
-
-						}
-
-						tdPropertyserial.setValue(String.valueOf(x));
-						tdPropertyCommAcc.setValue(commissionAccount);
-						tdPropertyFeesAcc.setValue(feesAccount);
-						tdPropertyAFees.setValue(afees);
-						tdPropertyOFees.setValue(ofees);
-						tdPropertyCommission.setValue(commission);
-						tdPropertytxid.setValue(transID);
-						tdPropertytransactiontype.setValue(transactiontype);
-						tdPropertyamount.setValue(amount);
-						tdPropertymcomm.setValue(mcomm);
-						tdPropertytcomm.setValue(tcomm);
-						tdPropertydate.setValue(d);
-
-					}
-
-					conn.close();
-
-					table.setContainerDataSource(feesCommissionContainer);
-
-					if (x > 30)
-						x = 30;
-					table.setPageLength(x);
-					table.setSelectable(true);
-					// table.setEditable(true);
-				} catch (SQLException | ClassNotFoundException
-						| InstantiationException | IllegalAccessException
-						| NullPointerException e) {
-					errorHandler(e);
-				}
-
-			}
 		} else if (selectedId
 				.equalsIgnoreCase("Fees / Commission Summary Report")) {
 
@@ -2428,131 +2128,6 @@ public class Reportform extends VerticalLayout {
 				errorHandler(e);
 			}
 
-			x = 0;
-
-			if (x != 0) {
-				ds = feesCommissionContainer;
-				bdAmt = new BigDecimal(0.00);
-
-				String drivers = "com.mysql.jdbc.Driver";
-				try {
-
-					Class<?> driver_class = Class.forName(drivers);
-					Driver driver = (Driver) driver_class.newInstance();
-					DriverManager.registerDriver(driver);
-
-					Connection conn = DriverManager.getConnection(
-							MatsWebPortalUI.conf.DB, MatsWebPortalUI.conf.UN,
-							MatsWebPortalUI.conf.PW);
-
-					Statement stmt = conn.createStatement();
-					ResultSet rs;
-
-					Object itemId;
-					Item trItem;
-
-					StringBuilder sb = new StringBuilder();
-					sb.append(" select acth.username as 'Partner', acts1.datecreated as 'date', sum(acts1.amount) as commission, sum(acts2.amount) as 'Adjusted Fees', ");
-					sb.append(" sum(acts2.amount+acts1.amount) as 'Original Fees',sum(acts3.amount) as amount from  ");
-					sb.append(" accounttransactions acts1,  transactions trx1, transactiontypes trxtyp, accounttransactions acts2, accounttransactions  ");
-					sb.append(" acts3, accountholders acth, accountholders acth2, accounts act1, accounts act2, profiles pf1, profiles pf2 where  ");
-					sb.append(" acts1.datecreated >= '" + d1
-							+ "' and acts1.datecreated <= DATE_ADD('" + d2
-							+ "', INTERVAL 1 DAY) and  ");
-					sb.append(" acts1.transactionid = trx1.transactionid and act1.profileid = pf1.profileid and acts2.transactionid =  ");
-					sb.append(" trx1.transactionid and acts2.userresourceid = acth.accountholderid and acts1.accountresourceid = act1.accountid and  ");
-					sb.append(" act2.profileid = pf2.profileid and acts2.accountresourceid = act2.accountid and acts3.userresourceid =  ");
-					sb.append(" acth2.accountholderid and acts3.transactionid = trx1.transactionid and trx1.transactiontypeid =  ");
-					sb.append(" trxtyp.transactiontypeid and acts1.accountresourceid = 12 and acts2.accountresourceid in  ");
-					sb.append(" (select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from  ");
-					sb.append(" accountholders where profileid = 15 and accounttypeid = 2)) and acts3.accountresourceid in ");
-					sb.append(" (select distinct(accountresourceid) from accounttransactions  where userresourceid in (select accountholderid from ");
-					sb.append(" accountholders where (profileid = 11 or profileid = 6) and accounttypeid = 1)) group by acth.username order by date desc; ");
-
-					// System.out.println(sb.toString());
-
-					rs = stmt.executeQuery(sb.toString());
-
-					while (rs.next()) {
-						x = x + 1;
-
-						String partner = rs.getString("Partner");
-
-						String commission = rs.getString("commission");
-
-						String afees = rs.getString("Adjusted Fees");
-
-						String ofees = rs.getString("Original Fees");
-
-						String amount = rs.getString("amount");
-
-						Date date = rs.getDate("date");
-						String d = sdf.format(date);
-
-						if (!ht.containsKey("Partner")) {
-							TreeSet<String> arrL = new TreeSet<>();
-							arrL.add(partner);
-							ht.put("Partner", arrL);
-						} else {
-							ht.get("Partner").add(partner);
-						}
-
-						itemId = feesCommissionContainer.addItem();
-
-						trItem = feesCommissionContainer.getItem(itemId);
-
-						Property<String> tdPropertyserial = trItem
-								.getItemProperty("S/N");
-						Property<String> tdPropertyPartner = trItem
-								.getItemProperty("Partner");
-
-						Property<String> tdPropertyAFees = trItem
-								.getItemProperty("Adjusted Fees (\u20A6)");
-						Property<String> tdPropertyOFees = trItem
-								.getItemProperty("Original Fees (\u20A6)");
-
-						Property<String> tdPropertyCommission = trItem
-								.getItemProperty("Commission (\u20A6)");
-
-						Property<String> tdPropertyamount = trItem
-								.getItemProperty("Amount (\u20A6)");
-
-						Property<String> tdPropertydate = trItem
-								.getItemProperty("Date");
-
-						try {
-							Double dn = Double.valueOf(amount);
-							bdAmt = BigDecimal
-									.valueOf(dn + bdAmt.doubleValue());
-						} catch (Exception e) {
-
-						}
-
-						tdPropertyserial.setValue(String.valueOf(x));
-						tdPropertyPartner.setValue(partner);
-						tdPropertyAFees.setValue(afees);
-						tdPropertyOFees.setValue(ofees);
-						tdPropertyCommission.setValue(commission);
-						tdPropertyamount.setValue(amount);
-						tdPropertydate.setValue(d);
-
-					}
-
-					conn.close();
-
-					table.setContainerDataSource(feesCommissionContainer);
-
-					if (x > 30)
-						x = 30;
-					table.setPageLength(x);
-					table.setSelectable(true);
-					// table.setEditable(true);
-				} catch (SQLException | ClassNotFoundException
-						| InstantiationException | IllegalAccessException
-						| NullPointerException e) {
-					errorHandler(e);
-				}
-			}
 		}
 
 		addFilter();
