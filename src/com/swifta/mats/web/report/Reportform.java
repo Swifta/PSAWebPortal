@@ -1554,19 +1554,19 @@ public class Reportform extends VerticalLayout {
 
 						String d = trxn.getDate();
 
-						// if (d != null)
-						// try {
-						// Date dt = sdf.parse(d);
-						// cal.setTime(dt);
-						// int m = cal.get(Calendar.MONTH) + 1;
-						//
-						// d = cal.get(Calendar.YEAR) + "-"
-						// + ((m < 10) ? "0" + m : m) + "-"
-						// + cal.get(Calendar.DATE);
-						// } catch (ParseException e) {
-						//
-						// e.printStackTrace();
-						// }
+						if (d != null)
+							try {
+								Date dt = sdf.parse(d);
+								cal.setTime(dt);
+								int m = cal.get(Calendar.MONTH) + 1;
+
+								d = cal.get(Calendar.YEAR) + "-"
+										+ ((m < 10) ? "0" + m : m) + "-"
+										+ cal.get(Calendar.DATE);
+							} catch (ParseException e) {
+
+								e.printStackTrace();
+							}
 
 						// d = trxn.getDate();
 						String sender = trxn.getSender();
