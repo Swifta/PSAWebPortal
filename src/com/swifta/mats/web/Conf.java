@@ -21,7 +21,7 @@ public class Conf {
 		} else {
 			this.UN = "psaproduser";
 			this.PW = "psaproduser@2015";
-			this.ESB = "http://10.0.1.5:8283/services/Provisionservice";
+			this.ESB = "http://localhost:8283/services/Provisionservice";
 			this.DB = "jdbc:mysql://mfisadb.caabwbnfnavv.us-east-1.rds.amazonaws.com:3306/psadatasource";
 			this.dbin = "psadatasource";
 			this.env = env;
